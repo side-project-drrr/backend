@@ -1,0 +1,3 @@
+rootProject.name = 'dr--r--r--'
+include 'dr--r--r--api'
+include 'dr--r--r--batch'
