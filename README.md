@@ -1,4 +1,4 @@
-# backend
+# backend - spring batch meta table
 
 CREATE SEQUENCE BATCH_STEP_EXECUTION_SEQ;
 CREATE SEQUENCE BATCH_JOB_EXECUTION_SEQ;
