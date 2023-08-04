@@ -1,3 +1,3 @@
 rootProject.name = 'dr--r--r--'
-include 'dr--r--r--api'
-include 'dr--r--r--batch'
+include 'api'
+include 'batch'

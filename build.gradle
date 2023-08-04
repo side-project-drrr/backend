@@ -99,7 +99,7 @@ subprojects  {
 }
 
 
-project(':dr--r--r--api') {
+project(':api') {
     bootJar { enabled = false }
     jar { enabled = true }
 
@@ -110,7 +110,7 @@ project(':dr--r--r--api') {
     }
 
 
-    project(':dr--r--r--batch') {
+    project(':batch') {
         bootJar { enabled = true }
         jar { enabled = false }
 
