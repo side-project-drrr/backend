@@ -9,6 +9,8 @@ spring:
         - develop
       main:
         - main
+      batch:
+        - batch
     default: local
 
 

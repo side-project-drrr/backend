@@ -1,0 +1,21 @@
+spring:
+  jpa:
+    hibernate:
+     ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+  batch:
+    jdbc:
+      initialize-schema: ALWAYS
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/BATCH_SAMPLE
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
+
+logging:
+  level:
+    org.hibernate: error
