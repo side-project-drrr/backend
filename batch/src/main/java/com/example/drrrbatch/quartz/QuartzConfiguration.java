@@ -33,7 +33,7 @@ public class QuartzConfiguration {
 
 
     @Bean
-    public JobDetail migrationJobDetail(){
+    public JobDetail migrationJobDetail() {
         return JobBuilder.newJob(MigrationBatchExecutor.class)
                 .withIdentity("migrationBatchExecutor")
                 .storeDurably()
@@ -42,10 +42,10 @@ public class QuartzConfiguration {
     }
 
     @Bean
-    public SimpleTrigger migrationJob() {
+    public SimpleTrigger migrationTrigger() {
         return TriggerBuilder.newTrigger()
                 .forJob(migrationJobDetail())
-                .withIdentity("migrationJObDetail")
+                .withIdentity("migrationJobDetail")
                 .withSchedule(SimpleScheduleBuilder.simpleSchedule()
                         .withIntervalInHours(1)
                         .repeatForever())
