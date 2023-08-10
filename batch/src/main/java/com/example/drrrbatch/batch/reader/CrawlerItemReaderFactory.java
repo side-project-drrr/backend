@@ -21,7 +21,7 @@ public class CrawlerItemReaderFactory {
 
     public Function<WebDriver, AbstractCrawlerPageItemReader> findItemReaderBy(TechBlogCode code) {
         return switch (code) {
-            case BASE -> TestCrawlerPageItemReader::new;
+            case BASE, WOOWAHAN -> TestCrawlerPageItemReader::new;
             case MARKET_KURLY -> MarketKurlyItemReader::new;
             case NAVER -> NaverCrawlerItemReader::new;
         };
