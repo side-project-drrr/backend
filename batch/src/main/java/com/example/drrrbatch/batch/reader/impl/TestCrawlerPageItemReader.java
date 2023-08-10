@@ -19,5 +19,4 @@ public class TestCrawlerPageItemReader extends AbstractCrawlerPageItemReader {
         return null;
     }
 
-
 }

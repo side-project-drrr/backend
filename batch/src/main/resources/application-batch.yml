@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-     ddl-auto: create
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -19,3 +19,9 @@ spring:
 logging:
   level:
     org.hibernate: error
+
+
+
+os:
+  mac:
+    webdriver: /usr/local/bin/chromedriver
