@@ -17,6 +17,7 @@ public class ChromeDriverConfiguration {
         options.addArguments("headless");                       //브라우저 안띄움
         options.addArguments("--disable-gpu");            //gpu 비활성화
         options.addArguments("--blink-settings=imagesEnabled=false"); //이미지 다운 안받음
+        options.addArguments("—user-data-dir=" + System.getProperty("java.io.tmpdir")); // 종료 옵션 추가
         return new ChromeDriver(options);
     }
 
