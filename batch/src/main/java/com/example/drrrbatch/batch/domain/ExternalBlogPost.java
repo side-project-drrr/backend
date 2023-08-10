@@ -2,7 +2,9 @@ package com.example.drrrbatch.batch.domain;
 
 import com.example.drrrbatch.batch.vo.TechBlogCode;
 import java.time.LocalDate;
+import lombok.Builder;
 
+@Builder
 public record ExternalBlogPost(
         String link,
         String title,
@@ -11,7 +13,7 @@ public record ExternalBlogPost(
         LocalDate postDate,
         String suffix,
         String thumbnailUrl,
-        TechBlogCode crawlerGroup
+        TechBlogCode code
 ) {
 
 }
