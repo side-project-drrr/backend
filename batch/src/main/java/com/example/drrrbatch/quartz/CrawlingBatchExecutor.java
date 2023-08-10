@@ -3,7 +3,6 @@ package com.example.drrrbatch.quartz;
 import com.example.drrrbatch.batch.vo.TechBlogCode;
 import java.time.LocalDate;
 import java.util.Arrays;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobExecutionContext;
@@ -11,14 +10,19 @@ import org.quartz.JobExecutionException;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
 
 @Slf4j
-@RequiredArgsConstructor
 public class CrawlingBatchExecutor extends QuartzJobBean {
     private final JobLauncher jobLauncher;
     private final Job crawlingJob;
+
+    public CrawlingBatchExecutor(JobLauncher jobLauncher, @Qualifier("crawlingJob") Job crawlingJob) {
+        this.jobLauncher = jobLauncher;
+        this.crawlingJob = crawlingJob;
+    }
 
     @SneakyThrows
     @Override
