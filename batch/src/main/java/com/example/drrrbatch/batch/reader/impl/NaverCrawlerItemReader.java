@@ -13,7 +13,6 @@ import org.openqa.selenium.WebDriver;
 @Slf4j
 public class NaverCrawlerItemReader extends AbstractCrawlerPageItemReader {
     private static final String TARGET_URL = "https://d2.naver.com/home";
-
     // 네이버의 경우 크롤링 페이지의 위치가 news, helloworld 이렇게 2개의 페이지가 존재하기 때문에 별도의 domain만 prefix를 가지도록 설정
     private static final String PREFIX_URL = "https://d2.naver.com/";
     private static final TechBlogCode CODE = TechBlogCode.NAVER;

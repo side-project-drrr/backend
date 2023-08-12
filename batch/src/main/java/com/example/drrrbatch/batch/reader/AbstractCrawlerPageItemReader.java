@@ -4,9 +4,11 @@ import static com.example.drrrbatch.batch.reader.CrawlerPageStrategy.PAGE;
 import static com.example.drrrbatch.batch.reader.CrawlerPageStrategy.SINGLE_PAGE;
 
 import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.batch.item.ItemReader;
 
 @Slf4j
@@ -22,6 +24,7 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
      */
     protected static final DateTimeFormatter FORMATTER2 = DateTimeFormatter.ofPattern("yyyy.MM.dd.");
     protected final WebDriver webDriver;
+    protected final WebDriverWait webDriverWait;
     private final CrawlerPageStrategy pageStrategy;
     private int page = -1;
     private int lastPage = Integer.MIN_VALUE;
@@ -29,6 +32,7 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
 
     protected AbstractCrawlerPageItemReader(CrawlerPageStrategy crawlerPageStrategy, WebDriver webDriver) {
         this.pageStrategy = crawlerPageStrategy;
+        this.webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
         this.webDriver = webDriver;
         this.page = 0;
     }

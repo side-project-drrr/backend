@@ -34,6 +34,7 @@ public class CrawlingBatchConfiguration {
     @Bean(name = BATCH_NAME + "Job")
     public Job crawlingJob() {
         return new JobBuilder(BATCH_NAME + "Job", jobRepository)
+                //.incrementer(new RunIdIncrementer()) // 실제 환경에서 지울 것을 권장함
                 .start(crawlingStep(null, null))
                 .build();
     }
