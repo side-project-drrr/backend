@@ -15,7 +15,7 @@ buildscript {
         classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}"
     }
 }
-subprojects  {
+subprojects {
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
@@ -83,7 +83,7 @@ subprojects  {
         }
     }
 
-    compileQuerydsl{
+    compileQuerydsl {
         options.annotationProcessorPath = configurations.querydsl
     }
 
@@ -92,7 +92,7 @@ subprojects  {
     }
 
     compileQuerydsl {
-        if(file(querydslDir).exists() )
+        if (file(querydslDir).exists())
             delete(file(querydslDir))
     }
 
@@ -116,7 +116,6 @@ project(':api') {
 
         dependencies {
             implementation 'org.springframework.boot:spring-boot-starter-batch'
-            implementation 'org.springframework.boot:spring-boot-starter-quartz'
             testImplementation 'org.springframework.batch:spring-batch-test'
             implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
             implementation 'mysql:mysql-connector-java:8.0.29'

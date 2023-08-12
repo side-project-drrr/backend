@@ -12,7 +12,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.Chunk;
@@ -35,15 +34,15 @@ public class CrawlingBatchConfiguration {
     @Bean(name = BATCH_NAME + "Job")
     public Job crawlingJob() {
         return new JobBuilder(BATCH_NAME + "Job", jobRepository)
-                .incrementer(new RunIdIncrementer())
-                .start(crawlingStep(null))
+                .start(crawlingStep(null, null))
                 .build();
     }
 
     @Bean(name = BATCH_NAME + "Step")
     @JobScope
     public Step crawlingStep(
-            @Value("#{jobParameters[techBlogCode]}") Long code
+            @Value("#{jobParameters[techBlogCode]}") Long code,
+            @Value("#{jobParameters[requestDate]}") String requestDate
     ) {
         log.info("get parameter code: {}", code);
         return new StepBuilder(BATCH_NAME + "Step", jobRepository)

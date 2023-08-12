@@ -12,7 +12,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
@@ -35,15 +34,15 @@ public class MigrationBatchConfiguration {
     @Bean(name = BATCH_NAME + "Job")
     public Job migrationJob() {
         return new JobBuilder(BATCH_NAME + "Job", jobRepository)
-                .incrementer(new RunIdIncrementer())
-                .start(migrationStep(null))
+                .start(migrationStep(null, null))
                 .build();
     }
 
     @Bean(name = BATCH_NAME + "Step")
     @JobScope
     public Step migrationStep(
-            @Value("#{jobParameters[techBlogCode]}") Long code
+            @Value("#{jobParameters[techBlogCode]}") Long code,
+            @Value("#{jobParameters[requestDate]}") String requestDate
     ) {
         final var techBlogCode = TechBlogCode.valueOf(code);
         return new StepBuilder(BATCH_NAME + "Step", jobRepository)
@@ -57,11 +56,11 @@ public class MigrationBatchConfiguration {
                         }})
                         .build())
                 .processor((temporalTechBlogEntity) -> {
-                    if (this.techBlogPostRepository.existsByTechBlogCodeAndUrlSuffix(
-                            temporalTechBlogEntity.getTechBlogCode(),
-                            temporalTechBlogEntity.getUrlSuffix())) {
-                        return null;
-                    }
+//                    if (this.techBlogPostRepository.existsByTechBlogCodeAndUrlSuffix(
+//                            temporalTechBlogEntity.getTechBlogCode(),
+//                            temporalTechBlogEntity.getUrlSuffix())) {
+//                        return null;
+//                    }
                     return TechBlogPost.from(temporalTechBlogEntity);
                 })
                 .writer(new JpaItemWriterBuilder<TechBlogPost>()
