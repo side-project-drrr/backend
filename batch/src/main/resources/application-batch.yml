@@ -28,3 +28,5 @@ logging:
 os:
   mac:
     webdriver: /usr/local/bin/chromedriver
+server:
+  port: 0
