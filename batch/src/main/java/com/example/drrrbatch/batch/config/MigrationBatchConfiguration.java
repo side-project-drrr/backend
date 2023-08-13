@@ -58,26 +58,17 @@ public class MigrationBatchConfiguration {
                         }})
                         .build())
                 .processor((temporalTechBlogEntity) -> {
-//                    if (this.techBlogPostRepository.existsByTechBlogCodeAndUrlSuffix(
-//                            temporalTechBlogEntity.getTechBlogCode(),
-//                            temporalTechBlogEntity.getUrlSuffix())) {
-//                        return null;
-//                    }
+                    if (this.techBlogPostRepository.existsByTechBlogCodeAndUrlSuffix(
+                            temporalTechBlogEntity.getTechBlogCode(),
+                            temporalTechBlogEntity.getUrlSuffix())) {
+                        return null;
+                    }
                     return TechBlogPost.from(temporalTechBlogEntity);
                 })
                 .writer(new JpaItemWriterBuilder<TechBlogPost>()
                         .usePersist(true)
                         .entityManagerFactory(entityManagerFactory)
                         .build())
-                /*   .writer(chunk -> {
-                       techBlogPostRepository.saveAll(chunk.getItems()
-                               .stream()
-                               .filter(temporalTechBlogEntity -> !this.techBlogPostRepository.existsByTechBlogCodeAndUrlSuffix(
-                                       temporalTechBlogEntity.getTechBlogCode(),
-                                       temporalTechBlogEntity.getUrlSuffix()))
-                               .map(TechBlogPost::from)
-                               .toList());
-                   })*/
                 .build();
     }
 }
