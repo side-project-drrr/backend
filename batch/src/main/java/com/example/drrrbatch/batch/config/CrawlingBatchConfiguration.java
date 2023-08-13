@@ -1,6 +1,5 @@
 package com.example.drrrbatch.batch.config;
 
-
 import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
 import com.example.drrrbatch.batch.entity.TemporalTechBlogPost;
 import com.example.drrrbatch.batch.reader.CrawlerItemReaderFactory;
@@ -8,6 +7,7 @@ import com.example.drrrbatch.batch.repository.TemporalTechBlogPostRepository;
 import com.example.drrrbatch.batch.vo.TechBlogCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.WebDriver;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
@@ -16,6 +16,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.Chunk;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -23,13 +24,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "spring.batch.job.name", havingValue = "crawlingJob")
 public class CrawlingBatchConfiguration {
     private static final String BATCH_NAME = "crawling";
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
-    private final CrawlerItemReaderFactory crawlerItemReaderFactory;
     private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
+    private final WebDriver webDriver;
 
     @Bean(name = BATCH_NAME + "Job")
     public Job crawlingJob() {
@@ -46,6 +48,7 @@ public class CrawlingBatchConfiguration {
             @Value("#{jobParameters[requestDate]}") String requestDate
     ) {
         log.info("get parameter code: {}", code);
+        final CrawlerItemReaderFactory crawlerItemReaderFactory = crawlerItemReaderFactory(webDriver);
         return new StepBuilder(BATCH_NAME + "Step", jobRepository)
                 .<ExternalBlogPosts, ExternalBlogPosts>chunk(1, transactionManager)
                 .reader(crawlerItemReaderFactory.createItemReader(TechBlogCode.valueOf(code)))
@@ -68,6 +71,11 @@ public class CrawlingBatchConfiguration {
                                 .techBlogCode(post.code())
                                 .urlSuffix(post.suffix()).build())
                 ).toList());
+    }
+
+    @Bean
+    public CrawlerItemReaderFactory crawlerItemReaderFactory(WebDriver webDriver) {
+        return new CrawlerItemReaderFactory(webDriver);
     }
 
 }

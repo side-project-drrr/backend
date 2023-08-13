@@ -1,14 +1,19 @@
 package com.example.drrrbatch.batch.config.crawler;
 
+import com.example.drrrbatch.batch.config.CrawlingBatchConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@Slf4j
 @EnableConfigurationProperties(ChromeDriverPathProperty.class)
+@ConditionalOnBean(CrawlingBatchConfiguration.class)
 public class ChromeDriverConfiguration {
 
     @Bean
@@ -24,4 +29,6 @@ public class ChromeDriverConfiguration {
         options.addArguments("—user-data-dir=" + System.getProperty("java.io.tmpdir")); // 종료 옵션 추가
         return new ChromeDriver(options);
     }
+
+
 }

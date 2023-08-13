@@ -8,9 +8,7 @@ import com.example.drrrbatch.batch.vo.TechBlogCode;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;
-import org.springframework.stereotype.Component;
 
-@Component
 @RequiredArgsConstructor
 public class CrawlerItemReaderFactory {
 
