@@ -58,7 +58,6 @@ public class KakaoCrawlerItemReader extends AbstractCrawlerPageItemReader {
     @Override
     protected int getLastPage() {
         this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("page-numbers")));
-        //Integer.parseInt(this.webDriver.findElement(By.className("e-load-more-anchor")).getAttribute("data-max-page")
         return this.webDriver.findElement(By.className("elementor-pagination"))
                 .findElements(By.tagName("a"))
                 .stream()
