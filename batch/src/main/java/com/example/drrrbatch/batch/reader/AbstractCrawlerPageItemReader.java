@@ -26,7 +26,7 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
     protected final WebDriver webDriver;
     protected final WebDriverWait webDriverWait;
     private final CrawlerPageStrategy pageStrategy;
-    private int page = -1;
+    private int page;
     private int lastPage = Integer.MIN_VALUE;
 
 
@@ -59,9 +59,8 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
     protected abstract ExternalBlogPosts executeCrawlerPage();
 
     protected void selectPage() {
-        this.webDriver.get(this.getPageUrlByParameter(page));
-        waitPage();
-        this.lastPage = this.getLastPage();
+        webDriver.get(this.getPageUrlByParameter(page));
+        lastPage = this.getLastPage();
     }
 
     protected int getLastPage() {
@@ -72,12 +71,5 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         throw new IllegalArgumentException("페이지 전략 연산으로 사용하기 위해서 해당 메서드를 재정의 해야 합니다.");
     }
 
-    private void waitPage() {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 }

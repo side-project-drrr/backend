@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @Slf4j
 public class MarketKurlyItemReader extends AbstractCrawlerPageItemReader {
@@ -25,12 +26,9 @@ public class MarketKurlyItemReader extends AbstractCrawlerPageItemReader {
     protected ExternalBlogPosts executeCrawlerPage() {
         log.info("run market kurly crawler");
         this.webDriver.get("https://helloworld.kurly.com/");
-        // 페이지 로딩을 위해 약간의 시간 대기 (이 부분은 선택 사항)
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {
-        }
 
+        // 페이지 로딩을 위해 약간의 시간
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("post-list")));
         //https://helloworld.kurly.com/blog
         var crawlerResult = webDriver.findElement(By.className("post-list"))
                 .findElements(By.className("post-card"))

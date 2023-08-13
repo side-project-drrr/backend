@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @Slf4j
 public class NaverCrawlerItemReader extends AbstractCrawlerPageItemReader {
@@ -72,6 +73,7 @@ public class NaverCrawlerItemReader extends AbstractCrawlerPageItemReader {
 
     @Override
     protected int getLastPage() {
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("btn_num")));
         return this.webDriver.findElements(By.className("btn_num"))
                 .stream()
                 .map(webElement -> webElement.getAttribute("data-number"))
