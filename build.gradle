@@ -118,7 +118,7 @@ project(':api') {
             implementation 'org.springframework.boot:spring-boot-starter-batch'
             testImplementation 'org.springframework.batch:spring-batch-test'
             implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
-            implementation 'mysql:mysql-connector-java:8.0.29'
+            runtimeOnly 'com.mysql:mysql-connector-j'
         }
     }
 
