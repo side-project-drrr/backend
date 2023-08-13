@@ -5,7 +5,9 @@ import static com.example.drrrbatch.batch.reader.CrawlerPageStrategy.SINGLE_PAGE
 
 import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -14,15 +16,6 @@ import org.springframework.batch.item.ItemReader;
 @Slf4j
 
 public abstract class AbstractCrawlerPageItemReader implements ItemReader<ExternalBlogPosts> {
-
-    /**
-     * <p> ex)2022.02.02 </p>
-     */
-    protected static final DateTimeFormatter FORMATTER1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-    /**
-     * <p>ex)2022.02.02.</p>
-     */
-    protected static final DateTimeFormatter FORMATTER2 = DateTimeFormatter.ofPattern("yyyy.MM.dd.");
     protected final WebDriver webDriver;
     protected final WebDriverWait webDriverWait;
     private final CrawlerPageStrategy pageStrategy;
@@ -71,5 +64,21 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         throw new IllegalArgumentException("페이지 전략 연산으로 사용하기 위해서 해당 메서드를 재정의 해야 합니다.");
     }
 
+
+    @RequiredArgsConstructor
+    protected enum CrawlingLocalDatePatterns {
+        PATTERN1("yyyy.MM.dd"),
+        PATTERN2("yyyy.MM.dd.");
+
+        private final DateTimeFormatter dateTimeFormatter;
+
+        CrawlingLocalDatePatterns(String pattern) {
+            this.dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+        }
+
+        public LocalDate parse(String text) {
+            return LocalDate.parse(text, this.dateTimeFormatter);
+        }
+    }
 
 }

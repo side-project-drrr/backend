@@ -5,7 +5,6 @@ import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
 import com.example.drrrbatch.batch.reader.AbstractCrawlerPageItemReader;
 import com.example.drrrbatch.batch.reader.CrawlerPageStrategy;
 import com.example.drrrbatch.batch.vo.TechBlogCode;
-import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -50,7 +49,7 @@ public class KakaoCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .link(PAGE_URL)
                             .author(postAuthor.getText())
                             .summary(postSummary.getText())
-                            .postDate(LocalDate.parse(postDate.getText(), FORMATTER1))
+                            .postDate(CrawlingLocalDatePatterns.PATTERN1.parse(postDate.getText()))
                             .build();
                 }).toList());
     }

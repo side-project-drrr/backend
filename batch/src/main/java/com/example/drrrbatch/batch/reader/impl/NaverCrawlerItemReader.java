@@ -5,7 +5,6 @@ import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
 import com.example.drrrbatch.batch.reader.AbstractCrawlerPageItemReader;
 import com.example.drrrbatch.batch.reader.CrawlerPageStrategy;
 import com.example.drrrbatch.batch.vo.TechBlogCode;
-import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -56,7 +55,7 @@ public class NaverCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .author("") // naver는 작성자가 없음
                             .summary(summary)
                             .thumbnailUrl(thumbnail)
-                            .postDate(LocalDate.parse(postDate, FORMATTER1))
+                            .postDate(CrawlingLocalDatePatterns.PATTERN1.parse(postDate))
                             .code(CODE)
                             .build();
                 }).toList());
