@@ -5,15 +5,14 @@ import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
 import com.example.drrrbatch.batch.reader.AbstractCrawlerPageItemReader;
 import com.example.drrrbatch.batch.reader.CrawlerPageStrategy;
 import com.example.drrrbatch.batch.vo.TechBlogCode;
-import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @Slf4j
 public class NaverCrawlerItemReader extends AbstractCrawlerPageItemReader {
     private static final String TARGET_URL = "https://d2.naver.com/home";
-
     // 네이버의 경우 크롤링 페이지의 위치가 news, helloworld 이렇게 2개의 페이지가 존재하기 때문에 별도의 domain만 prefix를 가지도록 설정
     private static final String PREFIX_URL = "https://d2.naver.com/";
     private static final TechBlogCode CODE = TechBlogCode.NAVER;
@@ -56,7 +55,7 @@ public class NaverCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .author("") // naver는 작성자가 없음
                             .summary(summary)
                             .thumbnailUrl(thumbnail)
-                            .postDate(LocalDate.parse(postDate, FORMATTER1))
+                            .postDate(CrawlingLocalDatePatterns.PATTERN1.parse(postDate))
                             .code(CODE)
                             .build();
                 }).toList());
@@ -73,6 +72,7 @@ public class NaverCrawlerItemReader extends AbstractCrawlerPageItemReader {
 
     @Override
     protected int getLastPage() {
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("btn_num")));
         return this.webDriver.findElements(By.className("btn_num"))
                 .stream()
                 .map(webElement -> webElement.getAttribute("data-number"))

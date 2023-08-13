@@ -1,21 +1,23 @@
 spring:
-
   jpa:
+
     hibernate:
     #ddl-auto: create
     properties:
       hibernate:
         format_sql: true
         use_sql_comments: true
+        default_batch_fetch_size: 1000
   batch:
     jdbc:
       initialize-schema: ALWAYS
 
   datasource:
-    url: jdbc:mysql://localhost:3306/BATCH_SAMPLE
+    url: jdbc:mysql://localhost:3306/BATCH_SAMPLE?rewriteBatchedStatements=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 1234
+
 
 logging:
   level:
@@ -23,6 +25,11 @@ logging:
 
 
 
-os:
-  mac:
-    webdriver: /usr/local/bin/chromedriver
+
+server:
+  port: 0
+
+chromedriver:
+  path:
+    mac: /usr/local/bin/chromedriver
+    window: #윈도우 크롬드라이브 경로

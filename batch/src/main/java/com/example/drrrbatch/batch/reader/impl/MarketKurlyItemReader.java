@@ -5,12 +5,12 @@ import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
 import com.example.drrrbatch.batch.reader.AbstractCrawlerPageItemReader;
 import com.example.drrrbatch.batch.reader.CrawlerPageStrategy;
 import com.example.drrrbatch.batch.vo.TechBlogCode;
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 @Slf4j
 public class MarketKurlyItemReader extends AbstractCrawlerPageItemReader {
@@ -25,13 +25,8 @@ public class MarketKurlyItemReader extends AbstractCrawlerPageItemReader {
     protected ExternalBlogPosts executeCrawlerPage() {
         log.info("run market kurly crawler");
         this.webDriver.get("https://helloworld.kurly.com/");
-        // 페이지 로딩을 위해 약간의 시간 대기 (이 부분은 선택 사항)
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {
-        }
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("post-list")));
 
-        //https://helloworld.kurly.com/blog
         var crawlerResult = webDriver.findElement(By.className("post-list"))
                 .findElements(By.className("post-card"))
                 .stream().map(webElement -> {
@@ -47,7 +42,7 @@ public class MarketKurlyItemReader extends AbstractCrawlerPageItemReader {
                             .title(postTitle)
                             .summary(postSummary)
                             .author(postAuthor)
-                            .postDate(LocalDate.parse(postDate, FORMATTER2))
+                            .postDate(CrawlingLocalDatePatterns.PATTERN2.parse(postDate))
                             .link(BLOG_PREFIX)
                             .suffix(postLink.getAttribute("href").substring(BLOG_PREFIX.length() + 1))
                             .code(code)

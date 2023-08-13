@@ -12,17 +12,19 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
+import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @RequiredArgsConstructor
 @Configuration
+@ConditionalOnProperty(name = "spring.batch.job.name", havingValue = "migrationJob")
 public class MigrationBatchConfiguration {
     private static final String BATCH_NAME = "migration";
 
@@ -34,19 +36,19 @@ public class MigrationBatchConfiguration {
     @Bean(name = BATCH_NAME + "Job")
     public Job migrationJob() {
         return new JobBuilder(BATCH_NAME + "Job", jobRepository)
-                .incrementer(new RunIdIncrementer())
-                .start(migrationStep(null))
+                .start(migrationStep(null, null))
                 .build();
     }
 
     @Bean(name = BATCH_NAME + "Step")
     @JobScope
     public Step migrationStep(
-            @Value("#{jobParameters[techBlogCode]}") Long code
+            @Value("#{jobParameters[techBlogCode]}") Long code,
+            @Value("#{jobParameters[requestDate]}") String requestDate
     ) {
         final var techBlogCode = TechBlogCode.valueOf(code);
         return new StepBuilder(BATCH_NAME + "Step", jobRepository)
-                .<TemporalTechBlogPost, TemporalTechBlogPost>chunk(100, transactionManager)
+                .<TemporalTechBlogPost, TechBlogPost>chunk(100, transactionManager)
                 .reader(new JpaCursorItemReaderBuilder<TemporalTechBlogPost>()
                         .name("migrationJbcItemReader")
                         .entityManagerFactory(entityManagerFactory)
@@ -55,15 +57,18 @@ public class MigrationBatchConfiguration {
                             this.put("techBlogCode", techBlogCode);
                         }})
                         .build())
-                .writer(chunk -> {
-                    chunk.getItems()
-                            .stream()
-                            .filter(temporalTechBlogEntity -> !this.techBlogPostRepository.existsByTechBlogCodeAndUrlSuffix(
-                                    temporalTechBlogEntity.getTechBlogCode(),
-                                    temporalTechBlogEntity.getUrlSuffix()))
-                            .map(TechBlogPost::from)
-                            .forEach(this.techBlogPostRepository::save);
+                .processor((temporalTechBlogEntity) -> {
+                    if (this.techBlogPostRepository.existsByTechBlogCodeAndUrlSuffix(
+                            temporalTechBlogEntity.getTechBlogCode(),
+                            temporalTechBlogEntity.getUrlSuffix())) {
+                        return null;
+                    }
+                    return TechBlogPost.from(temporalTechBlogEntity);
                 })
+                .writer(new JpaItemWriterBuilder<TechBlogPost>()
+                        .usePersist(true)
+                        .entityManagerFactory(entityManagerFactory)
+                        .build())
                 .build();
     }
 }

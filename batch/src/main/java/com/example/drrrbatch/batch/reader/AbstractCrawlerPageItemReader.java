@@ -4,31 +4,28 @@ import static com.example.drrrbatch.batch.reader.CrawlerPageStrategy.PAGE;
 import static com.example.drrrbatch.batch.reader.CrawlerPageStrategy.SINGLE_PAGE;
 
 import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.batch.item.ItemReader;
 
 @Slf4j
 
 public abstract class AbstractCrawlerPageItemReader implements ItemReader<ExternalBlogPosts> {
-
-    /**
-     * <p> ex)2022.02.02 </p>
-     */
-    protected static final DateTimeFormatter FORMATTER1 = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-    /**
-     * <p>ex)2022.02.02.</p>
-     */
-    protected static final DateTimeFormatter FORMATTER2 = DateTimeFormatter.ofPattern("yyyy.MM.dd.");
     protected final WebDriver webDriver;
+    protected final WebDriverWait webDriverWait;
     private final CrawlerPageStrategy pageStrategy;
-    private int page = -1;
+    private int page;
     private int lastPage = Integer.MIN_VALUE;
 
 
     protected AbstractCrawlerPageItemReader(CrawlerPageStrategy crawlerPageStrategy, WebDriver webDriver) {
         this.pageStrategy = crawlerPageStrategy;
+        this.webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
         this.webDriver = webDriver;
         this.page = 0;
     }
@@ -55,9 +52,8 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
     protected abstract ExternalBlogPosts executeCrawlerPage();
 
     protected void selectPage() {
-        this.webDriver.get(this.getPageUrlByParameter(page));
-        waitPage();
-        this.lastPage = this.getLastPage();
+        webDriver.get(this.getPageUrlByParameter(page));
+        lastPage = this.getLastPage();
     }
 
     protected int getLastPage() {
@@ -68,11 +64,20 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         throw new IllegalArgumentException("페이지 전략 연산으로 사용하기 위해서 해당 메서드를 재정의 해야 합니다.");
     }
 
-    private void waitPage() {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+
+    @RequiredArgsConstructor
+    protected enum CrawlingLocalDatePatterns {
+        PATTERN1("yyyy.MM.dd"),
+        PATTERN2("yyyy.MM.dd.");
+
+        private final DateTimeFormatter dateTimeFormatter;
+
+        CrawlingLocalDatePatterns(String pattern) {
+            this.dateTimeFormatter = DateTimeFormatter.ofPattern(pattern);
+        }
+
+        public LocalDate parse(String text) {
+            return LocalDate.parse(text, this.dateTimeFormatter);
         }
     }
 
