@@ -7,6 +7,7 @@ import com.example.drrrbatch.batch.domain.ExternalBlogPosts;
 import com.example.drrrbatch.batch.reader.AbstractCrawlerPageItemReader;
 import com.example.drrrbatch.batch.reader.CrawlerPageStrategy;
 
+import com.example.drrrbatch.batch.reader.impl.MarketKurlyItemReader.EmptyFinder;
 import com.example.drrrbatch.batch.vo.TechBlogCode;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -83,15 +84,6 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader imp
         this.navigateToNextPage(super.getPage());
 
         return externalBlogPosts;
-    }
-    static class EmptyFinder {
-        static <R> Optional<R> get(Supplier<R> result) {
-            try {
-                return Optional.of(result.get());
-            } catch (Exception e) {
-                return Optional.empty();
-            }
-        }
     }
 
     @Override
