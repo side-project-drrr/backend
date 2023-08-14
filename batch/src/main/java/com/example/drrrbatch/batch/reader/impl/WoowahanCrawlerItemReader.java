@@ -38,7 +38,7 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader imp
 
     @Override
     protected ExternalBlogPosts executeCrawlerPage() {
-        log.info("start crawler wowhahan blog");
+        log.info("start crawler woowahan blog");
         setLastPage();
         WebElement postsElement = this.webDriver.findElement(By.className("posts"));
 
