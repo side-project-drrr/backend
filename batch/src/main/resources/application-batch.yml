@@ -32,4 +32,4 @@ server:
 chromedriver:
   path:
     mac: /usr/local/bin/chromedriver
-    window: #윈도우 크롬드라이브 경로
+    window: C:/Users/USER/chrome/chromedriver.exe
