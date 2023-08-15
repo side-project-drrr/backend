@@ -33,7 +33,8 @@ public class CrawlingBatchConfiguration {
     private final PlatformTransactionManager transactionManager;
     private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
     private final WebDriver webDriver;
-    private final JobExecutionListener listener;
+    private final WebDriverListener listener;
+
 
     @Bean(name = BATCH_NAME + "Job")
     public Job crawlingJob() {
