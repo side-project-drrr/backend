@@ -4,6 +4,7 @@ import com.example.drrrbatch.batch.reader.impl.KakaoCrawlerItemReader;
 import com.example.drrrbatch.batch.reader.impl.MarketKurlyItemReader;
 import com.example.drrrbatch.batch.reader.impl.NaverCrawlerItemReader;
 import com.example.drrrbatch.batch.reader.impl.TestCrawlerPageItemReader;
+import com.example.drrrbatch.batch.reader.impl.WoowahanCrawlerItemReader;
 import com.example.drrrbatch.batch.vo.TechBlogCode;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,8 @@ public class CrawlerItemReaderFactory {
 
     public Function<WebDriver, AbstractCrawlerPageItemReader> findItemReaderBy(TechBlogCode code) {
         return switch (code) {
-            case BASE, WOOWAHAN -> TestCrawlerPageItemReader::new;
+            case BASE -> TestCrawlerPageItemReader::new;
+            case WOOWAHAN -> WoowahanCrawlerItemReader::new;
             case MARKET_KURLY -> MarketKurlyItemReader::new;
             case NAVER -> NaverCrawlerItemReader::new;
             case KAKAO -> KakaoCrawlerItemReader::new;

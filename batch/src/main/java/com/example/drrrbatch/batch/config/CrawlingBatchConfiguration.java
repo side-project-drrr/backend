@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -33,10 +34,12 @@ public class CrawlingBatchConfiguration {
     private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
     private final WebDriver webDriver;
 
+
     @Bean(name = BATCH_NAME + "Job")
     public Job crawlingJob() {
         return new JobBuilder(BATCH_NAME + "Job", jobRepository)
                 //.incrementer(new RunIdIncrementer()) // 실제 환경에서 지울 것을 권장함
+                .listener(webDriverListener(webDriver))
                 .start(crawlingStep(null, null))
                 .build();
     }
@@ -50,7 +53,7 @@ public class CrawlingBatchConfiguration {
         log.info("get parameter code: {}", code);
         final CrawlerItemReaderFactory crawlerItemReaderFactory = crawlerItemReaderFactory(webDriver);
         return new StepBuilder(BATCH_NAME + "Step", jobRepository)
-                .<ExternalBlogPosts, ExternalBlogPosts>chunk(1, transactionManager)
+                .<ExternalBlogPosts, ExternalBlogPosts>chunk(10, transactionManager)
                 .reader(crawlerItemReaderFactory.createItemReader(TechBlogCode.valueOf(code)))
                 .writer(this::saveChunkToTemporalTechBlogRepository)
                 .build();
@@ -76,6 +79,11 @@ public class CrawlingBatchConfiguration {
     @Bean
     public CrawlerItemReaderFactory crawlerItemReaderFactory(WebDriver webDriver) {
         return new CrawlerItemReaderFactory(webDriver);
+    }
+
+    @Bean
+    WebDriverListener webDriverListener(WebDriver webDriver){
+        return new WebDriverListener(webDriver);
     }
 
 }
