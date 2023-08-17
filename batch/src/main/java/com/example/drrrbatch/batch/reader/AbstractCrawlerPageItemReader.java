@@ -64,6 +64,10 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         lastPage = this.getLastPage();
     }
 
+    protected void setLastPage(int lastPage){
+        this.lastPage = lastPage;
+    }
+
     protected int getLastPage() {
         throw new IllegalArgumentException("페이지 전략 연산으로 사용하기 위해서 해당 메서드를 재정의 해야 합니다.");
     }

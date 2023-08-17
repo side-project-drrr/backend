@@ -33,14 +33,13 @@ public class CrawlingBatchConfiguration {
     private final PlatformTransactionManager transactionManager;
     private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
     private final WebDriver webDriver;
-    private final WebDriverListener listener;
 
 
     @Bean(name = BATCH_NAME + "Job")
     public Job crawlingJob() {
         return new JobBuilder(BATCH_NAME + "Job", jobRepository)
                 //.incrementer(new RunIdIncrementer()) // 실제 환경에서 지울 것을 권장함
-                .listener(listener)
+                .listener(webDriverListener(webDriver))
                 .start(crawlingStep(null, null))
                 .build();
     }
@@ -80,6 +79,11 @@ public class CrawlingBatchConfiguration {
     @Bean
     public CrawlerItemReaderFactory crawlerItemReaderFactory(WebDriver webDriver) {
         return new CrawlerItemReaderFactory(webDriver);
+    }
+
+    @Bean
+    WebDriverListener webDriverListener(WebDriver webDriver){
+        return new WebDriverListener(webDriver);
     }
 
 }
