@@ -60,10 +60,6 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         lastPage = this.getLastPage();
     }
 
-    protected void setLastPage() {
-        lastPage = this.getLastPage();
-    }
-
     protected void setLastPage(int lastPage){
         this.lastPage = lastPage;
     }
