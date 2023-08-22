@@ -1,21 +1,19 @@
-buildscript {
-    ext {
-        springBootVersion = '3.1.2'
-        queryDslVersion = '5.0.0'
-        querydslPluginVersion = '1.0.10'
-    }
-    repositories {
-        mavenCentral()
-        maven { url "https://plugins.gradle.org/m2/" }
-    }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "io.spring.gradle:dependency-management-plugin:1.1.2.RELEASE"
-        // Querydsl 의존성
-        classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}"
-    }
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.2'
+    id 'io.spring.dependency-management' version '1.1.2'
 }
+
+
+repositories {
+    mavenCentral()
+}
+
+bootJar.enabled = false
+
+
 subprojects {
+
     apply plugin: 'java'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
@@ -35,65 +33,34 @@ subprojects {
         }
     }
 
-    apply plugin: "com.ewerk.gradle.plugins.querydsl"
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
         implementation 'org.springframework.boot:spring-boot-starter-web'
-        implementation 'org.springframework.kafka:spring-kafka'
+
         implementation 'com.h2database:h2'
         compileOnly 'org.projectlombok:lombok'
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
         annotationProcessor 'org.projectlombok:lombok'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testImplementation 'io.projectreactor:reactor-test'
-        testImplementation 'org.springframework.kafka:spring-kafka-test'
-        testImplementation 'org.springframework.security:spring-security-test'
+
 
         // === QueryDsl 시작 ===
 
         // == 스프링 부트 3.0 이상 ==
         // for QueryDSL
         implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+
         annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
-        annotationProcessor "jakarta.annotation:jakarta.annotation-api"
         annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+        annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
         // === QueryDsl 끝 ===
 
     }
 
     tasks.named('test') {
         useJUnitPlatform()
-    }
-
-    // QueryDSL 설정
-    def querydslDir = "$buildDir/generated/querydsl"
-
-    querydsl {
-        library = "com.querydsl:querydsl-apt"
-        jpa = true
-        querydslSourcesDir = querydslDir
-    }
-
-    sourceSets {
-        main {
-            java {
-                srcDirs = ['src/main/java', querydslDir]
-            }
-        }
-    }
-
-    compileQuerydsl {
-        options.annotationProcessorPath = configurations.querydsl
-    }
-
-    configurations {
-        querydsl.extendsFrom compileClasspath
-    }
-
-    compileQuerydsl {
-        if (file(querydslDir).exists())
-            delete(file(querydslDir))
     }
 
 }
@@ -104,22 +71,28 @@ project(':api') {
     jar { enabled = true }
 
     dependencies {
+        implementation 'org.springframework.kafka:spring-kafka'
+
+
         implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
         implementation 'org.springframework.boot:spring-boot-starter-security'
         implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+
+        testImplementation 'io.projectreactor:reactor-test'
+        testImplementation 'org.springframework.kafka:spring-kafka-test'
+        testImplementation 'org.springframework.security:spring-security-test'
     }
+}
 
+project(':batch') {
+    bootJar { enabled = true }
+    jar { enabled = false }
 
-    project(':batch') {
-        bootJar { enabled = true }
-        jar { enabled = false }
-
-        dependencies {
-            implementation 'org.springframework.boot:spring-boot-starter-batch'
-            testImplementation 'org.springframework.batch:spring-batch-test'
-            implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
-            runtimeOnly 'com.mysql:mysql-connector-j'
-        }
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-batch'
+        testImplementation 'org.springframework.batch:spring-batch-test'
+        implementation 'org.seleniumhq.selenium:selenium-java:4.11.0'
+        runtimeOnly 'com.mysql:mysql-connector-j'
     }
-
 }
