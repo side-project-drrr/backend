@@ -1,4 +1,4 @@
-package com.drrr.drrrbatch.config.crawler;
+package com.drrr.config.crawler;
 
 
 import lombok.Getter;

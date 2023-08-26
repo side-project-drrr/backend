@@ -1,5 +1,5 @@
 rootProject.name = 'dr--r--r--'
 
-include 'api'
-include 'batch'
+include 'drrr-api'
+include 'drrr-batch'
 include "drrr-jpa"

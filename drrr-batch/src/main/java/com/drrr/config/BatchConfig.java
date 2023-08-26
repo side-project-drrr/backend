@@ -1,4 +1,4 @@
-package com.drrr.drrrbatch.config;
+package com.drrr.config;
 
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;

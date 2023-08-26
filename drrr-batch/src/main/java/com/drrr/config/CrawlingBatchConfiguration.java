@@ -1,7 +1,7 @@
-package com.drrr.drrrbatch.config;
+package com.drrr.config;
 
-import com.drrr.drrrbatch.domain.ExternalBlogPosts;
-import com.drrr.drrrbatch.reader.CrawlerItemReaderFactory;
+import com.drrr.domain.ExternalBlogPosts;
+import com.drrr.reader.CrawlerItemReaderFactory;
 import com.drrr.drrrjpa.domain.code.TechBlogCode;
 import com.drrr.drrrjpa.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.drrrjpa.domain.techblogpost.repository.TemporalTechBlogPostRepository;

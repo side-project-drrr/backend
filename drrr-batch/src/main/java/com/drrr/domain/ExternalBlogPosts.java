@@ -1,4 +1,4 @@
-package com.drrr.drrrbatch.domain;
+package com.drrr.domain;
 
 import java.util.List;
 

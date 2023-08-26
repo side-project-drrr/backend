@@ -1,4 +1,4 @@
-package com.drrr.drrrbatch.config;
+package com.drrr.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

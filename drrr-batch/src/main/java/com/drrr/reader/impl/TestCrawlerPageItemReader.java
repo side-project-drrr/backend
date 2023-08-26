@@ -1,8 +1,8 @@
-package com.drrr.drrrbatch.reader.impl;
+package com.drrr.reader.impl;
 
-import com.drrr.drrrbatch.domain.ExternalBlogPosts;
-import com.drrr.drrrbatch.reader.AbstractCrawlerPageItemReader;
-import com.drrr.drrrbatch.reader.CrawlerPageStrategy;
+import com.drrr.domain.ExternalBlogPosts;
+import com.drrr.reader.AbstractCrawlerPageItemReader;
+import com.drrr.reader.CrawlerPageStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 

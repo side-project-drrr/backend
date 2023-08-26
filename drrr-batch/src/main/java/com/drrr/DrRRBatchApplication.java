@@ -1,4 +1,4 @@
-package com.drrr.drrrbatch;
+package com.drrr;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
