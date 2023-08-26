@@ -1,4 +1,4 @@
-package com.drrr.drrrapi;
+package com.drrr;
 
 import org.springframework.boot.SpringApplication;
 

@@ -1,10 +1,10 @@
-package com.drrr.drrrbatch.reader;
+package com.drrr.reader;
 
-import com.drrr.drrrbatch.reader.impl.KakaoCrawlerItemReader;
-import com.drrr.drrrbatch.reader.impl.MarketKurlyItemReader;
-import com.drrr.drrrbatch.reader.impl.NaverCrawlerItemReader;
-import com.drrr.drrrbatch.reader.impl.TestCrawlerPageItemReader;
-import com.drrr.drrrbatch.reader.impl.WoowahanCrawlerItemReader;
+import com.drrr.reader.impl.KakaoCrawlerItemReader;
+import com.drrr.reader.impl.MarketKurlyItemReader;
+import com.drrr.reader.impl.NaverCrawlerItemReader;
+import com.drrr.reader.impl.TestCrawlerPageItemReader;
+import com.drrr.reader.impl.WoowahanCrawlerItemReader;
 import com.drrr.drrrjpa.domain.code.TechBlogCode;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;

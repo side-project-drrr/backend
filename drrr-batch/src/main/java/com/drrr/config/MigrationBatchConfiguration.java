@@ -1,4 +1,4 @@
-package com.drrr.drrrbatch.config;
+package com.drrr.config;
 
 
 import com.drrr.drrrjpa.domain.code.TechBlogCode;

@@ -1,6 +1,6 @@
-package com.drrr.drrrbatch.reader;
+package com.drrr.reader;
 
-import com.drrr.drrrbatch.domain.ExternalBlogPosts;
+import com.drrr.domain.ExternalBlogPosts;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

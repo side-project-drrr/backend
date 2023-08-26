@@ -1,6 +1,6 @@
-package com.drrr.drrrbatch.config.crawler;
+package com.drrr.config.crawler;
 
-import com.drrr.drrrbatch.config.CrawlingBatchConfiguration;
+import com.drrr.config.CrawlingBatchConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;

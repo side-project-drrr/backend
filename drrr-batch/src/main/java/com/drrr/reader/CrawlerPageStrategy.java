@@ -1,4 +1,4 @@
-package com.drrr.drrrbatch.reader;
+package com.drrr.reader;
 
 public enum CrawlerPageStrategy {
     SINGLE_PAGE, // 단일 페이지 전략

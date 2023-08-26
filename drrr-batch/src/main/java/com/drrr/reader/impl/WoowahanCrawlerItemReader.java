@@ -1,10 +1,10 @@
-package com.drrr.drrrbatch.reader.impl;
+package com.drrr.reader.impl;
 
-import com.drrr.drrrbatch.domain.ExternalBlogPost;
-import com.drrr.drrrbatch.domain.ExternalBlogPosts;
-import com.drrr.drrrbatch.reader.AbstractCrawlerPageItemReader;
-import com.drrr.drrrbatch.reader.CrawlerPageStrategy;
-import com.drrr.drrrbatch.reader.impl.MarketKurlyItemReader.EmptyFinder;
+import com.drrr.domain.ExternalBlogPost;
+import com.drrr.domain.ExternalBlogPosts;
+import com.drrr.reader.AbstractCrawlerPageItemReader;
+import com.drrr.reader.CrawlerPageStrategy;
+import com.drrr.reader.impl.MarketKurlyItemReader.EmptyFinder;
 import com.drrr.drrrjpa.domain.code.TechBlogCode;
 import java.util.List;
 import java.util.Optional;

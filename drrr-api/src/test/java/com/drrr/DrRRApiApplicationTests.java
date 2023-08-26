@@ -1,4 +1,4 @@
-package com.drrr.drrrapi;
+package com.drrr;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

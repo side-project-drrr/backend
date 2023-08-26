@@ -1,4 +1,4 @@
-package com.drrr.drrrbatch.domain;
+package com.drrr.domain;
 
 import com.drrr.drrrjpa.domain.code.TechBlogCode;
 import java.time.LocalDate;
