@@ -7,16 +7,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class SignUpRequest {
-    @NotNull
+    @NonNull
     private String accessToken;
-    @NotNull
+    @NonNull
     private String email;
 
     private String nickname;

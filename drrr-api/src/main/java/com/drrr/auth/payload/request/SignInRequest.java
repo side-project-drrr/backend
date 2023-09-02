@@ -6,15 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import org.springframework.lang.NonNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class SignInRequest {
-    @NotNull
+    @NonNull
     private String accessToken;
-    @NotNull
+    @NonNull
     private String provider;
 }
