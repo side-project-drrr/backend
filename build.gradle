@@ -43,6 +43,7 @@ subprojects {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.boot:spring-boot-starter-validation'
         implementation 'org.springframework.kafka:spring-kafka'
+        implementation 'org.jetbrains:annotations:23.0.0'
         implementation 'com.h2database:h2'
         compileOnly 'org.projectlombok:lombok'
         developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -105,7 +106,7 @@ subprojects {
 }
 
 
-project(':api') {
+project(':drrr-api') {
     bootJar { enabled = false }
     jar { enabled = true }
 
@@ -150,7 +151,7 @@ project(':api') {
     }
 
 
-    project(':batch') {
+    project(':drrr-batch') {
         bootJar { enabled = true }
         jar { enabled = false }
 
