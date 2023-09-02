@@ -11,3 +11,5 @@ include 'drrr-api'
 include 'drrr-admin'
 include 'drrr-batch'
 //include "drrr-jpa"
+include 'drrr-core'
+
