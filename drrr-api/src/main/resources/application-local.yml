@@ -49,7 +49,7 @@ spring:
             client-id: e756d60c6372cbaf3a99
             client-secret: 5393f0d241b969b2aa13ea610fb89f8b4d4b2532
           kakao:
-            client-id: d2ef8a5cdacf8c8485096cbc2628c907
+            client-id: 2438c851c4f4b4976361f1fd13fc2dcf
             redirect-uri: http://localhost:8080/login/oauth/kakao
             client-authentication-method: POST
             client-secret: vhHlIzCEwLqTdJwpiyhwxaXOVYPfOjT6
