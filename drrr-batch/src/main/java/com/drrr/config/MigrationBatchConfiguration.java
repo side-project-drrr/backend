@@ -1,10 +1,10 @@
 package com.drrr.config;
 
 
-import com.drrr.drrrjpa.domain.code.TechBlogCode;
-import com.drrr.drrrjpa.domain.techblogpost.entity.TechBlogPost;
-import com.drrr.drrrjpa.domain.techblogpost.entity.TemporalTechBlogPost;
-import com.drrr.drrrjpa.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.core.code.TechBlogCode;
+import com.drrr.domain.techblogpost.entity.TechBlogPost;
+import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
+import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;

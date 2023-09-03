@@ -1,10 +1,10 @@
 package com.drrr.reader.impl;
 
+import com.drrr.core.code.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.reader.AbstractCrawlerPageItemReader;
 import com.drrr.reader.CrawlerPageStrategy;
-import com.drrr.drrrjpa.domain.code.TechBlogCode;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
