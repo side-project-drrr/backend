@@ -2,10 +2,10 @@ package com.drrr.auth.service.impl;
 
 import com.drrr.auth.dto.AccessTokenRequest;
 import com.drrr.auth.dto.AccessTokenResponse;
+import com.drrr.domain.auth.service.AuthenticationTokenService;
+import com.drrr.domain.auth.service.AuthenticationTokenService.RegisterAuthenticationTokenDto;
+import com.drrr.domain.auth.service.AuthenticationTokenService.RemoveAuthenticationTokenDto;
 import com.drrr.web.jwt.util.JwtProvider;
-import com.example.drrrdomain.auth.service.AuthenticationTokenService;
-import com.example.drrrdomain.auth.service.AuthenticationTokenService.RegisterAuthenticationTokenDto;
-import com.example.drrrdomain.auth.service.AuthenticationTokenService.RemoveAuthenticationTokenDto;
 import java.time.Instant;
 import lombok.Builder;
 import lombok.Getter;
