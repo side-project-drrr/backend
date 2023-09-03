@@ -1,4 +1,4 @@
-package com.drrr.auth.dto;
+package com.drrr.auth.payload.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

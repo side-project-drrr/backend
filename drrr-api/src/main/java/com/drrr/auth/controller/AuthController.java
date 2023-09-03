@@ -1,9 +1,9 @@
 package com.drrr.auth.controller;
 
-import com.drrr.auth.dto.AccessTokenRequest;
-import com.drrr.auth.dto.AccessTokenResponse;
+import com.drrr.auth.payload.request.AccessTokenRequest;
 import com.drrr.auth.payload.request.SignInRequest;
 import com.drrr.auth.payload.request.SignUpRequest;
+import com.drrr.auth.payload.response.AccessTokenResponse;
 import com.drrr.auth.payload.response.SignInResponse;
 import com.drrr.auth.payload.response.SignUpResponse;
 import com.drrr.auth.service.impl.IssuanceTokenService;

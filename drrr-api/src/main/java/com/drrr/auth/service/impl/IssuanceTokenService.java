@@ -1,7 +1,7 @@
 package com.drrr.auth.service.impl;
 
-import com.drrr.auth.dto.AccessTokenRequest;
-import com.drrr.auth.dto.AccessTokenResponse;
+import com.drrr.auth.payload.request.AccessTokenRequest;
+import com.drrr.auth.payload.response.AccessTokenResponse;
 import com.drrr.domain.auth.service.AuthenticationTokenService;
 import com.drrr.domain.auth.service.AuthenticationTokenService.RegisterAuthenticationTokenDto;
 import com.drrr.domain.auth.service.AuthenticationTokenService.RemoveAuthenticationTokenDto;

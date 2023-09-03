@@ -367,6 +367,8 @@ subprojects {
     }
 
     dependencies {
+        implementation project(":drrr-core")
+
         compileOnly 'org.projectlombok:lombok'
 
         //developmentOnly 'org.springframework.boot:spring-boot-devtools'

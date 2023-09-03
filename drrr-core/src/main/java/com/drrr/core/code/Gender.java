@@ -1,4 +1,4 @@
-package com.drrr.auth.entity;
+package com.drrr.core.code;
 
 import lombok.Getter;
 

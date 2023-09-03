@@ -1,7 +1,8 @@
 package com.drrr.auth.payload.request;
 
 
-import com.drrr.auth.entity.Gender;
+import com.drrr.core.code.Gender;
+import com.drrr.domain.member.service.RegisterMemberService.RegisterMemberDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,4 +27,18 @@ public class SignUpRequest {
     private String provider;
     private String providerId;
     private String imageUrl;
+
+    public RegisterMemberDto toRegisterMemberDto() {
+        return RegisterMemberDto.builder()
+                .accessToken(accessToken)
+                .email(email)
+                .nickname(nickname)
+                .phoneNumber(phoneNumber)
+                .gender(gender)
+                .birthYear(birthYear)
+                .provider(provider)
+                .providerId(providerId)
+                .imageUrl(imageUrl)
+                .build();
+    }
 }
