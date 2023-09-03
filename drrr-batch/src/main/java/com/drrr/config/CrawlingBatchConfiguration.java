@@ -1,10 +1,10 @@
 package com.drrr.config;
 
+import com.drrr.core.code.TechBlogCode;
 import com.drrr.domain.ExternalBlogPosts;
+import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
+import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
 import com.drrr.reader.CrawlerItemReaderFactory;
-import com.drrr.drrrjpa.domain.code.TechBlogCode;
-import com.drrr.drrrjpa.domain.techblogpost.entity.TemporalTechBlogPost;
-import com.drrr.drrrjpa.domain.techblogpost.repository.TemporalTechBlogPostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -37,7 +37,6 @@ public class CrawlingBatchConfiguration {
     @Bean(name = BATCH_NAME + "Job")
     public Job crawlingJob() {
         return new JobBuilder(BATCH_NAME + "Job", jobRepository)
-                //.incrementer(new RunIdIncrementer()) // 실제 환경에서 지울 것을 권장함
                 .listener(webDriverListener(webDriver))
                 .start(crawlingStep(null, null))
                 .build();

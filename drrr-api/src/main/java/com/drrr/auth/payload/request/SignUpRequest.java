@@ -1,22 +1,23 @@
 package com.drrr.auth.payload.request;
 
 
-import com.drrr.auth.entity.Gender;
+import com.drrr.core.code.Gender;
+import com.drrr.domain.member.service.RegisterMemberService.RegisterMemberDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class SignUpRequest {
-    @NotNull
+    @NonNull
     private String accessToken;
-    @NotNull
+    @NonNull
     private String email;
 
     private String nickname;
@@ -26,4 +27,18 @@ public class SignUpRequest {
     private String provider;
     private String providerId;
     private String imageUrl;
+
+    public RegisterMemberDto toRegisterMemberDto() {
+        return RegisterMemberDto.builder()
+                .accessToken(accessToken)
+                .email(email)
+                .nickname(nickname)
+                .phoneNumber(phoneNumber)
+                .gender(gender)
+                .birthYear(birthYear)
+                .provider(provider)
+                .providerId(providerId)
+                .imageUrl(imageUrl)
+                .build();
+    }
 }

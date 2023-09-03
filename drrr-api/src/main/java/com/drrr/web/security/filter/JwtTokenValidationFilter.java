@@ -2,8 +2,6 @@ package com.drrr.web.security.filter;
 
 import com.drrr.web.jwt.util.JwtProvider;
 import com.drrr.web.security.exception.JwtExpiredTokenException;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,15 +52,10 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             log.info("[+] Token in SecurityContextHolder");
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException expiredJwtException) {
+        } catch (JwtExpiredTokenException expiredJwtException) {
             // Handle expired token exception
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write("Token expired");
-            response.getWriter().flush();
-        } catch (JwtException jwtException) {
-            // Handle invalid token exception
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("Invalid token");
             response.getWriter().flush();
         }
     }

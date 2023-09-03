@@ -1,11 +1,11 @@
 package com.drrr.reader;
 
+import com.drrr.core.code.TechBlogCode;
 import com.drrr.reader.impl.KakaoCrawlerItemReader;
 import com.drrr.reader.impl.MarketKurlyItemReader;
 import com.drrr.reader.impl.NaverCrawlerItemReader;
 import com.drrr.reader.impl.TestCrawlerPageItemReader;
 import com.drrr.reader.impl.WoowahanCrawlerItemReader;
-import com.drrr.drrrjpa.domain.code.TechBlogCode;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;

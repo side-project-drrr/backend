@@ -1,9 +1,10 @@
 package com.drrr.auth.service.impl;
 
-import com.drrr.auth.dto.AccessTokenRequest;
-import com.drrr.auth.dto.AccessTokenResponse;
-import com.drrr.auth.entity.AuthenticationToken;
-import com.drrr.auth.infrastructure.redis.RedisAuthenticationTokenRepository;
+import com.drrr.auth.payload.request.AccessTokenRequest;
+import com.drrr.auth.payload.response.AccessTokenResponse;
+import com.drrr.domain.auth.service.AuthenticationTokenService;
+import com.drrr.domain.auth.service.AuthenticationTokenService.RegisterAuthenticationTokenDto;
+import com.drrr.domain.auth.service.AuthenticationTokenService.RemoveAuthenticationTokenDto;
 import com.drrr.web.jwt.util.JwtProvider;
 import java.time.Instant;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class IssuanceTokenService {
     private final JwtProvider tokenProvider;
-    private final RedisAuthenticationTokenRepository authenticationTokenRepository;
+    private final AuthenticationTokenService authenticationTokenService;
 
     public IssuanceTokenDto execute(Long id) {
         var now = Instant.now();
@@ -23,11 +24,10 @@ public class IssuanceTokenService {
         var accessToken = tokenProvider.createAccessToken(id, now);
         var refreshToken = tokenProvider.createRefreshToken(id, now);
 
-        authenticationTokenRepository.save(AuthenticationToken.builder()
+        authenticationTokenService.register(RegisterAuthenticationTokenDto.builder()
                 .memberId(id)
                 .refreshToken(refreshToken)
-                .build()
-        );
+                .build());
 
         return IssuanceTokenDto.builder()
                 .accessToken(accessToken)
@@ -36,33 +36,31 @@ public class IssuanceTokenService {
     }
 
     public AccessTokenResponse regenerateAccessToken(AccessTokenRequest request) {
-        var id = tokenProvider.extractToValueFrom(request.getAccessToken());
-        var authenticationToken = authenticationTokenRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
+        final Long id = tokenProvider.extractToValueFrom(request.getAccessToken());
+        authenticationTokenService.remove(new RemoveAuthenticationTokenDto(id));
 
-        authenticationTokenRepository.delete(authenticationToken);
-        var now = Instant.now();
-
-        var accessToken = tokenProvider.createAccessToken(id, now);
-        var refreshToken = tokenProvider.createRefreshToken(id, now);
-
-        authenticationTokenRepository.save(AuthenticationToken.builder()
+        final Instant now = Instant.now();
+        final String accessToken = tokenProvider.createAccessToken(id, now);
+        final String refreshToken = tokenProvider.createRefreshToken(id, now);
+        authenticationTokenService.register(RegisterAuthenticationTokenDto.builder()
                 .refreshToken(refreshToken)
                 .memberId(id)
-                .build()
-        );
+                .build());
+
         return new AccessTokenResponse(accessToken);
     }
-}
 
-@Getter
-class IssuanceTokenDto {
-    private final String accessToken;
-    private final String refreshToken;
+    @Getter
+    public static class IssuanceTokenDto {
+        private final String accessToken;
+        private final String refreshToken;
 
-    @Builder
-    private IssuanceTokenDto(String accessToken, String refreshToken) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
+        @Builder
+        private IssuanceTokenDto(String accessToken, String refreshToken) {
+            this.accessToken = accessToken;
+            this.refreshToken = refreshToken;
+        }
     }
+
 }
+

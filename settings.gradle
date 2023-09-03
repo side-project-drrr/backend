@@ -1,5 +1,16 @@
+pluginManagement {
+    repositories {
+        maven { url 'https://repo.spring.io/milestone' }
+        gradlePluginPortal()
+    }
+}
+
 rootProject.name = 'dr--r--r--'
 
 include 'drrr-api'
+include 'drrr-admin'
 include 'drrr-batch'
-include "drrr-jpa"
+include 'drrr-core'
+include 'drrr-domain'
+include 'drrr-domain-redis'
+
