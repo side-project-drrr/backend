@@ -3,7 +3,7 @@ package com.drrr.auth.service.impl;
 
 import com.drrr.auth.payload.request.SignInRequest;
 import com.drrr.auth.payload.response.SignInResponse;
-import com.drrr.auth.repository.MemberRepository;
+import com.drrr.domain.member.service.MemberIdRetrievalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,16 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SignInService {
     private final ExternalAuthenticationFacade externalAuthenticationFacade;
-    private final MemberRepository memberRepository;
+    private final MemberIdRetrievalService memberIdRetrievalService;
     private final IssuanceTokenService issuanceTokenService;
 
 
     @Transactional(readOnly = true)
     public SignInResponse execute(SignInRequest signInRequest) {
-        final var socialId = externalAuthenticationFacade.execute(signInRequest.getAccessToken(), signInRequest.getProvider());
-        final var member = memberRepository.findByProviderId(socialId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
-        final var tokenDto = issuanceTokenService.execute(member.getId());
+        final String socialId = externalAuthenticationFacade.execute(signInRequest.getAccessToken(), signInRequest.getProvider());
+        final Long memberId = memberIdRetrievalService.findByProviderId(socialId);
+        final var tokenDto = issuanceTokenService.execute(memberId);
+
         return SignInResponse.builder()
                 .accessToken(tokenDto.getAccessToken())
                 .refreshToken(tokenDto.getRefreshToken())
