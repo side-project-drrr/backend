@@ -1,9 +1,15 @@
 package com.drrr.core.exception.admin;
 
 
+import lombok.EqualsAndHashCode;
+
+@EqualsAndHashCode(callSuper = false)
 public class AdminException extends RuntimeException {
 
-    public AdminException(String message) {
+    private final int code;
+
+    public AdminException(int code, String message) {
         super(message);
+        this.code = code;
     }
 }
