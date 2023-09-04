@@ -8,8 +8,10 @@ import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "drrr_admin")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,6 +30,6 @@ public class Admin extends BaseEntity {
         if (!Objects.equals(password, this.password)) {
             throw AdminExceptionCode.FAIL_SIGNIN.invoke();
         }
-
     }
+
 }
