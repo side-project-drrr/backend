@@ -16,7 +16,7 @@ public class AdminSignInService {
     private final AdminRepository adminRepository;
 
     public Long execute(final AdminSignInDto adminSignInDto) {
-        
+
         final Admin admin = adminRepository.findByLoginId(adminSignInDto.loginId)
                 .orElseThrow(AdminExceptionCode.FAIL_SIGNIN::invoke);
 
