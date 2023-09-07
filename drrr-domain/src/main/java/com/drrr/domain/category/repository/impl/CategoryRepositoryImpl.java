@@ -4,9 +4,11 @@ import static com.drrr.domain.category.entity.QCategory.category;
 
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CustomCategoryRepository;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 
@@ -20,6 +22,20 @@ public class CategoryRepositoryImpl implements CustomCategoryRepository {
         return queryFactory.select(category)
                 .from(category)
                 .where(category.id.in(ids))
+                .fetch();
+    }
+
+    @Override
+    public List<Category> findByUniqueNameOrDisplayNameContaining(String text, Pageable pageable) {
+        final BooleanExpression uniqueNameOrDisplayNameSearchCondition = category.displayName.startsWith(text).or(
+                category.uniqueName.startsWith(text)
+        );
+
+        return queryFactory.select(category)
+                .from(category)
+                .where(uniqueNameOrDisplayNameSearchCondition)
+                .limit(pageable.getPageSize())
+                .orderBy(category.uniqueName.asc())
                 .fetch();
     }
 }
