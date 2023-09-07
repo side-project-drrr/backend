@@ -91,7 +91,10 @@ public class TemporalTechBlogPost extends BaseEntity {
 
     public void registerCategory(List<TemporalTechPostTag> tags) {
         this.temporalTechPostTags = tags;
+        this.registrationCompleted = true;
     }
 }
+
+
 
 
