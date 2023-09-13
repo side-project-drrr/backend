@@ -10,10 +10,13 @@ import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.entity.TemporalTechPostTag;
 import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.TemporalTechPostTagRepository;
+import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -23,7 +26,7 @@ import org.springframework.stereotype.Service;
 
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import(QueryDSLConfiguration.class)
+@Import({QueryDSLConfiguration.class, DatabaseCleaner.class})
 class RegisterPostTagServiceTest {
 
     // system under test
@@ -35,6 +38,17 @@ class RegisterPostTagServiceTest {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private TemporalTechPostTagRepository temporalTechPostTagRepository;
+
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @AfterEach
+    public void teardown() {
+        databaseCleaner.clear();
+    }
 
     @Test
     void 임시_게시글의_카테고리가_정상적으로_등록됩니다() {
@@ -108,5 +122,89 @@ class RegisterPostTagServiceTest {
             // 등록된 카테고리 아이디에서 가장 마지막 아이디 부터 추가하여 테스트를 동작시켜 존재하지 않는 아이디를 만들어 냄
             sut.execute(post.getId(), LongStream.rangeClosed(maxId + 1, maxId + 3).boxed().toList());
         }).isInstanceOf(IllegalArgumentException.class);
+
     }
+
+    @Test
+    void 게시글을_업데이트_할_때_기존_태그가_없어지면_삭제가_이루어진다() {
+        // given
+        // 임시 기술블로그 데이터 생성
+        final TemporalTechBlogPost post = temporalTechBlogPostRepository.save(TemporalTechBlogPost.builder()
+                .author("author")
+                .createdDate(LocalDate.now())
+                .thumbnailUrl(null)
+                .title("title")
+                .summary("summary")
+                .url("")
+                .urlSuffix("suffix")
+                .techBlogCode(TechBlogCode.BASE)
+                .crawledDate(LocalDate.now())
+                .build());
+        // 카테고리 목록 생성
+
+        final List<Category> categories = categoryRepository.saveAll(IntStream.rangeClosed(1, 3)
+                .mapToObj(i -> Category.builder()
+                        .displayName(i + "")
+                        .uniqueName(i + "")
+                        .build())
+                .toList());
+
+        // 카테고리 아이디 리스트 추출
+        final List<Long> ids = categories.stream()
+                .map(Category::getId)
+                .toList();
+
+        sut.execute(post.getId(), ids);
+        sut.execute(post.getId(), List.of(1L, 2L));
+
+        final TemporalTechBlogPost updatedPost = temporalTechBlogPostRepository.findById(post.getId()).orElseThrow(IllegalArgumentException::new);
+        temporalTechBlogPostRepository.flush();
+
+        // Then
+        assertThat(temporalTechPostTagRepository.findAll().size()).isEqualTo(2);
+        assertThat(updatedPost.getTemporalTechPostTags().size()).isEqualTo(2);
+    }
+
+    @Test
+    void 기존에는_게시글보다_하나_늘어나면_새로_추가됩니다() {
+        // given
+        // 임시 기술블로그 데이터 생성
+        final TemporalTechBlogPost post = temporalTechBlogPostRepository.save(TemporalTechBlogPost.builder()
+                .author("author")
+                .createdDate(LocalDate.now())
+                .thumbnailUrl(null)
+                .title("title")
+                .summary("summary")
+                .url("")
+                .urlSuffix("suffix")
+                .techBlogCode(TechBlogCode.BASE)
+                .crawledDate(LocalDate.now())
+                .build());
+        // 카테고리 목록 생성
+        final List<Category> categories = categoryRepository.saveAll(IntStream.rangeClosed(1, 3)
+                .mapToObj(i -> Category.builder()
+                        .displayName(i + "")
+                        .uniqueName(i + "")
+                        .build())
+                .toList());
+        categoryRepository.save(Category.builder()
+                .displayName("5")
+                .uniqueName("5")
+                .build());
+        // 카테고리 아이디 리스트 추출
+        final List<Long> ids = categories.stream()
+                .map(Category::getId)
+                .toList();
+
+        sut.execute(post.getId(), ids);
+        sut.execute(post.getId(), List.of(1L, 2L, 3L, 4L));
+
+        final TemporalTechBlogPost updatedPost = temporalTechBlogPostRepository.findById(post.getId()).orElseThrow(IllegalArgumentException::new);
+        temporalTechBlogPostRepository.flush();
+
+        // Then
+        assertThat(temporalTechPostTagRepository.findAll().size()).isEqualTo(4);
+        assertThat(updatedPost.getTemporalTechPostTags().size()).isEqualTo(4);
+    }
+
 }
