@@ -2,7 +2,6 @@ package com.drrr.domain.category.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.domain.annotation.EnableMysqlProfile;
 import com.drrr.domain.annotation.EnableRepositoryTest;
 import com.drrr.domain.category.entity.Category;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 
 
 @EnableRepositoryTest
-@EnableMysqlProfile
 class CategoryRepositoryTest {
 
     @Autowired
