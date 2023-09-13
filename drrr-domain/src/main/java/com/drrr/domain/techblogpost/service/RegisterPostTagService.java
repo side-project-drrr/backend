@@ -9,9 +9,11 @@ import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.TemporalTechPostTagRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -26,11 +28,26 @@ public class RegisterPostTagService {
 
         final List<Category> categories = categoryRepository.findIds(categoryIds);
 
+        // validate category size
         if (categories.size() != categoryIds.size()) {
             throw new IllegalArgumentException("존재하지 않는 태그 id가 있습니다.");
         }
 
+        // update
+        if (temporalTechBlogPost.isRegistrationCompleted()) {
+            final List<TemporalTechPostTag> tags = temporalTechBlogPost.getTemporalTechPostTags();
+
+            // 삭제 연산
+            final List<TemporalTechPostTag> deleteTags = tags.stream()
+                    .filter(temporalTechPostTag -> !categories.contains(temporalTechPostTag.getCategory()))
+                    .toList();
+
+            temporalTechPostTagRepository.deleteAll(deleteTags);
+            temporalTechBlogPost.removeCategory(deleteTags);
+        }
+
         final List<TemporalTechPostTag> temporalTechPostTags = categories.stream()
+                .filter(category -> !temporalTechPostTagRepository.existsByCategoryAndTemporalTechBlogPost(category, temporalTechBlogPost))
                 .map(category -> new TemporalTechPostTag(category, temporalTechBlogPost))
                 .toList();
 

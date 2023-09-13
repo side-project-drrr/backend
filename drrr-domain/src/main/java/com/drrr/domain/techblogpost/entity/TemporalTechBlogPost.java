@@ -90,8 +90,19 @@ public class TemporalTechBlogPost extends BaseEntity {
     }
 
     public void registerCategory(List<TemporalTechPostTag> tags) {
-        this.temporalTechPostTags = tags;
-        this.registrationCompleted = true;
+        if (this.temporalTechPostTags == null) {
+            this.temporalTechPostTags = tags;
+            this.registrationCompleted = true;
+            return;
+        }
+        this.temporalTechPostTags.addAll(tags);
+    }
+
+    public void removeCategory(List<TemporalTechPostTag> tags) {
+        if (this.temporalTechPostTags == null) {
+            return;
+        }
+        this.temporalTechPostTags.removeAll(tags);
     }
 }
 
