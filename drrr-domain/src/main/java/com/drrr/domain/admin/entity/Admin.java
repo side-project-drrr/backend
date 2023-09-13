@@ -4,6 +4,7 @@ package com.drrr.domain.admin.entity;
 import com.drrr.core.exception.admin.AdminExceptionCode;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.util.Objects;
 import lombok.AccessLevel;
@@ -13,8 +14,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "drrr_admin")
+@Table(name = "DRRR_ADMIN")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@PrimaryKeyJoinColumn(name = "ADMIN_ID")
 public class Admin extends BaseEntity {
     private String loginId;
     private String password;
