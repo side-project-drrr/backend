@@ -11,8 +11,6 @@ public record AdminSignInRequest(
         @NonNull @Size(min = 8, max = 12) String loginId,
         @NonNull @Size(min = 8, max = 20) String password
 ) {
-
-
     public AdminSignInDto convertServiceDto() {
         return AdminSignInDto.builder()
                 .loginId(loginId)
