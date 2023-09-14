@@ -5,9 +5,9 @@ import com.drrr.domain.techblogpost.service.RegisterPostTagService;
 import com.drrr.domain.techblogpost.service.SearchTemporaryTechBlogPostService;
 import com.drrr.domain.techblogpost.service.SearchTemporaryTechBlogPostService.SearchTemporaryTechBlogPostDto;
 import com.drrr.domain.techblogpost.service.SearchTemporaryTechBlogPostService.SearchTemporaryTechBlogPostResultDto;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -40,10 +40,8 @@ public class TemporaryTechBlogPostApi {
         return ResponseEntity.ok(searchTemporaryTechBlogPostService.execute(
                 SearchTemporaryTechBlogPostDto.builder()
                         .pageable(pageable)
-                        .dateRangeBound(DateRangeBound.builder()
-                                .startDate(searchTechBlogPostRequest.startDate())
-                                .lastDate(searchTechBlogPostRequest.lastDate())
-                                .build())
+                        .dateRangeBound(searchTechBlogPostRequest.generateDateRangeBound())
+                        .assignTagCompleted(searchTechBlogPostRequest.assignTagCompleted())
                         .build()
         ));
     }
@@ -56,9 +54,20 @@ public class TemporaryTechBlogPostApi {
     }
 
     public record SearchTechBlogPostRequest(
-            @NotNull LocalDate startDate,
-            @NotNull LocalDate lastDate
+            @Nullable LocalDate startDate,
+            @Nullable LocalDate lastDate,
+            @Nullable Boolean assignTagCompleted
     ) {
+        public DateRangeBound generateDateRangeBound() {
+            // 두 날짜가 모두 비어 있으면 null로 반환함
+            if (startDate == null && lastDate == null) {
+                return null;
+            }
+            return DateRangeBound.builder()
+                    .startDate(startDate)
+                    .lastDate(lastDate)
+                    .build();
+        }
     }
 
     public record RegisterPostTagRequest(
