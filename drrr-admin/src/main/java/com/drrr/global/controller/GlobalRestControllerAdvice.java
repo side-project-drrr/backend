@@ -14,4 +14,10 @@ public class GlobalRestControllerAdvice {
         return ResponseEntity.badRequest()
                 .body(exception.getMessage());
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> illegalArgumentException(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest()
+                .body(exception.getMessage());
+    }
 }
