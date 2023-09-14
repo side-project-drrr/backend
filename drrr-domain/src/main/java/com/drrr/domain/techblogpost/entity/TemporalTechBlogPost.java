@@ -10,7 +10,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -59,7 +58,7 @@ public class TemporalTechBlogPost extends BaseEntity {
     private boolean registrationCompleted;
 
     @OneToMany(mappedBy = "temporalTechBlogPost")
-    private List<TemporalTechPostTag> temporalTechPostTags = new ArrayList<>();
+    private List<TemporalTechPostTag> temporalTechPostTags;
 
     @Builder
     public TemporalTechBlogPost(LocalDate createdDate,
@@ -90,9 +89,9 @@ public class TemporalTechBlogPost extends BaseEntity {
     }
 
     public void registerCategory(List<TemporalTechPostTag> tags) {
+        this.registrationCompleted = true;
         if (this.temporalTechPostTags == null) {
             this.temporalTechPostTags = tags;
-            this.registrationCompleted = true;
             return;
         }
         this.temporalTechPostTags.addAll(tags);

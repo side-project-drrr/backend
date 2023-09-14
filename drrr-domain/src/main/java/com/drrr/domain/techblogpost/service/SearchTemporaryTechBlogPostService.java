@@ -4,6 +4,7 @@ package com.drrr.domain.techblogpost.service;
 import com.drrr.core.code.TechBlogCode;
 import com.drrr.core.date.DateRangeBound;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
+import com.drrr.domain.techblogpost.entity.TemporalTechPostTag;
 import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,8 +22,12 @@ public class SearchTemporaryTechBlogPostService {
     private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
 
     public List<SearchTemporaryTechBlogPostResultDto> execute(SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto) {
-        return temporalTechBlogPostRepository.findBy(searchTemporaryTechBlogPostDto.dateRangeBound)
-                .stream().map(SearchTemporaryTechBlogPostResultDto::from)
+        return temporalTechBlogPostRepository.findBy(
+                        searchTemporaryTechBlogPostDto.dateRangeBound(),
+                        searchTemporaryTechBlogPostDto.assignTagCompleted(),
+                        searchTemporaryTechBlogPostDto.pageable()
+                ).stream()
+                .map(SearchTemporaryTechBlogPostResultDto::from)
                 .toList();
     }
 
@@ -30,7 +35,8 @@ public class SearchTemporaryTechBlogPostService {
     @Builder
     public record SearchTemporaryTechBlogPostDto(
             DateRangeBound dateRangeBound,
-            Pageable pageable
+            Pageable pageable,
+            Boolean assignTagCompleted
     ) {
 
     }
@@ -64,16 +70,26 @@ public class SearchTemporaryTechBlogPostService {
                     .techBlogCode(temporalTechBlogPost.getTechBlogCode())
                     .crawledDate(temporalTechBlogPost.getCrawledDate())
                     .registrationCompleted(temporalTechBlogPost.isRegistrationCompleted())
+                    .postTags(temporalTechBlogPost.getTemporalTechPostTags().stream().map(PostTag::from).toList())
                     .build();
 
         }
     }
 
+    @Builder
     public record PostTag(
             Long id,
             String displayName,
             String uniqueName
     ) {
+        public static PostTag from(TemporalTechPostTag temporalTechPostTag) {
+            return PostTag.builder()
+                    .id(temporalTechPostTag.getId())
+                    .displayName(temporalTechPostTag.getCategory().getDisplayName())
+                    .uniqueName(temporalTechPostTag.getCategory().getUniqueName())
+                    .build();
+
+        }
 
     }
 }
