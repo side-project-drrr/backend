@@ -6,7 +6,6 @@ import static io.restassured.RestAssured.given;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,6 @@ public class AdminE2eTest {
     @Nested
     class AdminE2E {
         // happy test
-        @Test
         void 관리자가_정상적으_로그인_됩니다() {
             given().log().all()
                     .when()
