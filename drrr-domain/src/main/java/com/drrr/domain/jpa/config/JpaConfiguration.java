@@ -12,4 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(basePackageClasses = Persistence.class)
 @EnableJpaRepositories(basePackageClasses = {Persistence.class})
 public class JpaConfiguration {
+
 }
+
+

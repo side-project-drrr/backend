@@ -10,4 +10,7 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     runtimeOnly 'com.h2database:h2'
+
+    // 성능 테스트 & 학습 테스트 용도의 mysql connect-j
+    testRuntimeOnly 'com.mysql:mysql-connector-j'
 }

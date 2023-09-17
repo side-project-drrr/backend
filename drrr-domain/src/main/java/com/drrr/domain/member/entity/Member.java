@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "drrr_member")
-@PrimaryKeyJoinColumn(name = "member_id")
+@Table(name = "DRRR_MEMBER")
+@PrimaryKeyJoinColumn(name = "MEMEBER_ID")
 public class Member extends BaseEntity {
 
     @Column(nullable = false)
