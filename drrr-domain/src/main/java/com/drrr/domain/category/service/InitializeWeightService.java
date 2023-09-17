@@ -20,19 +20,20 @@ public class InitializeWeightService {
     private final CategoryRepository categoryRepository;
 
     public void initializeCategoryWeight(Long memberId, List<Long> categories) {
-        List<Category> categoryList = categoryRepository.findByIds(categories).orElseThrow(() -> new RuntimeException(
-                "MemberViewWeightService.increaseMemberViewPost - Cannot find such categories"));
+        List<Category> categoryList = categoryRepository.findByIdIn(categories);
+        if(categories.isEmpty()){
+            throw new RuntimeException("MemberViewWeightService.increaseMemberViewPost - Cannot find such categories");
+        }
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NoSuchElementException("No Member Weight found with memberId: " + memberId));
         List<CategoryWeight> categoryWeightDto = categoryList.stream()
-                .map(category -> {
-                    return CategoryWeight.builder()
-                            .member(member)
-                            .category(category)
-                            .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
-                            .preferred(true)
-                            .build();
-                }).toList();
+                .map(category -> CategoryWeight.builder()
+                        .member(member)
+                        .category(category)
+                        .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
+                        .preferred(true)
+                        .build()).toList();
 
         categoryWeightRepository.saveAll(categoryWeightDto);
     }

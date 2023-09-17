@@ -39,6 +39,7 @@ public class MemberPostReadLogService {
 
         JPAUpdateClause updateClause = new JPAUpdateClause(em, memberPostLog);
 
+
         if (isRead) {
             updateClause.set(memberPostLog.isRead, true);
         }
