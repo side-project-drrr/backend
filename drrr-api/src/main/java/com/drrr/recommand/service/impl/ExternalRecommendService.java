@@ -19,7 +19,6 @@ public class ExternalRecommendService {
     public RecommendResponse execute(RecommendRequest request) {
         weightValidationService.validateWeight(request.getMemberId());
         List<TechBlogPost> posts = recommendPostService.recommendPosts(request.getMemberId());
-        RecommendResponse response = new RecommendResponse(posts);
-        return response;
+        return new RecommendResponse(posts);
     }
 }
