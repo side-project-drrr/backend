@@ -39,20 +39,19 @@ public class RecommendPostService {
 
     public List<TechBlogPost> recommendPosts(Long memberId) {
         //카테고리_가중치 Mapping Table를 특정 MemberId로 조회
-        List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId).orElseThrow(
-                () -> new RuntimeException(
-                        "RecommendPostService.recommendPosts - Cannot find such element -> memberId : " + memberId));
+        List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
 
+        if(categoryWeights.isEmpty()) {
+            throw new RuntimeException("RecommendPostService.recommendPosts - Cannot find such element -> memberId : " + memberId);
+        }
         //entity -> dto 변환
         List<CategoryWeightDto> categoryWeightDtos = categoryWeights.stream()
-                .map(categoryWeight -> {
-                    return CategoryWeightDto.builder()
-                            .member(categoryWeight.getMember())
-                            .category(categoryWeight.getCategory())
-                            .value(categoryWeight.getValue())
-                            .preferred(categoryWeight.isPreferred())
-                            .build();
-                }).toList();
+                .map(categoryWeight -> CategoryWeightDto.builder()
+                        .member(categoryWeight.getMember())
+                        .category(categoryWeight.getCategory())
+                        .value(categoryWeight.getValue())
+                        .preferred(categoryWeight.isPreferred())
+                        .build()).toList();
 
         //사용자에게 추천해줄 수 있는 모든 게시물 가져오기
         List<ExtractedPostCategoryDto> techBlogPosts = getFilteredPost(categoryWeightDtos, memberId);
@@ -199,49 +198,40 @@ public class RecommendPostService {
 
         int LIMIT_POST_FACTOR = PostConstants.RECOMMEND_POSTS_COUNT.getValue() * categoryIds.size();
 
-        StringBuilder sql = new StringBuilder();
+        String uniqonSql = categoryIds.stream()
+                .map(categoryId -> String.format("""
+             SELECT A.techblogpost_id pid
+                     , A.category_id cid
+                     , X.created_date created_date
+                  FROM DRRR_TECHBLOGPOST_CATEGORY A
+            INNER JOIN (
+                               SELECT C.id
+                                    , C.created_date
+                                 FROM DRRR_TECHBLOGPOST_CATEGORY B
+                           INNER JOIN DRRR_TECHBLOGPOST C
+                                   ON B.techblogpost_id = C.id
+                            LEFT JOIN DRRR_MEMBER_POST_LOG D
+                                   ON B.techblogpost_id = D.post_id
+                                  AND D.member_id = %d
+                                WHERE D.post_id IS NULL
+                                  AND B.category_id = %d
+                                ORDER BY C.created_date DESC
+                                LIMIT %d
+                        ) X
+                    ON A.techblogpost_id = X.id
+                        """, memberId, categoryId, LIMIT_POST_FACTOR))
+                .collect(Collectors.joining(" UNION ALL "));
 
-        sql.append("SELECT T.pid");
-        sql.append("     , T.cid ");
-        sql.append("     , T.created_date ");
-        sql.append("FROM ");
-        sql.append("  (");
-        int idx = 0;
-        for (Long categoryId : categoryIds) {
-            sql.append("      SELECT A.techblogpost_id pid");
-            sql.append("           , A.category_id cid");
-            sql.append("           , X.created_date created_date");
-            sql.append("        FROM DRRR_TECHBLOGPOST_CATEGORY A");
-            sql.append("  INNER JOIN (");
-            sql.append("                     SELECT C.id");
-            sql.append("                          , C.created_date");
-            sql.append("                       FROM DRRR_TECHBLOGPOST_CATEGORY B");
-            sql.append("                 INNER JOIN DRRR_TECHBLOGPOST C");
-            sql.append("                         ON B.techblogpost_id = C.id");
-            sql.append("                  LEFT JOIN DRRR_MEMBER_POST_LOG D");
-            sql.append("                         ON B.techblogpost_id = D.post_id");
-            sql.append("                        AND D.member_id = ").append(memberId);
-            sql.append("                      WHERE D.post_id IS NULL");
-            sql.append("                        AND B.category_id = ").append(categoryId);
-            sql.append("                      ORDER BY C.created_date DESC");
-            sql.append("                      LIMIT ").append(LIMIT_POST_FACTOR);
-            sql.append("              ) X ");
-            sql.append("          ON A.techblogpost_id = X.id");
+        String refactorSql = String.format("""
+                SELECT T.pid,T.cid, T.created_date FROM (
+                 %s
+                ) T GROUP BY T.pid, T.cid, T.created_date
+                 ORDER BY T.created_date DESC
+                """, uniqonSql );
 
-            if (idx < categoryIds.size() - 1) {
-                sql.append(" UNION ALL ");
-            }
-            idx++;
-        }
-        sql.append("  ) ");
-        sql.append("T GROUP BY T.pid");
-        sql.append("      , T.cid");
-        sql.append("      , T.created_date");
-        sql.append("  ORDER BY T.created_date DESC");
+        System.out.println("sql 값: " + refactorSql);
 
-        System.out.println("sql 값: " + sql);
-
-        Query nativeQuery = em.createNativeQuery(sql.toString());
+        Query nativeQuery = em.createNativeQuery(refactorSql);
 
         List<Object[]> list = nativeQuery.getResultList();
         List<ExtractedPostCategoryDto> resultDto = list.stream()
