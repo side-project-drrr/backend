@@ -9,11 +9,10 @@ import com.drrr.auth.payload.response.SignUpResponse;
 import com.drrr.auth.service.impl.IssuanceTokenService;
 import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
-import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,19 +28,17 @@ public class AuthController {
     private final SignInService signInService;
     private final IssuanceTokenService issuanceTokenService;
 
-    @PermitAll
     @PostMapping("/signup")
     public SignUpResponse signup(@Validated @RequestBody SignUpRequest signUpRequest) {
         return signUpService.execute(signUpRequest);
     }
 
-    @PermitAll
     @PostMapping("/signin")
     public SignInResponse signin(@Validated @RequestBody SignInRequest signInRequest) {
         return signInService.execute(signInRequest);
     }
 
-    @Secured("USER")
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/access-token")
     public ResponseEntity<AccessTokenResponse> regenerateAccessToken(@RequestBody final AccessTokenRequest request) {
         AccessTokenResponse accessTokenResponse = issuanceTokenService.regenerateAccessToken(request);
