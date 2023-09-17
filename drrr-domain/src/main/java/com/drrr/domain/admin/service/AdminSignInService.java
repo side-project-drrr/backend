@@ -1,7 +1,6 @@
 package com.drrr.domain.admin.service;
 
 
-import com.drrr.core.exception.admin.AdminExceptionCode;
 import com.drrr.domain.admin.entity.Admin;
 import com.drrr.domain.admin.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,7 @@ public class AdminSignInService {
 
     public Long execute(final AdminSignInDto adminSignInDto) {
         final Admin admin = adminRepository.findByLoginId(adminSignInDto.loginId)
-                .orElseThrow(AdminExceptionCode.FAIL_SIGNIN::invoke);
+                .orElseThrow(IllegalArgumentException::new);
 
         admin.validateSamePassword(adminSignInDto.password());
 
