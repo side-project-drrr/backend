@@ -81,17 +81,8 @@ public class TechBlogPost extends BaseEntity {
                 .urlSuffix(temporalTechBlogEntity.getUrlSuffix())
                 .build();
     }
-    public static TechBlogPost increaseViewCount(TechBlogPost post){
-        return TechBlogPost.builder()
-                .title(post.getTitle())
-                .author(post.getAuthor())
-                .crawlerGroup(post.getTechBlogCode())
-                .createdDate(post.getCreatedDate())
-                .url(post.getUrl())
-                .summary(post.getSummary())
-                .urlSuffix(post.getUrlSuffix())
-                .viewCount(post.getViewCount()+1)
-                .build();
+    public void increaseViewCount(){
+        this.viewCount+=1;
     }
 }
 
