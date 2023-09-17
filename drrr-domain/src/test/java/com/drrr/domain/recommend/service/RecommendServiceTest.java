@@ -9,6 +9,7 @@ import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.category.service.RecommendPostService;
+import com.drrr.domain.jpa.entity.BaseEntity;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberTechBlogPostRepository;
 import com.drrr.domain.member.entity.Member;
@@ -18,12 +19,14 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +51,14 @@ public class RecommendServiceTest {
 
     @Autowired
     private RecommendPostService recommendPostService;
+
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @AfterEach
+    void teardown(){
+        databaseCleaner.clear();
+    }
 
     @BeforeEach
     void setup() {
@@ -102,7 +113,7 @@ public class RecommendServiceTest {
          * Member Id 1이 추가적으로 읽은 카테고리 2, 8
          * Member Id 1의 가중치 값 C2-8, C3-3, C5-4, C7-2, C8-2
          */
-        List<Category> categoryWeights = categoryRepository.findByIds(Arrays.asList(2L, 3L, 5L, 7L, 8L)).get();
+        List<Category> categoryWeights = categoryRepository.findByIdIn(Arrays.asList(2L, 3L, 5L, 7L, 8L));
         List<Double> weights = Arrays.asList(8.0, 3.0, 4.0, 2.0, 2.0);
         List<CategoryWeight> categoryWeightList = new ArrayList<>();
         IntStream.range(0, categoryWeights.size()).forEach(i -> {
@@ -241,7 +252,7 @@ public class RecommendServiceTest {
     void 게시물_추천이_정상적으로_작동합니다() {
         List<TechBlogPost> techBlogPosts = recommendPostService.recommendPosts(1L);
         List<Long> postIds = techBlogPosts.stream()
-                .map(post -> post.getId()).toList();
+                .map(BaseEntity::getId).toList();
 
         assertThat(postIds).containsExactlyInAnyOrder(2L, 4L, 6L, 8L, 10L);
     }
