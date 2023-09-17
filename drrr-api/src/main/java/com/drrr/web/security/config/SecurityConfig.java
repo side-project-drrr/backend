@@ -66,10 +66,13 @@ public class SecurityConfig {
                         mvcMatcherBuilder.pattern("/swagger-resources/**"),
                         mvcMatcherBuilder.pattern("/v3/api-docs/**"),
                         mvcMatcherBuilder.pattern("/v2/api-docs"),
-                        mvcMatcherBuilder.pattern("/webjars/**"))
-                        .authenticated()
+                        mvcMatcherBuilder.pattern("/webjars/**"),
+                        mvcMatcherBuilder.pattern("/auth/signup"),
+                        mvcMatcherBuilder.pattern("/auth/signin"))
+                        .permitAll()
                         .anyRequest()
-                        .permitAll())
+                        .authenticated()
+        );
                 /*.oauth2Login((oauth2)-> oauth2.clientRegistrationRepository(clientRegistrationRepository()))*/;
 
         // 필터
