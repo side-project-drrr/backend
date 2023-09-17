@@ -2,7 +2,9 @@ package com.drrr.auth.payload.request;
 
 
 import com.drrr.core.code.Gender;
+import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.member.service.RegisterMemberService.RegisterMemberDto;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +21,8 @@ public class SignUpRequest {
     private String accessToken;
     @NonNull
     private String email;
+
+    private List<Long> categoryIds;
 
     private String nickname;
     private String phoneNumber;
