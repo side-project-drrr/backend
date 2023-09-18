@@ -191,6 +191,23 @@ public class MemberViewWeightServiceTest {
 
         techBlogPostCategoryRepository.saveAll(techBlogPostCategories);
 
+        /**
+         * Member Id 1이 선호하는 카테고리 3, 5, 7
+         * Member Id 1이 추가적으로 읽은 카테고리 2, 8
+         * Member Id 1의 가중치 값 C2-8, C3-3, C5-4, C7-2, C8-2
+         */
+        List<Category> categoryWeights = categoryRepository.findByIds(Arrays.asList(2L, 3L, 5L, 7L, 8L)).get();
+        List<Double> weights = Arrays.asList(8.0, 3.0, 4.0, 2.0, 2.0);
+        List<CategoryWeight> categoryWeightList = new ArrayList<>();
+        IntStream.range(0, categoryWeights.size()).forEach(i -> {
+            Category category = categoryWeights.get(i);
+            double value = weights.get(i);
+            boolean preferred = i == 3 || i == 5 || i == 7;
+
+            categoryWeightList.add(new CategoryWeight(member, category, value, preferred));
+        });
+        categoryWeightRepository.saveAll(categoryWeightList);
+
     }
 
     @Test
@@ -218,15 +235,16 @@ public class MemberViewWeightServiceTest {
 
         Long memberId = memberRepository.findAll().get(0).getId();
         Long postId = techBlogPostRepository.findAll().get(0).getId();
-
         //when
         memberViewWeightService.increaseMemberViewPost(memberId,postId,categoryIds);
+        TechBlogPost post = techBlogPostRepository.findById(postId).get();
 
         //then
         List<MemberPostLog> memberLogs = memberTechBlogPostRepository.findByMemberId(memberId).get();
         List<MemberPostHistory> memberHistories = memberPostHistoryRepository.findByMemberId(memberId).get();
         assertThat(memberLogs).isNotEmpty();
         assertThat(memberHistories).isNotEmpty();
+        assertThat(post.getViewCount()).isEqualTo(1);
 
         memberLogs.stream()
                 .map(log->{
@@ -245,7 +263,7 @@ public class MemberViewWeightServiceTest {
                 });
     }
     @AfterEach
-    void clearData(){
+    void clearData() throws InterruptedException {
         memberPostHistoryRepository.deleteAll();
         memberTechBlogPostRepository.deleteAll();
         memberRepository.deleteAll();
