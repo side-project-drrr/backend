@@ -21,6 +21,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,10 +59,18 @@ public class MemberViewWeightServiceTest {
     @Autowired
     private MemberPostHistoryRepository memberPostHistoryRepository;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @AfterEach
+    void teardown(){
+        databaseCleaner.clear();
+    }
 
 
     @BeforeEach
     void setup(){
+        databaseCleaner.clear();
         Member member = Member.builder()
                 .email("example@drrr.com")
                 .nickname("user1")
@@ -221,10 +230,11 @@ public class MemberViewWeightServiceTest {
         memberViewWeightService.increaseMemberViewPost(memberId,postId,categoryIds);
 
         //then
-        List<CategoryWeight> categoryWeights = categoryWeightRepository.findCategoryWeightsByMemberId(1L).get();
+        List<CategoryWeight> categoryWeights = categoryWeightRepository.findCategoryWeightByMemberId(1L);
         assertThat(categoryWeights).isNotEmpty();
-        categoryWeights.stream()
-                        .map(categoryWeight -> assertThat(categoryWeight).isEqualTo(WeightConstants.INCREASE_WEIGHT.getValue()));
+
+        categoryWeights.forEach(categoryWeight -> assertThat(categoryWeight.getValue())
+                .isEqualTo(WeightConstants.INCREASE_WEIGHT.getValue()));
 
     }
 
@@ -246,30 +256,17 @@ public class MemberViewWeightServiceTest {
         assertThat(memberHistories).isNotEmpty();
         assertThat(post.getViewCount()).isEqualTo(1);
 
-        memberLogs.stream()
-                .map(log->{
+        memberLogs.forEach(log->{
                     assertThat(log.getMemberId()).isEqualTo(memberId);
                     assertThat(log.getPostId()).isEqualTo(postId);
                     LocalDate updatedAt = log.getUpdatedAt().toLocalDate();
                     assertThat(updatedAt).isEqualTo(LocalDate.now());
                     assertThat(log.isRead()).isTrue();
-                  return null;
                 });
-        memberHistories.stream()
-                .map(history->{
+        memberHistories.forEach(history->{
                     assertThat(history.getMemberId()).isEqualTo(memberId);
                     assertThat(history.getPostId()).isEqualTo(postId);
-                    return null;
                 });
-    }
-    @AfterEach
-    void clearData() throws InterruptedException {
-        memberPostHistoryRepository.deleteAll();
-        memberTechBlogPostRepository.deleteAll();
-        memberRepository.deleteAll();
-        techBlogPostRepository.deleteAll();
-        techBlogPostCategoryRepository.deleteAll();
-        categoryWeightRepository.deleteAll();
     }
 
 }
