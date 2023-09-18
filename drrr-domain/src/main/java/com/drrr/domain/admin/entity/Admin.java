@@ -1,7 +1,6 @@
 package com.drrr.domain.admin.entity;
 
 
-import com.drrr.core.exception.admin.AdminExceptionCode;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -26,7 +25,6 @@ public class Admin extends BaseEntity {
 
     public void validateSamePassword(String password) {
         if (!Objects.equals(password, this.password)) {
-            throw AdminExceptionCode.FAIL_SIGNIN.invoke();
         }
 
     }

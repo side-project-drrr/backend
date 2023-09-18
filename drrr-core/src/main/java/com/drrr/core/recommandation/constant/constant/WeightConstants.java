@@ -22,5 +22,12 @@ public enum WeightConstants {
     }
 
 
+    public boolean isLessEqualThan(double value){
+        return value <= this.value;
+    }
 
+
+    public double sum(double value) {
+        return this.value += value;
+    }
 }
