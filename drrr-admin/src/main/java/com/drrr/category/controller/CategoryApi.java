@@ -3,6 +3,8 @@ package com.drrr.category.controller;
 
 import com.drrr.domain.category.service.SearchCategoryService;
 import com.drrr.domain.category.service.SearchCategoryService.SearchCategoryResultDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import lombok.Builder;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
+@Tag(name = "category", description = "카테고리 API")
 @Slf4j
 @Validated
 @RestController
@@ -24,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryApi {
     private final SearchCategoryService searchCategoryService;
 
+
+    @Operation(description = "카테고리 조회")
     @GetMapping
     public ResponseEntity<List<SearchCategoryResponse>> searchCategory(
             Pageable pageable,
