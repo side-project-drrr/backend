@@ -6,8 +6,9 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.domain.jpa.config.QuerydslConfiguration;
 import com.drrr.domain.log.entity.post.MemberPostLog;
-import com.drrr.domain.log.repository.MemberTechBlogPostRepository;
+import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
@@ -15,6 +16,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -25,9 +27,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Service;
 
-@SpringBootTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@Import({QuerydslConfiguration.class, CustomTechBlogPostCategoryRepositoryImpl.class})
 public class DummyDataFactory {
     private final int CATEGORY_COUNT = 20;
     private final int MEMBER_COUNT = 100;
@@ -45,7 +51,7 @@ public class DummyDataFactory {
     @Autowired
     private CategoryWeightRepository categoryWeightRepository;
     @Autowired
-    private MemberTechBlogPostRepository memberTechBlogPostRepository;
+    private MemberPostLogRepository memberPostLogRepository;
     @Autowired
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
 
@@ -98,7 +104,10 @@ public class DummyDataFactory {
         List<Category> categories = IntStream.rangeClosed(1, CATEGORY_COUNT).mapToObj(i -> {
             String categoryName = "Category" + i;
             String categoryDisplayName = "Display Category" + i;
-            return new Category(categoryName, categoryDisplayName);
+            return Category.builder()
+                    .uniqueName(categoryName)
+                    .categoryDisplayName(categoryDisplayName)
+                    .build();
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);
     }
@@ -117,7 +126,12 @@ public class DummyDataFactory {
                 double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
                 boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
 
-                categoryWeights.add(new CategoryWeight(member, category, value, preferred));
+                categoryWeights.add(CategoryWeight.builder()
+                        .member(member)
+                        .category(category)
+                        .value(value)
+                        .preferred(preferred)
+                        .build());
             });
         });
         categoryWeightRepository.saveAll(categoryWeights);
@@ -139,10 +153,15 @@ public class DummyDataFactory {
                 boolean isRead = (randomBoolean1 == 1); // 짝수 인덱스에서만 읽음으로 설정
                 boolean isRecommended = (randomBoolean2 == 1); // 3의 배수 인덱스에서만 추천으로 설정
 
-                logs.add(new MemberPostLog(randomMemberId, randomPostId, isRead, isRecommended));
+                logs.add(MemberPostLog.builder()
+                        .memberId(randomMemberId)
+                        .postId(randomPostId)
+                        .isRead(isRead)
+                        .isRecommended(isRecommended)
+                        .build());
             });
         });
-        memberTechBlogPostRepository.saveAll(logs);
+        memberPostLogRepository.saveAll(logs);
     }
 
 
@@ -159,7 +178,10 @@ public class DummyDataFactory {
             int randomCategoryCount = getRandomValueInRange(Integer.class, 1, MAX_PREFER_CATEGORIES_COUNT);
             IntStream.rangeClosed(0, randomCategoryCount).forEach(j -> {
                 Category category = categories.get(j);
-                techBlogPostCategories1.add(new TechBlogPostCategory(post, category));
+                techBlogPostCategories1.add(TechBlogPostCategory.builder()
+                        .post(post)
+                        .category(category)
+                        .build());
             });
         });
 

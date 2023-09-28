@@ -9,8 +9,10 @@ import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.category.service.RecommendPostService;
+import com.drrr.domain.jpa.config.QuerydslConfiguration;
+import com.drrr.domain.jpa.entity.BaseEntity;
 import com.drrr.domain.log.entity.post.MemberPostLog;
-import com.drrr.domain.log.repository.MemberTechBlogPostRepository;
+import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
@@ -18,18 +20,26 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
+import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Service;
 
-@SpringBootTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@Import({QuerydslConfiguration.class, DatabaseCleaner.class,
+        CustomTechBlogPostCategoryRepositoryImpl.class})
 public class RecommendServiceTest {
     @Autowired
     private MemberRepository memberRepository;
@@ -41,7 +51,7 @@ public class RecommendServiceTest {
     @Autowired
     private CategoryWeightRepository categoryWeightRepository;
     @Autowired
-    private MemberTechBlogPostRepository memberTechBlogPostRepository;
+    private MemberPostLogRepository memberTechBlogPostRepository;
 
     @Autowired
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
@@ -49,6 +59,38 @@ public class RecommendServiceTest {
     @Autowired
     private RecommendPostService recommendPostService;
 
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @AfterEach
+    void teardown() {
+        databaseCleaner.clear();
+    }
+
+    /**
+     * <h3>Given</h3>
+     * <h2>Member Id M1(Id 1) 생성</h2>
+     * <br>Member Id M1이 선호하는 카테고리 C3, C5, C7</br>
+     * <br>Member Id M1이 추가적으로 읽은 카테고리 C2, C8</br>
+     * <br>Member Id M1의 가중치 값 C2-8, C3-3, C5-4, C7-2, C8-2</br>
+     *
+     * <h2>Post 생성</h2>
+     * <br>Post Id P1~P100까지 생성</br>
+     *
+     * <h2>Category 생성</h2>
+     * <br>Category Id C1~C10까지 생성</br>
+     *
+     * <h2>Category별 가중치 값 생성</h2>
+     * <br>[C2-(8.0)], [C3-(3.0)], [C5-(4.0)], [C7-(2.0)], [C8-(2.0)]
+     *
+     * <h2>Member Id : 1 이 읽은 Post 목록 및 카테고리 생성</h2>
+     * <br>Post Id 목록 : P1, P3, P5, P7, P9</br>
+     * <br>[P1-C3,C5,C7], [P3-C2,C3,C7], [P5-C9], [P7-C4,C6,C9], [P9-C1,C2,C3]</br>
+     * <br>그 외 나머지 Post는 P(2,4,6,8,10)-C2,C3,C5,C7,C8를 가지고 있고 P(11)~P(50) C-8로 통일</br>
+     *
+     * <h2>추천 받아야 하는 Post Id 기댓값</h2>
+     * <br>P2, P4, P6, P8, P10</br>
+     */
     @BeforeEach
     void setup() {
         Member member = Member.builder()
@@ -97,12 +139,7 @@ public class RecommendServiceTest {
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);
 
-        /**
-         * Member Id 1이 선호하는 카테고리 3, 5, 7
-         * Member Id 1이 추가적으로 읽은 카테고리 2, 8
-         * Member Id 1의 가중치 값 C2-8, C3-3, C5-4, C7-2, C8-2
-         */
-        List<Category> categoryWeights = categoryRepository.findByIds(Arrays.asList(2L, 3L, 5L, 7L, 8L)).get();
+        List<Category> categoryWeights = categoryRepository.findByIdIn(Arrays.asList(2L, 3L, 5L, 7L, 8L));
         List<Double> weights = Arrays.asList(8.0, 3.0, 4.0, 2.0, 2.0);
         List<CategoryWeight> categoryWeightList = new ArrayList<>();
         IntStream.range(0, categoryWeights.size()).forEach(i -> {
@@ -110,19 +147,18 @@ public class RecommendServiceTest {
             double value = weights.get(i);
             boolean preferred = i == 3 || i == 5 || i == 7;
 
-            categoryWeightList.add(new CategoryWeight(member, category, value, preferred));
+            categoryWeightList.add(CategoryWeight.builder()
+                    .member(member)
+                    .category(category)
+                    .value(value)
+                    .preferred(preferred)
+                    .build());
         });
         categoryWeightRepository.saveAll(categoryWeightList);
 
         List<TechBlogPost> posts = techBlogPostRepository.findAll();
         List<Category> categoryList = categoryRepository.findAll();
         List<TechBlogPostCategory> techBlogPostCategories = new ArrayList<>();
-
-        /**
-         * Member Id 1이 읽은 Post Id 목록 : 1, 3, 5, 7, 9
-         * [P1-C3,C5,C7], [P3-C2,C3,C7], [P5-C9], [P7-C4,C6,C9], [P9-C1,C2,C3]
-         * 그 외 나머지 Post는 P(2,4,6,8,10)~P(50)-C2,C3,C5,C7,C8를 가지고 있고 P(51)~P(100) C-8로 통일
-         */
 
         List<MemberPostLog> logs = new ArrayList<>();
         logs.add(MemberPostLog.builder()
@@ -214,24 +250,50 @@ public class RecommendServiceTest {
                 .category(categoryList.get(2))
                 .build());
 
-        IntStream.rangeClosed(1, 49).forEach(i -> {
-            if (i < 10 && i % 2 == 1) {
-                TechBlogPost post = posts.get(i);
-                IntStream.rangeClosed(1, 7).forEach(j -> {
-                    Category category = categoryList.get(j);
-                    techBlogPostCategories.add(TechBlogPostCategory.builder()
-                            .post(post)
-                            .category(category)
-                            .build());
-                });
-            } else if (i >= 10) {
-                TechBlogPost post = posts.get(i);
-                Category category = categoryList.get(7);
-                techBlogPostCategories.add(TechBlogPostCategory.builder()
-                        .post(post)
-                        .category(category)
-                        .build());
-            }
+        IntStream.rangeClosed(1, 7).forEach(j -> {
+            Category category = categoryList.get(j);
+            techBlogPostCategories.add(TechBlogPostCategory.builder()
+                    .post(posts.get(1))
+                    .category(category)
+                    .build());
+        });
+        IntStream.rangeClosed(1, 7).forEach(j -> {
+            Category category = categoryList.get(j);
+            techBlogPostCategories.add(TechBlogPostCategory.builder()
+                    .post(posts.get(3))
+                    .category(category)
+                    .build());
+        });
+        IntStream.rangeClosed(1, 7).forEach(j -> {
+            Category category = categoryList.get(j);
+            techBlogPostCategories.add(TechBlogPostCategory.builder()
+                    .post(posts.get(5))
+                    .category(category)
+                    .build());
+        });
+        IntStream.rangeClosed(1, 7).forEach(j -> {
+            Category category = categoryList.get(j);
+            techBlogPostCategories.add(TechBlogPostCategory.builder()
+                    .post(posts.get(7))
+                    .category(category)
+                    .build());
+        });
+        IntStream.rangeClosed(1, 7).forEach(j -> {
+            Category category = categoryList.get(j);
+            techBlogPostCategories.add(TechBlogPostCategory.builder()
+                    .post(posts.get(9))
+                    .category(category)
+                    .build());
+        });
+
+        IntStream.rangeClosed(10, 49).forEach(i -> {
+            TechBlogPost post = posts.get(i);
+            Category category = categoryList.get(7);
+            techBlogPostCategories.add(TechBlogPostCategory.builder()
+                    .post(post)
+                    .category(category)
+                    .build());
+
         });
 
         techBlogPostCategoryRepository.saveAll(techBlogPostCategories);
@@ -239,10 +301,12 @@ public class RecommendServiceTest {
 
     @Test
     void 게시물_추천이_정상적으로_작동합니다() {
+        //when
         List<TechBlogPost> techBlogPosts = recommendPostService.recommendPosts(1L);
         List<Long> postIds = techBlogPosts.stream()
-                .map(post -> post.getId()).toList();
+                .map(BaseEntity::getId).toList();
 
+        //then
         assertThat(postIds).containsExactlyInAnyOrder(2L, 4L, 6L, 8L, 10L);
     }
 
