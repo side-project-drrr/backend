@@ -1,7 +1,7 @@
 package com.drrr.domain.member.service;
-
 import com.drrr.core.code.Gender;
 import com.drrr.domain.member.entity.Member;
+import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +20,16 @@ public class RegisterMemberService {
                 .ifPresent((member) -> {
                     throw new IllegalArgumentException("아이디, 닉네임 혹은 이메일이 이미 등록되어 있습니다.");
                 });
-        var member = Member.builder()
+        Member member = Member.builder()
                 .email(registerMemberDto.email)
                 .providerId(socialId)
-                .nickname("test")
+                .nickname(registerMemberDto.nickname)
+                .phoneNumber(registerMemberDto.phoneNumber)
+                .gender(registerMemberDto.gender)
+                .provider(registerMemberDto.provider)
+                .providerId(registerMemberDto.providerId)
+                .imageUrl(registerMemberDto.imageUrl)
+                .role(MemberRole.USER)
                 .build();
         var savedMember = memberRepository.save(member);
         return savedMember.getId();
