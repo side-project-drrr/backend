@@ -2,9 +2,10 @@ package com.drrr.recommand.service.impl;
 
 import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.category.service.WeightValidationService;
+import com.drrr.domain.log.service.LogUpdateService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
-import com.drrr.recommand.dto.RecommendRequest;
 import com.drrr.recommand.dto.RecommendResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,15 @@ public class ExternalRecommendService {
 
     private final RecommendPostService recommendPostService;
     private final WeightValidationService weightValidationService;
+    private final LogUpdateService logUpdateService;
 
-    public RecommendResponse execute(RecommendRequest request) {
-        weightValidationService.validateWeight(request.getMemberId());
-        List<TechBlogPost> posts = recommendPostService.recommendPosts(request.getMemberId());
-        return new RecommendResponse(posts);
+    public RecommendResponse execute(Long memberId) {
+        //두번 째 파라미터의 now는 가중치 검증 test를 진행하기 위함
+        weightValidationService.validateWeight(memberId, LocalDateTime.now());
+        List<TechBlogPost> posts = recommendPostService.recommendPosts(memberId);
+        logUpdateService.updateMemberPostRecommendLog(memberId, posts);
+        return RecommendResponse.builder()
+                .posts(posts)
+                .build();
     }
 }
