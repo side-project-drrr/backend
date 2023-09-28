@@ -18,7 +18,7 @@ public class SignInService {
 
     @Transactional(readOnly = true)
     public SignInResponse execute(SignInRequest signInRequest) {
-        final String socialId = externalAuthenticationFacade.execute(signInRequest.getAccessToken(), signInRequest.getProvider());
+        final String socialId = externalAuthenticationFacade.execute(signInRequest.accessToken(), signInRequest.provider());
         final Long memberId = memberIdRetrievalService.findByProviderId(socialId);
         final var tokenDto = issuanceTokenService.execute(memberId);
 
