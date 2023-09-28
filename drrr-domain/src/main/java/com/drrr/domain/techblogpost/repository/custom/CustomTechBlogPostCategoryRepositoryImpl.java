@@ -36,7 +36,7 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
                                                SELECT C.id
                                                     , C.created_date
                                                  FROM DRRR_TECHBLOGPOST_CATEGORY B
-                                           INNER JOIN DRRR_TECHBLOGPOST C
+                                           INNER JOIN DRRR_TECH_BLOG_POST C
                                                    ON B.techblogpost_id = C.id
                                 LEFT JOIN DRRR_MEMBER_POST_LOG D
                                        ON B.techblogpost_id = D.post_id

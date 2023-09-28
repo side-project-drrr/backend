@@ -6,14 +6,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +17,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "DRRR_TECHBLOGPOST")
-@PrimaryKeyJoinColumn(name = "TECHBLOGPOST_ID")
+@Table(name = "DRRR_TECH_BLOG_POST")
+@PrimaryKeyJoinColumn(name = "TECH_BLOG_POST_ID")
 public class TechBlogPost extends BaseEntity {
-
     @Column(nullable = false)
     private LocalDate createdDate;
 

@@ -6,7 +6,8 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import com.drrr.domain.jpa.config.QuerydslConfiguration;
+
+import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
@@ -33,8 +34,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QuerydslConfiguration.class, CustomTechBlogPostCategoryRepositoryImpl.class})
-public class DummyDataFactory {
+@Import({QueryDSLConfiguration.class, CustomTechBlogPostCategoryRepositoryImpl.class})
+class DummyDataFactory {
     private final int CATEGORY_COUNT = 20;
     private final int MEMBER_COUNT = 100;
     private final int POST_COUNT = 100;
@@ -106,7 +107,7 @@ public class DummyDataFactory {
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .uniqueName(categoryName)
-                    .categoryDisplayName(categoryDisplayName)
+                    .displayName(categoryDisplayName)
                     .build();
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);

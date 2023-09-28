@@ -5,6 +5,7 @@ import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
 import com.drrr.reader.CrawlerItemReaderFactory;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
@@ -70,6 +71,8 @@ public class CrawlingBatchConfiguration {
                                 .url(post.link())
                                 .createdDate(post.postDate())
                                 .techBlogCode(post.code())
+                                .registrationCompleted(false)
+                                .crawledDate(LocalDate.now())
                                 .urlSuffix(post.suffix()).build())
                 ).toList());
     }

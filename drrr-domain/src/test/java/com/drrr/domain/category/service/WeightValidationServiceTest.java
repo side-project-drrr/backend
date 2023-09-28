@@ -11,7 +11,7 @@ import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.jpa.config.JpaConfiguration;
-import com.drrr.domain.jpa.config.QuerydslConfiguration;
+import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
@@ -73,9 +73,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QuerydslConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class,
+@Import({QueryDSLConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class,
         CustomTechBlogPostCategoryRepositoryImpl.class})
-public class WeightValidationServiceTest {
+class WeightValidationServiceTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -146,7 +146,7 @@ public class WeightValidationServiceTest {
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .uniqueName(categoryName)
-                    .categoryDisplayName(categoryDisplayName)
+                    .displayName(categoryDisplayName)
                     .build();
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);

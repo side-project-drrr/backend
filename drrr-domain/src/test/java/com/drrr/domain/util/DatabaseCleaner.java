@@ -1,5 +1,4 @@
 package com.drrr.domain.util;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

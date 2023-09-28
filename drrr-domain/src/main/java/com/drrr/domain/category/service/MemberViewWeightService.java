@@ -40,7 +40,7 @@ public class MemberViewWeightService {
 
         //사용자의 category weight에 대한 정보가 없는 경우 새로 삽입
         if (categoryWeights.isEmpty()) {
-            List<Category> categories = categoryRepository.findByIdIn(categoryIds);
+            List<Category> categories = categoryRepository.findIds(categoryIds);
             if (categories.isEmpty()) {
                 throw new RuntimeException(
                         "MemberViewWeightService.increaseMemberViewPost() - Cannot find such categories");

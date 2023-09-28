@@ -4,7 +4,6 @@ package com.drrr.domain.member.entity;
 import com.drrr.core.code.Gender;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

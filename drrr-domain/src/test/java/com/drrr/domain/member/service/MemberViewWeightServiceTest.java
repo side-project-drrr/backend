@@ -11,7 +11,7 @@ import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.category.service.MemberViewWeightService;
 import com.drrr.domain.jpa.config.JpaConfiguration;
-import com.drrr.domain.jpa.config.QuerydslConfiguration;
+import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;
@@ -42,9 +42,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QuerydslConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class,
+@Import({QueryDSLConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class,
         CustomTechBlogPostCategoryRepositoryImpl.class})
-public class MemberViewWeightServiceTest {
+class MemberViewWeightServiceTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -129,7 +129,7 @@ public class MemberViewWeightServiceTest {
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .uniqueName(categoryName)
-                    .categoryDisplayName(categoryDisplayName)
+                    .displayName(categoryDisplayName)
                     .build();
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);

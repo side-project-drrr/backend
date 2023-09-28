@@ -22,7 +22,7 @@ public class InitializeWeightService {
     private final CategoryRepository categoryRepository;
 
     public void initializeCategoryWeight(Long memberId, List<Long> categories) {
-        List<Category> categoryList = categoryRepository.findByIdIn(categories);
+        List<Category> categoryList = categoryRepository.findIds(categories);
 
         if (categories.isEmpty()) {
             throw new RuntimeException(

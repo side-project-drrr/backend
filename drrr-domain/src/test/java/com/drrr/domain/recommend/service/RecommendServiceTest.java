@@ -9,7 +9,7 @@ import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.category.service.RecommendPostService;
-import com.drrr.domain.jpa.config.QuerydslConfiguration;
+import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
@@ -38,9 +38,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QuerydslConfiguration.class, DatabaseCleaner.class,
+@Import({QueryDSLConfiguration.class, DatabaseCleaner.class,
         CustomTechBlogPostCategoryRepositoryImpl.class})
-public class RecommendServiceTest {
+class RecommendServiceTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -134,12 +134,12 @@ public class RecommendServiceTest {
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .uniqueName(categoryName)
-                    .categoryDisplayName(categoryDisplayName)
+                    .displayName(categoryDisplayName)
                     .build();
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);
 
-        List<Category> categoryWeights = categoryRepository.findByIdIn(Arrays.asList(2L, 3L, 5L, 7L, 8L));
+        List<Category> categoryWeights = categoryRepository.findIds(Arrays.asList(2L, 3L, 5L, 7L, 8L));
         List<Double> weights = Arrays.asList(8.0, 3.0, 4.0, 2.0, 2.0);
         List<CategoryWeight> categoryWeightList = new ArrayList<>();
         IntStream.range(0, categoryWeights.size()).forEach(i -> {
