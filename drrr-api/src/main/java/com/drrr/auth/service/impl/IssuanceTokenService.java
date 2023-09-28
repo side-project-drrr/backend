@@ -47,7 +47,9 @@ public class IssuanceTokenService {
                 .memberId(id)
                 .build());
 
-        return new AccessTokenResponse(accessToken);
+        return AccessTokenResponse.builder()
+                .accessToken(accessToken)
+                .build();
     }
 
     @Getter
