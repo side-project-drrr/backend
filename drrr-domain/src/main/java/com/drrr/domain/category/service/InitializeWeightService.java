@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class InitializeWeightService {
@@ -21,13 +23,17 @@ public class InitializeWeightService {
 
     public void initializeCategoryWeight(Long memberId, List<Long> categories) {
         List<Category> categoryList = categoryRepository.findByIdIn(categories);
-        if(categories.isEmpty()){
-            throw new RuntimeException("MemberViewWeightService.increaseMemberViewPost - Cannot find such categories");
+
+        if (categories.isEmpty()) {
+            throw new RuntimeException(
+                    "InitializeWeightService.initializeCategoryWeight() - Cannot find such categories");
         }
 
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new NoSuchElementException("No Member Weight found with memberId: " + memberId));
-        List<CategoryWeight> categoryWeightDto = categoryList.stream()
+                .orElseThrow(() -> new NoSuchElementException(
+                        "InitializeWeightService.initializeCategoryWeight() - No Member Weight found with memberId: "
+                                + memberId));
+        List<CategoryWeight> initialCategoryWeight = categoryList.stream()
                 .map(category -> CategoryWeight.builder()
                         .member(member)
                         .category(category)
@@ -35,7 +41,7 @@ public class InitializeWeightService {
                         .preferred(true)
                         .build()).toList();
 
-        categoryWeightRepository.saveAll(categoryWeightDto);
+        categoryWeightRepository.saveAll(initialCategoryWeight);
     }
 
 
