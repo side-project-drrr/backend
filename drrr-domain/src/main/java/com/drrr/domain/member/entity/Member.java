@@ -28,9 +28,6 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    @Embedded
-    private Address address;
-
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
