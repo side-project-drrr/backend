@@ -8,14 +8,16 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
+@RequiredArgsConstructor
 @Repository
-public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogPostCategoryRepository{
-    @PersistenceContext
-    private EntityManager em;
+public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogPostCategoryRepository {
+    private final EntityManager em;
+
     @Override
     public List<ExtractedPostCategoryDto> getFilteredPost(List<CategoryWeightDto> categoryWeightDtos, Long memberId) {
         //query에 in(...) 절을 위한 categoryId 리스트
