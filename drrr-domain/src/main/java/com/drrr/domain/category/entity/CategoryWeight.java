@@ -6,9 +6,7 @@ import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN
 
 import com.drrr.core.recommandation.constant.constant.DaysConstants;
 import com.drrr.core.recommandation.constant.constant.HoursConstants;
-import com.drrr.core.recommandation.constant.constant.PostConstants;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
-import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import com.drrr.domain.member.entity.Member;
 import jakarta.persistence.Entity;
@@ -19,11 +17,6 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +35,6 @@ public class CategoryWeight extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -50,45 +42,6 @@ public class CategoryWeight extends BaseEntity {
     private double value;
 
     private boolean preferred;
-
-    /**
-     * 카테고리 별로 몇개의 게시물을 추천해줄 건지 계산 return : key - 카테고리_아이디, value - 카테고리별 추천 게시물 수 categoryWeightDtos - 가장 최근 게시물 순으로
-     * 정렬되어 있는 상태
-     */
-    public static Map<Long, Integer> calculatePostDistribution(List<CategoryWeightDto> categoryWeightDtos) {
-        int totalPosts = PostConstants.RECOMMEND_POSTS_COUNT.getValue();
-
-        // Calculate the total weight
-        double totalWeight = categoryWeightDtos.stream().mapToDouble(CategoryWeightDto::value).sum();
-
-        // key : categoryId, value : 가중치 백분율
-        Map<Long, Double> fractionalPartsMap = new LinkedHashMap<>();
-        Map<Long, Integer> resultMap = new HashMap<>();
-
-        // 카테고리별 게시물 개수
-        int remainingPosts = categoryWeightDtos.stream()
-                .map(dto -> {
-                    double rawPostCount = (dto.value() / totalWeight) * totalPosts;
-                    int postCount = (int) rawPostCount;
-                    double fractionalPart = rawPostCount - postCount;
-
-                    fractionalPartsMap.put(dto.category().getId(), fractionalPart);
-                    resultMap.put(dto.category().getId(), postCount);
-
-                    return postCount;
-                })
-                .reduce(totalPosts, (a, b) -> a - b);
-
-        //가중치 비율이 제일 높은 순
-        //key : 카테고리Id, value : 가중치
-        fractionalPartsMap.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .filter(entry -> resultMap.containsKey(entry.getKey()))
-                .limit(remainingPosts)
-                .forEach(entry -> resultMap.put(entry.getKey(), resultMap.get(entry.getKey()) + 1));
-
-        return resultMap;
-    }
 
     private double getDecreasedWeightValueByHours(LocalDateTime pastTime, LocalDateTime now) {
         Duration duration = Duration.between(pastTime, now);
@@ -100,6 +53,7 @@ public class CategoryWeight extends BaseEntity {
     public boolean isExpiredCategoryWeight(){
         return MIN_WEIGHT.isLessEqualThan(this.value) || isUnreadPastDays(updatedAt);
     }
+
 
     private boolean isUnreadPastDays(LocalDateTime unreadDays) {
         LocalDateTime now = LocalDateTime.now();
