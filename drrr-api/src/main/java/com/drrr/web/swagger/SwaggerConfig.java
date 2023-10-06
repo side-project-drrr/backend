@@ -1,8 +1,5 @@
 package com.drrr.web.swagger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -22,11 +19,5 @@ public class SwaggerConfig {
                         .description("Dr--r--r-- Project Swagger UI")
                         .version("1.0.0"))
                 .addSecurityItem(new SecurityRequirement().addList("JWT"));
-    }
-
-    //Swagger 문서에서 Example Value를 보여줄 때 SNAKE_CASE로 보여주게 함
-    @Bean
-    public ModelResolver modelResolver(ObjectMapper objectMapper) {
-        return new ModelResolver(objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE));
     }
 }
