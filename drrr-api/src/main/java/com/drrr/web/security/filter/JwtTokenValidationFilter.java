@@ -7,14 +7,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -37,7 +41,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        log.info("token:" + token);
+
         var memberId = jwtTokenProvider.extractToValueFrom(token);
 
         try {
@@ -46,10 +50,12 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             }
 
             // 권한 부여
-            var authenticationToken = new UsernamePasswordAuthenticationToken(memberId, null, List.of(new SimpleGrantedAuthority("USER")));
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(memberId, null,
+                    List.of(new SimpleGrantedAuthority("USER")));
             // Detail을 넣어줌
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
             log.info("[+] Token in SecurityContextHolder");
             filterChain.doFilter(request, response);
         } catch (JwtExpiredTokenException expiredJwtException) {
@@ -68,5 +74,4 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
         }
         return null;
     }
-
 }

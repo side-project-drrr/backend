@@ -47,7 +47,8 @@ public class RegisterPostTagService {
         }
 
         final List<TemporalTechPostTag> temporalTechPostTags = categories.stream()
-                .filter(category -> !temporalTechPostTagRepository.existsByCategoryAndTemporalTechBlogPost(category, temporalTechBlogPost))
+                .filter(category -> !temporalTechPostTagRepository.existsByCategoryAndTemporalTechBlogPost(category,
+                        temporalTechBlogPost))
                 .map(category -> new TemporalTechPostTag(category, temporalTechBlogPost))
                 .toList();
 

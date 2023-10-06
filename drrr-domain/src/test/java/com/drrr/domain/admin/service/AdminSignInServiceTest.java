@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import(QueryDSLConfiguration.class)
+@Import({QueryDSLConfiguration.class})
 class AdminSignInServiceTest {
     @Autowired
     private AdminSignInService adminSignInService;

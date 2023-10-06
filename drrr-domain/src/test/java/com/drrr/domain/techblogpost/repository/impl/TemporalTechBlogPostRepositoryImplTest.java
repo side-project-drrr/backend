@@ -103,7 +103,8 @@ class TemporalTechBlogPostRepositoryImplTest {
 
     @Test
     void 크롤링된_게시글을_가져올_때_카테고리_또한_가져온다() {
-        final var result = temporalTechBlogPostRepository.findBy(DateRangeBound.createSingleRange(LocalDate.now().minusDays(1)), null);
+        final var result = temporalTechBlogPostRepository.findBy(
+                DateRangeBound.createSingleRange(LocalDate.now().minusDays(1)), null);
 
         assertThat(result).size().isEqualTo(1);
         assertThat(result.get(0).getTemporalTechPostTags()).size().isEqualTo(2);

@@ -3,14 +3,11 @@ package com.drrr.web.security.config;
 
 import com.drrr.web.jwt.util.JwtProvider;
 import com.drrr.web.security.filter.JwtTokenValidationFilter;
-import java.util.Arrays;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -43,7 +40,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
+            throws Exception {
         System.out.println("---------security filter chain-------------");
         // http 기본 설정
         MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
@@ -58,19 +56,22 @@ public class SecurityConfig {
         // 명시적으로 허용할 url 등록
         http.authorizeHttpRequests(
                 (auth) -> auth.requestMatchers(
-                        mvcMatcherBuilder.pattern("/favicon.ico"),
-                        mvcMatcherBuilder.pattern("/login/oauth/kakao/**"),
-                        mvcMatcherBuilder.pattern("/h2-console/**"),
-                        mvcMatcherBuilder.pattern("/swagger-ui.html"),
-                        mvcMatcherBuilder.pattern("/swagger-ui/**"),
-                        mvcMatcherBuilder.pattern("/swagger-resources/**"),
-                        mvcMatcherBuilder.pattern("/v3/api-docs/**"),
-                        mvcMatcherBuilder.pattern("/v2/api-docs"),
-                        mvcMatcherBuilder.pattern("/webjars/**"))
-                        .authenticated()
+                                mvcMatcherBuilder.pattern("/favicon.ico"),
+                                mvcMatcherBuilder.pattern("/login/oauth/kakao/**"),
+                                mvcMatcherBuilder.pattern("/h2-console/**"),
+                                mvcMatcherBuilder.pattern("/swagger-ui.html"),
+                                mvcMatcherBuilder.pattern("/swagger-ui/**"),
+                                mvcMatcherBuilder.pattern("/swagger-resources/**"),
+                                mvcMatcherBuilder.pattern("/v3/api-docs/**"),
+                                mvcMatcherBuilder.pattern("/v2/api-docs"),
+                                mvcMatcherBuilder.pattern("/webjars/**"),
+                                mvcMatcherBuilder.pattern("/auth/signup"),
+                                mvcMatcherBuilder.pattern("/auth/signin"))
+                        .permitAll()
                         .anyRequest()
-                        .permitAll())
-                /*.oauth2Login((oauth2)-> oauth2.clientRegistrationRepository(clientRegistrationRepository()))*/;
+                        .authenticated()
+        );
+        /*.oauth2Login((oauth2)-> oauth2.clientRegistrationRepository(clientRegistrationRepository()))*/
 
         // 필터
         http.addFilterBefore(jwtTokenValidationFilter(), UsernamePasswordAuthenticationFilter.class);

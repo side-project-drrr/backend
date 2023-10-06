@@ -1,6 +1,4 @@
 package com.drrr.domain.util;
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -31,6 +29,7 @@ public class DatabaseCleaner {
                     .createNativeQuery(
                             "ALTER TABLE " + mappingInformation.tableName() + " ALTER COLUMN " + mappingInformation.idName() + " RESTART WITH 1")
                     .executeUpdate();
+            entityManager.createNativeQuery("DELETE FROM " + mappingInformation.tableName() + " WHERE 1=1");
         }
 
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY TRUE").executeUpdate();

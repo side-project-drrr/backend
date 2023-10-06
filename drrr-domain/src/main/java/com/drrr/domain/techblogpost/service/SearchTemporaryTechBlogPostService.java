@@ -21,7 +21,8 @@ public class SearchTemporaryTechBlogPostService {
 
     private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
 
-    public List<SearchTemporaryTechBlogPostResultDto> execute(SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto) {
+    public List<SearchTemporaryTechBlogPostResultDto> execute(
+            SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto) {
         return temporalTechBlogPostRepository.findBy(
                         searchTemporaryTechBlogPostDto.dateRangeBound(),
                         searchTemporaryTechBlogPostDto.assignTagCompleted(),

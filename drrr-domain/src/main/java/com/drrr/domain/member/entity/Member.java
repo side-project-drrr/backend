@@ -4,7 +4,6 @@ package com.drrr.domain.member.entity;
 import com.drrr.core.code.Gender;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,14 +21,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "DRRR_MEMBER")
-@PrimaryKeyJoinColumn(name = "MEMEBER_ID")
+@PrimaryKeyJoinColumn(name = "MEMBER_ID")
 public class Member extends BaseEntity {
 
     @Column(nullable = false)
     private String nickname;
-
-    @Embedded
-    private Address address;
 
     private String phoneNumber;
 

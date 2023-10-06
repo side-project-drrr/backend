@@ -18,8 +18,8 @@ public class ExternalAuthenticationFacade {
 
     public String execute(String accessToken, String provider) {
         OAuth2Response response = oAuth2Client.getUserProfile("Bearer " + accessToken, getProviderRequestUri(provider));
-        log.info("id: {}", response.getId());
-        return response.getId();
+        log.info("id: {}", response.id());
+        return response.id();
     }
 
     public String getProviderRequestUri(String provider) {

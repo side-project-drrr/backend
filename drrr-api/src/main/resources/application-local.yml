@@ -32,7 +32,7 @@ spring:
   jpa:
     hibernate:
       #애플리케이션 로딩 시점에 다 드랍하고 다시 생성
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         # show_sql: true
@@ -46,13 +46,13 @@ spring:
       client:
         registration:
           github:
-            client-id: e756d60c6372cbaf3a99
-            client-secret: 5393f0d241b969b2aa13ea610fb89f8b4d4b2532
+            client-id: classpath:security-storage-api/social/github/github.pub
+            client-secret: classpath:security-storage-api/social/github/github.key
           kakao:
-            client-id: 2438c851c4f4b4976361f1fd13fc2dcf
+            client-id: classpath:security-storage-api/social/kakao/kakao.pub
             redirect-uri: http://localhost:8080/login/oauth/kakao
             client-authentication-method: POST
-            client-secret: vhHlIzCEwLqTdJwpiyhwxaXOVYPfOjT6
+            client-secret: classpath:security-storage-api/social/kakao/kakao.key
             authorization-grant-type: authorization_code
             scope:
               - profile_nickname
@@ -67,15 +67,6 @@ spring:
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
-jasypt:
-  encryptor:
-    bean: jasyptStringEncryptor
-    algorithm: PBEWithMD5AndDES
-    pool-size: 2
-    string-output-type: base64
-    key-obtention-iterations: 100000
-  secret-key:
-    file-location: classpath:security-storage-api/jasypt.key
 jwt:
   private.key: classpath:security-storage-api/jwt.key
   public.key: classpath:security-storage-api/jwt.pub

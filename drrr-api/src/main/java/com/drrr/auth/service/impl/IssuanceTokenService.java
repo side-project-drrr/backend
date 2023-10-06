@@ -36,7 +36,7 @@ public class IssuanceTokenService {
     }
 
     public AccessTokenResponse regenerateAccessToken(AccessTokenRequest request) {
-        final Long id = tokenProvider.extractToValueFrom(request.getAccessToken());
+        final Long id = tokenProvider.extractToValueFrom(request.accessToken());
         authenticationTokenService.remove(new RemoveAuthenticationTokenDto(id));
 
         final Instant now = Instant.now();
@@ -47,7 +47,9 @@ public class IssuanceTokenService {
                 .memberId(id)
                 .build());
 
-        return new AccessTokenResponse(accessToken);
+        return AccessTokenResponse.builder()
+                .accessToken(accessToken)
+                .build();
     }
 
     @Getter

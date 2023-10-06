@@ -157,7 +157,8 @@ class RegisterPostTagServiceTest {
         sut.execute(post.getId(), ids);
         sut.execute(post.getId(), List.of(1L, 2L));
 
-        final TemporalTechBlogPost updatedPost = temporalTechBlogPostRepository.findById(post.getId()).orElseThrow(IllegalArgumentException::new);
+        final TemporalTechBlogPost updatedPost = temporalTechBlogPostRepository.findById(post.getId())
+                .orElseThrow(IllegalArgumentException::new);
         temporalTechBlogPostRepository.flush();
 
         // Then
@@ -199,7 +200,8 @@ class RegisterPostTagServiceTest {
         sut.execute(post.getId(), ids);
         sut.execute(post.getId(), List.of(1L, 2L, 3L, 4L));
 
-        final TemporalTechBlogPost updatedPost = temporalTechBlogPostRepository.findById(post.getId()).orElseThrow(IllegalArgumentException::new);
+        final TemporalTechBlogPost updatedPost = temporalTechBlogPostRepository.findById(post.getId())
+                .orElseThrow(IllegalArgumentException::new);
         temporalTechBlogPostRepository.flush();
 
         // Then

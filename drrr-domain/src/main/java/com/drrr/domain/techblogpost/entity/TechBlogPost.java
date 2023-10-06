@@ -11,8 +11,10 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "DRRR_TECH_BLOG_POST")
@@ -43,10 +45,15 @@ public class TechBlogPost extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private TechBlogCode techBlogCode;
 
+    @Column(nullable = false)
+    private int viewCount = 0;
+
+
 
     @Builder
-    private TechBlogPost(LocalDate createdDate, String author, String thumbnailUrl, String title, String summary, String urlSuffix, String url,
-                         TechBlogCode crawlerGroup) {
+    public TechBlogPost(LocalDate createdDate, String author, String thumbnailUrl, String title, String summary,
+                        String urlSuffix, String url,
+                        TechBlogCode crawlerGroup, int viewCount) {
         this.createdDate = createdDate;
         this.author = author;
         this.thumbnailUrl = thumbnailUrl;
@@ -55,6 +62,7 @@ public class TechBlogPost extends BaseEntity {
         this.urlSuffix = urlSuffix;
         this.url = url;
         this.techBlogCode = crawlerGroup;
+        this.viewCount = viewCount;
     }
 
     public static TechBlogPost from(TemporalTechBlogPost temporalTechBlogEntity) {
@@ -67,6 +75,9 @@ public class TechBlogPost extends BaseEntity {
                 .summary(temporalTechBlogEntity.getSummary())
                 .urlSuffix(temporalTechBlogEntity.getUrlSuffix())
                 .build();
+    }
+    public void increaseViewCount(){
+        this.viewCount+=1;
     }
 }
 
