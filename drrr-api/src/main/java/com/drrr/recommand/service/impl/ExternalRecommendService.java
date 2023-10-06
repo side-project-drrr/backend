@@ -5,6 +5,7 @@ import com.drrr.domain.category.service.WeightValidationService;
 import com.drrr.domain.log.service.LogUpdateService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.recommand.dto.RecommendResponse;
+import com.drrr.recommand.dto.TechBlogPostDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,17 @@ public class ExternalRecommendService {
         List<TechBlogPost> posts = recommendPostService.recommendPosts(memberId);
         logUpdateService.updateMemberPostRecommendLog(memberId, posts);
         return RecommendResponse.builder()
-                .posts(posts)
+                .posts(posts.stream()
+                        .map(post -> TechBlogPostDto.builder()
+                                .title(post.getTitle())
+                                .createdDate(post.getCreatedDate())
+                                .url(post.getUrl())
+                                .urlSuffix(post.getUrlSuffix())
+                                .summary(post.getSummary())
+                                .techBlogCode(post.getTechBlogCode())
+                                .thumbnailUrl(post.getThumbnailUrl())
+                                .viewCount(post.getViewCount())
+                                .build()).toList())
                 .build();
     }
 }
