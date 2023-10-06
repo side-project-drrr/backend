@@ -36,7 +36,7 @@ public class IssuanceTokenService {
     }
 
     public AccessTokenResponse regenerateAccessToken(AccessTokenRequest request) {
-        final Long id = tokenProvider.extractToValueFrom(request.getAccessToken());
+        final Long id = tokenProvider.extractToValueFrom(request.accessToken());
         authenticationTokenService.remove(new RemoveAuthenticationTokenDto(id));
 
         final Instant now = Instant.now();
