@@ -7,7 +7,6 @@ import com.drrr.recommand.dto.AdjustPostWeightRequest;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @RequiredArgsConstructor
 @Service
@@ -19,7 +18,7 @@ public class ExternalMemberPostReadService {
     public void execute(AdjustPostWeightRequest request, Long memberId, Long postId) {
         weightValidationService.validateWeight(memberId, LocalDateTime.now());
         memberViewWeightService.increaseMemberViewPost(memberId, postId,
-                request.getCategoryIds());
+                request.categoryIds());
         logUpdateService.insertMemberPostReadLog(memberId, postId);
         logUpdateService.insertMemberPostHistory(memberId, postId);
     }
