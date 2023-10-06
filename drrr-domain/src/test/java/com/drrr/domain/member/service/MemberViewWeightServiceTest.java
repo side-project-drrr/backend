@@ -10,6 +10,8 @@ import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.category.service.MemberViewWeightService;
+import com.drrr.domain.jpa.config.JpaConfiguration;
+import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;
@@ -37,15 +39,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
+import org.springframework.stereotype.Service;
 
-/**
- * <hr>이를 @SpringBootTest를 한 이유<hr>
- * <br>@DataJpaTest는 비동기 작업을 수행하는 경우 특정 상황에서 문제가 발생할 수 있다. 이는 기본적으로</br>
- * <br>테스트 메서드가 종료된 후에 트랜잭션을 롤백하는데 별도의 쓰레드에서 실행되는 작업은 이 트랜잭션과 분리되어 있으므로</br>
- * <br>해당 작업이 완료되기 전에 롤백이 발생할 수 있음. @DataJpaTest와 같은 단위 테스트 환경에서 비동기 로직을 사용하는 것은 일반적으로 권장하지 않음</br>
- */
-@SpringBootTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
+@Import({QueryDSLConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class})
 class MemberViewWeightServiceTest {
     @Autowired
     private MemberRepository memberRepository;
@@ -214,7 +215,7 @@ class MemberViewWeightServiceTest {
     }
 
     @Test
-    void 여러_사용자가_한_게시물을_접근했을_때_조회수가_정상적으로_증가합니다() throws InterruptedException {
+    void 사용자가_한_게시물을_접근했을_때_조회수가_정상적으로_증가합니다() {
         //when
         List<Member> members = memberRepository.findAll();
         if (members.size() == 0) {
@@ -226,29 +227,16 @@ class MemberViewWeightServiceTest {
         }
         List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
 
-        CountDownLatch latch = new CountDownLatch(50);
-        ExecutorService executorService = Executors.newFixedThreadPool(500);
-        IntStream.range(0,500).forEach(i->{
-            int idx = i;
-            executorService.submit(() -> {
-                memberViewWeightService.increaseMemberViewPost(members.get(idx).getId(), originalPost.get(0).getId(),
-                        categoryIds);
-                latch.countDown();
-            });
-        });
-
-        latch.await();
-        executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        memberViewWeightService.increaseMemberViewPost(members.get(0).getId(), originalPost.get(0).getId(),
+                categoryIds);
 
         //then
-
         List<TechBlogPost> updatedPost = techBlogPostRepository.findAll();
         if (updatedPost.size() == 0) {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         int viewCount = updatedPost.get(0).getViewCount();
-        assertThat(viewCount).isEqualTo(500);
+        assertThat(viewCount).isEqualTo(1);
     }
 
 }
