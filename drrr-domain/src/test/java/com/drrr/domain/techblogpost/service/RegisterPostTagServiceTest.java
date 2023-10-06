@@ -6,13 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.drrr.core.code.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
-import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.entity.TemporalTechPostTag;
 import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.TemporalTechPostTagRepository;
-import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
 import java.util.List;
@@ -23,13 +21,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QueryDSLConfiguration.class, DatabaseCleaner.class, CustomTechBlogPostCategoryRepositoryImpl.class})
+@Import({QueryDSLConfiguration.class, DatabaseCleaner.class})
 class RegisterPostTagServiceTest {
 
     // system under test

@@ -19,7 +19,6 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -73,8 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QueryDSLConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class,
-        CustomTechBlogPostCategoryRepositoryImpl.class})
+@Import({QueryDSLConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class})
 class WeightValidationServiceTest {
     @Autowired
     private MemberRepository memberRepository;

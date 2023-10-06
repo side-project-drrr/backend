@@ -20,7 +20,6 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,8 +37,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QueryDSLConfiguration.class, DatabaseCleaner.class,
-        CustomTechBlogPostCategoryRepositoryImpl.class})
+@Import({QueryDSLConfiguration.class, DatabaseCleaner.class})
 class RecommendServiceTest {
     @Autowired
     private MemberRepository memberRepository;
