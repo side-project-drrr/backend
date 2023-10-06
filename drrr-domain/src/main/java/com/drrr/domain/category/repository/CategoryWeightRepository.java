@@ -12,11 +12,5 @@ public interface CategoryWeightRepository extends JpaRepository<CategoryWeight, 
     @Query("select cw from CategoryWeight cw where cw.member.id =:memberId ")
     List<CategoryWeight> findCategoryWeightsByMemberId(@Param("memberId") Long memberId);
     List<CategoryWeight> findCategoryWeightByMemberId(Long memberId);
-
-/*    @Query("delete from CategoryWeight cw where cw.member.id =:memberId and cw.category.id =:categoryId")
-    Optional<Integer> deleteUselessCategoryWeightData(Long memberId, Long categoryId);
-
-    @Query("select cw from CategoryWeight cw where cw.member.id =:memberId and cw.category.id in (:categoryIds)")
-    Optional<List<CategoryWeight>> findByMemberAndCategory(Long memberId, List<Long> categoryIds);*/
     List<CategoryWeight> findByMemberId(Long memberId);
 }
