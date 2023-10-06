@@ -6,11 +6,10 @@ import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.log.service.LogUpdateService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
-import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
+import com.drrr.domain.techblogpost.repository.impl.CustomTechBlogPostRepositoryImpl;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,13 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class RecommendPostService {
     private final CategoryWeightRepository categoryWeightRepository;
-    private final RemainedPostRecommendService remainedPostRecommendService;
+    private final CustomTechBlogPostRepositoryImpl customTechBlogPostRepository;
 
     private final TechBlogPostRepository techBlogPostRepository;
     private final LogUpdateService logUpdateService;
     private final CustomTechBlogPostCategoryRepositoryImpl customTechBlogPostCategoryRepository;
+    private final PostCategoryUtilityService postDistributionService;
 
-    @PersistenceContext
     private EntityManager em;
 
     @Transactional
@@ -55,14 +54,16 @@ public class RecommendPostService {
                         .build()).toList();
 
         //사용자에게 추천해줄 수 있는 모든 게시물 가져오기
-        List<ExtractedPostCategoryDto> techBlogPosts = customTechBlogPostCategoryRepository.getFilteredPost(categoryWeightDtos, memberId);
+        List<ExtractedPostCategoryDto> techBlogPosts = customTechBlogPostCategoryRepository.getFilteredPost(
+                categoryWeightDtos, memberId);
 
         //게시물에 대해 카테고리별로 정리
-        Map<Long, Set<Long>> classifiedPostsDto = TechBlogPostCategory.classifyPostWithCategoriesByMap(techBlogPosts);
+        Map<Long, Set<Long>> classifiedPostsDto = postDistributionService.classifyPostWithCategoriesByMap(
+                techBlogPosts);
 
         //추천할 게시물 ids를 카테고리별로 담아서 반환
         //postsPerCategoryMap -> key : categoryId, value : 할당해야 하는 게시물 개수
-        Map<Long, Integer> postsPerCategoryMap = CategoryWeight.calculatePostDistribution(categoryWeightDtos);
+        Map<Long, Integer> postsPerCategoryMap = postDistributionService.calculatePostDistribution(categoryWeightDtos);
 
         //카테고리별로 할당된 개수만큼 게시물 추천해서 id 값 담아놓은 리스트
         //postIds - 할당된 게시물 id 리스트
@@ -72,7 +73,7 @@ public class RecommendPostService {
 
         //추천해줄 게시물이 더이상 없는 경우
         if (remainingPostCount > 0) {
-            postIds.addAll(remainedPostRecommendService.recommendRemain(memberId, remainingPostCount));
+            postIds.addAll(customTechBlogPostRepository.recommendRemain(memberId, remainingPostCount));
         }
 
         //post ids에 해당하는 post 객체들 찾기
