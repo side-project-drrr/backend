@@ -288,12 +288,10 @@ class WeightValidationServiceTest {
     void 가중치_검증에_의해서_가중치가_제대로_감소합니다() {
         //when
         List<Member> members = memberRepository.findAll();
-        for (Member member : members) {
-            System.out.println("member = " + member.getId());
-        }
         if (members.size() == 0) {
             throw new IllegalArgumentException("members elements is null");
         }
+
         weightValidationService.validateWeight(members.get(0).getId(),
                 LocalDateTime.now().plusHours(HoursConstants.PAST_HOURS.getValue() * 3L));
         weightValidationService.validateWeight(members.get(1).getId(), LocalDateTime.now());
