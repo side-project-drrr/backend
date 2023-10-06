@@ -15,7 +15,7 @@ public enum WeightConstants {
 
     // 증가하는 최소 가중치 값
     INCREASE_WEIGHT(1.0);
-    private double value;
+    private final double value;
 
     WeightConstants(double value) {
         this.value = value;
@@ -28,6 +28,6 @@ public enum WeightConstants {
 
 
     public double sum(double value) {
-        return this.value += value;
+        return this.value + value;
     }
 }
