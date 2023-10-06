@@ -228,14 +228,14 @@ class MemberViewWeightServiceTest {
 
         CountDownLatch latch = new CountDownLatch(50);
         ExecutorService executorService = Executors.newFixedThreadPool(500);
-        for (int i = 0; i < 500; i++) {
+        IntStream.range(0,500).forEach(i->{
             int idx = i;
             executorService.submit(() -> {
                 memberViewWeightService.increaseMemberViewPost(members.get(idx).getId(), originalPost.get(0).getId(),
                         categoryIds);
                 latch.countDown();
             });
-        }
+        });
 
         latch.await();
         executorService.shutdown();
