@@ -65,8 +65,14 @@ public class SecurityConfig {
                                 mvcMatcherBuilder.pattern("/v3/api-docs/**"),
                                 mvcMatcherBuilder.pattern("/v2/api-docs"),
                                 mvcMatcherBuilder.pattern("/webjars/**"),
+                                mvcMatcherBuilder.pattern("/auth/oauth2/profile"),
                                 mvcMatcherBuilder.pattern("/auth/signup"),
-                                mvcMatcherBuilder.pattern("/auth/signin"))
+                                mvcMatcherBuilder.pattern("/auth/signin"),
+                                mvcMatcherBuilder.pattern("/auth/code"),
+                                mvcMatcherBuilder.pattern("/api/notifications/**"),
+                                mvcMatcherBuilder.pattern("/actuator"),
+                                mvcMatcherBuilder.pattern("/actuator/**"),
+                                mvcMatcherBuilder.pattern("/actuator/prometheus"))
                         .permitAll()
                         .anyRequest()
                         .authenticated()
