@@ -1,5 +1,7 @@
 package com.drrr.web.security.filter;
 
+import com.drrr.core.exception.jwt.JwtException;
+import com.drrr.core.exception.jwt.JwtExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
 import com.drrr.web.security.exception.JwtExpiredTokenException;
 import jakarta.servlet.FilterChain;
@@ -53,7 +55,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
         try {
             if (!jwtTokenProvider.validateToken(token)) {
-                throw new JwtExpiredTokenException("Access token has expired");
+                throw new JwtException(JwtExceptionCode.INVALID_JWT_SIGNATURE.getCode(), JwtExceptionCode.INVALID_JWT_SIGNATURE.getMessage());
             }
 
             // 권한 부여
@@ -63,13 +65,13 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(auth);
-            log.info("[+] Token in SecurityContextHolder");
             filterChain.doFilter(request, response);
         } catch (JwtExpiredTokenException expiredJwtException) {
             // Handle expired token exception
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.getWriter().write("Token expired");
             response.getWriter().flush();
+            throw new JwtException(JwtExceptionCode.JWT_TOKEN_EXPIRED.getCode(), JwtExceptionCode.JWT_TOKEN_EXPIRED.getMessage());
         }
     }
 

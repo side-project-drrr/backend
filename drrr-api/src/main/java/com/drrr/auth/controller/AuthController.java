@@ -11,11 +11,14 @@ import com.drrr.auth.service.impl.ExchangeOAuth2AccessTokenService;
 import com.drrr.auth.service.impl.IssuanceTokenService;
 import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
+import com.drrr.core.exception.BaseCustomException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -80,10 +83,12 @@ public class AuthController {
         return ResponseEntity.ok(accessTokenResponse);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleException(Exception e) {
-        String errorMessage = e.getMessage(); // 원하는 에러 메시지를 작성합니다.
+    @ExceptionHandler(BaseCustomException.class)
+    public ResponseEntity<Object> handleException(BaseCustomException e) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("message", e.getMessage());
+        errorResponse.put("code", String.valueOf(e.getCode()));
         e.printStackTrace();
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

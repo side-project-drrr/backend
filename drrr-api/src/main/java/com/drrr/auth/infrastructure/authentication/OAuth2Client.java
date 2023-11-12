@@ -5,6 +5,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.drrr.auth.payload.dto.OAuth2GithubAccessTokenRequest;
 import com.drrr.auth.payload.dto.OAuth2KakaoAccessTokenRequest;
+import com.drrr.core.exception.login.OAuth2Exception;
+import com.drrr.core.exception.login.OAuth2ExceptionCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -40,7 +42,7 @@ public class OAuth2Client {
                             return id;
                         } catch (NullPointerException npe) {
                             log.error("provider ID를 받아오지 못했습니다. Access Token를 확인해주세요.");
-                            throw new RuntimeException("provider ID를 받아오지 못했습니다. Access Token를 확인해주세요.");
+                            throw new OAuth2Exception(OAuth2ExceptionCode.INVALID_ACCESS_TOKEN.getCode(), OAuth2ExceptionCode.INVALID_ACCESS_TOKEN.getMessage());
                         }
                     }
                 });
@@ -66,9 +68,7 @@ public class OAuth2Client {
                     if (response.getStatusCode().is4xxClientError()) {
                         log.error(
                                 "OAuth2Client Class exchangeKakaoOAuth2AccessToken(final OAuth2KakaoAccessTokenRequest requestParams) Method IllegalArgumentException Error");
-                        throw new IllegalArgumentException(
-                                "Kakao OAuth2의 인증코드가 유효하지 않습니다. uri -> " + requestParams.uri() + ", response body -> "
-                                        + response.getBody());
+                        throw new OAuth2Exception(OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.getCode(), OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.getMessage());
                     } else {
 
                         final JsonNode jsonNode = objectMapper.readTree(response.getBody());
@@ -79,7 +79,7 @@ public class OAuth2Client {
                         } catch (NullPointerException npe) {
                             log.error(
                                     "OAuth2Client Class exchangeKakaoOAuth2AccessToken(final OAuth2KakaoAccessTokenRequest requestParams) Method NullPointerException Error");
-                            throw new RuntimeException("Kakao 인증코드를 확인해주세요");
+                            throw new OAuth2Exception(OAuth2ExceptionCode.PROVIDER_ID_NULL.getCode(), OAuth2ExceptionCode.PROVIDER_ID_NULL.getMessage());
                         }
                     }
                 });
@@ -103,9 +103,7 @@ public class OAuth2Client {
                     if (response.getStatusCode().is4xxClientError()) {
                         log.error(
                                 "OAuth2Client Class exchangeGitHubOAuth2AccessToken(OAuth2GithubAccessTokenRequest requestBody) Method IllegalArgumentException Error");
-                        throw new IllegalArgumentException(
-                                "Github OAuth2의 인증코드가 유효하지 않습니다 -> uri ->" + requestBody.getUri()
-                                        + ", response body -> " + response.getBody());
+                        throw new OAuth2Exception(OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.getCode(), OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.getMessage());
                     } else {
                         final JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
@@ -116,7 +114,7 @@ public class OAuth2Client {
                         } catch (NullPointerException npe) {
                             log.error(
                                     "OAuth2Client Class exchangeGitHubOAuth2AccessToken(OAuth2GithubAccessTokenRequest requestBody) Method NullPointerException Error");
-                            throw new RuntimeException("Github 인증코드를 확인해주세요");
+                            throw new OAuth2Exception(OAuth2ExceptionCode.PROVIDER_ID_NULL.getCode(), OAuth2ExceptionCode.PROVIDER_ID_NULL.getMessage());
                         }
                     }
                 });
