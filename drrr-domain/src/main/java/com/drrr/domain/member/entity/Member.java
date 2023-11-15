@@ -1,7 +1,7 @@
 package com.drrr.domain.member.entity;
 
 
-import com.drrr.core.code.Gender;
+import com.drrr.core.code.member.Gender;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
