@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Recommended Posts</title>
+
+</head>
+
+<body style="font-family: &quot;Quicksand&quot;, sans-serif;display: grid;place-items: center;height: 100vh;background: linear-gradient(to right, #91eae4, #86a8e7, #7f7fd5);">
+<div class="container" style="display: flex;flex-wrap: wrap;justify-content: center;max-width: 1200px;margin-block: 2rem;gap: 2rem;">
+    <a href="https://naver.com" style="text-decoration: none; color: inherit;">
+        <div class="card" style="display: flex;flex-direction: column;width: clamp(20rem, calc(20rem + 2vw), 22rem);overflow: hidden;box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);border-radius: 1em;background: linear-gradient(to right, #FFFFFF, #ECE9E6);">
+            <div class="card__header">
+                <img src="https://source.unsplash.com/600x400/?computer" alt="card__image" class="card__image" width="600" style="max-width: 100%;display: block;object-fit: cover;">
+            </div>
+            <div class="card__body" style="padding: 1rem;display: flex;flex-direction: column;gap: .5rem;">
+                <div>
+                    <span class="tag tag-blue" style="align-self: flex-start;padding: .25em .75em;border-radius: 1em;font-size: .75rem;background: linear-gradient(to bottom, #2F80ED, #56CCF2);color: #fafafa;">Technology</span>
+                    <span class="tag tag-blue" style="align-self: flex-start;padding: .25em .75em;border-radius: 1em;font-size: .75rem;background: linear-gradient(to bottom, #2F80ED, #56CCF2);color: #fafafa;">Springboot</span>
+                    <span class="tag tag-blue" style="align-self: flex-start;padding: .25em .75em;border-radius: 1em;font-size: .75rem;background: linear-gradient(to bottom, #2F80ED, #56CCF2);color: #fafafa;">Security</span>
+                </div>
+                <h4 style="font-size: 1.5rem;text-transform: capitalize;">What's new in 2022 Tech</h4>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+            </div>
+            <div class="card__footer" style="display: flex;padding: 1rem;margin-top: auto;">
+                <div class="user" style="display: flex;gap: .5rem;">
+                    <img src="https://i.pravatar.cc/40?img=1" alt="user__image" class="user__image" style="max-width: 100%;display: block;object-fit: cover;border-radius: 50%;">
+                    <div class="user__info">
+                        <h5>Jane Doe</h5>
+                        <small style="color: #666;">2h ago</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+
+    <div class="card" style="display: flex;flex-direction: column;width: clamp(20rem, calc(20rem + 2vw), 22rem);overflow: hidden;box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);border-radius: 1em;background: linear-gradient(to right, #FFFFFF, #ECE9E6);">
+        <div class="card__header">
+            <img src="https://source.unsplash.com/600x400/?food" alt="card__image" class="card__image" width="600" style="max-width: 100%;display: block;object-fit: cover;">
+        </div>
+        <div class="card__body" style="padding: 1rem;display: flex;flex-direction: column;gap: .5rem;">
+            <span class="tag tag-brown" style="align-self: flex-start;padding: .25em .75em;border-radius: 1em;font-size: .75rem;background: linear-gradient(to bottom, #FFD194, #D1913C);color: #fafafa;">Food</span>
+            <h4 style="font-size: 1.5rem;text-transform: capitalize;">Delicious Food</h4>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+        </div>
+        <div class="card__footer" style="display: flex;padding: 1rem;margin-top: auto;">
+            <div class="user" style="display: flex;gap: .5rem;">
+                <img src="https://i.pravatar.cc/40?img=2" alt="user__image" class="user__image" style="max-width: 100%;display: block;object-fit: cover;border-radius: 50%;">
+                <div class="user__info">
+                    <h5>Jony Doe</h5>
+                    <small style="color: #666;">Yesterday</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="display: flex;flex-direction: column;width: clamp(20rem, calc(20rem + 2vw), 22rem);overflow: hidden;box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);border-radius: 1em;background: linear-gradient(to right, #FFFFFF, #ECE9E6);">
+        <div class="card__header">
+            <img src="https://source.unsplash.com/600x400/?car,automobile" alt="card__image" class="card__image" width="600" style="max-width: 100%;display: block;object-fit: cover;">
+        </div>
+        <div class="card__body" style="padding: 1rem;display: flex;flex-direction: column;gap: .5rem;">
+            <span class="tag tag-red" style="align-self: flex-start;padding: .25em .75em;border-radius: 1em;font-size: .75rem;background: linear-gradient(to bottom, #ef473a, #cb2d3e);color: #fafafa;">Automobile</span>
+            <h4 style="font-size: 1.5rem;text-transform: capitalize;">Race to your heart content</h4>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+        </div>
+        <div class="card__footer" style="display: flex;padding: 1rem;margin-top: auto;">
+            <div class="user" style="display: flex;gap: .5rem;">
+                <img src="https://i.pravatar.cc/40?img=3" alt="user__image" class="user__image" style="max-width: 100%;display: block;object-fit: cover;border-radius: 50%;">
+                <div class="user__info">
+                    <h5>John Doe</h5>
+                    <small style="color: #666;">2d ago</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="display: flex;flex-direction: column;width: clamp(20rem, calc(20rem + 2vw), 22rem);overflow: hidden;box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);border-radius: 1em;background: linear-gradient(to right, #FFFFFF, #ECE9E6);">
+        <div class="card__header">
+            <img src="https://source.unsplash.com/600x400/?car,automobile" alt="card__image" class="card__image" width="600" style="max-width: 100%;display: block;object-fit: cover;">
+        </div>
+        <div class="card__body" style="padding: 1rem;display: flex;flex-direction: column;gap: .5rem;">
+            <span class="tag tag-red" style="align-self: flex-start;padding: .25em .75em;border-radius: 1em;font-size: .75rem;background: linear-gradient(to bottom, #ef473a, #cb2d3e);color: #fafafa;">Automobile</span>
+            <h4 style="font-size: 1.5rem;text-transform: capitalize;">Race to your heart content</h4>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+        </div>
+        <div class="card__footer" style="display: flex;padding: 1rem;margin-top: auto;">
+            <div class="user" style="display: flex;gap: .5rem;">
+                <img src="https://i.pravatar.cc/40?img=3" alt="user__image" class="user__image" style="max-width: 100%;display: block;object-fit: cover;border-radius: 50%;">
+                <div class="user__info">
+                    <h5>John Doe</h5>
+                    <small style="color: #666;">2d ago</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="display: flex;flex-direction: column;width: clamp(20rem, calc(20rem + 2vw), 22rem);overflow: hidden;box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);border-radius: 1em;background: linear-gradient(to right, #FFFFFF, #ECE9E6);">
+        <div class="card__header">
+            <img src="https://source.unsplash.com/600x400/?car,automobile" alt="card__image" class="card__image" width="600" style="max-width: 100%;display: block;object-fit: cover;">
+        </div>
+        <div class="card__body" style="padding: 1rem;display: flex;flex-direction: column;gap: .5rem;">
+            <span class="tag tag-red" style="align-self: flex-start;padding: .25em .75em;border-radius: 1em;font-size: .75rem;background: linear-gradient(to bottom, #ef473a, #cb2d3e);color: #fafafa;">Automobile</span>
+            <h4 style="font-size: 1.5rem;text-transform: capitalize;">Race to your heart content</h4>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+        </div>
+        <div class="card__footer" style="display: flex;padding: 1rem;margin-top: auto;">
+            <div class="user" style="display: flex;gap: .5rem;">
+                <img src="https://i.pravatar.cc/40?img=3" alt="user__image" class="user__image" style="max-width: 100%;display: block;object-fit: cover;border-radius: 50%;">
+                <div class="user__info">
+                    <h5>John Doe</h5>
+                    <small style="color: #666;">2d ago</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="display: flex;flex-direction: column;width: clamp(20rem, calc(20rem + 2vw), 22rem);overflow: hidden;box-shadow: 0 .1rem 1rem rgba(0, 0, 0, 0.1);border-radius: 1em;background: linear-gradient(to right, #FFFFFF, #ECE9E6);">
+        <div class="card__header">
+            <img src="https://source.unsplash.com/600x400/?car,automobile" alt="card__image" class="card__image" width="600" style="max-width: 100%;display: block;object-fit: cover;">
+        </div>
+        <div class="card__body" style="padding: 1rem;display: flex;flex-direction: column;gap: .5rem;">
+            <span class="tag tag-red" style="align-self: flex-start;padding: .25em .75em;border-radius: 1em;font-size: .75rem;background: linear-gradient(to bottom, #ef473a, #cb2d3e);color: #fafafa;">Automobile</span>
+            <h4 style="font-size: 1.5rem;text-transform: capitalize;">Race to your heart content</h4>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae non nemo doloribus. Doloremque, nihil! At ea atque quidem!</p>
+        </div>
+        <div class="card__footer" style="display: flex;padding: 1rem;margin-top: auto;">
+            <div class="user" style="display: flex;gap: .5rem;">
+                <img src="https://i.pravatar.cc/40?img=3" alt="user__image" class="user__image" style="max-width: 100%;display: block;object-fit: cover;border-radius: 50%;">
+                <div class="user__info">
+                    <h5>John Doe</h5>
+                    <small style="color: #666;">2d ago</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
