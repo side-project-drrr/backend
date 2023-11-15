@@ -17,17 +17,17 @@ public enum WeightConstants {
     INCREASE_WEIGHT(1.0);
     private final double value;
 
-    WeightConstants(double value) {
+    WeightConstants(final double value) {
         this.value = value;
     }
 
 
-    public boolean isLessEqualThan(double value){
+    public boolean isLessEqualThan(final double value) {
         return value <= this.value;
     }
 
 
-    public double sum(double value) {
+    public double sum(final double value) {
         return this.value + value;
     }
 }
