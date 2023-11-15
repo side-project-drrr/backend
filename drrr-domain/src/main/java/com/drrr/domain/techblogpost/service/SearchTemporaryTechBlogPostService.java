@@ -1,7 +1,7 @@
 package com.drrr.domain.techblogpost.service;
 
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.date.DateRangeBound;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.entity.TemporalTechPostTag;

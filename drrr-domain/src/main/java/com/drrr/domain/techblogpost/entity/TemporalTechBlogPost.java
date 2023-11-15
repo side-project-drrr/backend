@@ -1,6 +1,6 @@
 package com.drrr.domain.techblogpost.entity;
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
