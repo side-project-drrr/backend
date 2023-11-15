@@ -18,9 +18,9 @@ public class WeightValidationService {
     /**
      * 사용자에게 블로그 게시물을 추천해줄 때나 사용자가 특정 게시물을 읽을 때 호출
      */
-    public void validateWeight(Long memberId, LocalDateTime now) {
+    public void validateWeight(final Long memberId, final LocalDateTime now) {
         // 가중치 회원 테이블에서 조회
-        List<CategoryWeight> categoryWeights = categoryWeightRepository.findCategoryWeightsByMemberId(memberId);
+        List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
 
         if (categoryWeights.isEmpty()) {
             throw new IllegalArgumentException("No Member Weight found with memberId: " + memberId);
