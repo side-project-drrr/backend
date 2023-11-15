@@ -9,9 +9,6 @@ import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.querydsl.jpa.impl.JPAUpdateClause;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,8 +24,8 @@ public class LogUpdateService {
     private final MemberPostHistoryRepository memberPostHistoryRepository;
     private final MemberPostLogRepository memberPostLogRepository;
 
-    public void insertMemberPostReadLog(Long memberId, Long postId) {
-        memberPostLogRepository.findByPostId(postId)
+    public void insertMemberPostReadLog(final Long memberId, final Long postId) {
+        memberPostLogRepository.findByPostIdAndMemberId(memberId, postId)
                 .orElseGet(() ->  memberPostLogRepository.save(MemberPostLog.builder()
                         .memberId(memberId)
                         .postId(postId)
@@ -36,7 +33,8 @@ public class LogUpdateService {
                         .isRecommended(false)
                         .build()));
     }
-    public void updateMemberPostRecommendLog(Long memberId, List<TechBlogPost> posts) {
+
+    public void updateMemberPostRecommendLog(final Long memberId, final List<TechBlogPost> posts) {
         List<Long> postIds = posts.stream()
                 .map(post -> post.getId())
                 .toList();
@@ -54,7 +52,7 @@ public class LogUpdateService {
         logs.stream().forEach(log->log.updateRecommendStatus());
 
     }
-    public void insertMemberPostLog(Long memberId, List<Long> postIds, List<MemberPostLog> logs) {
+    public void insertMemberPostLog(final Long memberId, final List<Long> postIds, final List<MemberPostLog> logs) {
         Set<Long> postIdSet = new HashSet<>(postIds);
 
         //postIdSet에 log 테이블에 저장이 안되어 있는 postId만 남기기
@@ -75,7 +73,7 @@ public class LogUpdateService {
         memberPostLogRepository.saveAll(insertList);
     }
 
-    public void insertMemberPostHistory(Long memberId, Long postId) {
+    public void insertMemberPostHistory(final Long memberId, final Long postId) {
         MemberPostHistory history = MemberPostHistory.builder()
                 .postId(postId)
                 .memberId(memberId)
@@ -83,7 +81,7 @@ public class LogUpdateService {
         memberPostHistoryRepository.save(history);
     }
 
-    private BooleanExpression postIdsInOrEq(List<Long> postIds) {
+    private BooleanExpression postIdsInOrEq(final List<Long> postIds) {
         return postIds.size() == 1 ? memberPostLog.postId.eq(postIds.get(0))
                 : memberPostLog.postId.in(postIds);
     }

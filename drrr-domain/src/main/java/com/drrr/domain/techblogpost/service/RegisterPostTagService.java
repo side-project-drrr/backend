@@ -22,7 +22,7 @@ public class RegisterPostTagService {
     private final TemporalTechPostTagRepository temporalTechPostTagRepository;
     private final CategoryRepository categoryRepository;
 
-    public void execute(Long postId, List<Long> categoryIds) {
+    public void execute(final Long postId, final List<Long> categoryIds) {
         final TemporalTechBlogPost temporalTechBlogPost = temporalTechBlogPostRepository.findById(postId)
                 .orElseThrow(IllegalArgumentException::new);
 

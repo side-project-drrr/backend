@@ -20,7 +20,7 @@ public class PostCategoryUtilityService {
     /**
      * 하나의 게시물에 대한 여러개의 카테고리를 객체로 각각 저장 techBlogPosts
      */
-    public Map<Long, Set<Long>> classifyPostWithCategoriesByMap(List<ExtractedPostCategoryDto> techBlogPosts) {
+    public Map<Long, Set<Long>> classifyPostWithCategoriesByMap(final List<ExtractedPostCategoryDto> techBlogPosts) {
 
         Map<Long, Set<Long>> classifiedPostsMap = techBlogPosts.stream()
                 .collect(Collectors.groupingBy(
@@ -35,7 +35,7 @@ public class PostCategoryUtilityService {
      * 카테고리 별로 몇개의 게시물을 추천해줄 건지 계산 return : key - 카테고리_아이디, value - 카테고리별 추천 게시물 수 categoryWeightDtos - 가장 최근 게시물 순으로
      * 정렬되어 있는 상태
      */
-    public Map<Long, Integer> calculatePostDistribution(List<CategoryWeightDto> categoryWeightDtos) {
+    public Map<Long, Integer> calculatePostDistribution(final List<CategoryWeightDto> categoryWeightDtos) {
         int totalPosts = PostConstants.RECOMMEND_POSTS_COUNT.getValue();
 
         // Calculate the total weight

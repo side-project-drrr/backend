@@ -26,7 +26,7 @@ public class MemberViewWeightService {
     /**
      * 사용자가 특정 게시물을 읽었을 때 그 게시물에 대한 가중치 증가
      */
-    public void increaseMemberViewPost(Long memberId, Long postId, List<Long> categoryIds) {
+    public void increaseMemberViewPost(final Long memberId, final Long postId, final List<Long> categoryIds) {
         TechBlogPost post = techBlogPostRepository.findByIdWithPessimisticLock(postId)
                 .orElseThrow(() -> new RuntimeException(
                         "MemberViewWeightService.increaseMemberViewPost() - Cannot find such post -> postId : "

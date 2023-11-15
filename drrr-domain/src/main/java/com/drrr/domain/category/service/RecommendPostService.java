@@ -34,7 +34,7 @@ public class RecommendPostService {
     private EntityManager em;
 
     @Transactional
-    public List<TechBlogPost> recommendPosts(Long memberId) {
+    public List<TechBlogPost> recommendPosts(final Long memberId) {
         int remainingPostCount = 0;
         //카테고리_가중치 Mapping Table를 특정 MemberId로 조회
         List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
@@ -60,7 +60,6 @@ public class RecommendPostService {
         //게시물에 대해 카테고리별로 정리
         Map<Long, Set<Long>> classifiedPostsDto = postDistributionService.classifyPostWithCategoriesByMap(
                 techBlogPosts);
-
         //추천할 게시물 ids를 카테고리별로 담아서 반환
         //postsPerCategoryMap -> key : categoryId, value : 할당해야 하는 게시물 개수
         Map<Long, Integer> postsPerCategoryMap = postDistributionService.calculatePostDistribution(categoryWeightDtos);
@@ -79,7 +78,6 @@ public class RecommendPostService {
         //post ids에 해당하는 post 객체들 찾기
         List<TechBlogPost> posts = techBlogPostRepository.findAllById(postIds);
 
-        //추천해주는 게시물에 대해서 카테고리_가중치 테이블의 isRecommended 업데이트
         logUpdateService.updateMemberPostRecommendLog(memberId, posts);
 
         return posts;
@@ -89,8 +87,8 @@ public class RecommendPostService {
      * 카테고리별로 추천해줄 게시물들을 추출 classifiedPostsDto - 가장 최근 게시물 순으로 정렬되어 있는 상태 postsPerCategoryMap -> key : categoryId, value
      * : 할당해야 하는 게시물 개수 classifiedPostsDto -> key : postId, value : post에 속한 categoryIds
      */
-    private List<Long> extractRecommendPostIds(Map<Long, Set<Long>> classifiedPostsDto,
-                                               Map<Long, Integer> postsPerCategoryMap) {
+    private List<Long> extractRecommendPostIds(final Map<Long, Set<Long>> classifiedPostsDto,
+                                               final Map<Long, Integer> postsPerCategoryMap) {
         return classifiedPostsDto.keySet()
                 .stream()
                 .filter(key -> {
