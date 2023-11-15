@@ -1,4 +1,5 @@
 package com.drrr.domain.util;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -27,7 +28,8 @@ public class DatabaseCleaner {
             entityManager.createNativeQuery("TRUNCATE TABLE " + mappingInformation.tableName()).executeUpdate();
             entityManager
                     .createNativeQuery(
-                            "ALTER TABLE " + mappingInformation.tableName() + " ALTER COLUMN " + mappingInformation.idName() + " RESTART WITH 1")
+                            "ALTER TABLE " + mappingInformation.tableName() + " ALTER COLUMN "
+                                    + mappingInformation.idName() + " RESTART WITH 1")
                     .executeUpdate();
             entityManager.createNativeQuery("DELETE FROM " + mappingInformation.tableName() + " WHERE 1=1");
         }
