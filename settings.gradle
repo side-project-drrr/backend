@@ -13,4 +13,5 @@ include 'drrr-batch'
 include 'drrr-core'
 include 'drrr-domain'
 include 'drrr-domain-redis'
+include 'drrr-infra'
 
