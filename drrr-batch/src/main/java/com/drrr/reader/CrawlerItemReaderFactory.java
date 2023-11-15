@@ -1,6 +1,6 @@
 package com.drrr.reader;
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.reader.impl.KakaoCrawlerItemReader;
 import com.drrr.reader.impl.MarketKurlyItemReader;
 import com.drrr.reader.impl.NaverCrawlerItemReader;

@@ -1,7 +1,7 @@
 package com.drrr.config;
 
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
