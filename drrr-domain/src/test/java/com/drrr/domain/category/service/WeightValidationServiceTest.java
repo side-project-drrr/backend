@@ -154,8 +154,16 @@ class WeightValidationServiceTest {
         List<Double> weights = Arrays.asList(8.0, 15.0, 5.0, 5.0, 1.0);
         List<CategoryWeight> categoryWeightList = new ArrayList<>();
 
+        List<LocalDateTime> lastReadAtList = new ArrayList<>();
+        lastReadAtList.add(LocalDateTime.now().minusHours(HoursConstants.PAST_HOURS.getValue() * 3L));
+        lastReadAtList.add(LocalDateTime.now());
+        lastReadAtList.add(LocalDateTime.now().minusHours(HoursConstants.PAST_HOURS.getValue() * 5L));
+        lastReadAtList.add(LocalDateTime.now().minusDays(100));
+        lastReadAtList.add(LocalDateTime.now().minusDays(100));
+
         IntStream.range(0, 5).forEach(i -> {
             IntStream.range(0, 5).forEach(j -> {
+                LocalDateTime readAt = lastReadAtList.get(j);
                 Category category = categories1.get(j);
                 double value = weights.get(j);
                 boolean preferred =
@@ -167,6 +175,7 @@ class WeightValidationServiceTest {
                         .category(category)
                         .value(value)
                         .preferred(preferred)
+                        .lastReadAt(readAt)
                         .build());
             });
         });
@@ -292,11 +301,10 @@ class WeightValidationServiceTest {
             throw new IllegalArgumentException("members elements is null");
         }
 
-        weightValidationService.validateWeight(members.get(0).getId(),
-                LocalDateTime.now().plusHours(HoursConstants.PAST_HOURS.getValue() * 3L));
-        weightValidationService.validateWeight(members.get(1).getId(), LocalDateTime.now());
-        weightValidationService.validateWeight(members.get(2).getId(), LocalDateTime.now().plusDays(100));
-        weightValidationService.validateWeight(members.get(3).getId(), LocalDateTime.now().plusDays(100));
+        weightValidationService.validateWeight(members.get(0).getId());
+        weightValidationService.validateWeight(members.get(1).getId());
+        weightValidationService.validateWeight(members.get(2).getId());
+        weightValidationService.validateWeight(members.get(3).getId());
 
         List<CategoryWeight> member1CategoryWeight = categoryWeightRepository.findByMemberId(members.get(0).getId());
 
@@ -312,9 +320,6 @@ class WeightValidationServiceTest {
             throw new IllegalArgumentException("member3CategoryWeight elements is null");
         }
         List<CategoryWeight> member4CategoryWeight = categoryWeightRepository.findByMemberId(members.get(3).getId());
-        if (member4CategoryWeight.size() == 0) {
-            throw new IllegalArgumentException("member4CategoryWeight elements is null");
-        }
 
         //then
         assertThat(member1CategoryWeight.get(0).getValue()).isEqualTo(
@@ -322,7 +327,7 @@ class WeightValidationServiceTest {
         assertThat(member2CategoryWeight.get(1).getValue()).isEqualTo(WeightConstants.MAX_WEIGHT.getValue());
         assertThat(member3CategoryWeight.get(2).getValue()).isEqualTo(
                 WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue());
-        //가중치가 0인 카테고리에 대해서는 데이터가 삭제됨, 그래서 기존 4개의 가중치에서 검증 후 그 중 하나의 가중치가 0이 되어 1개가 삭제됨
+        //가중치가 0인 카테고리에 대해서는 데이터가 삭제됨
         assertThat(member4CategoryWeight.size()).isEqualTo(3);
 
 
