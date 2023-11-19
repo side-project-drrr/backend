@@ -1,8 +1,8 @@
 package com.drrr.domain.member.service;
 
 
-import com.drrr.core.exception.login.MemberException;
-import com.drrr.core.exception.login.MemberExceptionCode;
+import com.drrr.core.exception.member.MemberException;
+import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
