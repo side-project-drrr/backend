@@ -18,9 +18,10 @@ public class ResourceReader {
     private final String githubClientSecret;
     private final ResourceLoader resourceLoader;
 
-    public ResourceReader(@Value("${kakao.private.key}") Resource kakaoClientId,
-                       @Value("${spring.security.oauth2.client.registration.github.client-id}") Resource githubClientId,
-                       @Value("${spring.security.oauth2.client.registration.github.client-secret}") Resource githubClientSecret, ResourceLoader resourceLoader)
+    public ResourceReader(@Value("${kakao.private.key}") final Resource kakaoClientId,
+                          @Value("${spring.security.oauth2.client.registration.github.client-id}") final Resource githubClientId,
+                          @Value("${spring.security.oauth2.client.registration.github.client-secret}") final Resource githubClientSecret,
+                          ResourceLoader resourceLoader)
             throws IOException {
         this.resourceLoader = resourceLoader;
         this.kakaoClientId = ResourceReader.loadFileAsString(kakaoClientId);
@@ -28,13 +29,15 @@ public class ResourceReader {
         this.githubClientSecret = ResourceReader.loadFileAsString(githubClientSecret);
     }
 
-    private static String loadFileAsString(Resource filePath) throws IOException {
-        Resource resource = filePath;
-        InputStream inputStream = resource.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+    private static String loadFileAsString(final Resource filePath) throws IOException {
+        final Resource resource = filePath;
+        final InputStream inputStream = resource.getInputStream();
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
+
         String line;
+
         while ((line = reader.readLine()) != null) {
             stringBuilder.append(line);
         }
