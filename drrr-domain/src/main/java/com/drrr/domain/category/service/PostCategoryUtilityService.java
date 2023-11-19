@@ -18,11 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostCategoryUtilityService {
 
     /**
-     * 하나의 게시물에 대한 여러개의 카테고리를 객체로 각각 저장 techBlogPosts
+     * 하나의 기술블로그에 대한 여러개의 카테고리를 객체로 각각 저장 techBlogPosts
      */
     public Map<Long, Set<Long>> classifyPostWithCategoriesByMap(final List<ExtractedPostCategoryDto> techBlogPosts) {
 
-        Map<Long, Set<Long>> classifiedPostsMap = techBlogPosts.stream()
+        //key : 기술블로그 id, value : 카테고리 id
+        final Map<Long, Set<Long>> classifiedPostsMap = techBlogPosts.stream()
                 .collect(Collectors.groupingBy(
                         ExtractedPostCategoryDto::postId,
                         LinkedHashMap::new,
@@ -36,17 +37,17 @@ public class PostCategoryUtilityService {
      * 정렬되어 있는 상태
      */
     public Map<Long, Integer> calculatePostDistribution(final List<CategoryWeightDto> categoryWeightDtos) {
-        int totalPosts = PostConstants.RECOMMEND_POSTS_COUNT.getValue();
+        final int totalPosts = PostConstants.RECOMMEND_POSTS_COUNT.getValue();
 
         // Calculate the total weight
-        double totalWeight = categoryWeightDtos.stream().mapToDouble(CategoryWeightDto::value).sum();
+        final double totalWeight = categoryWeightDtos.stream().mapToDouble(CategoryWeightDto::value).sum();
 
         // key : categoryId, value : 가중치 백분율
-        Map<Long, Double> fractionalPartsMap = new LinkedHashMap<>();
-        Map<Long, Integer> resultMap = new HashMap<>();
+        final Map<Long, Double> fractionalPartsMap = new LinkedHashMap<>();
+        final Map<Long, Integer> resultMap = new HashMap<>();
 
-        // 카테고리별 게시물 개수
-        int remainingPosts = categoryWeightDtos.stream()
+        // 비율에 맞게 카테고리별 기술 블로그 할당
+        final int remainingPosts = categoryWeightDtos.stream()
                 .map(dto -> {
                     double rawPostCount = (dto.value() / totalWeight) * totalPosts;
                     int postCount = (int) rawPostCount;
@@ -59,7 +60,7 @@ public class PostCategoryUtilityService {
                 })
                 .reduce(totalPosts, (a, b) -> a - b);
 
-        //가중치 비율이 제일 높은 순
+        //남은 소수점을 고려해서 remainingPosts 만큼 또 다시 할당
         //key : 카테고리Id, value : 가중치
         fractionalPartsMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
