@@ -15,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CORSFilter extends OncePerRequestFilter {
     @Override
-    protected void doFilterInternal(final HttpServletRequest request, HttpServletResponse response,
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
                                     final FilterChain filterChain)
             throws ServletException, IOException {
         //모든 도메인에서의 접근을 허용하기 위해 * 값을 설정합니다. 만약 특정 도메인만 허용하고 싶다면 해당 도메인을 명시합니다.
