@@ -3,7 +3,6 @@ package com.drrr.category.service;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.util.DatabaseCleaner;
 import com.drrr.core.code.member.Gender;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
@@ -19,6 +18,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
 import java.time.Instant;

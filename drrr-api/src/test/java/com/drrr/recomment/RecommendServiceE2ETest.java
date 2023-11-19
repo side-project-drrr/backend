@@ -46,29 +46,24 @@ import org.springframework.http.HttpStatus;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class RecommendServiceE2ETest {
 
+    @LocalServerPort
+    int port;
     @Autowired
     private JwtProvider jwtProvider;
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private TechBlogPostRepository techBlogPostRepository;
-
     @Autowired
     private CategoryRepository categoryRepository;
     @Autowired
     private CategoryWeightRepository categoryWeightRepository;
     @Autowired
     private MemberPostLogRepository memberTechBlogPostRepository;
-
     @Autowired
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
-
-
     @Autowired
     private DatabaseCleaner databaseCleaner;
-    @LocalServerPort
-    int port;
-
 
     /**
      * <h3>Given</h3>
@@ -332,17 +327,17 @@ public class RecommendServiceE2ETest {
                     .contentType(ContentType.APPLICATION_JSON.toString())
                     .body("""
                             {
-                                "memberId": """+String.valueOf(i)+"""
+                                "memberId": """ + i + """
                             }
                             """)
-                    .post("/recommendation/posts/{memberId}",(long) i);
+                    .post("/recommendation/posts/{memberId}", (long) i);
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
 
             RecommendResponse responseBody = response.as(RecommendResponse.class);
             membersRecommendedPosts.add(responseBody.posts().stream()
-                    .map(post->post.id()).toList());
+                    .map(post -> post.id()).toList());
             latch.countDown();
 
         });
