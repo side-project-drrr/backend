@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum WeightConstants {
-    // 최소 가중치 값
+    // 최소 가중치 값(주의, MIN_CONDITIONAL_WEIGHT 값보다 높게 설정하면 안됨, validation에서 문제 발생)
     MIN_WEIGHT(0.0),
     // 최대 가중치 값
     MAX_WEIGHT(10.0),
@@ -22,8 +22,8 @@ public enum WeightConstants {
     }
 
 
-    public boolean isLessEqualThan(final double value) {
-        return value <= this.value;
+    public boolean isGreaterThan(final double value) {
+        return value < this.value;
     }
 
 
