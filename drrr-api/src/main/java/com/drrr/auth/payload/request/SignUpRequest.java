@@ -17,7 +17,7 @@ public record SignUpRequest(
         String email,
         @Schema(description = "카테고리 id", nullable = false, example = "[1, 2, 3]")
         List<@NotNull(message = "사용자의 선호 카테고리id를 지정해주세요") Long> categoryIds,
-        @Schema(description = "사용자 별명", nullable = false, example = "홍길동")
+        @Schema(description = "사용자 별명", nullable = false, example = "텐시")
         @NotNull
         String nickname,
         @Schema(description = "소셜 로그인 주최", nullable = true, example = "kakao")
