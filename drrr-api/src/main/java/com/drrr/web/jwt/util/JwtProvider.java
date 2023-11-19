@@ -25,7 +25,7 @@ public class JwtProvider {
     private final JwtDecoder jwtDecoder;
 
     public String createAccessToken(final Long id, final Instant issuanceTime) {
-        var claims = JwtClaimsSet.builder()
+        final JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(issuer)
                 .issuedAt(issuanceTime)
                 .expiresAt(issuanceTime.plusSeconds(accessTokenExpiry))
@@ -39,8 +39,7 @@ public class JwtProvider {
     public String createRefreshToken(final Long id, final Instant issuanceTime) {
         // UUID 혹은 id를 사용할지 고민중
         // UUID.fromString(LocalDateTime.now().toString()).toString();
-
-        var claims = JwtClaimsSet.builder()
+        final JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(issuer)
                 .issuedAt(issuanceTime)
                 .expiresAt(issuanceTime.plusSeconds(refreshTokenExpiry))
@@ -68,9 +67,9 @@ public class JwtProvider {
             this.decode(token);
             return true;
         } catch (BadJwtException e) {
-            log.error("Invalid JWT signature: {}", e.getMessage());
+            log.error("유효하지 않은 JWT 토큰");
+            return false;
         }
-        return false;
     }
 
 }
