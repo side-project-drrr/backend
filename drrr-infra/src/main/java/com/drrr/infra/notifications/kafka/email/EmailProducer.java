@@ -1,23 +1,19 @@
 package com.drrr.infra.notifications.kafka.email;
 
+import com.drrr.core.exception.member.MemberException;
+import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.domain.alert.push.entity.PushMessage;
 import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.FileCopyUtils;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -35,16 +31,17 @@ public class EmailProducer {
 
     @Transactional
     public void sendMessage() {
-        List<Member> members = memberRepository.findAll();
+        final List<Member> members = memberRepository.findAll();
         if (members.size() == 0) {
-            log.error("[Member Element Empty Error]");
-            log.error("Occurred in EmailProducer.sendMessage");
-            throw new NoSuchElementException("member elements is null");
+            log.error("사용자를 찾을 수 없습니다.");
+
+            throw new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND.getCode(),
+                    MemberExceptionCode.MEMBER_NOT_FOUND.getMessage());
         }
-        Context context = new Context();
+        final Context context = new Context();
 
         members.stream().forEach(member -> {
-            List<TechBlogPost> recommendPosts = recommendPostService.recommendPosts(member.getId());
+            final List<TechBlogPost> recommendPosts = recommendPostService.recommendPosts(member.getId());
 
             context.setVariable("posts", recommendPosts);
 
@@ -56,9 +53,9 @@ public class EmailProducer {
                 throw new RuntimeException(e);
             }
 
-            PushMessage emailMessage = PushMessage.builder()
+            final PushMessage emailMessage = PushMessage.builder()
                     .to(member.getEmail())
-                    .subject(member.getNickname()+SUBJECT_CONTENT)
+                    .subject(member.getNickname() + SUBJECT_CONTENT)
                     .body(htmlBody)
                     .build();
 

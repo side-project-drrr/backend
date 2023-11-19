@@ -13,23 +13,28 @@ import org.springframework.util.backoff.FixedBackOff;
 @Configuration
 public class KafkaConfig {
     //재시도 간격 (milliseconds)
-    @Value(value = "${spring.kafka.backoff.interval}")
-    private Long interval;
+    private final Long interval;
 
     //Error로 남기기 전 Max 재시도 값
-    @Value(value = "${spring.kafka.backoff.max_failure}")
-    private Long maxAttempts;
+    private final Long maxAttempts;
+
+    public KafkaConfig(@Value(value = "${spring.kafka.backoff.interval}") final Long interval,
+                       @Value(value = "${spring.kafka.backoff.max_failure}") final Long maxAttempts) {
+        this.interval = interval;
+        this.maxAttempts = maxAttempts;
+    }
+
     @Bean
     public DefaultErrorHandler errorHandler() {
         //consumer는 fixed time만큼 기다리고 메세지 재소비를 실행
-        BackOff fixedBackOff = new FixedBackOff(interval, maxAttempts);
+        final BackOff fixedBackOff = new FixedBackOff(interval, maxAttempts);
         //consumerRecord: 카프카 에러 기록을 담는다
         //exception: exception 종류
         //Max 재시도가 끝나고도 에러가 나면 해당 람다가 실행됨
-        DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
+        final DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
             log.error("Message Consume Error");
-            log.error("Record -> "+consumerRecord);
-            log.error("Exception -> "+exception);
+            log.error("Record -> " + consumerRecord);
+            log.error("Exception -> " + exception);
         }, fixedBackOff);
         //해당 에러는 시도함
         errorHandler.addRetryableExceptions(SocketTimeoutException.class);

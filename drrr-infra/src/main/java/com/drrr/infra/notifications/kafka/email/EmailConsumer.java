@@ -22,8 +22,8 @@ public class EmailConsumer {
     @KafkaListener(topics = "alarm-email", groupId = "group_email", containerFactory = "kafkaEmailListenerContainerFactory")
     public void consume(final PushMessage message) {
         try{
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+            final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            final MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(message.to()); // 메일 수신자
             mimeMessageHelper.setSubject(message.subject()); // 메일 제목
             mimeMessageHelper.setText(message.body(), true); // 메일 본문 내용, HTML 여부
@@ -35,9 +35,9 @@ public class EmailConsumer {
         }
     }
     public void test(final PushMessage message){
-        try{
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+        try {
+            final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            final MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(message.to()); // 메일 수신자
             mimeMessageHelper.setSubject(message.subject()); // 메일 제목
             mimeMessageHelper.setText(message.body(), true); // 메일 본문 내용, HTML 여부

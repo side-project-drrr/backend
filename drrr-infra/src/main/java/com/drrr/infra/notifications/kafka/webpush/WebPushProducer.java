@@ -6,17 +6,21 @@ import com.drrr.domain.alert.push.repository.SubscriptionRepository;
 import com.drrr.infra.notifications.kafka.webpush.dto.NotificationDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class WebPushProducer {
     private final SubscriptionRepository subscriptionRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     public void sendNotifications() {
-        List<Subscription> subscriptions = subscriptionRepository.findAll();
+        final List<Subscription> subscriptions = subscriptionRepository.findAll();
         if (subscriptions.size() == 0) {
+            log.error("[send Notifiction Failed]");
+            log.error("웹 푸시가 실패하였습니다.");
             throw new IllegalArgumentException("subscription elements is null");
         }
 

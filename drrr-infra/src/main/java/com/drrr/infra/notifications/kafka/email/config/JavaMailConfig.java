@@ -1,7 +1,5 @@
 package com.drrr.infra.notifications.kafka.email.config;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -26,13 +24,13 @@ public class JavaMailConfig {
 
     @Bean
     public JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(env.getProperty("mail.host"));
         mailSender.setPort(Integer.parseInt(env.getProperty("mail.port")));
         mailSender.setUsername(env.getProperty("mail.user.email"));
         mailSender.setPassword(env.getProperty("mail.user.password"));
 
-        Properties props = mailSender.getJavaMailProperties();
+        final Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", env.getProperty("mail.transport.protocol"));
         props.put("mail.smtp.auth", env.getProperty("mail.smtp.auth"));
         props.put("mail.smtp.starttls.enable", env.getProperty("mail.smtp.starttls.enable"));

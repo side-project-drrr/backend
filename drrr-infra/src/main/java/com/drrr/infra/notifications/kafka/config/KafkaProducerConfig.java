@@ -13,8 +13,11 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @Configuration
 public class KafkaProducerConfig {
-    @Value("${spring.kafka.producer.bootstrap-servers}")
-    private String producerHost;
+    private final String producerHost;
+
+    public KafkaProducerConfig(@Value("${spring.kafka.producer.bootstrap-servers}") final String producerHost) {
+        this.producerHost = producerHost;
+    }
 
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
@@ -23,7 +26,7 @@ public class KafkaProducerConfig {
 
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
-        Map<String, Object> prop = new HashMap<>();
+        final Map<String, Object> prop = new HashMap<>();
         //Kafka 서버의 위치를 설정
         prop.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, producerHost);
         //Kafka message key에 대한 직렬화 클래스로 JsonSerializer를 지정

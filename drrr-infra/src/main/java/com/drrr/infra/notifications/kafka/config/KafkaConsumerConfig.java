@@ -4,7 +4,6 @@ import com.drrr.domain.alert.push.entity.PushMessage;
 import com.drrr.infra.notifications.kafka.webpush.dto.NotificationDto;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,25 +12,28 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-@RequiredArgsConstructor
 @Configuration
 public class KafkaConsumerConfig {
-    @Value("${spring.kafka.consumer.bootstrap-servers}")
-    private String consumerHost;
-
+    private final String consumerHost;
     private final KafkaConfig kafkaConfig;
 
-    private <T> JsonDeserializer<T> getDeserializer(final JsonDeserializer<T> deserializer){
+    public KafkaConsumerConfig(@Value("${spring.kafka.consumer.bootstrap-servers}") final String consumerHost,
+                               final KafkaConfig kafkaConfig) {
+        this.consumerHost = consumerHost;
+        this.kafkaConfig = kafkaConfig;
+    }
+
+    private <T> JsonDeserializer<T> getDeserializer(final JsonDeserializer<T> deserializer) {
         deserializer.setRemoveTypeHeaders(false);
         deserializer.addTrustedPackages("*");
         deserializer.setUseTypeMapperForKey(true);
         return deserializer;
     }
-    private <T> Map<String, Object> getProp(final JsonDeserializer<T> deserializer){
-        Map<String, Object> prop = new HashMap<>();
+
+    private <T> Map<String, Object> getProp(final JsonDeserializer<T> deserializer) {
+        final Map<String, Object> prop = new HashMap<>();
 
         prop.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, consumerHost);
         prop.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -40,8 +42,8 @@ public class KafkaConsumerConfig {
     }
     @Bean
     public ConsumerFactory<String, PushMessage> consumerEmailFactory() {
-        JsonDeserializer<PushMessage> deserializer = getDeserializer(new JsonDeserializer<>(PushMessage.class));
-        Map<String, Object> prop = getProp(deserializer);
+        final JsonDeserializer<PushMessage> deserializer = getDeserializer(new JsonDeserializer<>(PushMessage.class));
+        final Map<String, Object> prop = getProp(deserializer);
 
         return new DefaultKafkaConsumerFactory<>(
                 prop,
@@ -66,7 +68,7 @@ public class KafkaConsumerConfig {
      */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, PushMessage> kafkaEmailListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, PushMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        final ConcurrentKafkaListenerContainerFactory<String, PushMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(AckMode.MANUAL);
         factory.setConsumerFactory(consumerEmailFactory());
         factory.setCommonErrorHandler(kafkaConfig.errorHandler());
@@ -77,8 +79,9 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConsumerFactory<String, NotificationDto> consumerWebPushFactory() {
-        JsonDeserializer<NotificationDto> deserializer = getDeserializer(new JsonDeserializer<>(NotificationDto.class));
-        Map<String, Object> prop = getProp(deserializer);
+        final JsonDeserializer<NotificationDto> deserializer = getDeserializer(
+                new JsonDeserializer<>(NotificationDto.class));
+        final Map<String, Object> prop = getProp(deserializer);
 
         return new DefaultKafkaConsumerFactory<>(
                 prop,
@@ -88,7 +91,7 @@ public class KafkaConsumerConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, NotificationDto> kafkaWebPushListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, NotificationDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        final ConcurrentKafkaListenerContainerFactory<String, NotificationDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.getContainerProperties().setAckMode(AckMode.MANUAL);
         factory.setConsumerFactory(consumerWebPushFactory());
         factory.setCommonErrorHandler(kafkaConfig.errorHandler());

@@ -20,14 +20,14 @@ import org.springframework.stereotype.Repository;
 public class TemporalTechBlogPostRepositoryImpl implements CustomTemporalTechBlogPostRepository {
     private final JPAQueryFactory queryFactory;
 
-    private BooleanExpression betweenBy(DateRangeBound rangeBound) {
+    private BooleanExpression betweenBy(final DateRangeBound rangeBound) {
         if (rangeBound == null) {
             return null;
         }
         return temporalTechBlogPost.crawledDate.between(rangeBound.getStartDate(), rangeBound.getLastDate());
     }
 
-    private BooleanExpression isRegistrationCompleted(Boolean assignTagCompleted) {
+    private BooleanExpression isRegistrationCompleted(final Boolean assignTagCompleted) {
         if (assignTagCompleted == null) {
             return null;
         }
@@ -35,9 +35,9 @@ public class TemporalTechBlogPostRepositoryImpl implements CustomTemporalTechBlo
     }
 
     @Override
-    public List<TemporalTechBlogPost> findBy(DateRangeBound rangeBound,
-                                             Boolean assignTagCompleted,
-                                             Pageable pageable
+    public List<TemporalTechBlogPost> findBy(final DateRangeBound rangeBound,
+                                             final Boolean assignTagCompleted,
+                                             final Pageable pageable
     ) {
         return queryFactory.select(temporalTechBlogPost)
                 .from(temporalTechBlogPost)
@@ -51,8 +51,8 @@ public class TemporalTechBlogPostRepositoryImpl implements CustomTemporalTechBlo
     }
 
     @Override
-    public List<TemporalTechBlogPost> findBy(DateRangeBound rangeBound,
-                                             Boolean assignTagCompleted
+    public List<TemporalTechBlogPost> findBy(final DateRangeBound rangeBound,
+                                             final Boolean assignTagCompleted
     ) {
         return queryFactory.select(temporalTechBlogPost)
                 .from(temporalTechBlogPost)
