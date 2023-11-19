@@ -19,10 +19,10 @@ public class IssuanceTokenService {
     private final AuthenticationTokenService authenticationTokenService;
 
     public IssuanceTokenDto execute(final Long id) {
-        var now = Instant.now();
+        final Instant now = Instant.now();
 
-        var accessToken = tokenProvider.createAccessToken(id, now);
-        var refreshToken = tokenProvider.createRefreshToken(id, now);
+        final String accessToken = tokenProvider.createAccessToken(id, now);
+        final String refreshToken = tokenProvider.createRefreshToken(id, now);
 
         authenticationTokenService.register(RegisterAuthenticationTokenDto.builder()
                 .memberId(id)
