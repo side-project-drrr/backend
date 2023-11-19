@@ -5,7 +5,6 @@ import com.drrr.domain.category.service.WeightValidationService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.recommand.dto.RecommendResponse;
 import com.drrr.recommand.dto.TechBlogPostDto;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +20,8 @@ public class ExternalRecommendService {
     @Transactional
     public RecommendResponse execute(final Long memberId) {
         //두번 째 파라미터의 now는 가중치 검증 test를 진행하기 위함
-        weightValidationService.validateWeight(memberId, LocalDateTime.now());
-        List<TechBlogPost> posts = recommendPostService.recommendPosts(memberId);
+        weightValidationService.validateWeight(memberId);
+        final List<TechBlogPost> posts = recommendPostService.recommendPosts(memberId);
         return RecommendResponse.builder()
                 .posts(posts.stream()
                         .map(post -> TechBlogPostDto.builder()
