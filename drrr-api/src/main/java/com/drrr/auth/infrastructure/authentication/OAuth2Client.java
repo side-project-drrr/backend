@@ -5,8 +5,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.drrr.auth.payload.dto.OAuth2GithubAccessTokenRequest;
 import com.drrr.auth.payload.dto.OAuth2KakaoAccessTokenRequest;
-import com.drrr.core.exception.login.OAuth2Exception;
-import com.drrr.core.exception.login.OAuth2ExceptionCode;
+import com.drrr.core.exception.member.OAuth2Exception;
+import com.drrr.core.exception.member.OAuth2ExceptionCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -90,12 +90,12 @@ public class OAuth2Client {
 
     public String exchangeGitHubOAuth2AccessToken(final OAuth2GithubAccessTokenRequest requestBody) {
         final Map<String, String> body = new HashMap<>();
-        body.put("client_id", requestBody.getClientId());
-        body.put("client_secret", requestBody.getClientSecret());
-        body.put("code", requestBody.getCode());
+        body.put("client_id", requestBody.clientId());
+        body.put("client_secret", requestBody.clientSecret());
+        body.put("code", requestBody.code());
 
         final String result = restClient.post()
-                .uri(requestBody.getUri())
+                .uri(requestBody.uri())
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .body(body)
