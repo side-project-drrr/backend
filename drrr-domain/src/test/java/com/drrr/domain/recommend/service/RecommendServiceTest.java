@@ -22,6 +22,7 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -149,6 +150,7 @@ class RecommendServiceTest {
                     .member(member)
                     .category(category)
                     .value(value)
+                    .lastReadAt(LocalDateTime.now())
                     .preferred(preferred)
                     .build());
         });

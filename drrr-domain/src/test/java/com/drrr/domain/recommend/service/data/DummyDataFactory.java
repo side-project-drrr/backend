@@ -17,6 +17,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -116,6 +117,8 @@ class DummyDataFactory {
         IntStream.range(0, CATEGORY_WEIGHT_COUNT).forEach(i -> {
             List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
             int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
+            int randomDays = getRandomValueInRange(Integer.class, 0, 7);
+            int randomHours = getRandomValueInRange(Integer.class, 0, 24);
             Member member = members.get(i); // 순환적으로 Member 객체 할당
             IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
                 Category category = categories.get(randomCategoryList.get(j));
@@ -126,6 +129,7 @@ class DummyDataFactory {
                         .member(member)
                         .category(category)
                         .value(value)
+                        .lastReadAt(LocalDateTime.now().minusDays(randomDays).minusHours(randomHours))
                         .preferred(preferred)
                         .build());
             });
