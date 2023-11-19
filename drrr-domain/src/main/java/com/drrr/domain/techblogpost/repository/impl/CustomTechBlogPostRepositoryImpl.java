@@ -14,14 +14,15 @@ import org.springframework.stereotype.Repository;
 public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepository {
     private final JPAQueryFactory queryFactory;
 
-    public List<Long> recommendRemain(Long memberId, int remainedPostCount) {
+    public List<Long> recommendRemain(final Long memberId, final int remainedPostCount) {
+        //로그 테이블에서 사용자가 읽은 적이 없는 최신 기술블로그를 추천
         return queryFactory.select(techBlogPost.id)
                 .from(techBlogPost)
                 .leftJoin(memberPostLog)
                 .on(
                         memberPostLog.postId.eq(techBlogPost.id),
                         memberPostLog.memberId.eq(memberId)
-                   )
+                )
                 .where(memberPostLog.id.isNull())
                 .orderBy(techBlogPost.createdDate.desc())
                 .limit(remainedPostCount)
