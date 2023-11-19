@@ -4,7 +4,6 @@ import com.drrr.core.recommandation.constant.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,16 +18,19 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
     private final EntityManager em;
 
     @Override
-    public List<ExtractedPostCategoryDto> getFilteredPost(List<CategoryWeightDto> categoryWeightDtos, Long memberId) {
+    public List<ExtractedPostCategoryDto> getFilteredPost(final List<CategoryWeightDto> categoryWeightDtos,
+                                                          final Long memberId) {
         //query에 in(...) 절을 위한 categoryId 리스트
-        List<Long> categoryIds = categoryWeightDtos.stream()
+        final List<Long> categoryIds = categoryWeightDtos.stream()
                 .map((categoryWeightDto) -> {
                     return categoryWeightDto.category().getId();
                 }).toList();
 
-        int LIMIT_POST_FACTOR = PostConstants.RECOMMEND_POSTS_COUNT.getValue() * categoryIds.size();
+        final int LIMIT_POST_FACTOR = PostConstants.RECOMMEND_POSTS_COUNT.getValue() * categoryIds.size();
 
-        String unionSql = categoryIds.stream()
+        //pid 기술블로그 id, cid 카테고리 id, created_date 작성일자
+        //로그에는 존재하지 않는 기술 블로그를 추천해줌(읽은 적도 없고, 추천 받은 적이 없는 기술블로그)
+        final String unionSql = categoryIds.stream()
                 .map(categoryId -> String.format("""
                              SELECT A.techblogpost_id pid
                                      , A.category_id cid
@@ -52,7 +54,7 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
                             """, memberId, categoryId, LIMIT_POST_FACTOR))
                 .collect(Collectors.joining(" UNION ALL "));
 
-        String refactorSql = String.format("""
+        final String refactorSql = String.format("""
                 SELECT T.pid,T.cid, T.created_date FROM (
                  %s
                 ) T GROUP BY T.pid, T.cid, T.created_date
@@ -61,8 +63,8 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
 
         Query nativeQuery = em.createNativeQuery(refactorSql);
 
-        List<Object[]> list = nativeQuery.getResultList();
-        List<ExtractedPostCategoryDto> resultDto = list.stream()
+        final List<Object[]> list = nativeQuery.getResultList();
+        final List<ExtractedPostCategoryDto> resultDto = list.stream()
                 .map(elem -> ExtractedPostCategoryDto.builder()
                         .postId((Long) elem[0])
                         .categoryId((Long) elem[1])
