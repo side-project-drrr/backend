@@ -1,10 +1,10 @@
 package com.drrr.auth.service.impl;
 
-import com.drrr.auth.infrastructure.subject.GithubOAuth2Request;
-import com.drrr.auth.infrastructure.subject.KakaoOAuth2Request;
 import com.drrr.auth.payload.dto.OAuth2Response;
-import com.drrr.core.exception.login.OAuth2Exception;
-import com.drrr.core.exception.login.OAuth2ExceptionCode;
+import com.drrr.auth.payload.request.GithubOAuth2Request;
+import com.drrr.auth.payload.request.KakaoOAuth2Request;
+import com.drrr.core.exception.member.OAuth2Exception;
+import com.drrr.core.exception.member.OAuth2ExceptionCode;
 import com.drrr.domain.member.service.ExistenceMemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
