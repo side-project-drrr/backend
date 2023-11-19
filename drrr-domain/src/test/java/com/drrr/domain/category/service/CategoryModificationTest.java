@@ -20,7 +20,9 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -130,6 +132,7 @@ public class CategoryModificationTest {
             categoryWeights.add(CategoryWeight.builder()
                     .member(member)
                     .category(categories.get(i))
+                    .lastReadAt(LocalDateTime.now().minusDays(3))
                     .preferred(true)
                     .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
                     .build());
@@ -154,7 +157,8 @@ public class CategoryModificationTest {
 
         //카테고리 업데이트
         modificationService.changeMemberPreferredCategory(1L, updateCategoryIds);
-
+        List<Long> newPreferredCategoryIds = Arrays.asList(6L, 7L, 8L);
+        List<Long> oldPreferredCategoryIds = Arrays.asList(1L, 2L, 3L);
         //then
         List<CategoryWeight> memberCategoryWeights = categoryWeightRepository.findByMemberId(1L);
         List<Long> categoryIds = memberCategoryWeights.stream()
@@ -162,6 +166,19 @@ public class CategoryModificationTest {
                     return category.getCategory().getId();
                 }).toList();
 
-        assertThat(categoryIds).containsExactlyInAnyOrder(6L, 7L, 8L);
+        //선호 카테고리가 추가됐는지 확인
+        assertThat(categoryIds).containsAnyOf(6L, 7L, 8L);
+        //총 6개의 카테고리가 있는지 확인(선호 카테고리 3, 비선호 카테고리 3)
+        assertThat(categoryIds).size().isEqualTo(6);
+        //6, 7, 8 카테고리 id에 대해서 선호가 true인지 확인
+        assertThat(memberCategoryWeights)
+                .filteredOn(categoryWeight -> newPreferredCategoryIds.contains(categoryWeight.getCategory().getId()))
+                .extracting(CategoryWeight::isPreferred)
+                .containsOnly(true);
+        //1, 2, 3 카테고리 id에 대해서 선호가 false인지 확인
+        assertThat(memberCategoryWeights)
+                .filteredOn(categoryWeight -> oldPreferredCategoryIds.contains(categoryWeight.getCategory().getId()))
+                .extracting(CategoryWeight::isPreferred)
+                .containsOnly(false);
     }
 }
