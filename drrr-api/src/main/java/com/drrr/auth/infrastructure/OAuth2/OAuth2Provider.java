@@ -1,4 +1,4 @@
-package com.drrr.auth.infrastructure.OAuth2;
+package com.drrr.auth.infrastructure.oauth2;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
