@@ -13,12 +13,15 @@ import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.core.exception.BaseCustomException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,13 +46,18 @@ public class AuthController {
     private final ExchangeOAuth2AccessTokenService exchangeOAuth2AccessTokenService;
 
 
-    @Operation(summary = "Front에서 준 code로 provider ID를 반환하는 API", description = "호출 성공 시 provider id와 isRegistered 반환. isRegistered : false (신규회원) true (기존회원)")
+    @Operation(summary = "Front에서 준 code로 provider ID를 반환하는 API",
+            description = "호출 성공 시 provider id와 isRegistered 반환. isRegistered : false (신규회원) true (기존회원)",
+            parameters = {
+                    @Parameter(name = "code", description = "OAuth2 인증코드", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
+                    @Parameter(name = "state", description = "OAuth2 주체", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
+            })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원가입 성공", content = @Content(schema = @Schema(implementation = SignUpResponse.class)))
+            @ApiResponse(responseCode = "200", description = "신규 회원 여부 및 provider id 반환", content = @Content(schema = @Schema(implementation = OAuth2Response.class)))
     })
     @GetMapping("/oauth2/profile")
-    public OAuth2Response exchangeOAuth2AccessToken(@RequestParam("code") final String code,
-                                                    @RequestParam("state") final String provider) {
+    public OAuth2Response exchangeOAuth2AccessToken(@NonNull @RequestParam("code") final String code,
+                                                    @NonNull @RequestParam("state") final String provider) {
         return exchangeOAuth2AccessTokenService.execute(code, provider);
     }
 
