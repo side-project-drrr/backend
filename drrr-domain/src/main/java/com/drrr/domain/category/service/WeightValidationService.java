@@ -1,16 +1,19 @@
 package com.drrr.domain.category.service;
 
+import com.drrr.core.exception.member.MemberException;
+import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 @Transactional
 public class WeightValidationService {
     private final CategoryWeightRepository categoryWeightRepository;
@@ -18,16 +21,19 @@ public class WeightValidationService {
     /**
      * 사용자에게 블로그 게시물을 추천해줄 때나 사용자가 특정 게시물을 읽을 때 호출
      */
-    public void validateWeight(final Long memberId, final LocalDateTime now) {
+    public void validateWeight(final Long memberId) {
         // 가중치 회원 테이블에서 조회
-        List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
+        final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
 
         if (categoryWeights.isEmpty()) {
-            throw new IllegalArgumentException("No Member Weight found with memberId: " + memberId);
+            log.error("사용자 가중치를 찾을 수 없습니다.");
+            log.error("memberId -> " + memberId);
+            throw new MemberException(MemberExceptionCode.INVALID_AUTHORIZE_CODE.getCode(),
+                    MemberExceptionCode.INVALID_AUTHORIZE_CODE.getMessage());
         }
 
         categoryWeights.stream()
-                .peek(categoryWeight -> categoryWeight.calculateMemberWeight(now))
+                .peek(CategoryWeight::calculateMemberWeight)
                 .filter(CategoryWeight::isExpiredCategoryWeight)
                 .forEach(categoryWeightRepository::delete);
     }
