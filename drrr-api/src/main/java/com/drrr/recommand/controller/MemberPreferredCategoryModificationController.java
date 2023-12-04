@@ -1,6 +1,7 @@
 package com.drrr.recommand.controller;
 
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
+import com.drrr.web.security.annotation.UserAuthority;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@UserAuthority
 @RequestMapping("/category/modification")
 public class MemberPreferredCategoryModificationController {
     private final ExternalMemberPreferredCategoryModificationService modificationService;
@@ -29,7 +31,6 @@ public class MemberPreferredCategoryModificationController {
                     @Parameter(name = "memberId", description = "사용자 ID", in = ParameterIn.PATH, schema = @Schema(type = "string")),
                     @Parameter(name = "categoryIds", description = "카테고리 ID 리스트, body 안에 포함 ex: [1, 2, 3] 이렇게 객체로 둘러싸지 말고 리스트 형태로 body에 넣어줄 것", schema = @Schema(type = "array", implementation = Long.class))
             })
-    @PreAuthorize("hasAuthority('USER')")
     @PutMapping("/{memberId}")
     public ResponseEntity<String> modifyCategory(@NonNull @PathVariable(name = "memberId") final Long memberId,
                                                  @RequestBody @NonNull final List<Long> categoryIds) {
