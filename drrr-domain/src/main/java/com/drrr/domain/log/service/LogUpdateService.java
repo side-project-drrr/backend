@@ -38,11 +38,7 @@ public class LogUpdateService {
                         .build()));
     }
 
-    public void updateMemberPostRecommendLog(final Long memberId, final List<TechBlogPost> posts) {
-        final List<Long> postIds = posts.stream()
-                .map(post -> post.getId())
-                .toList();
-
+    public void updateMemberPostRecommendLog(final Long memberId, final List<Long> postIds) {
         //해당 유저의 추천받은 기술블로그 ids와 member id로 log 정보 가져오기
         final List<MemberPostLog> logs = queryFactory
                 .selectFrom(memberPostLog)
