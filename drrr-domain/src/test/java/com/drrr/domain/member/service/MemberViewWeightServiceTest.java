@@ -97,7 +97,6 @@ class MemberViewWeightServiceTest {
                     .gender(Gender.MAN)
                     .provider("kakao")
                     .providerId("12345" + i)
-                    .imageUrl("http://example.com/image" + i)
                     .role(MemberRole.USER)
                     .build();
             memberRepository.save(member);

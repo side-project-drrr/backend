@@ -105,10 +105,7 @@ class WeightValidationServiceTest {
                     .gender(Gender.MAN)
                     .provider("kakao" + i)
                     .providerId("12345" + i)
-                    .imageUrl("http://example" + i + ".com/image")
                     .role(MemberRole.USER)
-                    .birthYear("19950316")
-                    .phoneNumber("010111122222")
                     .build();
         }).toList();
 

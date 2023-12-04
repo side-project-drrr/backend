@@ -73,7 +73,6 @@ public class CategoryModificationTest {
                 .gender(Gender.MAN)
                 .provider("kakao")
                 .providerId("12345")
-                .imageUrl("http://example.com/image")
                 .role(MemberRole.USER)
                 .build();
         memberRepository.save(member);

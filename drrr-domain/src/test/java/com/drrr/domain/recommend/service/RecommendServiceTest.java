@@ -98,7 +98,6 @@ class RecommendServiceTest {
                 .gender(Gender.MAN)
                 .provider("kakao")
                 .providerId("12345")
-                .imageUrl("http://example.com/image")
                 .role(MemberRole.USER)
                 .build();
         memberRepository.save(member);
@@ -302,12 +301,14 @@ class RecommendServiceTest {
     @Test
     void 게시물_추천이_정상적으로_작동합니다() {
         //when
-        List<TechBlogPost> techBlogPosts = recommendPostService.recommendPosts(1L);
-        List<Long> postIds = techBlogPosts.stream()
+        List<Long> postIds = recommendPostService.recommendPosts(1L);
+        List<TechBlogPost> techBlogPosts = techBlogPostRepository.findByIdIn(postIds);
+
+        List<Long> foundPostIds = techBlogPosts.stream()
                 .map(BaseEntity::getId).toList();
 
         //then
-        assertThat(postIds).containsExactlyInAnyOrder(2L, 4L, 6L, 8L, 10L);
+        assertThat(foundPostIds).containsExactlyInAnyOrder(2L, 4L, 6L, 8L, 10L);
     }
 
 
