@@ -5,6 +5,7 @@ import com.drrr.alarm.service.impl.ExternalNotificationEmailService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
 import com.drrr.domain.alert.push.entity.PushMessage;
 import com.drrr.infra.notifications.kafka.webpush.WebPushProducer;
+import com.drrr.web.security.annotation.UserAuthority;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@UserAuthority
 @RequestMapping("/api")
 public class PushAlarmController {
     private final ExternalNotificationEmailService externalNotificationEmailService;
     private final ExternalMemberSubscriptionService externalMemberSubscriptionService;
     private final WebPushProducer webPushProducer;
 
-    @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/subscription")
     public ResponseEntity<?> addSubscription(@RequestBody final SubscriptionRequest request) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -38,14 +39,12 @@ public class PushAlarmController {
         externalMemberSubscriptionService.executeSubscription(request, memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    @PreAuthorize("hasAuthority('USER')")
     @DeleteMapping("/subscription/{memberId}")
     public ResponseEntity<?> cancelSubscription(@NonNull @PathVariable(name = "memberId") final Long memberId) {
         externalMemberSubscriptionService.executeUnsubscription(memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/notifications/email")
     public ResponseEntity<String> emailNotifications(@RequestBody PushMessage message){
        // webPushProducer.sendNotifications();
