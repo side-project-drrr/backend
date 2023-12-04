@@ -5,7 +5,7 @@ networks:
   monitor:
     ipam:
       config:
-        - subnet: 172.19.199.1/24
+        - subnet: 192.19.199.1/24
 
 services:
   prometheus:
@@ -17,7 +17,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       monitor:
-        ipv4_address: 172.19.199.100
+        ipv4_address: 192.19.199.100
 
   #UI Server
   jaeger-service:
@@ -30,7 +30,7 @@ services:
       - "4317:4317"
     networks:
       monitor:
-        ipv4_address: 172.19.199.101
+        ipv4_address: 192.19.199.101
   loki:
     image: grafana/loki:2.8.2
     ports:
