@@ -2,16 +2,20 @@ package com.drrr.auth.controller;
 
 import com.drrr.auth.payload.dto.OAuth2Response;
 import com.drrr.auth.payload.request.AccessTokenRequest;
+import com.drrr.auth.payload.request.EmailRequest;
+import com.drrr.auth.payload.request.EmailVerificationRequest;
 import com.drrr.auth.payload.request.SignInRequest;
 import com.drrr.auth.payload.request.SignUpRequest;
 import com.drrr.auth.payload.response.AccessTokenResponse;
 import com.drrr.auth.payload.response.SignInResponse;
 import com.drrr.auth.payload.response.SignUpResponse;
+import com.drrr.auth.service.impl.EmailVerificationService;
+import com.drrr.auth.service.impl.IssuanceVerificationCode;
 import com.drrr.auth.service.impl.ExchangeOAuth2AccessTokenService;
 import com.drrr.auth.service.impl.IssuanceTokenService;
 import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
-import com.drrr.core.exception.BaseCustomException;
+import com.drrr.domain.email.service.VerificationService.VerificationDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -19,15 +23,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +44,8 @@ public class AuthController {
     private final SignInService signInService;
     private final IssuanceTokenService issuanceTokenService;
     private final ExchangeOAuth2AccessTokenService exchangeOAuth2AccessTokenService;
+    private final IssuanceVerificationCode issuanceVerificationCode;
+    private final EmailVerificationService emailVerificationService;
 
 
     @Operation(summary = "Front에서 준 code로 provider ID를 반환하는 API",
@@ -91,12 +93,19 @@ public class AuthController {
         return ResponseEntity.ok(accessTokenResponse);
     }
 
-    @ExceptionHandler(BaseCustomException.class)
-    public ResponseEntity<Object> handleException(BaseCustomException e) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", e.getMessage());
-        errorResponse.put("code", String.valueOf(e.getCode()));
-        e.printStackTrace();
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+   // @PreAuthorize("hasAuthority('USER')")
+    @PostMapping("/email")
+    public ResponseEntity<String> createEmailVerification(@RequestBody final EmailRequest emailRequest){
+        issuanceVerificationCode.execute(emailRequest);
+        return ResponseEntity.ok().build();
     }
+
+   /// @PreAuthorize("hasAuthority('USER')")
+    @PostMapping("/email/verification")
+    public VerificationDto executeEmailVerification(@RequestBody final EmailVerificationRequest request){
+        return emailVerificationService.execute(request);
+    }
+
+
+
 }
