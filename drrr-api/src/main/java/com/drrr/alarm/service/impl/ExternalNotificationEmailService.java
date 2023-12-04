@@ -11,6 +11,6 @@ import org.springframework.stereotype.Service;
 public class ExternalNotificationEmailService {
     private final EmailProducer emailProducer;
     public void execute(final PushMessage pushMessage) {
-        emailProducer.sendMessage();
+        emailProducer.sendRecommendationMessage();
     }
 }
