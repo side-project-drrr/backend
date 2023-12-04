@@ -67,6 +67,8 @@ public class SecurityConfig {
                                 mvcMatcherBuilder.pattern("/auth/oauth2/profile"),
                                 mvcMatcherBuilder.pattern("/auth/signup"),
                                 mvcMatcherBuilder.pattern("/auth/signin"),
+                                mvcMatcherBuilder.pattern("/auth/email"),
+                                mvcMatcherBuilder.pattern("/auth/email/verification"),
                                 mvcMatcherBuilder.pattern("/auth/code"),
                                 mvcMatcherBuilder.pattern("/api/notifications/**"),
                                 mvcMatcherBuilder.pattern("/actuator"),
