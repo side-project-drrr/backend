@@ -6,43 +6,36 @@ spring:
     name: dr--r--r--
   main:
     allow-bean-definition-overriding: true
-  profiles:
-    activate:
-      on-profile: local
   data:
     redis:
+      time-to-live: 3600 # 데이터 유지 시간(sec) 1시간
       host: localhost
       port: 6379
   kafka:
     consumer:
       bootstrap-servers: localhost:9093
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      auto-commit-interval: 10
     producer:
       bootstrap-servers: localhost:9093
+    backoff:
+      interval: 1000
+      max_failure: 3
+
   docker:
     compose:
       file: classpath:docker/docker-compose.yaml
       #서버가 켜지면 컨테이너들이 켜지고 꺼지면 알아서 꺼지나 필요할 때만 주석 제거
       lifecycle-management: start_only
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: drxxrxxrxx@gmail.com
-    password: eqtl dpnc kydw okkp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          timeout: 5000
-          starttls:
-            enable: true
   h2:
     console:
       enabled: true
       path: /h2-console
   datasource:
     url: jdbc:h2:tcp://localhost/~/testdb
-    username: sa
-    password:
+    username: root
+    password: 1234
     hikari:
       connection-timeout: 300000
   jpa:
@@ -51,6 +44,8 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
+        jdbc:
+
         # show_sql: true
         format_sql: true
         use_sql_comments: true
@@ -62,27 +57,23 @@ spring:
       client:
         registration:
           github:
-            client-id: classpath:security-storage-api/social/github/github.pub
-            client-secret: classpath:security-storage-api/social/github/github.key
+            client-id: classpath:security-storage-api/social/github/github.key
+            client-secret: classpath:security-storage-api/social/github/github.pub
+            redirect-uri: http://localhost:8081/
           kakao:
-            client-id: classpath:security-storage-api/social/kakao/kakao.pub
-            redirect-uri: http://localhost:8081/login/oauth/kakao
+            client-id: classpath:security-storage-api/social/kakao/client_id.key
+            redirect-uri: http://localhost:8081/
             client-authentication-method: POST
-            client-secret: classpath:security-storage-api/social/kakao/kakao.key
             authorization-grant-type: authorization_code
-            scope:
-              - profile_nickname
-              - profile_image
-              - account_email
-              - gender
-              - birthday
-            client_name: kakao
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
             token-uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
+kakao:
+  private.key: classpath:security-storage-api/social/kakao/client_id.key
+
 jwt:
   private.key: classpath:security-storage-api/jwt/jwt.key
   public.key: classpath:security-storage-api/jwt/jwt.pub
@@ -91,4 +82,29 @@ management:
     web:
       exposure:
         include: "prometheus"
+  metrics:
+    distribution:
+      percentiles-histogram:
+        all: true
 
+
+  otlp:
+    metrics:
+      export:
+        url: http://localhost:4318/v1/metrics
+      tracing:
+        endpoint: http://localhost:4318/v1/traces
+  tracing:
+    sampling:
+      probability: 1.0
+opentracing:
+  jaeger:
+    service-name: dr--r--r-- # jaeger service name
+    udp-sender:
+      host: localhost # jaeger server ip
+      port: 6831           # jaeger udp port
+    enabled: true
+    log-spans: true
+#logging:
+#  level:
+#    web: debug
