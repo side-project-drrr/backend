@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class RecommendPostService {
     private final PostCategoryUtilityService postDistributionService;
 
     @Transactional
-    public List<TechBlogPost> recommendPosts(final Long memberId) {
+    public List<Long> recommendPosts(final Long memberId) {
         //추천해 줄 기술블로그가 없는 경우 추가적으로 추천해줘야 하는 게시물 수, 초기값 0
         int remainingPostCount = 0;
 
@@ -82,12 +83,7 @@ public class RecommendPostService {
             postIds.addAll(customTechBlogPostRepository.recommendRemain(memberId, remainingPostCount));
         }
 
-        //post ids에 해당하는 post 객체들 찾기
-        final List<TechBlogPost> posts = techBlogPostRepository.findAllById(postIds);
-
-        logUpdateService.updateMemberPostRecommendLog(memberId, posts);
-
-        return posts;
+        return postIds;
     }
 
     /**
