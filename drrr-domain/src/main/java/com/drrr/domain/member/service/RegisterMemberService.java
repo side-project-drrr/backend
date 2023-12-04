@@ -35,11 +35,8 @@ public class RegisterMemberService {
                 .email(registerMemberDto.email)
                 .providerId(socialId)
                 .nickname(registerMemberDto.nickname)
-                .phoneNumber(registerMemberDto.phoneNumber)
-                .gender(registerMemberDto.gender)
                 .provider(registerMemberDto.provider)
                 .providerId(registerMemberDto.providerId)
-                .imageUrl(registerMemberDto.imageUrl)
                 .role(MemberRole.USER)
                 .build();
         var savedMember = memberRepository.save(member);
@@ -51,12 +48,8 @@ public class RegisterMemberService {
             String accessToken,
             String email,
             String nickname,
-            String phoneNumber,
-            Gender gender,
-            String birthYear,
             String provider,
-            String providerId,
-            String imageUrl
+            String providerId
     ) {
     }
 }
