@@ -14,15 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class SignUpService {
-    private final ExternalAuthenticationFacade externalAuthenticationFacade;
-
     private final RegisterMemberService registerMemberService;
     private final IssuanceTokenService issuanceTokenService;
     private final InitializeWeightService initializeWeightService;
 
-    public SignUpResponse execute(SignUpRequest signUpRequest) {
-        String socialId = externalAuthenticationFacade.execute(signUpRequest.accessToken(), signUpRequest.provider());
-        Long memberId = registerMemberService.execute(socialId, signUpRequest.toRegisterMemberDto());
+    public SignUpResponse execute(final SignUpRequest signUpRequest) {
+        String providerId = signUpRequest.providerId();
+        Long memberId = registerMemberService.execute(providerId, signUpRequest.toRegisterMemberDto());
         IssuanceTokenDto issuanceTokenDto = issuanceTokenService.execute(memberId);
         initializeWeightService.initializeCategoryWeight(memberId, signUpRequest.categoryIds());
 

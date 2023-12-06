@@ -3,7 +3,7 @@ package com.drrr.domain.techblogpost.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.jpa.config.QueryDSLConfiguration;

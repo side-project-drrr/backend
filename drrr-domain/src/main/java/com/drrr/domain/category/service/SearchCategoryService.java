@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SearchCategoryService {
     private final CategoryRepository categoryRepository;
 
-    public List<SearchCategoryResultDto> execute(String text, Pageable pageable) {
+    public List<SearchCategoryResultDto> execute(final String text, final Pageable pageable) {
         return categoryRepository.findByUniqueNameOrDisplayNameContaining(text, pageable)
                 .stream().map(SearchCategoryResultDto::from)
                 .toList();
@@ -29,7 +29,7 @@ public class SearchCategoryService {
             String displayName,
             String uniqueName
     ) {
-        public static SearchCategoryResultDto from(Category category) {
+        public static SearchCategoryResultDto from(final Category category) {
             return SearchCategoryResultDto.builder()
                     .id(category.getId())
                     .displayName(category.getDisplayName())

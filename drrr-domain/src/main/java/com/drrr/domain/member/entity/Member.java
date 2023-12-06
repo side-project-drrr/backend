@@ -1,7 +1,7 @@
 package com.drrr.domain.member.entity;
 
 
-import com.drrr.core.code.Gender;
+import com.drrr.core.code.member.Gender;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,18 +27,13 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-    private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    private String birthYear;
-
     private String provider;
     @Column(unique = true)
     private String providerId;
-
-    private String imageUrl;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -46,15 +41,13 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    public static Member createMember(String email, String nickname, Gender gender, String provider, String providerId,
-                                      String imageUrl, MemberRole role) {
+    public static Member createMember(String email, String nickname,  String provider, String providerId,
+                                       MemberRole role) {
         return Member.builder()
                 .email(email)
                 .nickname(nickname)
-                .gender(gender)
                 .provider(provider)
                 .providerId(providerId)
-                .imageUrl(imageUrl)
                 .role(role)
                 .build();
     }

@@ -1,14 +1,18 @@
 package com.drrr.domain.member.service;
 
 
+import com.drrr.core.exception.member.MemberException;
+import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class MemberIdRetrievalService {
@@ -20,9 +24,12 @@ public class MemberIdRetrievalService {
      * @param userSocialId
      * @return
      */
-    public Long findByProviderId(String userSocialId) {
+    public Long findByProviderId(final String userSocialId) {
         final Member member = memberRepository.findByProviderId(userSocialId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(() -> {
+                    log.error("MemberIdRetrievalService Class findByProviderId(final String userSocialId) Method IllegalArgumentException Error");
+                    throw new MemberException(MemberExceptionCode.UNREGISTERED_MEMBER.getCode(), MemberExceptionCode.UNREGISTERED_MEMBER.getMessage());
+                });
         return member.getId();
     }
 

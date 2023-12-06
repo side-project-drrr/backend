@@ -1,6 +1,8 @@
 package com.drrr.web.jwt.util;
 
 
+import com.drrr.core.exception.jwt.JwtException;
+import com.drrr.core.exception.jwt.JwtExceptionCode;
 import java.time.Instant;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +24,8 @@ public class JwtProvider {
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
-    public String createAccessToken(final Long id, Instant issuanceTime) {
-        var claims = JwtClaimsSet.builder()
+    public String createAccessToken(final Long id, final Instant issuanceTime) {
+        final JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(issuer)
                 .issuedAt(issuanceTime)
                 .expiresAt(issuanceTime.plusSeconds(accessTokenExpiry))
@@ -34,11 +36,10 @@ public class JwtProvider {
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    public String createRefreshToken(final Long id, Instant issuanceTime) {
+    public String createRefreshToken(final Long id, final Instant issuanceTime) {
         // UUID 혹은 id를 사용할지 고민중
         // UUID.fromString(LocalDateTime.now().toString()).toString();
-
-        var claims = JwtClaimsSet.builder()
+        final JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(issuer)
                 .issuedAt(issuanceTime)
                 .expiresAt(issuanceTime.plusSeconds(refreshTokenExpiry))
@@ -48,16 +49,16 @@ public class JwtProvider {
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    private Map<String, Object> decode(String token) {
+    private Map<String, Object> decode(final String token) {
         return jwtDecoder.decode(token).getClaims();
     }
 
 
-    public Long extractToValueFrom(String token) {
+    public Long extractToValueFrom(final String token) {
         try {
             return Long.parseLong(this.decode(token).get("id").toString());
         } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException("유효하지 않은 토큰 입니다.");
+            throw new JwtException(JwtExceptionCode.EXTRACT_VALUE_FROM_TOKEN_FAILED.getCode(), JwtExceptionCode.EXTRACT_VALUE_FROM_TOKEN_FAILED.getMessage());
         }
     }
 
@@ -66,9 +67,9 @@ public class JwtProvider {
             this.decode(token);
             return true;
         } catch (BadJwtException e) {
-            log.error("Invalid JWT signature: {}", e.getMessage());
+            log.error("유효하지 않은 JWT 토큰");
+            return false;
         }
-        return false;
     }
 
 }

@@ -40,11 +40,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector)
+    public SecurityFilterChain filterChain(final HttpSecurity http, final HandlerMappingIntrospector introspector)
             throws Exception {
-        System.out.println("---------security filter chain-------------");
         // http 기본 설정
-        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
+        final MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -65,8 +64,16 @@ public class SecurityConfig {
                                 mvcMatcherBuilder.pattern("/v3/api-docs/**"),
                                 mvcMatcherBuilder.pattern("/v2/api-docs"),
                                 mvcMatcherBuilder.pattern("/webjars/**"),
+                                mvcMatcherBuilder.pattern("/auth/oauth2/profile"),
                                 mvcMatcherBuilder.pattern("/auth/signup"),
-                                mvcMatcherBuilder.pattern("/auth/signin"))
+                                mvcMatcherBuilder.pattern("/auth/signin"),
+                                mvcMatcherBuilder.pattern("/auth/email"),
+                                mvcMatcherBuilder.pattern("/auth/email/verification"),
+                                mvcMatcherBuilder.pattern("/auth/code"),
+                                mvcMatcherBuilder.pattern("/api/notifications/**"),
+                                mvcMatcherBuilder.pattern("/actuator"),
+                                mvcMatcherBuilder.pattern("/actuator/**"),
+                                mvcMatcherBuilder.pattern("/actuator/prometheus"))
                         .permitAll()
                         .anyRequest()
                         .authenticated()
@@ -81,7 +88,7 @@ public class SecurityConfig {
 
     @Bean
     public BasicAuthenticationEntryPoint swaggerAuthenticationEntryPoint() {
-        BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
+        final BasicAuthenticationEntryPoint entryPoint = new BasicAuthenticationEntryPoint();
         entryPoint.setRealmName("Swagger Realm");
         return entryPoint;
     }

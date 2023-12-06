@@ -1,12 +1,12 @@
 package com.drrr.domain.recommend.service.data;
 
-import com.drrr.core.code.Gender;
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.member.Gender;
+import com.drrr.core.code.techblog.TechBlogCode;
+import com.drrr.domain.annotation.EnableMysqlProfile;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
@@ -17,6 +17,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,17 +27,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.stereotype.Service;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QueryDSLConfiguration.class})
+@EnableMysqlProfile
+@SpringBootTest
 class DummyDataFactory {
     private final int CATEGORY_COUNT = 20;
-    private final int MEMBER_COUNT = 100;
-    private final int POST_COUNT = 100;
+    private final int MEMBER_COUNT = 500;
+    private final int POST_COUNT = 500;
     private final int CATEGORY_WEIGHT_COUNT = 100;
     private final int MEMBER_POST_LOG_COUNT = 100;
     private final int CATEGORIES_PER_POST = 8;
@@ -74,7 +72,7 @@ class DummyDataFactory {
             String providerId = "providerId" + i;
             String imageUrl = "http://example.com/image" + i + ".jpg";
             MemberRole role = MemberRole.USER; // 임의로 USER와 ADMIN을 번갈아가며 설정
-            return Member.createMember(email, nickname, gender, provider, providerId, imageUrl, role);
+            return Member.createMember(email, nickname, provider, providerId, role);
         }).collect(Collectors.toList());
         memberRepository.saveAll(members);
     }
@@ -90,11 +88,11 @@ class DummyDataFactory {
             String summary = (i % 3 == 0) ? "Summary" + i : null; // 3의 배수 인덱스에서만 요약 설정
             String urlSuffix = "/suffix/" + i;
             String url = "http://example.com/suffix/" + i;
-            int viewCount = getRandomValueInRange(Integer.class,100,5000);
+            int viewCount = getRandomValueInRange(Integer.class, 100, 5000);
             TechBlogCode techBlogCode = TechBlogCode.values()[i
                     % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
             return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, urlSuffix, url,
-                    techBlogCode,viewCount);
+                    techBlogCode, viewCount);
         }).collect(Collectors.toList());
         techBlogPostRepository.saveAll(techBlogPosts);
     }
@@ -119,6 +117,26 @@ class DummyDataFactory {
         IntStream.range(0, CATEGORY_WEIGHT_COUNT).forEach(i -> {
             List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
             int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
+            int randomDays = getRandomValueInRange(Integer.class, 0, 7);
+            int randomHours = getRandomValueInRange(Integer.class, 0, 24);
+            Member member = members.get(i); // 순환적으로 Member 객체 할당
+            IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
+                Category category = categories.get(randomCategoryList.get(j));
+                double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
+                boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
+
+                categoryWeights.add(CategoryWeight.builder()
+                        .member(member)
+                        .category(category)
+                        .value(value)
+                        .lastReadAt(LocalDateTime.now().minusDays(randomDays).minusHours(randomHours))
+                        .preferred(preferred)
+                        .build());
+            });
+        });
+        IntStream.range(CATEGORY_WEIGHT_COUNT, CATEGORY_WEIGHT_COUNT * 2).forEach(i -> {
+            List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
+            int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
             Member member = members.get(i); // 순환적으로 Member 객체 할당
             IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
                 Category category = categories.get(randomCategoryList.get(j));
@@ -133,6 +151,58 @@ class DummyDataFactory {
                         .build());
             });
         });
+        IntStream.range(CATEGORY_WEIGHT_COUNT * 2, CATEGORY_WEIGHT_COUNT * 3).forEach(i -> {
+            List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
+            int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
+            Member member = members.get(i); // 순환적으로 Member 객체 할당
+            IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
+                Category category = categories.get(randomCategoryList.get(j));
+                double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
+                boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
+
+                categoryWeights.add(CategoryWeight.builder()
+                        .member(member)
+                        .category(category)
+                        .value(value)
+                        .preferred(preferred)
+                        .build());
+            });
+        });
+        IntStream.range(CATEGORY_WEIGHT_COUNT * 3, CATEGORY_WEIGHT_COUNT * 4).forEach(i -> {
+            List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
+            int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
+            Member member = members.get(i); // 순환적으로 Member 객체 할당
+            IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
+                Category category = categories.get(randomCategoryList.get(j));
+                double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
+                boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
+
+                categoryWeights.add(CategoryWeight.builder()
+                        .member(member)
+                        .category(category)
+                        .value(value)
+                        .preferred(preferred)
+                        .build());
+            });
+        });
+        IntStream.range(CATEGORY_WEIGHT_COUNT * 4, CATEGORY_WEIGHT_COUNT * 5).forEach(i -> {
+            List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
+            int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
+            Member member = members.get(i); // 순환적으로 Member 객체 할당
+            IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
+                Category category = categories.get(randomCategoryList.get(j));
+                double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
+                boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
+
+                categoryWeights.add(CategoryWeight.builder()
+                        .member(member)
+                        .category(category)
+                        .value(value)
+                        .preferred(preferred)
+                        .build());
+            });
+        });
+
         categoryWeightRepository.saveAll(categoryWeights);
     }
 

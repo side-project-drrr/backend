@@ -19,12 +19,15 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 @Configuration
 public class JwtTokenConfiguration {
 
+    private final RSAPublicKey key;
 
-    @Value("${jwt.public.key}")
-    private RSAPublicKey key;
+    private final RSAPrivateKey priv;
 
-    @Value("${jwt.private.key}")
-    private RSAPrivateKey priv;
+    public JwtTokenConfiguration(@Value("${jwt.public.key}") final RSAPublicKey key,
+                                 @Value("${jwt.private.key}") final RSAPrivateKey priv) {
+        this.key = key;
+        this.priv = priv;
+    }
 
 
     @Bean
@@ -35,8 +38,8 @@ public class JwtTokenConfiguration {
     @Bean
     JwtEncoder jwtEncoder() {
         // RSA 키 생성 방법
-        JWK jwk = new RSAKey.Builder(this.key).privateKey(this.priv).build();
-        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+        final JWK jwk = new RSAKey.Builder(this.key).privateKey(this.priv).build();
+        final JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
     }
 

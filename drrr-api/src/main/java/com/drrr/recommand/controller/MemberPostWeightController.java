@@ -1,37 +1,44 @@
 package com.drrr.recommand.controller;
 
-import com.drrr.auth.payload.response.SignInResponse;
 import com.drrr.recommand.dto.AdjustPostWeightRequest;
 import com.drrr.recommand.service.impl.ExternalMemberPostReadService;
+import com.drrr.web.security.annotation.UserAuthority;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
+@UserAuthority
 @RequestMapping("/posts")
 public class MemberPostWeightController {
     private final ExternalMemberPostReadService memberPostReadService;
 
-    @Operation(summary = "사용자 게시물을 읽을 때 가중치 계산 API", description = "호출 성공 시 가중치 계산 및 로깅")
-    @PreAuthorize("hasAuthority('USER')")
+    @Operation(summary = "사용자가 특정 기술 블로그를 읽으려고 클릭했을 때 요청하는 API", description = "호출 성공 시 조회한 기술 블로그 기준으로 가중치 계산, 로깅, 조회수 증가",
+            parameters = {
+                    @Parameter(name = "memberId", description = "게시물을 읽은 사용자 ID", in = ParameterIn.PATH, schema = @Schema(type = "string")),
+                    @Parameter(name = "postId", description = "게시물 ID", in = ParameterIn.PATH, schema = @Schema(type = "string"))
+            })
     @PostMapping("/read/{memberId}/{postId}")
-    public void MemberPostReadController(@Validated @RequestBody AdjustPostWeightRequest request, @NonNull @PathVariable Long memberId,@NonNull @PathVariable Long postId) {
+    public ResponseEntity<String> MemberPostReadController(
+            @Validated @RequestBody final AdjustPostWeightRequest request,
+            @NonNull @PathVariable(name = "memberId") final Long memberId,
+            @NonNull @PathVariable(name = "postId") final Long postId) {
         memberPostReadService.execute(request, memberId, postId);
+        return ResponseEntity.ok().build();
     }
 
 }

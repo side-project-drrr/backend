@@ -6,13 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 
-/**
- * 시작일과 종료일을 포함하는 유틸 클래스
- *
- * @param startDate
- * @param lastDate
- */
-
 @Getter
 public final class DateRangeBound {
     private final LocalDate startDate;

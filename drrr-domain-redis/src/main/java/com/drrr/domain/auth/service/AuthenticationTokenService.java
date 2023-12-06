@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthenticationTokenService {
     private final RedisAuthenticationTokenRepository authenticationTokenRepository;
 
-    public void register(RegisterAuthenticationTokenDto registerAuthenticationTokenDto) {
+    public void register(final RegisterAuthenticationTokenDto registerAuthenticationTokenDto) {
         authenticationTokenRepository.save(AuthenticationToken.builder()
                 .memberId(registerAuthenticationTokenDto.memberId)
                 .refreshToken(registerAuthenticationTokenDto.refreshToken)
@@ -23,7 +23,7 @@ public class AuthenticationTokenService {
 
     }
 
-    public void remove(RemoveAuthenticationTokenDto removeAuthenticationTokenDto) {
+    public void remove(final RemoveAuthenticationTokenDto removeAuthenticationTokenDto) {
         final AuthenticationToken authenticationToken = authenticationTokenRepository.findById(removeAuthenticationTokenDto.memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
         authenticationTokenRepository.delete(authenticationToken);

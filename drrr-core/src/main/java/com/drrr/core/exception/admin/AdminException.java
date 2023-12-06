@@ -8,7 +8,7 @@ public class AdminException extends RuntimeException {
 
     private final int code;
 
-    public AdminException(int code, String message) {
+    public AdminException(final int code, final String message) {
         super(message);
         this.code = code;
     }

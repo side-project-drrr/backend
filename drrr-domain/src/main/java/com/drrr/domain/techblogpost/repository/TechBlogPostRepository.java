@@ -1,8 +1,9 @@
 package com.drrr.domain.techblogpost.repository;
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import jakarta.persistence.LockModeType;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -15,7 +16,9 @@ public interface TechBlogPostRepository extends JpaRepository<TechBlogPost, Long
     boolean existsByTechBlogCodeAndUrlSuffix(TechBlogCode techBlogCode, String urlSuffix);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("select tbp from TechBlogPost tbp")
+    @Query("select tbp from TechBlogPost tbp where tbp.id =:id")
     Optional<TechBlogPost> findByIdWithPessimisticLock(@Param("id") Long id);
+
+    List<TechBlogPost> findByIdIn(List<Long> postIds);
 
 }

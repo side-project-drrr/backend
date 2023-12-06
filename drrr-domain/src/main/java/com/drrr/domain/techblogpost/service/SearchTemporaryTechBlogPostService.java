@@ -1,7 +1,7 @@
 package com.drrr.domain.techblogpost.service;
 
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.date.DateRangeBound;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.entity.TemporalTechPostTag;
@@ -22,7 +22,7 @@ public class SearchTemporaryTechBlogPostService {
     private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
 
     public List<SearchTemporaryTechBlogPostResultDto> execute(
-            SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto) {
+            final SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto) {
         return temporalTechBlogPostRepository.findBy(
                         searchTemporaryTechBlogPostDto.dateRangeBound(),
                         searchTemporaryTechBlogPostDto.assignTagCompleted(),
@@ -58,7 +58,7 @@ public class SearchTemporaryTechBlogPostService {
             List<PostTag> postTags
     ) {
 
-        public static SearchTemporaryTechBlogPostResultDto from(TemporalTechBlogPost temporalTechBlogPost) {
+        public static SearchTemporaryTechBlogPostResultDto from(final TemporalTechBlogPost temporalTechBlogPost) {
             return SearchTemporaryTechBlogPostResultDto.builder()
                     .id(temporalTechBlogPost.getId())
                     .createdDate(temporalTechBlogPost.getCreatedDate())
@@ -83,7 +83,7 @@ public class SearchTemporaryTechBlogPostService {
             String displayName,
             String uniqueName
     ) {
-        public static PostTag from(TemporalTechPostTag temporalTechPostTag) {
+        public static PostTag from(final TemporalTechPostTag temporalTechPostTag) {
             return PostTag.builder()
                     .id(temporalTechPostTag.getId())
                     .displayName(temporalTechPostTag.getCategory().getDisplayName())

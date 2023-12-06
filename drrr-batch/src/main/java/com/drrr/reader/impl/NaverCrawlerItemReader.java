@@ -1,6 +1,6 @@
 package com.drrr.reader.impl;
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.reader.AbstractCrawlerPageItemReader;

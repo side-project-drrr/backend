@@ -2,8 +2,8 @@ package com.drrr.domain.recommend.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.code.Gender;
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.member.Gender;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
@@ -22,6 +22,7 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.util.DatabaseCleaner;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,7 +82,7 @@ class RecommendServiceTest {
      * <h2>Category별 가중치 값 생성</h2>
      * <br>[C2-(8.0)], [C3-(3.0)], [C5-(4.0)], [C7-(2.0)], [C8-(2.0)]
      *
-     * <h2>Member Id : 1 이 읽은 Post 목록 및 카테고리 생성</h2>
+     * <h2>Member Id : 1~500 이 읽은 Post 목록 및 카테고리 생성</h2>
      * <br>Post Id 목록 : P1, P3, P5, P7, P9</br>
      * <br>[P1-C3,C5,C7], [P3-C2,C3,C7], [P5-C9], [P7-C4,C6,C9], [P9-C1,C2,C3]</br>
      * <br>그 외 나머지 Post는 P(2,4,6,8,10)-C2,C3,C5,C7,C8를 가지고 있고 P(11)~P(50) C-8로 통일</br>
@@ -97,7 +98,6 @@ class RecommendServiceTest {
                 .gender(Gender.MAN)
                 .provider("kakao")
                 .providerId("12345")
-                .imageUrl("http://example.com/image")
                 .role(MemberRole.USER)
                 .build();
         memberRepository.save(member);
@@ -149,6 +149,7 @@ class RecommendServiceTest {
                     .member(member)
                     .category(category)
                     .value(value)
+                    .lastReadAt(LocalDateTime.now())
                     .preferred(preferred)
                     .build());
         });
@@ -300,12 +301,14 @@ class RecommendServiceTest {
     @Test
     void 게시물_추천이_정상적으로_작동합니다() {
         //when
-        List<TechBlogPost> techBlogPosts = recommendPostService.recommendPosts(1L);
-        List<Long> postIds = techBlogPosts.stream()
+        List<Long> postIds = recommendPostService.recommendPosts(1L);
+        List<TechBlogPost> techBlogPosts = techBlogPostRepository.findByIdIn(postIds);
+
+        List<Long> foundPostIds = techBlogPosts.stream()
                 .map(BaseEntity::getId).toList();
 
         //then
-        assertThat(postIds).containsExactlyInAnyOrder(2L, 4L, 6L, 8L, 10L);
+        assertThat(foundPostIds).containsExactlyInAnyOrder(2L, 4L, 6L, 8L, 10L);
     }
 
 

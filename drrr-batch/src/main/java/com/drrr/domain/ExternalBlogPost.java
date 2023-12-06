@@ -1,6 +1,6 @@
 package com.drrr.domain;
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import java.time.LocalDate;
 import lombok.Builder;
 

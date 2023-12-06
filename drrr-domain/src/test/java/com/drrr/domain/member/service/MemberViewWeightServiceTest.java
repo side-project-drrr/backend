@@ -2,8 +2,8 @@ package com.drrr.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.code.Gender;
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.member.Gender;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
@@ -29,10 +29,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.AfterEach;
@@ -40,7 +36,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
@@ -102,7 +97,6 @@ class MemberViewWeightServiceTest {
                     .gender(Gender.MAN)
                     .provider("kakao")
                     .providerId("12345" + i)
-                    .imageUrl("http://example.com/image" + i)
                     .role(MemberRole.USER)
                     .build();
             memberRepository.save(member);
@@ -168,7 +162,7 @@ class MemberViewWeightServiceTest {
         memberViewWeightService.increaseMemberViewPost(memberId, postId, categoryIds);
 
         //then
-        List<CategoryWeight> categoryWeights = categoryWeightRepository.findCategoryWeightByMemberId(1L);
+        List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(1L);
         assertThat(categoryWeights).isNotEmpty();
 
         categoryWeights.forEach(categoryWeight -> assertThat(categoryWeight.getValue())

@@ -1,7 +1,6 @@
 package com.drrr.domain.category.entity;
 
 import static com.drrr.core.recommandation.constant.constant.WeightConstants.INCREASE_WEIGHT;
-import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN_CONDITIONAL_WEIGHT;
 import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN_WEIGHT;
 
 import com.drrr.core.recommandation.constant.constant.DaysConstants;
@@ -42,25 +41,39 @@ public class CategoryWeight extends BaseEntity {
     private double value;
 
     private boolean preferred;
+    private LocalDateTime lastReadAt;
 
-    private double getDecreasedWeightValueByHours(LocalDateTime pastTime, LocalDateTime now) {
-        Duration duration = Duration.between(pastTime, now);
-        long diffHours = duration.toHours();
-        long quotient = diffHours / HoursConstants.PAST_HOURS.getValue();
+    /**
+     * HoursConstants.PAST_HOURS(시간 값)값마다 WeightConstants.DECREASE_WEIGHT만큼 떨어지는 가중치 값 반환
+     *
+     * @param pastTime
+     * @param now
+     * @return
+     */
+    private double getDecreasedWeightValueByHours(final LocalDateTime pastTime, final LocalDateTime now) {
+        final Duration duration = Duration.between(pastTime, now);
+        final long diffHours = duration.toHours();
+        final long quotient = diffHours / HoursConstants.PAST_HOURS.getValue();
         return quotient * WeightConstants.DECREASE_WEIGHT.getValue();
     }
 
-    public boolean isExpiredCategoryWeight(){
-        return MIN_WEIGHT.isLessEqualThan(this.value) || isUnreadPastDays(updatedAt);
+    /**
+     * MIN_WEIGHT(최소 가중치) 값보다 더 낮거나 동일한 카테고리에 해당하는 기술 블로그를 UNREAD_DAYS에 정의한 값만큼 안 읽었는지 검증 둘 중에 하나라도 해당되면 그 카테고리의 가중치는
+     * 초기값으로 변환하기 위함
+     *
+     * @return
+     */
+    public boolean isExpiredCategoryWeight() {
+        return MIN_WEIGHT.isGreaterThan(this.value) || isUnreadPastDays(this.lastReadAt);
     }
 
 
-    private boolean isUnreadPastDays(LocalDateTime unreadDays) {
-        LocalDateTime now = LocalDateTime.now();
-        Duration duration = Duration.between(unreadDays, now);
-        long diffHours = duration.toDays();
+    private boolean isUnreadPastDays(final LocalDateTime unreadDays) {
+        final LocalDateTime now = LocalDateTime.now();
+        final Duration duration = Duration.between(unreadDays, now);
+        final long diffHours = duration.toDays();
 
-        return diffHours == DaysConstants.UNREAD_DAYS.getValue();
+        return diffHours >= DaysConstants.UNREAD_DAYS.getValue();
     }
 
     public void accumulateWeight() {
@@ -68,25 +81,34 @@ public class CategoryWeight extends BaseEntity {
     }
 
     /**
-     * 마지막 본 특정 카테고리에 대한 게시물에 대해 읽은 지 8시간이 지났을 때마다 가중치 1씩 감소
+     * 마지막 본 특정 카테고리에 대한 게시물에 대해 읽은 지 PAST_HOURS 값만큼 시간이 지났을 때마다 가중치 DECREASE_WEIGHT 값만큼 감소
      */
-    public void calculateMemberWeight(LocalDateTime dateTime) {
-        LocalDateTime lastUpdatedAt = this.updatedAt;
-        double weightValue = this.value;
-        boolean isPreferred = this.preferred;
-        double minusWeight = getDecreasedWeightValueByHours(lastUpdatedAt, dateTime);
-        weightValue = decreaseWeightValue(weightValue, minusWeight, isPreferred);
-        this.value = weightValue;
+    public void calculateMemberWeight() {
+        final LocalDateTime lastUpdatedAt = this.lastReadAt;
+
+        final boolean isPreferred = this.preferred;
+        //시간에 따른 가중치 감소값
+        final double minusWeight = getDecreasedWeightValueByHours(lastUpdatedAt, LocalDateTime.now());
+
+        //가중치 범위 검증
+        this.value = limitWeightValue(this.value, minusWeight, isPreferred);
     }
 
-    private double decreaseWeightValue(double weightValue, double minusWeight, boolean isPreferred) {
+    /**
+     * 카테고리의 가중치가 MIN_WEIGHT과 MAX_WEIGHT의 사이에 있는지 검증 MIN_WEIGHT의 값보다 카테고리 가중치가 적으면 MIN_WEIGHT 값으로 설정 (선호가중치는
+     * MIN_CONDITIONAL_WEIGHT로 설정) MAX_WEIGHT 보다 높으면 MAX_WEIGHT 값으로 설정
+     *
+     * @param weightValue
+     * @param minusWeight
+     * @param isPreferred
+     * @return
+     */
+    private double limitWeightValue(final double weightValue, final double minusWeight, final boolean isPreferred) {
         double updateWeight = weightValue - minusWeight;
-        //updateWeight이 설정한 최저 가중치, 최대 가중치 사이에 있으면 그대로 가져가고 벗어나면 최고치 or 최저치로 설정
-        updateWeight = Math.max(WeightConstants.MIN_WEIGHT.getValue(),
-                Math.min(updateWeight, WeightConstants.MAX_WEIGHT.getValue()));
-
+        //최대 가중치를 넘어갈 경우 MAX_WEIGHT으로 설정
+        updateWeight = Math.max(Math.min(updateWeight, WeightConstants.MAX_WEIGHT.getValue()), MIN_WEIGHT.getValue());
         //선호하는 카테고리에 대해서는 최소 가중치 할당
-        if (updateWeight < MIN_CONDITIONAL_WEIGHT.getValue() && isPreferred) {
+        if (updateWeight == MIN_WEIGHT.getValue() && isPreferred) {
             updateWeight = WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue();
         }
         return updateWeight;

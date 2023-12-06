@@ -18,11 +18,11 @@ public class IssuanceTokenService {
     private final JwtProvider tokenProvider;
     private final AuthenticationTokenService authenticationTokenService;
 
-    public IssuanceTokenDto execute(Long id) {
-        var now = Instant.now();
+    public IssuanceTokenDto execute(final Long id) {
+        final Instant now = Instant.now();
 
-        var accessToken = tokenProvider.createAccessToken(id, now);
-        var refreshToken = tokenProvider.createRefreshToken(id, now);
+        final String accessToken = tokenProvider.createAccessToken(id, now);
+        final String refreshToken = tokenProvider.createRefreshToken(id, now);
 
         authenticationTokenService.register(RegisterAuthenticationTokenDto.builder()
                 .memberId(id)
@@ -35,7 +35,7 @@ public class IssuanceTokenService {
                 .build();
     }
 
-    public AccessTokenResponse regenerateAccessToken(AccessTokenRequest request) {
+    public AccessTokenResponse regenerateAccessToken(final AccessTokenRequest request) {
         final Long id = tokenProvider.extractToValueFrom(request.accessToken());
         authenticationTokenService.remove(new RemoveAuthenticationTokenDto(id));
 
@@ -58,7 +58,7 @@ public class IssuanceTokenService {
         private final String refreshToken;
 
         @Builder
-        private IssuanceTokenDto(String accessToken, String refreshToken) {
+        private IssuanceTokenDto(final String accessToken, final String refreshToken) {
             this.accessToken = accessToken;
             this.refreshToken = refreshToken;
         }

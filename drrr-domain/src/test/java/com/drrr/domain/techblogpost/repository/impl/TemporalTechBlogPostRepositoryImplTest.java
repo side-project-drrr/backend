@@ -2,7 +2,7 @@ package com.drrr.domain.techblogpost.repository.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.code.TechBlogCode;
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.date.DateRangeBound;
 import com.drrr.domain.annotation.EnableMysqlProfile;
 import com.drrr.domain.annotation.EnableRepositoryTest;
