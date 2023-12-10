@@ -2,12 +2,12 @@ package com.drrr.infra.notifications.kafka.email;
 
 import com.drrr.core.exception.member.MemberException;
 import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.domain.alert.push.entity.PushMessage;
 import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
+import com.drrr.infra.push.entity.PushMessage;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

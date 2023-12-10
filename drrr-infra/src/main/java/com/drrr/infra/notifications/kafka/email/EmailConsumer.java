@@ -1,6 +1,6 @@
 package com.drrr.infra.notifications.kafka.email;
 
-import com.drrr.domain.alert.push.entity.PushMessage;
+import com.drrr.infra.push.entity.PushMessage;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

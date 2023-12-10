@@ -1,9 +1,9 @@
 package com.drrr.infra.notifications.kafka.webpush;
 
 
-import com.drrr.domain.alert.push.entity.Subscription;
-import com.drrr.domain.alert.push.repository.SubscriptionRepository;
 import com.drrr.infra.notifications.kafka.webpush.dto.NotificationDto;
+import com.drrr.infra.push.entity.Subscription;
+import com.drrr.infra.push.repository.SubscriptionRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

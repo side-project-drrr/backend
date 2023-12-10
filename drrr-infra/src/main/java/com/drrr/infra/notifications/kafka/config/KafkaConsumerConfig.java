@@ -1,7 +1,8 @@
 package com.drrr.infra.notifications.kafka.config;
 
-import com.drrr.domain.alert.push.entity.PushMessage;
+
 import com.drrr.infra.notifications.kafka.webpush.dto.NotificationDto;
+import com.drrr.infra.push.entity.PushMessage;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
