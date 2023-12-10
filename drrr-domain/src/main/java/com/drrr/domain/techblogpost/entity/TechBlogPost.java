@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -35,6 +36,10 @@ public class TechBlogPost extends BaseEntity {
     // 설명이 없는 기술블로그가 있을 수 있음
     @Column(length = 1000)
     private String summary;
+
+    @Lob
+    @Column(length = 3000)
+    private String aiSummary;
 
     @Column(nullable = false)
     private String urlSuffix;
