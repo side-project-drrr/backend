@@ -18,7 +18,7 @@ public class SearchCategoryService {
     private final CategoryRepository categoryRepository;
 
     public List<SearchCategoryResultDto> execute(final String text, final Pageable pageable) {
-        return categoryRepository.findByUniqueNameOrDisplayNameContaining(text, pageable)
+        return categoryRepository.findByNameContaining(text, pageable)
                 .stream().map(SearchCategoryResultDto::from)
                 .toList();
     }
@@ -26,14 +26,12 @@ public class SearchCategoryService {
     @Builder
     public record SearchCategoryResultDto(
             Long id,
-            String displayName,
-            String uniqueName
+            String name
     ) {
         public static SearchCategoryResultDto from(final Category category) {
             return SearchCategoryResultDto.builder()
                     .id(category.getId())
-                    .displayName(category.getDisplayName())
-                    .uniqueName(category.getUniqueName())
+                    .name(category.getName())
                     .build();
         }
     }

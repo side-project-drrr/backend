@@ -80,14 +80,12 @@ public class SearchTemporaryTechBlogPostService {
     @Builder
     public record PostTag(
             Long id,
-            String displayName,
-            String uniqueName
+            String name
     ) {
         public static PostTag from(final TemporalTechPostTag temporalTechPostTag) {
             return PostTag.builder()
                     .id(temporalTechPostTag.getId())
-                    .displayName(temporalTechPostTag.getCategory().getDisplayName())
-                    .uniqueName(temporalTechPostTag.getCategory().getUniqueName())
+                    .name(temporalTechPostTag.getCategory().getName())
                     .build();
 
         }

@@ -22,8 +22,7 @@ class CategoryRepositoryTest {
     void 카테고리를_조회할때_아이디_목록으로_조회한다() {
         categoryRepository.saveAllAndFlush(IntStream.rangeClosed(1, 3)
                 .mapToObj(i -> Category.builder()
-                        .displayName(i + "")
-                        .uniqueName(i + "")
+                        .name(i + "")
                         .build())
                 .toList());
 
@@ -37,14 +36,13 @@ class CategoryRepositoryTest {
         final List<Category> categories = IntStream.iterate(1, i -> i + 1)
                 .limit(10)
                 .mapToObj(i -> Category.builder()
-                        .displayName("자바" + i)
-                        .uniqueName("다른거" + i)
+                        .name("자바" + i)
                         .build())
                 .toList();
 
         categoryRepository.saveAll(categories);
 
-        final List<Category> result = categoryRepository.findByUniqueNameOrDisplayNameContaining("자", Pageable
+        final List<Category> result = categoryRepository.findByNameContaining("자", Pageable
                 .ofSize(10)
         );
 

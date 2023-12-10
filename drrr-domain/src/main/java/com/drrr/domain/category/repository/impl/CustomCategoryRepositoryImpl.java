@@ -26,16 +26,14 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Override
-    public List<Category> findByUniqueNameOrDisplayNameContaining(final String text, final Pageable pageable) {
-        final BooleanExpression uniqueNameOrDisplayNameSearchCondition = category.displayName.startsWith(text).or(
-                category.uniqueName.startsWith(text)
-        );
+    public List<Category> findByNameContaining(final String text, final Pageable pageable) {
+        final BooleanExpression uniqueNameOrDisplayNameSearchCondition = category.name.startsWith(text);
 
         return queryFactory.select(category)
                 .from(category)
                 .where(uniqueNameOrDisplayNameSearchCondition)
                 .limit(pageable.getPageSize())
-                .orderBy(category.uniqueName.asc())
+                .orderBy(category.name.asc())
                 .fetch();
     }
 }

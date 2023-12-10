@@ -8,5 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface CustomCategoryRepository {
     List<Category> findIds(List<Long> ids);
 
-    List<Category> findByUniqueNameOrDisplayNameContaining(String text, Pageable pageable);
+    List<Category> findByNameContaining(String text, Pageable pageable);
 }
