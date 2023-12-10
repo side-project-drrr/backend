@@ -18,17 +18,12 @@ import lombok.NoArgsConstructor;
 @PrimaryKeyJoinColumn(name = "CATEGORY_ID")
 public class Category extends BaseEntity {
 
-    @Column(name = "unique_name", unique = true)
-    private String uniqueName;
-
-
-    @Column(name = "display_name", unique = true)
-    private String displayName;
+    @Column(name = "name", unique = true)
+    private String name;
 
 
     @Builder
-    public Category(String uniqueName, String displayName) {
-        this.uniqueName = uniqueName;
-        this.displayName = displayName;
+    public Category(String name) {
+        this.name = name;
     }
 }
