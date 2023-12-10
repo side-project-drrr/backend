@@ -9,7 +9,11 @@ import com.drrr.core.exception.member.OAuth2Exception;
 import com.drrr.core.exception.member.OAuth2ExceptionCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +28,8 @@ public class OAuth2Client {
     private final RestClient restClient = RestClient.create();
     private final ObjectMapper objectMapper;
 
-    public String getUserProfile(final String accessToken, final String uri) {
-        final String providerId = restClient.get()
+    public JsonNode getUserProfile(final String accessToken, final String uri) {
+        return restClient.get()
                 .uri(uri)
                 .header("Authorization", accessToken)
                 .accept(APPLICATION_JSON)
@@ -38,15 +42,13 @@ public class OAuth2Client {
                         final JsonNode jsonNode = objectMapper.readTree(response.getBody());
                         //asText()에서 code가 잘못 됐을 경우 null 반환
                         try {
-                            final String id = jsonNode.get("id").asText();
-                            return id;
+                            return jsonNode;
                         } catch (NullPointerException npe) {
                             log.error("provider ID를 받아오지 못했습니다. Access Token를 확인해주세요.");
                             throw new OAuth2Exception(OAuth2ExceptionCode.INVALID_ACCESS_TOKEN.getCode(), OAuth2ExceptionCode.INVALID_ACCESS_TOKEN.getMessage());
                         }
                     }
                 });
-        return providerId;
     }
 
     /**
@@ -60,7 +62,7 @@ public class OAuth2Client {
 
         final String url = uriBuilder.build().encode().toUriString();
 
-        final String result = restClient.post()
+        return restClient.post()
                 .uri(url)
                 .accept(APPLICATION_JSON)
                 .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
@@ -74,8 +76,7 @@ public class OAuth2Client {
                         final JsonNode jsonNode = objectMapper.readTree(response.getBody());
                         //asText()에서 code가 잘못 됐을 경우 null 반환
                         try {
-                            final String accessToken = jsonNode.get("access_token").asText();
-                            return accessToken;
+                            return jsonNode.get("access_token").asText();
                         } catch (NullPointerException npe) {
                             log.error(
                                     "OAuth2Client Class exchangeKakaoOAuth2AccessToken(final OAuth2KakaoAccessTokenRequest requestParams) Method NullPointerException Error");
@@ -83,9 +84,6 @@ public class OAuth2Client {
                         }
                     }
                 });
-
-        return result;
-
     }
 
     public String exchangeGitHubOAuth2AccessToken(final OAuth2GithubAccessTokenRequest requestBody) {
@@ -94,7 +92,7 @@ public class OAuth2Client {
         body.put("client_secret", requestBody.clientSecret());
         body.put("code", requestBody.code());
 
-        final String result = restClient.post()
+        return restClient.post()
                 .uri(requestBody.uri())
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
@@ -109,8 +107,7 @@ public class OAuth2Client {
 
                         //asText()에서 code가 잘못 됐을 경우 null 반환
                         try {
-                            final String accessToken = jsonNode.get("access_token").asText();
-                            return accessToken;
+                            return jsonNode.get("access_token").asText();
                         } catch (NullPointerException npe) {
                             log.error(
                                     "OAuth2Client Class exchangeGitHubOAuth2AccessToken(OAuth2GithubAccessTokenRequest requestBody) Method NullPointerException Error");
@@ -118,8 +115,6 @@ public class OAuth2Client {
                         }
                     }
                 });
-
-        return result;
     }
 
 
