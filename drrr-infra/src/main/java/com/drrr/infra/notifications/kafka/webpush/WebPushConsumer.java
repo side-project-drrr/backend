@@ -41,12 +41,12 @@ public class WebPushConsumer {
             pushService.send(notification);
         } catch (GeneralSecurityException e) {
             log.error("[Web Push Key Error Failed Error]");
-            log.error("Member p245dh: "+notificationDto.p245dh());
+            log.error("Member p245dh: " + notificationDto.p245dh());
             throw new RuntimeException(e);
-        } catch (IOException | JoseException | ExecutionException | InterruptedException  e) {
+        } catch (IOException | JoseException | ExecutionException | InterruptedException e) {
             log.error("[Web Push Failed Error]");
             log.error("Web Push Send Error");
-            log.error("Member EndPoint: "+notificationDto.endPoint());
+            log.error("Member EndPoint: " + notificationDto.endPoint());
             throw new RuntimeException(e);
         }
 

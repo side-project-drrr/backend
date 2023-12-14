@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class WebPushProducer {
     private final SubscriptionRepository subscriptionRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+
     public void sendNotifications() {
         final List<Subscription> subscriptions = subscriptionRepository.findAll();
         if (subscriptions.size() == 0) {

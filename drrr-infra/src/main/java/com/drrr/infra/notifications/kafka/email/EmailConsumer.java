@@ -33,16 +33,16 @@ public class EmailConsumer {
         javaMailSender.send(mimeMessage);
         ack.acknowledge();
     }
-    
-    private MimeMessage buildMessage(final PushMessage message){
-        try{
+
+    private MimeMessage buildMessage(final PushMessage message) {
+        try {
             final MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             final MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(message.to()); // 메일 수신자
             mimeMessageHelper.setSubject(message.subject()); // 메일 제목
             mimeMessageHelper.setText(message.body(), true); // 메일 본문 내용, HTML 여부
             return mimeMessage;
-        }catch(MessagingException e){
+        } catch (MessagingException e) {
             log.error("[Message Push Failed Error]");
             log.error("Message Send Failed To Member Email Address : " + message.to());
             throw new RuntimeException(e);
