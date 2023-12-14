@@ -68,8 +68,7 @@ class RegisterPostTagServiceTest {
         // 카테고리 목록 생성
         final List<Category> categories = categoryRepository.saveAll(IntStream.rangeClosed(1, 3)
                 .mapToObj(i -> Category.builder()
-                        .displayName(i + "")
-                        .uniqueName(i + "")
+                        .name(i + "")
                         .build())
                 .toList());
         // 카테고리 아이디 리스트 추출
@@ -111,8 +110,7 @@ class RegisterPostTagServiceTest {
         // 카테고리 목록 생성
         final List<Category> categories = categoryRepository.saveAll(IntStream.rangeClosed(1, 3)
                 .mapToObj(i -> Category.builder()
-                        .displayName(i + "")
-                        .uniqueName(i + "")
+                        .name(i + "")
                         .build())
                 .toList());
 
@@ -144,8 +142,7 @@ class RegisterPostTagServiceTest {
 
         final List<Category> categories = categoryRepository.saveAll(IntStream.rangeClosed(1, 3)
                 .mapToObj(i -> Category.builder()
-                        .displayName(i + "")
-                        .uniqueName(i + "")
+                        .name(i + "")
                         .build())
                 .toList());
 
@@ -184,13 +181,11 @@ class RegisterPostTagServiceTest {
         // 카테고리 목록 생성
         final List<Category> categories = categoryRepository.saveAll(IntStream.rangeClosed(1, 3)
                 .mapToObj(i -> Category.builder()
-                        .displayName(i + "")
-                        .uniqueName(i + "")
+                        .name(i + "")
                         .build())
                 .toList());
         categoryRepository.save(Category.builder()
-                .displayName("5")
-                .uniqueName("5")
+                .name("5")
                 .build());
         // 카테고리 아이디 리스트 추출
         final List<Long> ids = categories.stream()

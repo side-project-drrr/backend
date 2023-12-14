@@ -2,7 +2,6 @@ package com.drrr.domain.category.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.code.member.Gender;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.recommandation.constant.constant.HoursConstants;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
@@ -13,7 +12,6 @@ import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.jpa.config.JpaConfiguration;
 import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.member.entity.Member;
-import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
@@ -58,10 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <br>그 외 나머지 Post는 P(2,4,6,8,10)-C2,C3,C5,C7,C8를 가지고 있고 P(11)~P(50) C-8로 통일</br>
  *
  * <h2>테스트 요소</h2>
- * - 시간에 따른 감소
- * - 가중치 최대값 초과
- * - 가중치 유효기간 체크(선호하는 카테고리, 선호하지 않는 카테고리 두가지)
- * - 가중치의 최소값 미만 체크
+ * - 시간에 따른 감소 - 가중치 최대값 초과 - 가중치 유효기간 체크(선호하는 카테고리, 선호하지 않는 카테고리 두가지) - 가중치의 최소값 미만 체크
  *
  * <h2>체크 요소</h2>
  * <br>M1 - 현재 가중치에서 DECREASE_WEIGHT의 세배 감소하는 것 체크</br>
@@ -102,10 +97,8 @@ class WeightValidationServiceTest {
             return Member.builder()
                     .email("example" + i + "@drrr.com")
                     .nickname("user" + i)
-                    .gender(Gender.MAN)
                     .provider("kakao" + i)
                     .providerId("12345" + i)
-                    .role(MemberRole.USER)
                     .build();
         }).toList();
 
@@ -140,8 +133,7 @@ class WeightValidationServiceTest {
             String categoryName = "Category" + i;
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
-                    .uniqueName(categoryName)
-                    .displayName(categoryDisplayName)
+                    .name(categoryDisplayName)
                     .build();
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);
