@@ -37,7 +37,6 @@ public class RegisterMemberService {
                 .nickname(registerMemberDto.nickname)
                 .provider(registerMemberDto.provider)
                 .providerId(registerMemberDto.providerId)
-                .role(MemberRole.USER)
                 .build();
         var savedMember = memberRepository.save(member);
         return savedMember.getId();
