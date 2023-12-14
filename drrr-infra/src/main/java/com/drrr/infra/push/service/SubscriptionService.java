@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
-    public void saveMemberSubscriptionData(final Subscription subscription){
+
+    public void saveMemberSubscriptionData(final Subscription subscription) {
         subscriptionRepository.save(subscription);
     }
 
-    public void deleteMemberSubscriptionData(final Long memberId){
+    public void deleteMemberSubscriptionData(final Long memberId) {
         subscriptionRepository.deleteByMemberId(memberId);
     }
 
