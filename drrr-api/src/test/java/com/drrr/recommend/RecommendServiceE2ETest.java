@@ -20,7 +20,6 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.recommand.dto.RecommendResponse;
 import com.drrr.util.DatabaseCleaner;
-import com.drrr.util.RestDocsConfiguration;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -43,8 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
+
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class RecommendServiceE2ETest {
 
@@ -104,7 +103,7 @@ public class RecommendServiceE2ETest {
             String providerId = "providerId" + i;
             String imageUrl = "http://example.com/image" + i + ".jpg";
             MemberRole role = MemberRole.USER; // 임의로 USER와 ADMIN을 번갈아가며 설정
-            return Member.createMember(email, nickname,  provider, providerId, imageUrl);
+            return Member.createMember(email, nickname, provider, providerId, imageUrl);
         }).collect(Collectors.toList());
         memberRepository.saveAll(members);
 
