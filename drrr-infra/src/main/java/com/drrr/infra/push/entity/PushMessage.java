@@ -1,11 +1,12 @@
 package com.drrr.infra.push.entity;
 
 import lombok.Builder;
+import org.antlr.v4.runtime.misc.NotNull;
 
 @Builder
 public record PushMessage(
-        String to,
-        String subject,
-        String body
+        @NotNull String to,
+        @NotNull String subject,
+        @NotNull String body
 ) {
 }
