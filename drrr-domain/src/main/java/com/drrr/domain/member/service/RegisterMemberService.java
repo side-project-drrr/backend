@@ -1,9 +1,7 @@
 package com.drrr.domain.member.service;
-import com.drrr.core.code.member.Gender;
-import com.drrr.core.exception.member.MemberException;
+
 import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.domain.member.entity.Member;
-import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +20,14 @@ public class RegisterMemberService {
     public Long execute(final String socialId, final RegisterMemberDto registerMemberDto) {
         memberRepository.findByNicknameOrEmail(registerMemberDto.nickname, registerMemberDto.email)
                 .ifPresent((member) -> {
-                    log.error("RegisterMemberService Class execute(final String socialId, final RegisterMemberDto registerMemberDto) Method IllegalArgumentException Error");
-                    if(registerMemberDto.email.equals(member.getEmail())){
-                        throw new MemberException(MemberExceptionCode.DUPLICATE_EMAIL.getCode(), MemberExceptionCode.DUPLICATE_EMAIL.getMessage());
-                    }else if(registerMemberDto.nickname.equals(member.getNickname())){
-                        throw new MemberException(MemberExceptionCode.DUPLICATE_NICKNAME.getCode(), MemberExceptionCode.DUPLICATE_NICKNAME.getMessage());
-                    }else{
-                        throw new MemberException(MemberExceptionCode.UNKNOWN_ERROR.getCode(), MemberExceptionCode.UNKNOWN_ERROR.getMessage());
+                    log.error(
+                            "RegisterMemberService Class execute(final String socialId, final RegisterMemberDto registerMemberDto) Method IllegalArgumentException Error");
+                    if (registerMemberDto.email.equals(member.getEmail())) {
+                        throw MemberExceptionCode.DUPLICATE_EMAIL.newInstance();
+                    } else if (registerMemberDto.nickname.equals(member.getNickname())) {
+                        throw MemberExceptionCode.DUPLICATE_NICKNAME.newInstance();
+                    } else {
+                        throw MemberExceptionCode.UNKNOWN_ERROR.newInstance();
                     }
                 });
         Member member = Member.builder()
@@ -37,7 +36,6 @@ public class RegisterMemberService {
                 .nickname(registerMemberDto.nickname)
                 .provider(registerMemberDto.provider)
                 .providerId(registerMemberDto.providerId)
-                .role(MemberRole.USER)
                 .build();
         var savedMember = memberRepository.save(member);
         return savedMember.getId();

@@ -1,7 +1,6 @@
 package com.drrr.web.jwt.util;
 
 
-import com.drrr.core.exception.jwt.JwtException;
 import com.drrr.core.exception.jwt.JwtExceptionCode;
 import java.time.Instant;
 import java.util.Map;
@@ -12,6 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -57,8 +57,8 @@ public class JwtProvider {
     public Long extractToValueFrom(final String token) {
         try {
             return Long.parseLong(this.decode(token).get("id").toString());
-        } catch (NumberFormatException exception) {
-            throw new JwtException(JwtExceptionCode.EXTRACT_VALUE_FROM_TOKEN_FAILED.getCode(), JwtExceptionCode.EXTRACT_VALUE_FROM_TOKEN_FAILED.getMessage());
+        } catch (JwtValidationException ex) {
+            throw JwtExceptionCode.JWT_UNAUTHORIZED.newInstance();
         }
     }
 

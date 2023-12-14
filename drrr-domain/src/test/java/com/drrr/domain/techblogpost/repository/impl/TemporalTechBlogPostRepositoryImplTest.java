@@ -42,12 +42,10 @@ class TemporalTechBlogPostRepositoryImplTest {
     @BeforeEach
     void setup() {
         final var JAVACategory = categoryRepository.saveAndFlush(Category.builder()
-                .displayName("자바")
-                .uniqueName("JAVA")
+                .name("JAVA")
                 .build());
         final var NodeCategory = categoryRepository.save(Category.builder()
-                .displayName("node js")
-                .uniqueName("NODE_JS")
+                .name("node js")
                 .build());
 
         final var post = temporalTechBlogPostRepository.saveAndFlush(TemporalTechBlogPost.builder()

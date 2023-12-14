@@ -34,18 +34,8 @@ public class KafkaProducerConfig {
         //Kafka message value에 대한 직렬화 클래스로 JsonSerializer를 지정
         prop.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-        //메세지를 중복없이 단 1개의 메시지를 소비시키게 하기 위한 설정
-        /**
-         * 멱등성 설정과 트랜잭션 설정으로 인해 카프카는 트랜잭션 id를 사용해서 producer가 보내는
-         */
-       // prop.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
-        //prop.put(ProducerConfig.TRANSACTIONAL_ID_CONFIG, "prod-1");
-
-
         return new DefaultKafkaProducerFactory<>(prop);
     }
-
-
 
 
 }

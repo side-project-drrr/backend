@@ -34,14 +34,14 @@ public class ExternalRecommendService {
 
         //redis에서 조회
         final List<TechBlogPost> postsInRedis = redisTechBlogPostService.findPostsByIds(postIds);
-        final List<TechBlogPost> noCachedPosts = techBlogPostService.findNoCachedTechBlogPosts(postsInRedis, postIds);
+        final List<TechBlogPost> notCachedPosts = techBlogPostService.findNotCachedTechBlogPosts(postsInRedis, postIds);
         final List<TechBlogPost> posts = new ArrayList<>(postsInRedis);
 
         //캐싱해야 할 포스트가 있다면
-        if(!noCachedPosts.isEmpty()){
-            redisTechBlogPostService.savePostsInRedis(noCachedPosts);
+        if (!notCachedPosts.isEmpty()) {
+            redisTechBlogPostService.savePostsInRedis(notCachedPosts);
             //합치기
-            posts.addAll(noCachedPosts);
+            posts.addAll(notCachedPosts);
         }
 
         //로그 쌓기

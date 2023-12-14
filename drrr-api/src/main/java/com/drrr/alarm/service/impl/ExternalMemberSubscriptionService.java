@@ -2,9 +2,9 @@ package com.drrr.alarm.service.impl;
 
 import com.drrr.alarm.service.request.SubscriptionRequest;
 
-import com.drrr.domain.alert.push.entity.Subscription;
-import com.drrr.domain.alert.push.service.SubscriptionService;
 
+import com.drrr.infra.push.entity.Subscription;
+import com.drrr.infra.push.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

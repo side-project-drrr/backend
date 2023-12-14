@@ -12,5 +12,19 @@ public enum EmailExceptionCode {
     ;
     private final int code;
     private final String message;
+    public EmailException newInstance() {
+        return new EmailException(code, message);
+    }
 
+    public EmailException newInstance(Throwable ex) {
+        return new EmailException(code, message, ex);
+    }
+
+    public EmailException newInstance(Object... args) {
+        return new EmailException(code, String.format(message, args), args);
+    }
+
+    public EmailException newInstance(Throwable ex, Object... args) {
+        return new EmailException(code, String.format(message, args), ex, args);
+    }
 }

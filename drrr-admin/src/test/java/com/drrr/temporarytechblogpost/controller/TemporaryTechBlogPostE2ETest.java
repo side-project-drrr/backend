@@ -66,8 +66,7 @@ class TemporaryTechBlogPostE2ETest {
                 .toList());
 
         categoryRepository.saveAll(IntStream.rangeClosed(1, 2).mapToObj(i -> Category.builder()
-                .displayName(i + "")
-                .uniqueName(i + "")
+                .name(i + "")
                 .build()).toList());
     }
 

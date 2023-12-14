@@ -1,5 +1,6 @@
 package com.drrr.core.exception.category;
 
+import com.drrr.core.exception.email.EmailException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,4 +14,19 @@ public enum CategoryExceptionCode {
     ;
     private final int code;
     private final String message;
+    public CategoryException newInstance() {
+        return new CategoryException(code, message);
+    }
+
+    public CategoryException newInstance(Throwable ex) {
+        return new CategoryException(code, message, ex);
+    }
+
+    public CategoryException newInstance(Object... args) {
+        return new CategoryException(code, String.format(message, args), args);
+    }
+
+    public CategoryException newInstance(Throwable ex, Object... args) {
+        return new CategoryException(code, String.format(message, args), ex, args);
+    }
 }

@@ -1,19 +1,31 @@
 package com.drrr.core.exception.jwt;
 
+import com.drrr.core.exception.email.EmailException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
 public enum JwtExceptionCode {
-    JWT(3000, "정의되지 않은 에러입니다."),
-    EXTRACT_VALUE_FROM_TOKEN_FAILED(JWT.code + 1, "JWT 토큰으로부터 값을 추출할 수 없습니다."),
-    INVALID_JWT_SIGNATURE(JWT.code + 2, "JWT 토큰 시그니처가 유효하지 않습니다."),
-    JWT_TOKEN_EXPIRED(JWT.code + 3, "JWT 토큰 시그니처가 유효하지 않습니다."),
-    INVALID_JWT_TOKEN(JWT.code + 4, "유효하지 않은 JWT 토큰."),
+    JWT(404, "정의되지 않은 에러입니다."),
+    JWT_UNAUTHORIZED(401, "Unauthorized"),
     ;
-
-    private static final String ERROR_FORMAT = "[ERROR %d] %s";
     private final int code;
     private final String message;
+    public JwtException newInstance() {
+        return new JwtException(code, message);
+    }
+
+    public JwtException newInstance(Throwable ex) {
+        return new JwtException(code, message, ex);
+    }
+
+    public JwtException newInstance(Object... args) {
+        System.out.println();
+        return new JwtException(code, String.format(message, args), args);
+    }
+
+    public JwtException newInstance(Throwable ex, Object... args) {
+        return new JwtException(code, String.format(message, args), ex, args);
+    }
 }

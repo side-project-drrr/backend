@@ -1,7 +1,7 @@
-package com.drrr.domain.alert.push.repository;
+package com.drrr.infra.push.repository;
 
 
-import com.drrr.domain.alert.push.entity.Subscription;
+import com.drrr.infra.push.entity.Subscription;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TechBlogPostCategoryRepository extends JpaRepository<TechBlogPostCategory, Long>,
         CustomTechBlogPostCategoryRepository {
+
 }

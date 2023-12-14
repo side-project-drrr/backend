@@ -10,10 +10,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 /**
- * @PropertySource는 기본적으로 .properties를 지원하는데 추가적인 custom 파일을 만들어서 사용하면 .yml도
- * 가능하나 redundant 하다고 느껴서 .properties로 설정
- * application.yml에서 따로 JavaMailConfiguration 설정이 가능하나 classpath에서 username과 password를
- * 읽지 못하는 문제로 인해서 따로 Config 빈을 만듬
+ * @PropertySource는 기본적으로 .properties를 지원하는데 추가적인 custom 파일을 만들어서 사용하면 .yml도 가능하나 redundant 하다고 느껴서 .properties로 설정
+ * application.yml에서 따로 JavaMailConfiguration 설정이 가능하나 classpath에서 username과 password를 읽지 못하는 문제로 인해서 따로 Config 빈을 만듬
  */
 @PropertySource(value = {"classpath:security-storage-api/notification/email/google-smtp.properties"})
 @RequiredArgsConstructor

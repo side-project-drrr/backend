@@ -27,10 +27,6 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String nickname;
 
-
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
     private String provider;
     @Column(unique = true)
     private String providerId;
@@ -38,17 +34,20 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Enumerated(EnumType.STRING)
-    private MemberRole role;
+/*    @Enumerated(EnumType.STRING)
+    private MemberRole role;*/
+
+    @Column(unique = true)
+    private String profileImageUrl;
 
     public static Member createMember(String email, String nickname,  String provider, String providerId,
-                                       MemberRole role) {
+                                      String profileImageUrl) {
         return Member.builder()
                 .email(email)
                 .nickname(nickname)
                 .provider(provider)
                 .providerId(providerId)
-                .role(role)
+                .profileImageUrl(profileImageUrl)
                 .build();
     }
 }

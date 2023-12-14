@@ -1,4 +1,4 @@
-package com.drrr.domain.alert.push.entity;
+package com.drrr.infra.push.entity;
 
 import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;

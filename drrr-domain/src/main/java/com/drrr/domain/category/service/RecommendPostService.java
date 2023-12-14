@@ -1,13 +1,11 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryException;
 import com.drrr.core.exception.category.CategoryExceptionCode;
 import com.drrr.core.recommandation.constant.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.log.service.LogUpdateService;
-import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import com.drrr.domain.techblogpost.repository.impl.CustomTechBlogPostRepositoryImpl;
@@ -16,7 +14,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,11 +40,10 @@ public class RecommendPostService {
         //카테고리_가중치 Mapping Table를 특정 MemberId로 조회
         final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
 
-        if(categoryWeights.isEmpty()) {
+        if (categoryWeights.isEmpty()) {
             log.error("카테고리 가중치를 찾을 수 없습니다.");
             log.error("memberId -> " + memberId);
-            throw new CategoryException(CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.getCode(),
-                    CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.getMessage());
+            throw CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
 
         //entity -> dto 변환

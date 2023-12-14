@@ -1,7 +1,6 @@
 package com.drrr.domain.member.service;
 
 
-import com.drrr.core.exception.member.MemberException;
 import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
@@ -27,8 +26,9 @@ public class MemberIdRetrievalService {
     public Long findByProviderId(final String userSocialId) {
         final Member member = memberRepository.findByProviderId(userSocialId)
                 .orElseThrow(() -> {
-                    log.error("MemberIdRetrievalService Class findByProviderId(final String userSocialId) Method IllegalArgumentException Error");
-                    throw new MemberException(MemberExceptionCode.UNREGISTERED_MEMBER.getCode(), MemberExceptionCode.UNREGISTERED_MEMBER.getMessage());
+                    log.error(
+                            "MemberIdRetrievalService Class findByProviderId(final String userSocialId) Method IllegalArgumentException Error");
+                    throw MemberExceptionCode.UNREGISTERED_MEMBER.newInstance();
                 });
         return member.getId();
     }

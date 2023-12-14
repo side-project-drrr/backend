@@ -28,6 +28,7 @@ spring:
       file: classpath:docker/docker-compose.yaml
       #서버가 켜지면 컨테이너들이 켜지고 꺼지면 알아서 꺼지나 필요할 때만 주석 제거
       lifecycle-management: start_only
+
   h2:
     console:
       enabled: true
@@ -114,3 +115,8 @@ opentracing:
 #logging:
 #  level:
 #    web: debug
+global:
+  variable:
+    front:
+      local:
+        domain: http://localhost:5173

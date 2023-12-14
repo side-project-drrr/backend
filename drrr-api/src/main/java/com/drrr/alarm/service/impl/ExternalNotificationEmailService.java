@@ -1,8 +1,8 @@
 package com.drrr.alarm.service.impl;
 
 
-import com.drrr.domain.alert.push.entity.PushMessage;
 import com.drrr.infra.notifications.kafka.email.EmailProducer;
+import com.drrr.infra.push.entity.PushMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

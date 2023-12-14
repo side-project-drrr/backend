@@ -13,8 +13,21 @@ public enum OAuth2ExceptionCode {
     PROVIDER_ID_NULL(OAUTH.code+4, "Provider Id를 찾을 수 없습니다.")
     ;
 
-    private static final String ERROR_FORMAT = "[ERROR %d] %s";
     private final int code;
     private final String message;
+    public OAuth2Exception newInstance() {
+        return new OAuth2Exception(code, message);
+    }
 
+    public OAuth2Exception newInstance(Throwable ex) {
+        return new OAuth2Exception(code, message, ex);
+    }
+
+    public OAuth2Exception newInstance(Object... args) {
+        return new OAuth2Exception(code, String.format(message, args), args);
+    }
+
+    public OAuth2Exception newInstance(Throwable ex, Object... args) {
+        return new OAuth2Exception(code, String.format(message, args), ex, args);
+    }
 }

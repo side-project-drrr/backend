@@ -2,7 +2,6 @@ package com.drrr.domain.category.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.code.member.Gender;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
@@ -12,7 +11,6 @@ import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.jpa.config.JpaConfiguration;
 import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.member.entity.Member;
-import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
@@ -70,10 +68,8 @@ public class CategoryModificationTest {
         Member member = Member.builder()
                 .email("example+@drrr.com")
                 .nickname("user")
-                .gender(Gender.MAN)
                 .provider("kakao")
                 .providerId("12345")
-                .role(MemberRole.USER)
                 .build();
         memberRepository.save(member);
 
@@ -102,8 +98,7 @@ public class CategoryModificationTest {
             String categoryName = "Category" + i;
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
-                    .uniqueName(categoryName)
-                    .displayName(categoryDisplayName)
+                    .name(categoryName)
                     .build();
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);

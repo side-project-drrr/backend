@@ -1,5 +1,6 @@
 package com.drrr.core.exception.member;
 
+import com.drrr.core.exception.log.LoggingException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -20,11 +21,21 @@ public enum MemberExceptionCode {
     MEMBER_NOT_FOUND(MEMBER.code+9, "사용자를 찾을 수 없습니다."),
     ;
 
-    private static final String ERROR_FORMAT = "[ERROR %d] %s";
     private final int code;
     private final String message;
-
-    public MemberException invoke() {
+    public MemberException newInstance() {
         return new MemberException(code, message);
+    }
+
+    public MemberException newInstance(Throwable ex) {
+        return new MemberException(code, message, ex);
+    }
+
+    public MemberException newInstance(Object... args) {
+        return new MemberException(code, String.format(message, args), args);
+    }
+
+    public MemberException newInstance(Throwable ex, Object... args) {
+        return new MemberException(code, String.format(message, args), ex, args);
     }
 }

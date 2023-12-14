@@ -10,12 +10,13 @@ import com.drrr.auth.payload.response.AccessTokenResponse;
 import com.drrr.auth.payload.response.SignInResponse;
 import com.drrr.auth.payload.response.SignUpResponse;
 import com.drrr.auth.service.impl.EmailVerificationService;
-import com.drrr.auth.service.impl.IssuanceVerificationCode;
 import com.drrr.auth.service.impl.ExchangeOAuth2AccessTokenService;
 import com.drrr.auth.service.impl.IssuanceTokenService;
+import com.drrr.auth.service.impl.IssuanceVerificationCode;
 import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
+import com.drrr.web.security.annotation.UserAuthority;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -26,7 +27,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
+@UserAuthority
 @RequestMapping("/auth")
 public class AuthController {
     private final SignUpService signUpService;
@@ -49,7 +50,7 @@ public class AuthController {
 
 
     @Operation(summary = "Front에서 준 code로 provider ID를 반환하는 API",
-            description = "호출 성공 시 provider id와 isRegistered 반환. isRegistered : false (신규회원) true (기존회원)",
+            description = "호출 성공 시 provider id와 isRegistered(isRegistered : false (신규회원) true (기존회원)), profile image url 반환",
             parameters = {
                     @Parameter(name = "code", description = "OAuth2 인증코드", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
                     @Parameter(name = "state", description = "OAuth2 주체", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
@@ -85,7 +86,6 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "access token 재발급 성공", content = @Content(schema = @Schema(implementation = AccessTokenResponse.class)))
     })
-    @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/access-token")
     public ResponseEntity<AccessTokenResponse> regenerateAccessToken(
             @Validated @RequestBody final AccessTokenRequest request) {
@@ -93,19 +93,24 @@ public class AuthController {
         return ResponseEntity.ok(accessTokenResponse);
     }
 
-   // @PreAuthorize("hasAuthority('USER')")
+    @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @PostMapping("/email")
-    public ResponseEntity<String> createEmailVerification(@RequestBody final EmailRequest emailRequest){
+    public ResponseEntity<String> createEmailVerification(@RequestBody final EmailRequest emailRequest) {
         issuanceVerificationCode.execute(emailRequest);
         return ResponseEntity.ok().build();
     }
 
-   /// @PreAuthorize("hasAuthority('USER')")
+    @Operation(summary = "이메일 인증코드 확인 API", description = "호출 성공 시 이메일 인증코드 확인 여부")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이메일 인증코드 확인 여부 반환", content = @Content(schema = @Schema(implementation = VerificationDto.class)))
+    })
     @PostMapping("/email/verification")
-    public VerificationDto executeEmailVerification(@RequestBody final EmailVerificationRequest request){
+    public VerificationDto executeEmailVerification(@RequestBody final EmailVerificationRequest request) {
         return emailVerificationService.execute(request);
     }
-
 
 
 }

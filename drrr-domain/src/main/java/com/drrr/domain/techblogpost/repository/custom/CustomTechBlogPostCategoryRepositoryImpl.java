@@ -1,8 +1,13 @@
 package com.drrr.domain.techblogpost.repository.custom;
 
+import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
+import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
+
 import com.drrr.core.recommandation.constant.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
+import com.drrr.domain.techblogpost.entity.TechBlogPost;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.List;
@@ -16,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogPostCategoryRepository {
     private final EntityManager em;
+    private final JPAQueryFactory queryFactory;
+
 
     @Override
     public List<ExtractedPostCategoryDto> getFilteredPost(final List<CategoryWeightDto> categoryWeightDtos,
@@ -74,5 +81,15 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
         //가장 최근에 만들어진 게시물 순으로 정렬됨
         //사용자가 관심 있는 카테고리에 대해 게시물 추출
         return resultDto;
+    }
+
+    @Override
+    public List<TechBlogPost> getPostsByCategory(Long postId) {
+        return queryFactory.select(techBlogPost)
+                .from(techBlogPostCategory)
+                .leftJoin(techBlogPost)
+                .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
+                .where(techBlogPostCategory.category.id.eq(postId))
+                .fetch();
     }
 }

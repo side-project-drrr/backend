@@ -1,13 +1,12 @@
 package com.drrr.infra.notifications.kafka.email;
 
-import com.drrr.core.exception.member.MemberException;
 import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.domain.alert.push.entity.PushMessage;
 import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
+import com.drrr.infra.push.entity.PushMessage;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,16 +22,15 @@ import org.thymeleaf.context.Context;
 @RequiredArgsConstructor
 public class EmailProducer {
     private final String SUBJECT_CONTENT = "님이 관심 있을 만한 블로그를 추천해봤어요.";
-    private String htmlBody = "";
     private final TemplateEngine templateEngine;
     private final RecommendPostService recommendPostService;
     private final TechBlogPostService techBlogPostService;
-
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final MemberRepository memberRepository;
-    
+    private String htmlBody = "";
+
     @Transactional
-    public void sendVerificationMessage(String email, String verificationCode){
+    public void sendVerificationMessage(String email, String verificationCode) {
         final PushMessage emailMessage = PushMessage.builder()
                 .to(email)
                 .subject("이메일 인증 제목")
@@ -47,8 +45,7 @@ public class EmailProducer {
         if (members.size() == 0) {
             log.error("사용자를 찾을 수 없습니다.");
 
-            throw new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND.getCode(),
-                    MemberExceptionCode.MEMBER_NOT_FOUND.getMessage());
+            throw MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
         }
         final Context context = new Context();
 

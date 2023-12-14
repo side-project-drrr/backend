@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -37,6 +38,9 @@ public class TemporalTechBlogPost extends BaseEntity {
     // 설명이 없는 기술블로그가 있음
     @Column(length = 1000)
     private String summary;
+    @Lob
+    @Column(length = 3000)
+    private String aiSummary;
 
     @Column(nullable = false)
     private String urlSuffix;
@@ -66,6 +70,7 @@ public class TemporalTechBlogPost extends BaseEntity {
                                 String thumbnailUrl,
                                 String title,
                                 String summary,
+                                String aiSummary,
                                 String urlSuffix,
                                 String url,
                                 TechBlogCode techBlogCode,
@@ -78,6 +83,7 @@ public class TemporalTechBlogPost extends BaseEntity {
         this.thumbnailUrl = thumbnailUrl;
         this.title = title;
         this.summary = summary;
+        this.aiSummary = aiSummary;
         this.urlSuffix = urlSuffix;
         this.url = url;
         this.techBlogCode = techBlogCode;

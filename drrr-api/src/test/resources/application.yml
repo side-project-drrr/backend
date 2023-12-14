@@ -108,3 +108,8 @@ opentracing:
 #logging:
 #  level:
 #    web: debug
+global:
+  variable:
+    front:
+      local:
+        domain: http://localhost:5173

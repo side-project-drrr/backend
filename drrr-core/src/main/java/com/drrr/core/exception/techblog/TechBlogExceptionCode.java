@@ -1,5 +1,6 @@
 package com.drrr.core.exception.techblog;
 
+import com.drrr.core.exception.member.OAuth2Exception;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,11 +13,21 @@ public enum TechBlogExceptionCode {
     TECH_BLOG_NOT_FOUND(TECH_BLOG.code + 1,"기술블로그를 찾을 수 없습니다."),
     ;
 
-    private static final String ERROR_FORMAT = "[ERROR %d] %s";
     private final int code;
     private final String message;
-
-    public TechBlogException invoke() {
+    public TechBlogException newInstance() {
         return new TechBlogException(code, message);
+    }
+
+    public TechBlogException newInstance(Throwable ex) {
+        return new TechBlogException(code, message, ex);
+    }
+
+    public TechBlogException newInstance(Object... args) {
+        return new TechBlogException(code, String.format(message, args), args);
+    }
+
+    public TechBlogException newInstance(Throwable ex, Object... args) {
+        return new TechBlogException(code, String.format(message, args), ex, args);
     }
 }

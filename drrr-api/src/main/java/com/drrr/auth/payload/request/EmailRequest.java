@@ -1,10 +1,10 @@
 package com.drrr.auth.payload.request;
 
-import lombok.Builder;
+import jakarta.validation.constraints.NotNull;
 
 
 public record EmailRequest(
-        String providerId,
-        String email
+        @NotNull String providerId,
+        @NotNull String email
 ) {
 }
