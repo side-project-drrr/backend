@@ -1,18 +1,24 @@
 package com.drrr.alarm.service.request;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Data;
 
 @Builder
-public record SubscriptionRequest (
+public record SubscriptionRequest(
+
+        @NotNull
         Long id,
+
+        @NotNull
         String endpoint,
+
+        @NotNull
         String expirationTime,
+
+        @NotNull
         String p256dh, // public key
+
+        @NotNull
         String auth
-){
+) {
 }
