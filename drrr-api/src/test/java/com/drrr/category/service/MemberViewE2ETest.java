@@ -23,6 +23,7 @@ import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,8 +129,7 @@ public class MemberViewE2ETest {
             String categoryName = "Category" + i;
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
-                    .uniqueName(categoryName)
-                    .displayName(categoryDisplayName)
+                    .name(categoryDisplayName)
                     .build();
         }).collect(Collectors.toList());
         categoryRepository.saveAll(categories);
@@ -154,6 +154,7 @@ public class MemberViewE2ETest {
                         .category(category)
                         .value(value)
                         .preferred(preferred)
+                        .lastReadAt(LocalDateTime.now())
                         .build());
             });
         });
@@ -170,6 +171,7 @@ public class MemberViewE2ETest {
                         .member(member)
                         .category(category)
                         .value(value)
+                        .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
             });
@@ -187,6 +189,7 @@ public class MemberViewE2ETest {
                         .member(member)
                         .category(category)
                         .value(value)
+                        .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
             });
@@ -204,6 +207,7 @@ public class MemberViewE2ETest {
                         .member(member)
                         .category(category)
                         .value(value)
+                        .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
             });
@@ -221,6 +225,7 @@ public class MemberViewE2ETest {
                         .member(member)
                         .category(category)
                         .value(value)
+                        .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
             });
