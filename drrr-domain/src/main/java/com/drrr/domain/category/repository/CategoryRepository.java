@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long>, CustomCategoryRepository {
     List<Category> findByIdIn(Set<Long> categoryIds);
+
+    List<Category> findByIdIn(List<Long> categoryIds);
 }
