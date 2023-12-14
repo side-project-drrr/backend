@@ -11,7 +11,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @UserAuthority
-@RequestMapping("/posts")
+@RequestMapping("/api/v1")
 public class MemberPostWeightController {
     private final ExternalMemberPostReadService memberPostReadService;
 
@@ -32,7 +31,7 @@ public class MemberPostWeightController {
                     @Parameter(name = "memberId", description = "게시물을 읽은 사용자 ID", in = ParameterIn.PATH, schema = @Schema(type = "string")),
                     @Parameter(name = "postId", description = "게시물 ID", in = ParameterIn.PATH, schema = @Schema(type = "string"))
             })
-    @PostMapping("/read/{memberId}/{postId}")
+    @PostMapping("/posts/read/{memberId}/{postId}")
     public ResponseEntity<String> MemberPostReadController(
             @Validated @RequestBody final AdjustPostWeightRequest request,
             @NonNull @PathVariable(name = "memberId") final Long memberId,
