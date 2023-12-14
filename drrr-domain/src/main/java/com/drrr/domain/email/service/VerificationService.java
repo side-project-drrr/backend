@@ -1,6 +1,5 @@
 package com.drrr.domain.email.service;
 
-import com.drrr.core.exception.email.EmailException;
 import com.drrr.core.exception.email.EmailExceptionCode;
 import com.drrr.domain.email.entity.Email;
 import com.drrr.domain.email.repository.EmailRepository;
@@ -21,10 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class VerificationService {
     private final EmailRepository emailRepository;
 
-    public String createVerificationCode(final String providerId, final String email){
+    public String createVerificationCode(final String providerId, final String email) {
         final Optional<Email> byProviderId = emailRepository.findByProviderId(providerId);
 
-        if(byProviderId.isPresent()){
+        if (byProviderId.isPresent()) {
             emailRepository.deleteByProviderId(providerId);
         }
 
@@ -40,29 +39,27 @@ public class VerificationService {
         return code;
     }
 
-    public VerificationDto verifyCode(final String providerId, final String verificationCode){
+    public VerificationDto verifyCode(final String providerId, final String verificationCode) {
         final Email email = emailRepository.findByProviderId(providerId).orElseThrow(() -> {
             log.error("이메일 인증 정보를 찾을 수 없습니다.");
             log.error("providerId -> " + providerId);
-            throw new EmailException(EmailExceptionCode.EMAIL_VERIFICATION_INFORMATION_NOT_FOUND.getCode(),
-                    EmailExceptionCode.EMAIL_VERIFICATION_INFORMATION_NOT_FOUND.getMessage());
+            throw EmailExceptionCode.EMAIL_VERIFICATION_INFORMATION_NOT_FOUND.newInstance();
         });
 
         final Duration duration = Duration.between(email.getCreatedAt(), LocalDateTime.now());
         final long differenceInSeconds = duration.toSeconds();
         boolean isVerified = true;
 
-        if(differenceInSeconds > 180){
+        if (differenceInSeconds > 180) {
             emailRepository.deleteByProviderId(providerId);
 
             log.error("이메일 인증 정보가 만료되었습니다.");
             log.error("providerId -> " + providerId);
-            throw new EmailException(EmailExceptionCode.EMAIL_VERIFICATION_CODE_EXPIRED.getCode(),
-                    EmailExceptionCode.EMAIL_VERIFICATION_CODE_EXPIRED.getMessage());
+            throw EmailExceptionCode.EMAIL_VERIFICATION_CODE_EXPIRED.newInstance();
         }
 
         //인증번호가 만들어진 이후부터 3분 이내에 입력
-        if(!email.getVerificationCode().equals(verificationCode)){
+        if (!email.getVerificationCode().equals(verificationCode)) {
             isVerified = false;
         }
 
@@ -71,8 +68,9 @@ public class VerificationService {
                 .providerId(providerId)
                 .build();
 
-        if(isVerified)
+        if (isVerified) {
             emailRepository.deleteByProviderId(providerId);
+        }
 
         return verificationDto;
 
@@ -82,7 +80,7 @@ public class VerificationService {
     public record VerificationDto(
             String providerId,
             boolean isVerified
-    ){
+    ) {
 
     }
 }

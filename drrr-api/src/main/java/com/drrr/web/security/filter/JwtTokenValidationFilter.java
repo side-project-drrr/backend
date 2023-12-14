@@ -1,6 +1,5 @@
 package com.drrr.web.security.filter;
 
-import com.drrr.core.exception.jwt.JwtException;
 import com.drrr.core.exception.jwt.JwtExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
 import com.drrr.web.security.exception.JwtExpiredTokenException;
@@ -56,7 +55,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
         try {
             if (!jwtTokenProvider.validateToken(token)) {
-                throw new JwtException(JwtExceptionCode.INVALID_JWT_SIGNATURE.getCode(), JwtExceptionCode.INVALID_JWT_SIGNATURE.getMessage());
+                throw new IllegalArgumentException(JwtExceptionCode.JWT_UNAUTHORIZED.newInstance("토큰 검증 실패"));
             }
 
             // 권한 부여
@@ -73,7 +72,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             response.getWriter().write("Token expired");
             response.getWriter().flush();
             log.error("JWT 토큰이 만료되었습니다.");
-            throw new JwtException(JwtExceptionCode.JWT_TOKEN_EXPIRED.getCode(), JwtExceptionCode.JWT_TOKEN_EXPIRED.getMessage());
+            throw new IllegalArgumentException(JwtExceptionCode.JWT_UNAUTHORIZED.newInstance());
         }
     }
 

@@ -1,8 +1,6 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryException;
 import com.drrr.core.exception.category.CategoryExceptionCode;
-import com.drrr.core.exception.member.MemberException;
 import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
@@ -33,8 +31,7 @@ public class MemberPreferredCategoryServiceModificationService {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             log.error("사용자 가중치를 찾을 수 없습니다.");
             log.error("memberId -> " + memberId);
-            throw new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND.getCode(),
-                    MemberExceptionCode.MEMBER_NOT_FOUND.getMessage());
+            throw MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
         });
 
         //현재 사용자의 카테고리 정보 가져오기
@@ -42,8 +39,7 @@ public class MemberPreferredCategoryServiceModificationService {
         if (categoryWeights.isEmpty()) {
             log.error("카테고리 가중치 정보를 찾을 수 없습니다.");
             log.error("memberId -> " + memberId);
-            throw new CategoryException(CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.getCode(),
-                    CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.getMessage());
+            throw CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
 
         //사용자의 기존 선호하는 카테고리 id set

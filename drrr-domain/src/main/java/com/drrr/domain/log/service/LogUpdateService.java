@@ -2,13 +2,11 @@ package com.drrr.domain.log.service;
 
 import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
 
-import com.drrr.core.exception.log.LoggingException;
 import com.drrr.core.exception.log.LoggingExceptionCode;
 import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
-import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.HashSet;
@@ -30,7 +28,7 @@ public class LogUpdateService {
 
     public void insertMemberPostReadLog(final Long memberId, final Long postId) {
         memberPostLogRepository.findByPostIdAndMemberId(memberId, postId)
-                .orElseGet(() ->  memberPostLogRepository.save(MemberPostLog.builder()
+                .orElseGet(() -> memberPostLogRepository.save(MemberPostLog.builder()
                         .memberId(memberId)
                         .postId(postId)
                         .isRead(true)
@@ -50,8 +48,7 @@ public class LogUpdateService {
         if (logs.size() != 0) {
             log.error("기술 블로그 추천 후 로깅이 제대로 동작하지 않습니다.");
             log.error("memberId -> " + memberId);
-            throw new LoggingException(LoggingExceptionCode.INVALID_RECOMMEND_POSTS_LOGGING.getCode(),
-                    LoggingExceptionCode.INVALID_RECOMMEND_POSTS_LOGGING.getMessage());
+            throw LoggingExceptionCode.INVALID_RECOMMEND_POSTS_LOGGING.newInstance();
 
         }
 

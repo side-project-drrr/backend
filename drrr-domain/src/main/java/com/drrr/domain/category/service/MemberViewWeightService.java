@@ -1,10 +1,7 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryException;
 import com.drrr.core.exception.category.CategoryExceptionCode;
-import com.drrr.core.exception.member.MemberException;
 import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.core.exception.techblog.TechBlogException;
 import com.drrr.core.exception.techblog.TechBlogExceptionCode;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
@@ -39,15 +36,13 @@ public class MemberViewWeightService {
                 .orElseThrow(() -> {
                     log.error("기술블로그를 찾을 수 없습니다.");
                     log.error("postId -> " + postId);
-                    throw new TechBlogException(TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.getCode(),
-                            TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.getMessage());
+                    throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     log.error("사용자를 찾을 수 없습니다.");
                     log.error("memberId -> " + memberId);
-                    throw new MemberException(MemberExceptionCode.MEMBER_NOT_FOUND.getCode(),
-                            MemberExceptionCode.MEMBER_NOT_FOUND.getMessage());
+                    throw MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
                 });
 
         //조회수 증가
@@ -61,8 +56,7 @@ public class MemberViewWeightService {
             if (categories.isEmpty()) {
                 log.error("카테고리를 찾을 수 없습니다.");
                 log.error("categoryIds -> " + categoryIds);
-                throw new CategoryException(CategoryExceptionCode.CATEGORY_NOT_FOUND.getCode(),
-                        CategoryExceptionCode.CATEGORY_NOT_FOUND.getMessage());
+                throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
             }
             final List<CategoryWeight> updatedCategoryWeights = categories.stream()
                     .map(category -> CategoryWeight.builder()

@@ -5,15 +5,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.drrr.auth.payload.dto.OAuth2GithubAccessTokenRequest;
 import com.drrr.auth.payload.dto.OAuth2KakaoAccessTokenRequest;
-import com.drrr.core.exception.member.OAuth2Exception;
 import com.drrr.core.exception.member.OAuth2ExceptionCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +40,7 @@ public class OAuth2Client {
                             return jsonNode;
                         } catch (NullPointerException npe) {
                             log.error("provider ID를 받아오지 못했습니다. Access Token를 확인해주세요.");
-                            throw new OAuth2Exception(OAuth2ExceptionCode.INVALID_ACCESS_TOKEN.getCode(), OAuth2ExceptionCode.INVALID_ACCESS_TOKEN.getMessage());
+                            throw OAuth2ExceptionCode.INVALID_ACCESS_TOKEN.newInstance();
                         }
                     }
                 });
@@ -70,7 +65,7 @@ public class OAuth2Client {
                     if (response.getStatusCode().is4xxClientError()) {
                         log.error(
                                 "OAuth2Client Class exchangeKakaoOAuth2AccessToken(final OAuth2KakaoAccessTokenRequest requestParams) Method IllegalArgumentException Error");
-                        throw new OAuth2Exception(OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.getCode(), OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.getMessage());
+                        throw OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
                     } else {
 
                         final JsonNode jsonNode = objectMapper.readTree(response.getBody());
@@ -80,7 +75,7 @@ public class OAuth2Client {
                         } catch (NullPointerException npe) {
                             log.error(
                                     "OAuth2Client Class exchangeKakaoOAuth2AccessToken(final OAuth2KakaoAccessTokenRequest requestParams) Method NullPointerException Error");
-                            throw new OAuth2Exception(OAuth2ExceptionCode.PROVIDER_ID_NULL.getCode(), OAuth2ExceptionCode.PROVIDER_ID_NULL.getMessage());
+                            throw OAuth2ExceptionCode.PROVIDER_ID_NULL.newInstance();
                         }
                     }
                 });
@@ -101,7 +96,7 @@ public class OAuth2Client {
                     if (response.getStatusCode().is4xxClientError()) {
                         log.error(
                                 "OAuth2Client Class exchangeGitHubOAuth2AccessToken(OAuth2GithubAccessTokenRequest requestBody) Method IllegalArgumentException Error");
-                        throw new OAuth2Exception(OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.getCode(), OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.getMessage());
+                        throw OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
                     } else {
                         final JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
@@ -111,7 +106,7 @@ public class OAuth2Client {
                         } catch (NullPointerException npe) {
                             log.error(
                                     "OAuth2Client Class exchangeGitHubOAuth2AccessToken(OAuth2GithubAccessTokenRequest requestBody) Method NullPointerException Error");
-                            throw new OAuth2Exception(OAuth2ExceptionCode.PROVIDER_ID_NULL.getCode(), OAuth2ExceptionCode.PROVIDER_ID_NULL.getMessage());
+                            throw OAuth2ExceptionCode.PROVIDER_ID_NULL.newInstance();
                         }
                     }
                 });
