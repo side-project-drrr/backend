@@ -331,7 +331,7 @@ public class RecommendServiceE2ETest {
                                 "memberId": """ + i + """
                             }
                             """)
-                    .post("/recommendation/posts/{memberId}", (long) i);
+                    .post("/api/v1/recommendation/posts/{memberId}", (long) i);
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
