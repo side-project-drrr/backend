@@ -1,9 +1,12 @@
 package com.drrr.domain.techblogpost.service;
 
+import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
+import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
+
 import com.drrr.core.exception.techblog.TechBlogExceptionCode;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepository;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class TechBlogPostService {
+    private final JPAQueryFactory queryFactory;
     private final TechBlogPostRepository techBlogPostRepository;
-    private final CustomTechBlogPostCategoryRepository customTechBlogPostCategoryRepository;
 
     public List<TechBlogPost> findAllPosts() {
         List<TechBlogPost> posts = techBlogPostRepository.findAll();
@@ -30,12 +33,26 @@ public class TechBlogPostService {
     }
 
     public List<TechBlogPost> findPostsByCategory(Long postId) {
-        List<TechBlogPost> posts = customTechBlogPostCategoryRepository.getPostsByCategory(postId);
+        List<TechBlogPost> posts = queryFactory.select(techBlogPost)
+                .from(techBlogPostCategory)
+                .leftJoin(techBlogPost)
+                .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
+                .where(techBlogPostCategory.category.id.eq(postId))
+                .fetch();
         if (posts.size() == 0) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
         return posts;
+    }
+
+    public List<TechBlogPost> getPostsByCategory(Long postId) {
+        return queryFactory.select(techBlogPost)
+                .from(techBlogPostCategory)
+                .leftJoin(techBlogPost)
+                .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
+                .where(techBlogPostCategory.category.id.eq(postId))
+                .fetch();
     }
 
     public List<TechBlogPost> findNotCachedTechBlogPosts(final List<TechBlogPost> postsInRedis,
