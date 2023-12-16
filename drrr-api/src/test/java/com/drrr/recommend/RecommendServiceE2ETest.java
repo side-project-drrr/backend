@@ -3,7 +3,6 @@ package com.drrr.recommend;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.code.member.Gender;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
@@ -98,7 +97,6 @@ public class RecommendServiceE2ETest {
         List<Member> members = IntStream.rangeClosed(1, 500).mapToObj(i -> {
             String email = "user" + i + "@example.com";
             String nickname = "user" + i;
-            Gender gender = (i % 2 == 0) ? Gender.MAN : Gender.WOMAN; // 임의로 남성과 여성을 번갈아가며 설정
             String provider = "provider" + i;
             String providerId = "providerId" + i;
             String imageUrl = "http://example.com/image" + i + ".jpg";
@@ -116,16 +114,18 @@ public class RecommendServiceE2ETest {
             String thumbnailUrl = "http://example.com/thumbnail" + i + ".jpg";
             String title = "Title" + i;
             String summary = (i % 3 == 0) ? "Summary" + i : null; // 3의 배수 인덱스에서만 요약 설정
+            String aiSummary = (i % 3 == 0) ? "Summary" + i : null; // 3의 배수 인덱스에서만 요약 설정
             String urlSuffix = "/suffix/" + i;
             String url = "http://example.com/suffix/" + i;
             TechBlogCode techBlogCode = TechBlogCode.values()[i
                     % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
             return TechBlogPost.builder()
-                    .createdDate(createdDate)
+                    .writtenAt(createdDate)
                     .author(author)
                     .thumbnailUrl(thumbnailUrl)
                     .title(title)
                     .summary(summary)
+                    .aiSummary(aiSummary)
                     .urlSuffix(urlSuffix)
                     .url(url)
                     .crawlerGroup(TechBlogCode.KAKAO)
