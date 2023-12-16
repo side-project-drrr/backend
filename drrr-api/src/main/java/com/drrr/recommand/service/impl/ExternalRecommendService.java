@@ -33,7 +33,7 @@ public class ExternalRecommendService {
         final List<Long> postIds = recommendPostService.recommendPosts(memberId);
 
         //redis에서 조회
-        final List<TechBlogPost> postsInRedis = redisTechBlogPostService.findPostsByIds(postIds);
+        final List<TechBlogPost> postsInRedis = redisTechBlogPostService.findPostsByIdsInRedis(postIds);
         final List<TechBlogPost> notCachedPosts = techBlogPostService.findNotCachedTechBlogPosts(postsInRedis, postIds);
         final List<TechBlogPost> posts = new ArrayList<>(postsInRedis);
 
@@ -52,7 +52,7 @@ public class ExternalRecommendService {
                         .map(post -> TechBlogPostDto.builder()
                                 .id(post.getId())
                                 .title(post.getTitle())
-                                .createdDate(post.getCreatedDate())
+                                .createdDate(post.getWrittenAt())
                                 .url(post.getUrl())
                                 .urlSuffix(post.getUrlSuffix())
                                 .summary(post.getSummary())
