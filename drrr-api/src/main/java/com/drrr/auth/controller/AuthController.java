@@ -15,6 +15,7 @@ import com.drrr.auth.service.impl.IssuanceTokenService;
 import com.drrr.auth.service.impl.IssuanceVerificationCode;
 import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
+import com.drrr.auth.service.impl.UnregisterService;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
 import com.drrr.web.security.annotation.UserAuthority;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,7 +29,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final SignUpService signUpService;
     private final SignInService signInService;
+    private final UnregisterService unregisterService;
     private final IssuanceTokenService issuanceTokenService;
     private final ExchangeOAuth2AccessTokenService exchangeOAuth2AccessTokenService;
     private final IssuanceVerificationCode issuanceVerificationCode;
@@ -110,6 +114,16 @@ public class AuthController {
     @PostMapping("/email/verification")
     public VerificationDto executeEmailVerification(@RequestBody final EmailVerificationRequest request) {
         return emailVerificationService.execute(request);
+    }
+
+    @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    @DeleteMapping("/member/{memberId}")
+    public ResponseEntity<String> memberUnregister(@PathVariable("memberId") final Long memberId) {
+        unregisterService.unregister(memberId);
+        return ResponseEntity.ok().build();
     }
 
 
