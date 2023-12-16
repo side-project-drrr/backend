@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
+@UserAuthority
 @RequiredArgsConstructor
 @RestController
-@UserAuthority
 @RequestMapping("/api/v1")
 public class CategoryController {
     private final ExternalCategoryService externalCategoryService;
@@ -40,16 +40,16 @@ public class CategoryController {
         return externalCategoryService.execute();
     }
 
-    @Operation(summary = "특정 카테고리를 가져오는 API", description = "호출 성공 시 body 안에 명시한 카테고리 정보 반환")
+    @Operation(summary = "특정 카테고리를 가져오는 API", description = "호출 성공 시 body 안에 명시한 카테고리 정보 반환 - 내림차순으로 반환")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "body 안에 명시한 카테고리 정보 반환", content = @Content(schema = @Schema(implementation = CategoryDto.class)))
+            @ApiResponse(responseCode = "200", description = "body 안에 명시한 카테고리 정보 반환 - 내림차순", content = @Content(schema = @Schema(implementation = CategoryDto.class)))
     })
     @GetMapping("/categories/selection")
     public List<CategoryDto> findSelectedCategory(@NonNull @RequestParam("ids") final List<Long> ids) {
         return externalCategoryService.execute(new CategoryRequest(ids));
     }
 
-    @Operation(summary = "사용자가 선호카테고리를 바꿀 때 호출하는 API", description = "호출 성공 시 사용자의 선호나는 카테고리 변경",
+    @Operation(summary = "사용자가 선호카테고리를 바꿀 때 호출하는 API", description = "호출 성공 시 사용자의 선호나는 카테고리 변경 - 내림차순으로 반환",
             parameters = {
                     @Parameter(name = "memberId", description = "사용자 ID", in = ParameterIn.PATH, schema = @Schema(type = "string")),
                     @Parameter(name = "categoryIds", description = "카테고리 ID 리스트, body 안에 Json 형태로 \"category\" : [1,2,3] 이렇게 body에 넣어줄 것", schema = @Schema(type = "array", implementation = Long.class))
