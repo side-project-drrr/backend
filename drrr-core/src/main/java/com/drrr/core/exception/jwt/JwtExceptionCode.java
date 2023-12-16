@@ -1,6 +1,5 @@
 package com.drrr.core.exception.jwt;
 
-import com.drrr.core.exception.email.EmailException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,6 +11,7 @@ public enum JwtExceptionCode {
     ;
     private final int code;
     private final String message;
+
     public JwtException newInstance() {
         return new JwtException(code, message);
     }
@@ -21,7 +21,6 @@ public enum JwtExceptionCode {
     }
 
     public JwtException newInstance(Object... args) {
-        System.out.println();
         return new JwtException(code, String.format(message, args), args);
     }
 
