@@ -24,7 +24,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                         memberPostLog.memberId.eq(memberId)
                 )
                 .where(memberPostLog.id.isNull())
-                .orderBy(techBlogPost.createdDate.desc())
+                .orderBy(techBlogPost.writtenAt.desc())
                 .limit(remainedPostCount)
                 .fetch();
     }
