@@ -17,7 +17,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public List<CategoryDto> findAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
+        final List<Category> categories = categoryRepository.findAll();
         if (categories.isEmpty()) {
             log.error("카테고리가 존재하지 않습니다.");
             throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
@@ -31,8 +31,8 @@ public class CategoryService {
                 .toList();
     }
 
-    public List<CategoryDto> findSelectedCategories(List<Long> ids) {
-        List<Category> categories = categoryRepository.findByIdIn(ids);
+    public List<CategoryDto> findSelectedCategories(final List<Long> ids) {
+        final List<Category> categories = categoryRepository.findByIdIn(ids);
 
         if (categories.isEmpty()) {
             log.error("카테고리가 존재하지 않습니다.");
