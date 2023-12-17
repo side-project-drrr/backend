@@ -1,4 +1,4 @@
-package com.drrr.category.service;
+package com.drrr.category;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,8 +118,8 @@ public class MemberViewE2ETest {
             int viewCount = 0;
             TechBlogCode techBlogCode = TechBlogCode.values()[i
                     % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
-            return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, urlSuffix, url,
-                    techBlogCode, viewCount);
+            return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, summary, urlSuffix, url,
+                    techBlogCode, viewCount, viewCount);
         }).collect(Collectors.toList());
         techBlogPostRepository.saveAll(techBlogPosts);
     }
