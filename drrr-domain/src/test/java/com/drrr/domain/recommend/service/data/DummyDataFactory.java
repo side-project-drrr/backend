@@ -91,8 +91,8 @@ class DummyDataFactory {
             int viewCount = getRandomValueInRange(Integer.class, 100, 5000);
             TechBlogCode techBlogCode = TechBlogCode.values()[i
                     % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
-            return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, urlSuffix, url,
-                    techBlogCode, viewCount);
+            return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, summary, urlSuffix, url,
+                    techBlogCode, viewCount, viewCount);
         }).collect(Collectors.toList());
         techBlogPostRepository.saveAll(techBlogPosts);
     }
