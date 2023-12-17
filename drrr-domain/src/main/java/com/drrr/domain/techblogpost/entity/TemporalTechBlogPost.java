@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 public class TemporalTechBlogPost extends BaseEntity {
 
     @Column(nullable = false)
-    private LocalDate createdDate;
+    private LocalDate writtenAt;
 
     @Column
     private String author;
@@ -78,7 +78,7 @@ public class TemporalTechBlogPost extends BaseEntity {
                                 boolean registrationCompleted,
                                 List<TemporalTechPostTag> temporalTechPostTags
     ) {
-        this.createdDate = createdDate;
+        this.writtenAt = createdDate;
         this.author = author;
         this.thumbnailUrl = thumbnailUrl;
         this.title = title;
