@@ -48,6 +48,7 @@ public class RedisCategoryService {
                         .name(category.getName())
                         .build())
                 .toList();
+        System.out.println("사이즈 ######:" + redisCategories.size());
 
         redisCategoryRepository.saveAll(redisCategories);
     }
