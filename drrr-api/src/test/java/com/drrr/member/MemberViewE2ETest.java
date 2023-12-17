@@ -1,4 +1,4 @@
-package com.drrr.category;
+package com.drrr.member;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
