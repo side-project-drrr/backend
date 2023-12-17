@@ -108,11 +108,12 @@ class MemberViewWeightServiceTest {
         String url = "http://example.com/suffix/";
         TechBlogCode techBlogCode = TechBlogCode.values()[0]; // 순환적으로 TechBlogCode 값 할당
         TechBlogPost post = TechBlogPost.builder()
-                .createdDate(createdDate)
+                .writtenAt(createdDate)
                 .author(author)
                 .thumbnailUrl(thumbnailUrl)
                 .title(title)
                 .summary(summary)
+                .aiSummary(summary)
                 .urlSuffix(urlSuffix)
                 .url(url)
                 .crawlerGroup(TechBlogCode.KAKAO)
