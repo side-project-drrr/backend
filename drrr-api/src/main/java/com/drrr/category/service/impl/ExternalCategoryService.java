@@ -69,13 +69,16 @@ public class ExternalCategoryService {
 
             redisCategoryService.saveCategories(redisCategoryList);
             //redis에 기존에 있었던 카테고리 dto로 변환
-            final List<CategoryDto> existingCategories = redisCategoryList.stream()
+            final List<CategoryDto> existingCategories = redisCategories.stream()
                     .map(redisCategory -> CategoryDto.builder()
                             .id(redisCategory.getId())
                             .categoryName(redisCategory.getName())
                             .build())
                     .toList();
-            selectedCategories.addAll(existingCategories);
+
+            if (!existingCategories.isEmpty()) {
+                selectedCategories.addAll(existingCategories);
+            }
 
             return selectedCategories;
         }
