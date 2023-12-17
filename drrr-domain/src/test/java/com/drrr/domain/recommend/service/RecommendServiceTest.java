@@ -111,7 +111,7 @@ class RecommendServiceTest {
             TechBlogCode techBlogCode = TechBlogCode.values()[i
                     % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
             return TechBlogPost.builder()
-                    .createdDate(createdDate)
+                    .writtenAt(createdDate)
                     .author(author)
                     .thumbnailUrl(thumbnailUrl)
                     .title(title)
