@@ -6,6 +6,7 @@ import com.drrr.domain.category.repository.RedisCategoryRepository;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +15,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RedisCategoryService {
     private final RedisCategoryRepository redisCategoryRepository;
+    private final RedisTemplate<String, RedisCategory> redisCategoryTemplate;
 
     public List<Category> findByIds(List<Long> categoryIds) {
-        List<RedisCategory> redisCategories = redisCategoryRepository.findByIdIn(categoryIds);
+        final List<String> keys = categoryIds.stream()
+                .map(Object::toString)
+                .toList();
+
+        final List<RedisCategory> redisCategories = redisCategoryTemplate.opsForValue().multiGet(keys).stream()
+                .filter(redisCategory -> redisCategory != null).toList();
+
         return redisCategories.stream()
                 .map(category -> Category.builder()
                         .name(category.getName())
@@ -24,8 +32,10 @@ public class RedisCategoryService {
     }
 
     public List<Category> findAll() {
-        List<RedisCategory> redisCategories = (List<RedisCategory>) redisCategoryRepository.findAll();
+        final List<RedisCategory> redisCategories = redisCategoryRepository.findAll();
+
         return redisCategories.stream()
+                .filter(redisCategory -> redisCategory != null)
                 .map(category -> Category.builder()
                         .name(category.getName())
                         .build()).sorted(Comparator.comparing(Category::getName)).toList();

@@ -24,10 +24,11 @@ public class ExternalTechBlogPostService {
         final List<TechBlogPost> postsByCategoryIdInRedis = redisTechBlogPostService.findPostsByCategoryIdInRedis(
                 categoryId);
 
-        if (postsByCategoryIdInRedis.isEmpty()) {
+        //redis에서 가져온 데이터가 null인 경우
+        if (postsByCategoryIdInRedis == null) {
             List<TechBlogPost> postsByCategory = techBlogPostService.findPostsByCategory(categoryId);
             redisTechBlogPostService.saveCategoryPostsInRedis(categoryId, postsByCategory);
-            return techBlogPostService.findPostsByCategory(categoryId);
+            return postsByCategory;
         }
         return postsByCategoryIdInRedis;
     }
