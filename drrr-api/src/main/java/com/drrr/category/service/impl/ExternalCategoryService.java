@@ -20,28 +20,11 @@ public class ExternalCategoryService {
     private final RedisCategoryService redisCategoryService;
 
     /**
-     * 모든 카테고리 정보를 가져옴
+     * 모든 카테고리 정보를 가져옴, redis를 사용하지 않음 파라미터 없이 redis에서 findAll할 경우 문제가 발생할 수 있음 기존에 20개중 3개가 들어갔다고 하면 3개만 끌고 오는 문제 발생
      */
     public List<CategoryDto> execute() {
-        final List<Category> redisCategories = redisCategoryService.findAll();
-        //최신 카테고리가 업데이트되는 순간 모든 캐시를 날림
-        if (redisCategories.isEmpty()) {
-            final List<CategoryDto> categories = categoryService.findAllCategories();
-
-            final List<RedisCategory> categoryList = categories.stream()
-                    .map(categoryDto -> RedisCategory.builder()
-                            .id(categoryDto.id())
-                            .name(categoryDto.categoryName())
-                            .build()).toList();
-            redisCategoryService.saveCategories(categoryList);
-            return categories;
-        }
-
-        return redisCategories.stream().map(redisCategory -> CategoryDto.builder()
-                        .id(redisCategory.getId())
-                        .categoryName(redisCategory.getName())
-                        .build())
-                .toList();
+        return categoryService.findAllCategories().stream()
+                .sorted((o1, o2) -> o1.categoryName().compareTo(o2.categoryName())).toList();
     }
 
     /**
