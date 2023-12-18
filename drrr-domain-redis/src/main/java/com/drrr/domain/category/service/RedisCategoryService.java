@@ -31,16 +31,6 @@ public class RedisCategoryService {
                         .build()).sorted(Comparator.comparing(Category::getName)).toList();
     }
 
-    public List<Category> findAll() {
-        final List<RedisCategory> redisCategories = redisCategoryRepository.findAll();
-
-        return redisCategories.stream()
-                .filter(redisCategory -> redisCategory != null)
-                .map(category -> Category.builder()
-                        .name(category.getName())
-                        .build()).sorted(Comparator.comparing(Category::getName)).toList();
-    }
-
     public void saveCategories(List<RedisCategory> categories) {
         List<RedisCategory> redisCategories = categories.stream()
                 .map(category -> RedisCategory.builder()
