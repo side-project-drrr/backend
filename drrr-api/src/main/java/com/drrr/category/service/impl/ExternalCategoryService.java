@@ -9,6 +9,7 @@ import com.drrr.domain.category.service.RedisCategoryService;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -69,18 +70,17 @@ public class ExternalCategoryService {
 
             redisCategoryService.saveCategories(redisCategoryList);
             //redis에 기존에 있었던 카테고리 dto로 변환
-            final List<CategoryDto> existingCategories = redisCategories.stream()
-                    .map(redisCategory -> CategoryDto.builder()
-                            .id(redisCategory.getId())
-                            .categoryName(redisCategory.getName())
-                            .build())
-                    .toList();
 
-            if (!existingCategories.isEmpty()) {
-                selectedCategories.addAll(existingCategories);
-            }
+            final List<CategoryDto> combinedCategories = Stream.concat(
+                            redisCategories.stream()
+                                    .map(redisCategory -> CategoryDto.builder()
+                                            .id(redisCategory.getId())
+                                            .categoryName(redisCategory.getName())
+                                            .build()),
+                            selectedCategories.stream())
+                    .collect(Collectors.toList());
 
-            return selectedCategories;
+            return combinedCategories;
         }
         return categoryService.findSelectedCategories(request.categoryIds());
     }
