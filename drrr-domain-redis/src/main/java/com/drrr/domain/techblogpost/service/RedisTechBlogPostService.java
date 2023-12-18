@@ -38,6 +38,10 @@ public class RedisTechBlogPostService {
         final Optional<RedisCategoryTechBlogPost> redisCategoryTechBlogPosts = redisCategoryTechBlogPostRepository.findById(
                 categoryId);
 
+        if (!redisCategoryTechBlogPosts.isPresent()) {
+            return null;
+        }
+
         return redisCategoryTechBlogPosts.get().getTechBlogPost().stream().filter(techBlogPost -> techBlogPost != null)
                 .toList();
     }
