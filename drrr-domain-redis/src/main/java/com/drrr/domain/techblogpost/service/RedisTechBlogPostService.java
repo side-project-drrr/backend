@@ -6,6 +6,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.RedisCategoryTechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.RedisTechBlogPostRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,9 +29,10 @@ public class RedisTechBlogPostService {
 
         final List<RedisTechBlogPost> redisTechBlogPosts = redisTechBlogPostTemplate.opsForValue().multiGet(keys);
 
+        assert redisTechBlogPosts != null;
         return redisTechBlogPosts.stream()
-                .filter(redisTechBlogPost -> redisTechBlogPost != null)
-                .map((entity) -> entity.getTechBlogPost())
+                .filter(Objects::nonNull)
+                .map(RedisTechBlogPost::getTechBlogPost)
                 .toList();
     }
 
@@ -38,12 +40,11 @@ public class RedisTechBlogPostService {
         final Optional<RedisCategoryTechBlogPost> redisCategoryTechBlogPosts = redisCategoryTechBlogPostRepository.findById(
                 categoryId);
 
-        if (!redisCategoryTechBlogPosts.isPresent()) {
-            return null;
-        }
+        return redisCategoryTechBlogPosts.map(
+                redisCategoryTechBlogPost -> redisCategoryTechBlogPost.getTechBlogPost().stream()
+                        .filter(Objects::nonNull)
+                        .toList()).orElse(null);
 
-        return redisCategoryTechBlogPosts.get().getTechBlogPost().stream().filter(techBlogPost -> techBlogPost != null)
-                .toList();
     }
 
     public void savePostsInRedis(final List<TechBlogPost> posts) {

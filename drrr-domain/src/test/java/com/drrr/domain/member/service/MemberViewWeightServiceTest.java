@@ -99,7 +99,7 @@ class MemberViewWeightServiceTest {
         });
 
         LocalDate createdDate = LocalDate.of(2023, 9, 30);
-        createdDate.minusDays(1);
+
         String author = "Author1";
         String thumbnailUrl = "http://example.com/thumbnail1.jpg";
         String title = "Title";
@@ -121,7 +121,7 @@ class MemberViewWeightServiceTest {
         techBlogPostRepository.save(post);
 
         List<Category> categories = IntStream.rangeClosed(1, 10).mapToObj(i -> {
-            String categoryName = "Category" + i;
+
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .name(categoryDisplayName)
@@ -169,7 +169,6 @@ class MemberViewWeightServiceTest {
     @Test
     void 사용자가_본_게시물에_대한_로그와_히스토리가_정상적으로_쌓입니다() {
         //when
-        List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
 
         Long memberId = memberRepository.findAll().get(0).getId();
         Long postId = techBlogPostRepository.findAll().get(0).getId();
@@ -179,11 +178,11 @@ class MemberViewWeightServiceTest {
 
         //then
         List<MemberPostLog> memberLogs = memberPostLogRepository.findByMemberId(memberId);
-        if (memberLogs.size() == 0) {
+        if (memberLogs.isEmpty()) {
             throw new IllegalArgumentException("memberLog elements is null");
         }
         List<MemberPostHistory> memberHistories = memberPostHistoryRepository.findByMemberId(memberId);
-        if (memberHistories.size() == 0) {
+        if (memberHistories.isEmpty()) {
             throw new IllegalArgumentException("memberHistory elements is null");
         }
         assertThat(memberLogs).isNotEmpty();
@@ -208,11 +207,11 @@ class MemberViewWeightServiceTest {
     void 사용자가_한_게시물을_접근했을_때_조회수가_정상적으로_증가합니다() {
         //when
         List<Member> members = memberRepository.findAll();
-        if (members.size() == 0) {
+        if (members.isEmpty()) {
             throw new IllegalArgumentException("member elements is null");
         }
         List<TechBlogPost> originalPost = techBlogPostRepository.findAll();
-        if (originalPost.size() == 0) {
+        if (originalPost.isEmpty()) {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
@@ -222,7 +221,7 @@ class MemberViewWeightServiceTest {
 
         //then
         List<TechBlogPost> updatedPost = techBlogPostRepository.findAll();
-        if (updatedPost.size() == 0) {
+        if (updatedPost.isEmpty()) {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         int viewCount = updatedPost.get(0).getViewCount();

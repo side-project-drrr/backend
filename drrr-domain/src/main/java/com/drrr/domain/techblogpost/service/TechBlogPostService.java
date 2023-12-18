@@ -25,7 +25,7 @@ public class TechBlogPostService {
 
     public List<TechBlogPost> findAllPosts() {
         final List<TechBlogPost> posts = techBlogPostRepository.findAll();
-        if (posts.size() == 0) {
+        if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
@@ -39,7 +39,7 @@ public class TechBlogPostService {
                 .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
                 .where(techBlogPostCategory.category.id.eq(postId))
                 .fetch();
-        if (posts.size() == 0) {
+        if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
@@ -52,7 +52,7 @@ public class TechBlogPostService {
                 .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
                 .limit(topN)
                 .fetch();
-        if (topPosts.size() == 0) {
+        if (topPosts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
@@ -75,7 +75,7 @@ public class TechBlogPostService {
 
     public List<TechBlogPost> findTechBlogPostsByIds(final List<Long> postIds) {
         final List<TechBlogPost> posts = techBlogPostRepository.findByIdIn(postIds);
-        if (posts.size() == 0) {
+        if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }

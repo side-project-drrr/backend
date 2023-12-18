@@ -29,14 +29,14 @@ public class TechBlogPostLikeService {
                 .orElseThrow(() -> {
                     log.error("사용자를 찾을 수 없습니다.");
                     log.error("memberId -> " + memberId);
-                    throw MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
+                    return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
                 });
 
         final TechBlogPost post = techBlogPostRepository.findByIdWithPessimisticLock(postId)
                 .orElseThrow(() -> {
                     log.error("기술블로그를 찾을 수 없습니다.");
                     log.error("postId -> " + postId);
-                    throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+                    return TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
 
         final Optional<TechBlogPostLike> postLike = postLikeRepository.findByPostIdAndMemberId(memberId, postId);
@@ -62,7 +62,7 @@ public class TechBlogPostLikeService {
                 .orElseThrow(() -> {
                     log.error("기술블로그를 찾을 수 없습니다.");
                     log.error("postId -> " + postId);
-                    throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+                    return TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
 
         postLikeRepository.deleteByMemberIdAndPostId(memberId, postId);

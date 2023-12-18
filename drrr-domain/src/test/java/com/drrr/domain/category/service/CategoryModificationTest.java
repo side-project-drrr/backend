@@ -74,7 +74,6 @@ public class CategoryModificationTest {
         memberRepository.save(member);
 
         LocalDate createdDate = LocalDate.of(2023, 9, 30);
-        createdDate.minusDays(1);
         String author = "Author1";
         String thumbnailUrl = "http://example.com/thumbnail1.jpg";
         String title = "Title";
@@ -97,7 +96,7 @@ public class CategoryModificationTest {
 
         List<Category> categories = IntStream.rangeClosed(1, 10).mapToObj(i -> {
             String categoryName = "Category" + i;
-            String categoryDisplayName = "Display Category" + i;
+
             return Category.builder()
                     .name(categoryName)
                     .build();

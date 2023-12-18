@@ -32,7 +32,7 @@ public class MemberPreferredCategoryServiceModificationService {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             log.error("사용자 가중치를 찾을 수 없습니다.");
             log.error("memberId -> " + memberId);
-            throw MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
+            return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
         });
 
         List<Category> categories = categoryRepository.findByIdIn(updateCategoryIds);
@@ -68,7 +68,7 @@ public class MemberPreferredCategoryServiceModificationService {
                             .category(categoryWeight.getCategory())
                             .build();
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         //사용자의 기존 등록된 카테고리 id를 제외하고 새로 등록해줘야 할 id set
         updateCategoryIdsSet.removeAll(existingCategoryIdsSet);

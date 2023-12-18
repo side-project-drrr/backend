@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
@@ -132,7 +131,7 @@ public class TechBlogPostE2ETest {
         List<TechBlogPost> techBlogPosts = IntStream.rangeClosed(1, 99).mapToObj(i -> {
             //현재로부터 몇년전까지 랜덤으로 연월일을 뽑을지 정함
             LocalDate createdDate = LocalDate.of(2023, 9, 30);
-            createdDate.minusDays(i);
+
             String author = "Author" + i; // 짝수 인덱스에서만 저자 설정
             String thumbnailUrl = "http://example.com/thumbnail" + i + ".jpg";
             String title = "Title" + i;
@@ -177,7 +176,6 @@ public class TechBlogPostE2ETest {
         //C1~C10 생성
         List<Category> categories = IntStream.rangeClosed(1, 10).mapToObj(i -> {
             String categoryName = "Category" + i;
-            String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .name(categoryName)
                     .build();
@@ -370,7 +368,7 @@ public class TechBlogPostE2ETest {
                     .contentType(ContentType.APPLICATION_JSON.toString())
                     .body("""
                             {
-                                "memberId": """ + i + """
+                                "memberId":""" + i + """
                                 ,"postId" : 1
                             }
                             """)
@@ -384,12 +382,10 @@ public class TechBlogPostE2ETest {
         });
         latch.await();
         executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         //then
-        TechBlogPost techBlogPost = techBlogPostRepository.findById(1L).orElseThrow(() -> {
-            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
-        });
+        TechBlogPost techBlogPost = techBlogPostRepository.findById(1L).orElseThrow(
+                TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
         int likeCount = techBlogPost.getPostLike();
         assertThat(likeCount).isEqualTo(500);
@@ -426,12 +422,10 @@ public class TechBlogPostE2ETest {
         });
         latch.await();
         executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         //then
-        TechBlogPost techBlogPost = techBlogPostRepository.findById(100L).orElseThrow(() -> {
-            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
-        });
+        TechBlogPost techBlogPost = techBlogPostRepository.findById(100L).orElseThrow(
+                TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
         int likeCount = techBlogPost.getPostLike();
         assertThat(likeCount).isEqualTo(0);

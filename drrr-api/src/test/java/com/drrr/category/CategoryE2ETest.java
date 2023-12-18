@@ -27,7 +27,6 @@ import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class CategoryE2ETest {
-    private final int CATEGORY_COUNT = 20;
 
     @LocalServerPort
     int port;
@@ -47,6 +46,7 @@ public class CategoryE2ETest {
 
 
     private void insertCategoryDummyData() {
+        int CATEGORY_COUNT = 20;
         List<Category> categories = IntStream.rangeClosed(1, CATEGORY_COUNT).mapToObj(i -> {
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()

@@ -18,6 +18,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.recommand.dto.RecommendResponse;
+import com.drrr.recommand.dto.TechBlogPostDto;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
@@ -31,7 +32,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
@@ -109,7 +109,6 @@ public class RecommendServiceE2ETest {
         List<TechBlogPost> techBlogPosts = IntStream.rangeClosed(1, 100).mapToObj(i -> {
             //현재로부터 몇년전까지 랜덤으로 연월일을 뽑을지 정함
             LocalDate createdDate = LocalDate.of(2023, 9, 30);
-            createdDate.minusDays(i);
             String author = "Author" + i; // 짝수 인덱스에서만 저자 설정
             String thumbnailUrl = "http://example.com/thumbnail" + i + ".jpg";
             String title = "Title" + i;
@@ -328,7 +327,7 @@ public class RecommendServiceE2ETest {
                     .contentType(ContentType.APPLICATION_JSON.toString())
                     .body("""
                             {
-                                "memberId": """ + i + """
+                                "memberId":""" + i + """
                             }
                             """)
                     .post("/api/v1/recommendation/posts/{memberId}", (long) i);
@@ -338,13 +337,12 @@ public class RecommendServiceE2ETest {
 
             RecommendResponse responseBody = response.as(RecommendResponse.class);
             membersRecommendedPosts.add(responseBody.posts().stream()
-                    .map(post -> post.id()).toList());
+                    .map(TechBlogPostDto::id).toList());
             latch.countDown();
 
         });
         latch.await();
         executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         //then
         IntStream.range(0, 500).forEach(i -> {

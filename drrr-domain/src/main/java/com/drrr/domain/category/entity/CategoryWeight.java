@@ -45,10 +45,6 @@ public class CategoryWeight extends BaseEntity {
 
     /**
      * HoursConstants.PAST_HOURS(시간 값)값마다 WeightConstants.DECREASE_WEIGHT만큼 떨어지는 가중치 값 반환
-     *
-     * @param pastTime
-     * @param now
-     * @return
      */
     private double getDecreasedWeightValueByHours(final LocalDateTime pastTime, final LocalDateTime now) {
         final Duration duration = Duration.between(pastTime, now);
@@ -60,8 +56,6 @@ public class CategoryWeight extends BaseEntity {
     /**
      * MIN_WEIGHT(최소 가중치) 값보다 더 낮거나 동일한 카테고리에 해당하는 기술 블로그를 UNREAD_DAYS에 정의한 값만큼 안 읽었는지 검증 둘 중에 하나라도 해당되면 그 카테고리의 가중치는
      * 초기값으로 변환하기 위함
-     *
-     * @return
      */
     public boolean isExpiredCategoryWeight() {
         return MIN_WEIGHT.isGreaterThan(this.value) || isUnreadPastDays(this.lastReadAt);
@@ -97,11 +91,6 @@ public class CategoryWeight extends BaseEntity {
     /**
      * 카테고리의 가중치가 MIN_WEIGHT과 MAX_WEIGHT의 사이에 있는지 검증 MIN_WEIGHT의 값보다 카테고리 가중치가 적으면 MIN_WEIGHT 값으로 설정 (선호가중치는
      * MIN_CONDITIONAL_WEIGHT로 설정) MAX_WEIGHT 보다 높으면 MAX_WEIGHT 값으로 설정
-     *
-     * @param weightValue
-     * @param minusWeight
-     * @param isPreferred
-     * @return
      */
     private double limitWeightValue(final double weightValue, final double minusWeight, final boolean isPreferred) {
         double updateWeight = weightValue - minusWeight;

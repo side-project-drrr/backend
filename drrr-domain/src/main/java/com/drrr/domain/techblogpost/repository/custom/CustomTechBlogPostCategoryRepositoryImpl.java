@@ -71,16 +71,15 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
         Query nativeQuery = em.createNativeQuery(refactorSql);
 
         final List<Object[]> list = nativeQuery.getResultList();
-        final List<ExtractedPostCategoryDto> resultDto = list.stream()
+
+        //가장 최근에 만들어진 게시물 순으로 정렬됨
+        //사용자가 관심 있는 카테고리에 대해 게시물 추출
+        return list.stream()
                 .map(elem -> ExtractedPostCategoryDto.builder()
                         .postId((Long) elem[0])
                         .categoryId((Long) elem[1])
                         .build())
                 .toList();
-
-        //가장 최근에 만들어진 게시물 순으로 정렬됨
-        //사용자가 관심 있는 카테고리에 대해 게시물 추출
-        return resultDto;
     }
 
     @Override

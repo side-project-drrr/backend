@@ -6,6 +6,8 @@ import com.drrr.domain.category.entity.RedisCategory;
 import com.drrr.domain.category.service.CategoryService;
 import com.drrr.domain.category.service.CategoryService.CategoryDto;
 import com.drrr.domain.category.service.RedisCategoryService;
+import com.drrr.domain.jpa.entity.BaseEntity;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,8 +35,8 @@ public class ExternalCategoryService {
     public List<CategoryDto> execute(final CategoryRequest request) {
         final List<Category> redisCategories = redisCategoryService.findByIds(request.categoryIds());
         if (redisCategories.size() != request.categoryIds().size()) {
-            final Set<Long> requestIds = request.categoryIds().stream().collect(Collectors.toSet());
-            final Set<Long> redisCategoryIds = redisCategories.stream().map(redisCategory -> redisCategory.getId())
+            final Set<Long> requestIds = new HashSet<>(request.categoryIds());
+            final Set<Long> redisCategoryIds = redisCategories.stream().map(BaseEntity::getId)
                     .collect(Collectors.toSet());
             //redis에 없는 카테고리를 뽑아냄
             requestIds.removeAll(redisCategoryIds);
@@ -54,7 +56,7 @@ public class ExternalCategoryService {
             redisCategoryService.saveCategories(redisCategoryList);
             //redis에 기존에 있었던 카테고리 dto로 변환
 
-            final List<CategoryDto> combinedCategories = Stream.concat(
+            return Stream.concat(
                             redisCategories.stream()
                                     .map(redisCategory -> CategoryDto.builder()
                                             .id(redisCategory.getId())
@@ -62,8 +64,6 @@ public class ExternalCategoryService {
                                             .build()),
                             selectedCategories.stream())
                     .collect(Collectors.toList());
-
-            return combinedCategories;
         }
         return categoryService.findSelectedCategories(request.categoryIds());
     }

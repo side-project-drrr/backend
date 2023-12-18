@@ -5,6 +5,7 @@ import com.drrr.domain.category.entity.RedisCategory;
 import com.drrr.domain.category.repository.RedisCategoryRepository;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class RedisCategoryService {
                 .toList();
 
         final List<RedisCategory> redisCategories = redisCategoryTemplate.opsForValue().multiGet(keys).stream()
-                .filter(redisCategory -> redisCategory != null).toList();
+                .filter(Objects::nonNull).toList();
 
         return redisCategories.stream()
                 .map(category -> Category.builder()
