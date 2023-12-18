@@ -29,6 +29,10 @@ public class ExternalCategoryService {
                 .sorted((o1, o2) -> o1.categoryName().compareTo(o2.categoryName())).toList();
     }
 
+    public List<CategoryDto> execute(final Long topN) {
+        return categoryService.findTopCategories(topN);
+    }
+
     /**
      * 지정된 카테고리 정보를 가져옴
      */
