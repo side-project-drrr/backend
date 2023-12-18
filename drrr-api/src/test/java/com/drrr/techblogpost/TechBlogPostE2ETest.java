@@ -20,8 +20,12 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.time.Instant;
@@ -91,6 +95,8 @@ public class TechBlogPostE2ETest {
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
     @Autowired
     private TechBlogPostLikeRepository techBlogPostLikeRepository;
+    @Autowired
+    private TechBlogPostService techBlogPostService;
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
@@ -430,5 +436,67 @@ public class TechBlogPostE2ETest {
         int likeCount = techBlogPost.getPostLike();
         assertThat(likeCount).isEqualTo(0);
 
+    }
+
+    @Test
+    void 모든_게시물을_정상적으로_가져옵니다() throws JsonProcessingException {
+        //when
+        List<TechBlogPost> posts =
+                new ObjectMapper().readValue(
+                        given()
+                                .log().all()
+                                .when()
+                                .contentType(ContentType.APPLICATION_JSON.toString())
+                                .get("/api/v1/posts")
+                                .then()
+                                .statusCode(HttpStatus.OK.value())
+                                .extract().body().asString(),
+                        new TypeReference<List<TechBlogPost>>() {
+                        }
+                );
+
+        //then
+        List<TechBlogPost> postsFromDb = techBlogPostRepository.findAll();
+        if (posts.isEmpty()) {
+            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+        }
+
+        assertThat(postsFromDb.size()).isEqualTo(posts.size());
+        assertThat(postsFromDb)
+                .zipSatisfy(posts, (actual, expected) -> {
+                    assertThat(actual.getId()).isEqualTo(expected.getId());
+                    // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
+                });
+    }
+
+    @Test
+    void 특정_카테고리에_해당하는_게시물을_정상적으로_가져옵니다() throws JsonProcessingException {
+        //when
+        List<TechBlogPost> posts =
+                new ObjectMapper().readValue(
+                        given()
+                                .log().all()
+                                .when()
+                                .contentType(ContentType.APPLICATION_JSON.toString())
+                                .get("/api/v1/posts/category/{id}", 8)
+                                .then()
+                                .statusCode(HttpStatus.OK.value())
+                                .extract().body().asString(),
+                        new TypeReference<List<TechBlogPost>>() {
+                        }
+                );
+
+        //then
+        List<TechBlogPost> postsFromDb = techBlogPostService.findPostsByCategory(8L);
+        if (posts.isEmpty()) {
+            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+        }
+
+        assertThat(postsFromDb.size()).isEqualTo(posts.size());
+        assertThat(postsFromDb)
+                .zipSatisfy(posts, (actual, expected) -> {
+                    assertThat(actual.getId()).isEqualTo(expected.getId());
+                    // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
+                });
     }
 }
