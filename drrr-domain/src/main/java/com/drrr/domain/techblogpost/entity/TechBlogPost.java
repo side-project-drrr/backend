@@ -2,6 +2,10 @@ package com.drrr.domain.techblogpost.entity;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.jpa.entity.BaseEntity;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -53,6 +57,9 @@ public class TechBlogPost extends BaseEntity {
 
     @Column(nullable = false)
     private int postLike = 0;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     @Column(nullable = false)
     private LocalDate writtenAt;
 

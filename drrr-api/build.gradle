@@ -27,19 +27,14 @@ dependencies {
     implementation group: 'com.github.maricn', name: 'logback-slack-appender', version: '1.6.1'
     //카프카
     implementation 'org.springframework.kafka:spring-kafka'
-
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'com.h2database:h2:1.4.199'
 
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'io.rest-assured:rest-assured:5.3.1'
-
-
-
-
-
-
 
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
