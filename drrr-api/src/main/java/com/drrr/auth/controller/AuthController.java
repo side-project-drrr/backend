@@ -122,7 +122,7 @@ public class AuthController {
     })
     @DeleteMapping("/member/{memberId}")
     public ResponseEntity<String> memberUnregister(@PathVariable("memberId") final Long memberId) {
-        unregisterService.unregister(memberId);
+        unregisterService.execute(memberId);
         return ResponseEntity.ok().build();
     }
 

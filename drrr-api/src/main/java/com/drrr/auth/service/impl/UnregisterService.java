@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UnregisterService {
     private final UnregisterMemberService unregisterMemberService;
 
-    public void unregister(final Long memberId) {
+    public void execute(final Long memberId) {
         unregisterMemberService.unregisterMember(memberId);
     }
 }
