@@ -42,7 +42,7 @@ public class CategoryController {
 
     @Operation(summary = "특정 카테고리를 가져오는 API", description = "호출 성공 시 body 안에 명시한 카테고리 정보 반환 - 올림차순 반환")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "body 안에 명시한 카테고리 정보 반환 - 내림차순", content = @Content(schema = @Schema(implementation = CategoryDto.class)))
+            @ApiResponse(responseCode = "200", description = "body 안에 명시한 카테고리 정보 반환 - 올림차순", content = @Content(schema = @Schema(implementation = CategoryDto.class)))
     })
     @GetMapping("/categories/selection")
     public List<CategoryDto> findSelectedCategory(@NonNull @RequestParam("ids") final List<Long> ids) {
