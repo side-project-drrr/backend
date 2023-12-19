@@ -63,8 +63,7 @@ public class CategoryController {
 
     @Operation(summary = "사용자가 가장 많이 선호하는 top 카테고리들을 가져오는 API", description = "호출 성공 시 사용자가 선호하는 카테고리들 반환 - 올림차순 반환",
             parameters = {
-                    @Parameter(name = "memberId", description = "사용자 ID", in = ParameterIn.PATH, schema = @Schema(type = "string")),
-                    @Parameter(name = "categoryIds", description = "카테고리 ID 리스트, body 안에 Json 형태로 \"category\" : [1,2,3] 이렇게 body에 넣어줄 것", schema = @Schema(type = "array", implementation = Long.class))
+                    @Parameter(name = "topN", description = "탑 카테고리 개수", in = ParameterIn.PATH, schema = @Schema(type = "Long"))
             })
     @GetMapping("/top/categories/{topN}")
     public List<CategoryDto> findTopCategories(@PathVariable("topN") @NonNull final Long topN) {
