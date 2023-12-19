@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 public class PushAlarmController {
     private final ExternalNotificationEmailService externalNotificationEmailService;
     private final ExternalMemberSubscriptionService externalMemberSubscriptionService;
@@ -62,8 +62,8 @@ public class PushAlarmController {
             description = "사용하지 말 것, 개인 테스트 용 Controller")
     @PostMapping("/notifications/email")
     public ResponseEntity<String> emailNotifications(@RequestBody PushMessage message) {
-        // webPushProducer.sendNotifications();
-        externalNotificationEmailService.execute(message);
+        webPushProducer.sendNotifications();
+        // externalNotificationEmailService.execute(message);
         return ResponseEntity.ok("Email requests sent to Kafka");
     }
 }
