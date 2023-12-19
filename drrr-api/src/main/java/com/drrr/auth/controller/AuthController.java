@@ -116,9 +116,9 @@ public class AuthController {
         return emailVerificationService.execute(request);
     }
 
-    @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
+    @Operation(summary = "회원탈퇴 API", description = "호출 성공 시 회원탈퇴")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "200", description = "회원탈퇴 성공", content = @Content(schema = @Schema(implementation = String.class)))
     })
     @DeleteMapping("/member/{memberId}")
     public ResponseEntity<String> memberUnregister(@PathVariable("memberId") final Long memberId) {
