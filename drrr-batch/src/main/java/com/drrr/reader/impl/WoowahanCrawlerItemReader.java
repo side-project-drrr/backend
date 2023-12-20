@@ -101,7 +101,7 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader imp
 
         return this.webDriver.findElements(By.cssSelector(cssSelectorTarget))
                 .stream()
-                .map(webElement -> webElement.getText())
+                .map(WebElement::getText)
                 .mapToInt(Integer::parseInt)
                 .max()
                 .orElseThrow(IllegalArgumentException::new);
