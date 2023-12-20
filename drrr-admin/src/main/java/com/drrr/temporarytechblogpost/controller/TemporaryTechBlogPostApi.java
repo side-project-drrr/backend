@@ -8,7 +8,10 @@ import com.drrr.domain.techblogpost.service.SearchTemporaryTechBlogPostService.S
 import com.drrr.domain.techblogpost.service.SearchTemporaryTechBlogPostService.SearchTemporaryTechBlogPostResultDto;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,6 +50,20 @@ public class TemporaryTechBlogPostApi {
                         .build(),
                 pageable
         ));
+    }
+
+    @PatchMapping("/{id}/category")
+    public void registerPostTag(
+            @PathVariable(name = "id") Long id,
+            @RequestBody @Valid RegisterPostTagRequest registerPostTagRequest) {
+
+        registerPostTagService.execute(id, registerPostTagRequest.tagNames());
+    }
+
+    public record RegisterPostTagRequest(
+            @NotNull String aiSummarizedText,
+            @NotEmpty List<String> tagNames
+    ) {
     }
 
     public record SearchTemporalTechBlogPostResponse(

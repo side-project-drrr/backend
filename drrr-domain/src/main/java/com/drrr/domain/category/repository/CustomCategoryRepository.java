@@ -9,4 +9,5 @@ public interface CustomCategoryRepository {
     List<Category> findIds(List<Long> ids);
 
     List<Category> findByNameContaining(String text, Pageable pageable);
+
 }
