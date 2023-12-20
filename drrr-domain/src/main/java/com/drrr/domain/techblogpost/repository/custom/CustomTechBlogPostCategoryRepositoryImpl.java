@@ -41,20 +41,20 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
                 .map(categoryId -> String.format("""
                              SELECT A.techblogpost_id pid
                                      , A.category_id cid
-                                     , X.created_date created_date
+                                     , X.written_at written_at
                                   FROM DRRR_TECHBLOGPOST_CATEGORY A
                             INNER JOIN (
                                                SELECT C.id
-                                                    , C.created_date
+                                                    , C.written_at
                                                  FROM DRRR_TECHBLOGPOST_CATEGORY B
-                                           INNER JOIN DRRR_TECH_BLOG_POST C
+                                           INNER JOIN DRRR_TECHBLOGPOST C
                                                    ON B.techblogpost_id = C.id
                                 LEFT JOIN DRRR_MEMBER_POST_LOG D
                                        ON B.techblogpost_id = D.post_id
                                       AND D.member_id = %d
                                     WHERE D.post_id IS NULL
                                       AND B.category_id = %d
-                                    ORDER BY C.created_date DESC
+                                    ORDER BY C.written_at DESC
                                     LIMIT %d
                             ) X
                         ON A.techblogpost_id = X.id
@@ -62,25 +62,24 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
                 .collect(Collectors.joining(" UNION ALL "));
 
         final String refactorSql = String.format("""
-                SELECT T.pid,T.cid, T.created_date FROM (
+                SELECT T.pid,T.cid, T.written_at FROM (
                  %s
-                ) T GROUP BY T.pid, T.cid, T.created_date
-                 ORDER BY T.created_date DESC
+                ) T GROUP BY T.pid, T.cid, T.written_at
+                 ORDER BY T.written_at DESC
                 """, unionSql);
 
         Query nativeQuery = em.createNativeQuery(refactorSql);
 
         final List<Object[]> list = nativeQuery.getResultList();
-        final List<ExtractedPostCategoryDto> resultDto = list.stream()
+
+        //가장 최근에 만들어진 게시물 순으로 정렬됨
+        //사용자가 관심 있는 카테고리에 대해 게시물 추출
+        return list.stream()
                 .map(elem -> ExtractedPostCategoryDto.builder()
                         .postId((Long) elem[0])
                         .categoryId((Long) elem[1])
                         .build())
                 .toList();
-
-        //가장 최근에 만들어진 게시물 순으로 정렬됨
-        //사용자가 관심 있는 카테고리에 대해 게시물 추출
-        return resultDto;
     }
 
     @Override

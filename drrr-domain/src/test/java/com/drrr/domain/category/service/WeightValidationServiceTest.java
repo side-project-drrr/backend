@@ -107,7 +107,7 @@ class WeightValidationServiceTest {
         List<TechBlogPost> techBlogPosts = IntStream.rangeClosed(1, 100).mapToObj(i -> {
             //현재로부터 몇년전까지 랜덤으로 연월일을 뽑을지 정함
             LocalDate createdDate = LocalDate.of(2023, 9, 30);
-            createdDate.minusDays(i);
+
             String author = "Author" + i; // 짝수 인덱스에서만 저자 설정
             String thumbnailUrl = "http://example.com/thumbnail" + i + ".jpg";
             String title = "Title" + i;
@@ -117,7 +117,7 @@ class WeightValidationServiceTest {
             TechBlogCode techBlogCode = TechBlogCode.values()[i
                     % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
             return TechBlogPost.builder()
-                    .createdDate(createdDate)
+                    .writtenAt(createdDate)
                     .author(author)
                     .thumbnailUrl(thumbnailUrl)
                     .title(title)
@@ -130,7 +130,7 @@ class WeightValidationServiceTest {
         techBlogPostRepository.saveAll(techBlogPosts);
 
         List<Category> categories = IntStream.rangeClosed(1, 10).mapToObj(i -> {
-            String categoryName = "Category" + i;
+
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .name(categoryDisplayName)
@@ -286,7 +286,7 @@ class WeightValidationServiceTest {
     void 가중치_검증에_의해서_가중치가_제대로_감소합니다() {
         //when
         List<Member> members = memberRepository.findAll();
-        if (members.size() == 0) {
+        if (members.isEmpty()) {
             throw new IllegalArgumentException("members elements is null");
         }
 
@@ -297,15 +297,15 @@ class WeightValidationServiceTest {
 
         List<CategoryWeight> member1CategoryWeight = categoryWeightRepository.findByMemberId(members.get(0).getId());
 
-        if (member1CategoryWeight.size() == 0) {
+        if (member1CategoryWeight.isEmpty()) {
             throw new IllegalArgumentException("member1CategoryWeight elements is null");
         }
         List<CategoryWeight> member2CategoryWeight = categoryWeightRepository.findByMemberId(members.get(1).getId());
-        if (member2CategoryWeight.size() == 0) {
+        if (member2CategoryWeight.isEmpty()) {
             throw new IllegalArgumentException("member2CategoryWeight elements is null");
         }
         List<CategoryWeight> member3CategoryWeight = categoryWeightRepository.findByMemberId(members.get(2).getId());
-        if (member3CategoryWeight.size() == 0) {
+        if (member3CategoryWeight.isEmpty()) {
             throw new IllegalArgumentException("member3CategoryWeight elements is null");
         }
         List<CategoryWeight> member4CategoryWeight = categoryWeightRepository.findByMemberId(members.get(3).getId());

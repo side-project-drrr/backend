@@ -3,6 +3,7 @@ package com.drrr.web.security.filter;
 import com.drrr.core.exception.jwt.JwtExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
 import com.drrr.web.security.exception.JwtExpiredTokenException;
+import com.drrr.web.security.exception.NotRegisteredIpException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,10 @@ import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +26,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j
+@PropertySource(value = "classpath:security-storage-api/front/front-ip.properties")
 @RequiredArgsConstructor
 public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
@@ -29,11 +34,23 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
     private static final String HEADER_AUTHORIZATION = "Authorization";
     private final JwtProvider jwtTokenProvider;
     private final Set<String> IgnoreUrlsSet = new HashSet<>(List.of("/actuator/prometheus"));
+    @Value("${api.acceptance.local.ipv4.ip}")
+    private String ipv4AcceptIp;
+    @Value("${api.acceptance.local.ipv6.ip}")
+    private String ipv6AcceptIp;
+    @Value("${api.acceptance.front.ip}")
+    private String frontIp;
 
     @Override
-    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
-                                    final FilterChain filterChain)
+    protected void doFilterInternal(final HttpServletRequest request, @NonNull final HttpServletResponse response,
+                                    @NonNull final FilterChain filterChain)
             throws ServletException, IOException {
+
+        if (!ipv4AcceptIp.equals(request.getRemoteAddr()) && !ipv6AcceptIp.equals(request.getRemoteAddr())
+                && !frontIp.equals(request.getRemoteAddr())) {
+            log.info("등록되지 않은 IP 요청 -> " + request.getRemoteAddr());
+            throw new NotRegisteredIpException("등록되지 않은 IP 주소의 요청입니다.");
+        }
 
         //prometheus의 지표 수집을 위한 주기적인 request는 무시
         if (IgnoreUrlsSet.contains(request.getRequestURI())) {
@@ -45,8 +62,8 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
         log.info("-------------------request URI: " + request.getRequestURI() + "---------------");
         final String token = extractToken(request);
 
-        if (Objects.isNull(token) || IgnoreUrlsSet.contains(request.getRequestURI())) {
-            System.out.println("-----------JWT Token null-------------------");
+        if (Objects.isNull(token)) {
+            log.info("-----------JWT Token null-------------------");
             filterChain.doFilter(request, response);
             return;
         }

@@ -61,7 +61,7 @@ public class SearchTemporaryTechBlogPostService {
         public static SearchTemporaryTechBlogPostResultDto from(final TemporalTechBlogPost temporalTechBlogPost) {
             return SearchTemporaryTechBlogPostResultDto.builder()
                     .id(temporalTechBlogPost.getId())
-                    .createdDate(temporalTechBlogPost.getCreatedDate())
+                    .createdDate(temporalTechBlogPost.getWrittenAt())
                     .author(temporalTechBlogPost.getAuthor())
                     .thumbnailUrl(temporalTechBlogPost.getThumbnailUrl())
                     .title(temporalTechBlogPost.getTitle())

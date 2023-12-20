@@ -24,54 +24,58 @@ public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
     public List<TechBlogPost> findAllPosts() {
-        List<TechBlogPost> posts = techBlogPostRepository.findAll();
-        if (posts.size() == 0) {
+        final List<TechBlogPost> posts = techBlogPostRepository.findAll();
+        if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
         return posts;
     }
 
-    public List<TechBlogPost> findPostsByCategory(Long postId) {
-        List<TechBlogPost> posts = queryFactory.select(techBlogPost)
+    public List<TechBlogPost> findPostsByCategory(final Long postId) {
+        final List<TechBlogPost> posts = queryFactory.select(techBlogPost)
                 .from(techBlogPostCategory)
                 .leftJoin(techBlogPost)
                 .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
                 .where(techBlogPostCategory.category.id.eq(postId))
                 .fetch();
-        if (posts.size() == 0) {
+        if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
         return posts;
     }
 
-    public List<TechBlogPost> getPostsByCategory(Long postId) {
-        return queryFactory.select(techBlogPost)
-                .from(techBlogPostCategory)
-                .leftJoin(techBlogPost)
-                .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
-                .where(techBlogPostCategory.category.id.eq(postId))
+    public List<TechBlogPost> findTopLikePost(final int topN) {
+        final List<TechBlogPost> topPosts = queryFactory.select(techBlogPost)
+                .from(techBlogPost)
+                .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
+                .limit(topN)
                 .fetch();
+        if (topPosts.isEmpty()) {
+            log.error("기술블로그를 찾을 수 없습니다.");
+            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+        }
+        return topPosts;
     }
 
     public List<TechBlogPost> findNotCachedTechBlogPosts(final List<TechBlogPost> postsInRedis,
                                                          final List<Long> postIds) {
         //추천해줘야 할 전체 게시물 ids
-        Set<Long> postsInRedisIds = postsInRedis.stream()
+        final Set<Long> postsInRedisIds = postsInRedis.stream()
                 .map(TechBlogPost::getId)
                 .collect(Collectors.toSet());
 
-        List<Long> notCachedPostIds = postIds.stream()
+        final List<Long> notCachedPostIds = postIds.stream()
                 .filter(id -> !postsInRedisIds.contains(id))
                 .collect(Collectors.toList());
 
         return techBlogPostRepository.findByIdIn(notCachedPostIds);
     }
 
-    public List<TechBlogPost> findTechBlogPostsByIds(List<Long> postIds) {
-        List<TechBlogPost> posts = techBlogPostRepository.findByIdIn(postIds);
-        if (posts.size() == 0) {
+    public List<TechBlogPost> findTechBlogPostsByIds(final List<Long> postIds) {
+        final List<TechBlogPost> posts = techBlogPostRepository.findByIdIn(postIds);
+        if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }

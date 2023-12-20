@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Getter
 @RedisHash(value = "redisTechBlogPost", timeToLive = 3600) // Redis Repository 사용을 위한
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 public class RedisTechBlogPost {
     @Id

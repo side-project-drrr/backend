@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,8 +32,15 @@ public class MemberPreferredCategoryServiceModificationService {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             log.error("사용자 가중치를 찾을 수 없습니다.");
             log.error("memberId -> " + memberId);
-            throw MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
+            return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
         });
+
+        List<Category> categories = categoryRepository.findByIdIn(updateCategoryIds);
+        if (categories.isEmpty()) {
+            log.error("카테고리가 존재하지 않습니다.");
+            log.error("category id -> " + updateCategoryIds.toString());
+            throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+        }
 
         //현재 사용자의 카테고리 정보 가져오기
         final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
@@ -59,7 +67,8 @@ public class MemberPreferredCategoryServiceModificationService {
                             .value(categoryWeight.getValue())
                             .category(categoryWeight.getCategory())
                             .build();
-                }).collect(Collectors.toList());
+                })
+                .toList();
 
         //사용자의 기존 등록된 카테고리 id를 제외하고 새로 등록해줘야 할 id set
         updateCategoryIdsSet.removeAll(existingCategoryIdsSet);
@@ -69,7 +78,7 @@ public class MemberPreferredCategoryServiceModificationService {
         final List<Category> remainedCategories = categoryRepository.findByIdIn(updateCategoryIdsSet);
 
         //카테고리 가중치 테이블에 없는 신규 카테고리 가중치 추가
-        final List<CategoryWeight> remainedCategoryWeights = remainedCategories.stream()
+        final List<CategoryWeight> updates = Stream.concat(remainedCategories.stream()
                 .map(category -> {
                     return CategoryWeight.builder()
                             .member(member)
@@ -77,18 +86,13 @@ public class MemberPreferredCategoryServiceModificationService {
                             .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
                             .category(category)
                             .build();
-                }).collect(Collectors.toList());
+                }), updatedCategoryWeights.stream()).toList();
 
         //memberId에 해당하는 categoryWeight를 다 지우기
         categoryWeightRepository.deleteByMemberId(memberId);
 
-        //바꾸려는 선호 카테고리가 이미 기존 선호 카테고리나 비선호 카테고리로 다 등록되지 않은 경우
-        if (remainedCategoryWeights.size() != 0) {
-            updatedCategoryWeights.addAll(remainedCategoryWeights);
-        }
-
         //다시 새로 categoryWeight를 넣어주기
-        categoryWeightRepository.saveAll(updatedCategoryWeights);
+        categoryWeightRepository.saveAll(updates);
     }
 
 }

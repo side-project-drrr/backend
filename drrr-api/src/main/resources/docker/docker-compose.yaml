@@ -85,10 +85,10 @@ services:
       # Redis 서버를 실행할 때 사용되는 명령어입니다. 이 명령어는 Redis 서버를 구동하고 지정된 경로의 Redis 설정 파일(redis.conf)을 사용하여 구성
     command: bash -c "apt-get update && apt-get install vim -y && redis-server /usr/local/etc/redis/redis.conf"
     restart: always
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 512M
+  #    deploy:
+  #      resources:
+  #        limits:
+  #          memory: 512M
   redis-insight:
     image: redislabs/redisinsight:latest
     ports:
@@ -133,10 +133,10 @@ services:
       #여기서는 내부 리스너(LISTENER_DOCKER_INTERNAL)를 사용하도록 설정되어 있습니다.
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
 
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 512M
+  #    deploy:
+  #      resources:
+  #        limits:
+  #          memory: 512M
   kafdrop:
     image: obsidiandynamics/kafdrop
     restart: "no"
@@ -148,21 +148,4 @@ services:
       KAFKA_BROKER_CONNECT: "kafka1:19091"
     depends_on:
       - kafka1
-  jenkins:
-    image: jenkins/jenkins:lts
-    container_name: jenkins_cicd
-    volumes:
-      - ./var/run/docker.sock:/var/run/docker.sock
-      - ./jenkins:/var/jenkins_home
-    ports:
-      - "9090:8080"
-    networks:
-      - replica
-    privileged: true
-    user: root
-#    deploy:
-#      resources:
-#        limits:
-#          memory: 512M
-
 

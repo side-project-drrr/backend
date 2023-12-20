@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,6 +28,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 
 @Configuration
+@PropertySource(value = "classpath:security-storage-api/front/front-ip.properties")
 @RequiredArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = false)
@@ -34,7 +36,7 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 public class SecurityConfig {
     private final JwtProvider jwtProvider;
 
-    @Value("${global.variable.front.local.domain}")
+    @Value("${api.acceptance.front.ip}")
     private String domain;
 
     @Bean
@@ -52,7 +54,7 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
             config.setAllowedHeaders(Collections.singletonList("*"));
             config.setAllowedMethods(Collections.singletonList("*"));
-            config.setAllowedOriginPatterns(Collections.singletonList(domain));
+            config.setAllowedOriginPatterns(Collections.singletonList("*"));
             config.setAllowCredentials(true);
             return config;
         };

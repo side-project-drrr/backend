@@ -5,8 +5,6 @@ import com.drrr.core.recommandation.constant.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import com.drrr.domain.log.service.LogUpdateService;
-import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import com.drrr.domain.techblogpost.repository.impl.CustomTechBlogPostRepositoryImpl;
 import java.util.List;
@@ -26,9 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecommendPostService {
     private final CategoryWeightRepository categoryWeightRepository;
     private final CustomTechBlogPostRepositoryImpl customTechBlogPostRepository;
-
-    private final TechBlogPostRepository techBlogPostRepository;
-    private final LogUpdateService logUpdateService;
     private final CustomTechBlogPostCategoryRepositoryImpl customTechBlogPostCategoryRepository;
     private final PostCategoryUtilityService postDistributionService;
 

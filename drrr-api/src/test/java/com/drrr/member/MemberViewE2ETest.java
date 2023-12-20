@@ -1,4 +1,4 @@
-package com.drrr.category.service;
+package com.drrr.member;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +33,6 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
@@ -118,15 +117,14 @@ public class MemberViewE2ETest {
             int viewCount = 0;
             TechBlogCode techBlogCode = TechBlogCode.values()[i
                     % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
-            return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, urlSuffix, url,
-                    techBlogCode, viewCount);
+            return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, summary, urlSuffix, url,
+                    techBlogCode, viewCount, viewCount);
         }).collect(Collectors.toList());
         techBlogPostRepository.saveAll(techBlogPosts);
     }
 
     private void insertCategoryDummyData() {
         List<Category> categories = IntStream.rangeClosed(1, CATEGORY_COUNT).mapToObj(i -> {
-            String categoryName = "Category" + i;
             String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .name(categoryDisplayName)
@@ -270,7 +268,6 @@ public class MemberViewE2ETest {
         Collections.shuffle(posts);
         IntStream.range(0, POST_COUNT).forEach(i -> {
             Collections.shuffle(categories);
-            List<Integer> categoriesPerPost = getRangeShuffledList(1, CATEGORIES_PER_POST);
             TechBlogPost post = posts.get(i);
             int randomCategoryCount = getRandomValueInRange(Integer.class, 1, MAX_PREFER_CATEGORIES_COUNT);
             IntStream.rangeClosed(0, randomCategoryCount).forEach(j -> {
@@ -327,11 +324,11 @@ public class MemberViewE2ETest {
     void 여러_사용자가_한_게시물을_접근했을_때_조회수가_정상적으로_증가합니다() throws InterruptedException {
         //when
         List<Member> members = memberRepository.findAll();
-        if (members.size() == 0) {
+        if (members.isEmpty()) {
             throw new IllegalArgumentException("member elements is null");
         }
         List<TechBlogPost> originalPost = techBlogPostRepository.findAll();
-        if (originalPost.size() == 0) {
+        if (originalPost.isEmpty()) {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
@@ -360,11 +357,10 @@ public class MemberViewE2ETest {
 
         latch.await();
         executorService.shutdown();
-        executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
         //then
         List<TechBlogPost> updatedPost = techBlogPostRepository.findAll();
-        if (updatedPost.size() == 0) {
+        if (updatedPost.isEmpty()) {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         int viewCount = updatedPost.get(0).getViewCount();

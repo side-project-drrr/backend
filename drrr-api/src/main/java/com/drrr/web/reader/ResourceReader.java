@@ -30,8 +30,7 @@ public class ResourceReader {
     }
 
     private static String loadFileAsString(final Resource filePath) throws IOException {
-        final Resource resource = filePath;
-        final InputStream inputStream = resource.getInputStream();
+        final InputStream inputStream = filePath.getInputStream();
         final BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         final StringBuilder stringBuilder = new StringBuilder();

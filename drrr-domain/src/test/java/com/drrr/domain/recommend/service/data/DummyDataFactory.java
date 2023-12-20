@@ -33,10 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class DummyDataFactory {
     private final int CATEGORY_COUNT = 20;
-    private final int MEMBER_COUNT = 500;
     private final int POST_COUNT = 500;
-    private final int CATEGORY_WEIGHT_COUNT = 100;
-    private final int MEMBER_POST_LOG_COUNT = 100;
     private final int CATEGORIES_PER_POST = 8;
     private final int MAX_PREFER_CATEGORIES_COUNT = 8;
     @Autowired
@@ -64,6 +61,7 @@ class DummyDataFactory {
 
 
     private void insertMemberDummyData() {
+        int MEMBER_COUNT = 500;
         List<Member> members = IntStream.rangeClosed(1, MEMBER_COUNT).mapToObj(i -> {
             String email = "user" + i + "@example.com";
             String nickname = "user" + i;
@@ -91,8 +89,8 @@ class DummyDataFactory {
             int viewCount = getRandomValueInRange(Integer.class, 100, 5000);
             TechBlogCode techBlogCode = TechBlogCode.values()[i
                     % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
-            return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, urlSuffix, url,
-                    techBlogCode, viewCount);
+            return new TechBlogPost(createdDate, author, thumbnailUrl, title, summary, summary, urlSuffix, url,
+                    techBlogCode, viewCount, viewCount);
         }).collect(Collectors.toList());
         techBlogPostRepository.saveAll(techBlogPosts);
     }
@@ -100,7 +98,6 @@ class DummyDataFactory {
     private void insertCategoryDummyData() {
         List<Category> categories = IntStream.rangeClosed(1, CATEGORY_COUNT).mapToObj(i -> {
             String categoryName = "Category" + i;
-            String categoryDisplayName = "Display Category" + i;
             return Category.builder()
                     .name(categoryName)
                     .build();
@@ -113,6 +110,7 @@ class DummyDataFactory {
         List<Category> categories = categoryRepository.findAll();
         List<CategoryWeight> categoryWeights = new ArrayList<>();
 
+        int CATEGORY_WEIGHT_COUNT = 100;
         IntStream.range(0, CATEGORY_WEIGHT_COUNT).forEach(i -> {
             List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
             int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
@@ -207,6 +205,7 @@ class DummyDataFactory {
 
     private void insertMemberPostLogDummyData() {
         List<MemberPostLog> logs = new ArrayList<>();
+        int MEMBER_POST_LOG_COUNT = 100;
         IntStream.range(0, MEMBER_POST_LOG_COUNT).forEach(i -> {
             List<Member> randomMemberIds = memberRepository.findAll();
             List<TechBlogPost> randomPostIds = techBlogPostRepository.findAll();
@@ -241,7 +240,6 @@ class DummyDataFactory {
         Collections.shuffle(posts);
         IntStream.range(0, POST_COUNT).forEach(i -> {
             Collections.shuffle(categories);
-            List<Integer> categoriesPerPost = getRangeShuffledList(1, CATEGORIES_PER_POST);
             TechBlogPost post = posts.get(i);
             int randomCategoryCount = getRandomValueInRange(Integer.class, 1, MAX_PREFER_CATEGORIES_COUNT);
             IntStream.rangeClosed(0, randomCategoryCount).forEach(j -> {

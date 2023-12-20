@@ -114,7 +114,7 @@ class RegisterPostTagServiceTest {
                         .build())
                 .toList());
 
-        final Long maxId = categories.stream().mapToLong(Category::getId).max().orElse(1L);
+        final long maxId = categories.stream().mapToLong(Category::getId).max().orElse(1L);
         assertThatThrownBy(() -> {
             // when & then
             // 등록된 카테고리 아이디에서 가장 마지막 아이디 부터 추가하여 테스트를 동작시켜 존재하지 않는 아이디를 만들어 냄
