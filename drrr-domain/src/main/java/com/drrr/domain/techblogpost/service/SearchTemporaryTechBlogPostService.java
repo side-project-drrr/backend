@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,26 +22,25 @@ public class SearchTemporaryTechBlogPostService {
 
     private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
 
-    public List<SearchTemporaryTechBlogPostResultDto> execute(
-            final SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto) {
-        return temporalTechBlogPostRepository.findBy(
-                        searchTemporaryTechBlogPostDto.dateRangeBound(),
-                        searchTemporaryTechBlogPostDto.assignTagCompleted(),
-                        searchTemporaryTechBlogPostDto.pageable()
-                ).stream()
-                .map(SearchTemporaryTechBlogPostResultDto::from)
-                .toList();
+    public Page<SearchTemporaryTechBlogPostResultDto> execute(final SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto,
+                                                              final Pageable pageable) {
+
+        return temporalTechBlogPostRepository.findBy(searchTemporaryTechBlogPostDto, pageable)
+                .map(SearchTemporaryTechBlogPostResultDto::from);
     }
 
 
     @Builder
     public record SearchTemporaryTechBlogPostDto(
+            String title,
+            TechBlogCode code,
             DateRangeBound dateRangeBound,
             Pageable pageable,
             Boolean assignTagCompleted
     ) {
 
     }
+
 
     @Builder
     public record SearchTemporaryTechBlogPostResultDto(
@@ -71,8 +71,11 @@ public class SearchTemporaryTechBlogPostService {
                     .techBlogCode(temporalTechBlogPost.getTechBlogCode())
                     .crawledDate(temporalTechBlogPost.getCrawledDate())
                     .registrationCompleted(temporalTechBlogPost.isRegistrationCompleted())
-                    .postTags(temporalTechBlogPost.getTemporalTechPostTags().stream().map(PostTag::from).toList())
-                    .build();
+                    .postTags(temporalTechBlogPost.getTemporalTechPostTags()
+                            .stream()
+                            .map(PostTag::from)
+                            .toList()
+                    ).build();
 
         }
     }
