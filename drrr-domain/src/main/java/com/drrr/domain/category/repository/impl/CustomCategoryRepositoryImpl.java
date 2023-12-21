@@ -36,4 +36,6 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .orderBy(category.name.asc())
                 .fetch();
     }
+
+
 }

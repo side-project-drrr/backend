@@ -40,7 +40,6 @@ public class TechBlogPost extends BaseEntity {
     private String summary;
 
     @Lob
-    @Column(length = 3000)
     private String aiSummary;
 
     @Column(nullable = false)
