@@ -1,11 +1,9 @@
 package com.drrr.auth.payload.response;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @Builder
-public record SignUpResponse(@NonNull String accessToken, @NonNull String refreshToken) {
+public record SignUpResponse(@NotNull String accessToken, @NotNull String refreshToken) {
 }

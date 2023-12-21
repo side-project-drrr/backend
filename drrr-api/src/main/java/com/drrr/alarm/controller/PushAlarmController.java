@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -53,7 +53,7 @@ public class PushAlarmController {
     })
     @DeleteMapping("/subscription/{memberId}")
     public ResponseEntity<HttpStatus> cancelSubscription(
-            @NonNull @PathVariable(name = "memberId") final Long memberId) {
+            @NotNull @PathVariable(name = "memberId") final Long memberId) {
         externalMemberSubscriptionService.executeUnsubscription(memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
