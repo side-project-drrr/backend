@@ -25,7 +25,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -63,8 +63,8 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "신규 회원 여부 및 provider id 반환", content = @Content(schema = @Schema(implementation = OAuth2Response.class)))
     })
     @GetMapping("/oauth2/profile")
-    public OAuth2Response exchangeOAuth2AccessToken(@NonNull @RequestParam("code") final String code,
-                                                    @NonNull @RequestParam("state") final String provider) {
+    public OAuth2Response exchangeOAuth2AccessToken(@NotNull @RequestParam("code") final String code,
+                                                    @NotNull @RequestParam("state") final String provider) {
         return exchangeOAuth2AccessTokenService.execute(code, provider);
     }
 

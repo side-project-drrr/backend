@@ -11,8 +11,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -44,20 +44,20 @@ public class TechBlogPostController {
             @ApiResponse(responseCode = "200", description = "특정 카테고리 id에 해당하는 기술 블로그 정보 반환", content = @Content(schema = @Schema(implementation = CategoryDto.class)))
     })
     @GetMapping("/posts/category/{id}")
-    public List<TechBlogPost> findPostsByCategory(@NonNull @PathVariable("id") final Long id) {
+    public List<TechBlogPost> findPostsByCategory(@NotNull @PathVariable("id") final Long id) {
         return externalTechBlogPostService.execute(id);
     }
 
     @Operation(summary = "사용자가 기술 블로그에 좋아요를 누를 때 사용하는 api", description = "호출 성공 시 게시물 좋아요 증가")
     @PostMapping("/post/like")
-    public ResponseEntity<String> addPostLike(@RequestBody @NonNull final TechBlogPostLikeDto request) {
+    public ResponseEntity<String> addPostLike(@RequestBody @NotNull final TechBlogPostLikeDto request) {
         externalTechBlogPostService.execute(request, "ADD");
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "사용자가 기술 블로그에 좋아요 해제할 때 사용하는 api", description = "호출 성공 시 게시물 좋아요 감소")
     @DeleteMapping("/post/like")
-    public ResponseEntity<String> deletePostLike(@RequestBody @NonNull final TechBlogPostLikeDto request) {
+    public ResponseEntity<String> deletePostLike(@RequestBody @NotNull final TechBlogPostLikeDto request) {
         externalTechBlogPostService.execute(request, "DELETE");
         return ResponseEntity.ok().build();
     }

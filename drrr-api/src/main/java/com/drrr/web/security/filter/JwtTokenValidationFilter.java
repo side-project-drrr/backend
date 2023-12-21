@@ -8,6 +8,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,8 +42,8 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
     private String frontIp;
 
     @Override
-    protected void doFilterInternal(final HttpServletRequest request, @NonNull final HttpServletResponse response,
-                                    @NonNull final FilterChain filterChain)
+    protected void doFilterInternal(final HttpServletRequest request, @NotNull final HttpServletResponse response,
+                                    @NotNull final FilterChain filterChain)
             throws ServletException, IOException {
 
         if (!ipv4AcceptIp.equals(request.getRemoteAddr()) && !ipv6AcceptIp.equals(request.getRemoteAddr())

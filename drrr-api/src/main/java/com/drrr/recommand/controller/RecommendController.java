@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +27,7 @@ public class RecommendController {
             @ApiResponse(responseCode = "200", description = "게시물 추천 성공", content = @Content(schema = @Schema(implementation = RecommendResponse.class)))
     })
     @PostMapping("/recommendation/posts/{memberId}")
-    public RecommendResponse recommendPost(@NonNull @PathVariable(name = "memberId") final Long memberId) {
+    public RecommendResponse recommendPost(@NotNull @PathVariable(name = "memberId") final Long memberId) {
         return recommendService.execute(memberId);
     }
 }

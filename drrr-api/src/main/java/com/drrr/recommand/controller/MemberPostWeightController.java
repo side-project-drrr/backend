@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +34,8 @@ public class MemberPostWeightController {
     @PostMapping("/posts/read/{memberId}/{postId}")
     public ResponseEntity<String> MemberPostReadController(
             @Validated @RequestBody final AdjustPostWeightRequest request,
-            @NonNull @PathVariable(name = "memberId") final Long memberId,
-            @NonNull @PathVariable(name = "postId") final Long postId) {
+            @NotNull @PathVariable(name = "memberId") final Long memberId,
+            @NotNull @PathVariable(name = "postId") final Long postId) {
         memberPostReadService.execute(request, memberId, postId);
         return ResponseEntity.ok().build();
     }

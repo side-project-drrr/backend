@@ -1,12 +1,12 @@
 package com.drrr.auth.payload.request;
 
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
-import org.springframework.lang.NonNull;
 
 
 @Builder
 public record SignInRequest(
-        @NonNull String providerId) {
+        @NotNull String providerId) {
 }
 
