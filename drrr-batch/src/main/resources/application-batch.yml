@@ -1,7 +1,6 @@
 spring:
   jpa:
-
-    hibernate:
+    #hibernate:
     #ddl-auto: create
     properties:
       hibernate:
@@ -22,14 +21,5 @@ spring:
 logging:
   level:
     org.hibernate: error
-
-
-
-
 server:
   port: 0
-
-chromedriver:
-  path:
-    mac: /usr/local/bin/chromedriver
-    window: C:/Users/USER/chrome/chromedriver.exe

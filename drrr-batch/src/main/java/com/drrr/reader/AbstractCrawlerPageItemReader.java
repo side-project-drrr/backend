@@ -31,7 +31,6 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
 
     @Override
     public ExternalBlogPosts read() {
-
         // 단일 페이지의 경우 1번만 실행 되도록 설정
         if (CrawlerPageStrategy.SINGLE_PAGE.equals(pageStrategy) && page == 1) {
             return null;
@@ -76,7 +75,9 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
 
     @RequiredArgsConstructor
     protected enum CrawlingLocalDatePatterns {
-        PATTERN1("yyyy.MM.dd"), PATTERN2("yyyy.MM.dd."), PATTERN3("MMM.d.yyyy", Locale.ENGLISH);
+        PATTERN1("yyyy.MM.dd"),
+        PATTERN2("yyyy.MM.dd."),
+        PATTERN3("MMM.d.yyyy", Locale.ENGLISH);
 
         private final DateTimeFormatter dateTimeFormatter;
 
