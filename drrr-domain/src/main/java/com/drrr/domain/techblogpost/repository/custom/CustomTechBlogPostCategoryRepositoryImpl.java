@@ -70,7 +70,7 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
 
         Query nativeQuery = em.createNativeQuery(refactorSql);
 
-        final List<Object[]> list = nativeQuery.getResultList();
+        @SuppressWarnings("unchecked") final List<Object[]> list = nativeQuery.getResultList();
 
         //가장 최근에 만들어진 게시물 순으로 정렬됨
         //사용자가 관심 있는 카테고리에 대해 게시물 추출
