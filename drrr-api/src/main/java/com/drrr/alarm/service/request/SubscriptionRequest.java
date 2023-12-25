@@ -7,9 +7,6 @@ import lombok.Builder;
 public record SubscriptionRequest(
 
         @NotNull
-        Long id,
-
-        @NotNull
         String endpoint,
 
         @NotNull
