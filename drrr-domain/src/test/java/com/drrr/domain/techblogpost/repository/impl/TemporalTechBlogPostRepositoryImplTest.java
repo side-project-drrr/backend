@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.date.DateRangeBound;
-import com.drrr.domain.annotation.EnableMysqlProfile;
 import com.drrr.domain.annotation.EnableRepositoryTest;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 
 @EnableRepositoryTest
-@EnableMysqlProfile
 class TemporalTechBlogPostRepositoryImplTest {
     @Autowired
     private TemporalTechBlogPostRepository temporalTechBlogPostRepository;
