@@ -55,7 +55,6 @@ public class MemberViewE2ETest {
     private final int POST_COUNT = 500;
     private final int CATEGORY_WEIGHT_COUNT = 100;
     private final int MEMBER_POST_LOG_COUNT = 100;
-    private final int CATEGORIES_PER_POST = 8;
     private final int MAX_PREFER_CATEGORIES_COUNT = 8;
     @LocalServerPort
     int port;
@@ -332,11 +331,11 @@ public class MemberViewE2ETest {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
-        String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
 
         CountDownLatch latch = new CountDownLatch(500);
         ExecutorService executorService = Executors.newFixedThreadPool(500);
         IntStream.rangeClosed(1, 500).forEach(i -> {
+            String accessToken = jwtProvider.createAccessToken(Long.valueOf(i), Instant.now());
             given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
