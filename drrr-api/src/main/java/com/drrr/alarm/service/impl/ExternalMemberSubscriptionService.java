@@ -14,7 +14,7 @@ public class ExternalMemberSubscriptionService {
     private final SubscriptionService subscriptionService;
 
     public void execute(final SubscriptionRequest request, final Long memberId) {
-        Subscription memberSubscriptionData = Subscription.builder()
+        final Subscription memberSubscriptionData = Subscription.builder()
                 .endpoint(request.endpoint())
                 .auth(request.auth())
                 .p256dh(request.p256dh())

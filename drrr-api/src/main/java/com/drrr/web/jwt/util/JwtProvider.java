@@ -88,7 +88,7 @@ public class JwtProvider {
     }
 
     public Long getMemberIdFromAuthorizationToken() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return Long.valueOf(authentication.getName());
     }
 

@@ -41,7 +41,7 @@ public class PushAlarmController {
     })
     @PostMapping("/member/subscription")
     public void addSubscription(@RequestBody final SubscriptionRequest request) {
-        Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
+        final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         externalMemberSubscriptionService.execute(request, memberId);
     }
 
@@ -52,7 +52,7 @@ public class PushAlarmController {
     })
     @DeleteMapping("/member/subscription")
     public void cancelSubscription() {
-        Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
+        final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         subscriptionRepository.deleteByMemberId(memberId);
     }
 
