@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,7 @@ public class RecommendPostService {
                 .map(categoryWeight -> CategoryWeightDto.builder()
                         .member(categoryWeight.getMember())
                         .category(categoryWeight.getCategory())
-                        .value(categoryWeight.getValue())
+                        .value(categoryWeight.getWeightValue())
                         .preferred(categoryWeight.isPreferred())
                         .build()).toList();
 
@@ -106,7 +107,7 @@ public class RecommendPostService {
                 })
                 //RECOMMEND_POSTS_COUNT에 정의된 값만큼의 기술블로그를 추천함
                 .limit(PostConstants.RECOMMEND_POSTS_COUNT.getValue())
-                .toList();
+                .collect(Collectors.toList());
     }
 
 
