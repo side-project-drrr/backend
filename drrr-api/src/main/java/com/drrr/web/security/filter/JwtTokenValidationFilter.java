@@ -2,7 +2,6 @@ package com.drrr.web.security.filter;
 
 import com.drrr.core.exception.jwt.JwtExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
-import com.drrr.web.security.exception.JwtExpiredTokenException;
 import com.drrr.web.security.exception.NotRegisteredIpException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,8 +28,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
-    private static final String TOKEN_PREFIX = "Bearer ";
-    private static final String HEADER_AUTHORIZATION = "Authorization";
     private final JwtProvider jwtTokenProvider;
     private final Set<String> IgnoreUrlsSet = new HashSet<>(List.of("/actuator/prometheus"));
     @Value("${api.acceptance.local.ipv4.ip}")
@@ -60,7 +56,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
         log.info("-------------------JwtTokenValidationFilter CALL-------------------");
         log.info("-------------------request URI: " + request.getRequestURI() + "---------------");
-        final String token = extractToken(request);
+        final String token = jwtTokenProvider.extractToken(request);
 
         if (Objects.isNull(token)) {
             log.info("-----------JWT Token null-------------------");
@@ -69,36 +65,19 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
         }
 
         final Long memberId = jwtTokenProvider.extractToValueFrom(token);
-
-        try {
-            if (!jwtTokenProvider.validateToken(token)) {
-                throw new IllegalArgumentException(JwtExceptionCode.JWT_UNAUTHORIZED.newInstance("토큰 검증 실패"));
-            }
-
-            // 권한 부여
-            final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(memberId, null,
-                    List.of(new SimpleGrantedAuthority("USER")));
-            // Detail을 넣어줌
-            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            filterChain.doFilter(request, response);
-        } catch (JwtExpiredTokenException expiredJwtException) {
-            // Handle expired token exception
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.getWriter().write("Token expired");
-            response.getWriter().flush();
-            log.error("JWT 토큰이 만료되었습니다.");
-            throw new IllegalArgumentException(JwtExceptionCode.JWT_UNAUTHORIZED.newInstance());
+        if (!jwtTokenProvider.validateToken(token)) {
+            throw new IllegalArgumentException(JwtExceptionCode.JWT_UNAUTHORIZED.newInstance("토큰 검증 실패"));
         }
+
+        // 권한 부여
+        final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(memberId, null,
+                List.of(new SimpleGrantedAuthority("USER")));
+        // Detail을 넣어줌
+        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        filterChain.doFilter(request, response);
+
     }
 
-    private String extractToken(final HttpServletRequest request) {
-        final String token = request.getHeader(HEADER_AUTHORIZATION);
-
-        if (token != null && token.startsWith(TOKEN_PREFIX)) {
-            return token.substring(TOKEN_PREFIX.length());
-        }
-        return null;
-    }
 }
