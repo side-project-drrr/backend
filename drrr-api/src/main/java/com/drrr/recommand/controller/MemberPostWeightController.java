@@ -2,6 +2,8 @@ package com.drrr.recommand.controller;
 
 import com.drrr.recommand.dto.AdjustPostWeightRequest;
 import com.drrr.recommand.service.impl.ExternalMemberPostReadService;
+import com.drrr.web.interceptor.annotation.Auth;
+import com.drrr.web.resolver.annotation.UserId;
 import com.drrr.web.security.annotation.UserAuthority;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,10 +33,11 @@ public class MemberPostWeightController {
                     @Parameter(name = "memberId", description = "게시물을 읽은 사용자 ID", in = ParameterIn.PATH, schema = @Schema(type = "string")),
                     @Parameter(name = "postId", description = "게시물 ID", in = ParameterIn.PATH, schema = @Schema(type = "string"))
             })
-    @PostMapping("/posts/read/{memberId}/{postId}")
+    @Auth
+    @PostMapping("/posts/read/{postId}")
     public ResponseEntity<String> MemberPostReadController(
             @Validated @RequestBody final AdjustPostWeightRequest request,
-            @NotNull @PathVariable(name = "memberId") final Long memberId,
+            @UserId final Long memberId,
             @NotNull @PathVariable(name = "postId") final Long postId) {
         memberPostReadService.execute(request, memberId, postId);
         return ResponseEntity.ok().build();
