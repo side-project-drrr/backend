@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum JwtExceptionCode {
     JWT(404, "정의되지 않은 에러입니다."),
     JWT_UNAUTHORIZED(401, "Unauthorized"),
-    ;
+    JWT_NO_AUTHORIZATION_HEADER(400, "Authorization 헤더가 유효하지 않습니다.");
     private final int code;
     private final String message;
 
