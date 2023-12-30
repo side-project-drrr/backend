@@ -63,14 +63,15 @@ public class MemberViewWeightService {
                             .preferred(false)
                             .member(member)
                             .category(category)
-                            .value(WeightConstants.INCREASE_WEIGHT.getValue())
+                            .weightValue(WeightConstants.INCREASE_WEIGHT.getValue())
                             .build())
                     .toList();
             categoryWeightRepository.saveAll(updatedCategoryWeights);
-        } else {
-            //기존에 해당 게시물을 읽은 기록이 있다면 INCREASE_WEIGHT 값만큼 가중치 증가
-            categoryWeights.forEach(CategoryWeight::accumulateWeight);
+            return;
         }
+        //기존에 해당 게시물을 읽은 기록이 있다면 INCREASE_WEIGHT 값만큼 가중치 증가
+        categoryWeights.forEach(CategoryWeight::accumulateWeight);
+
 
     }
 
