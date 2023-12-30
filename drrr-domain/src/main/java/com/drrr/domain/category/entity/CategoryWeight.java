@@ -1,6 +1,7 @@
 package com.drrr.domain.category.entity;
 
 import static com.drrr.core.recommandation.constant.constant.WeightConstants.INCREASE_WEIGHT;
+import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN_CONDITIONAL_WEIGHT;
 import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN_WEIGHT;
 
 import com.drrr.core.recommandation.constant.constant.DaysConstants;
@@ -38,7 +39,7 @@ public class CategoryWeight extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    private double value;
+    private double weightValue;
 
     private boolean preferred;
     private LocalDateTime lastReadAt;
@@ -58,7 +59,7 @@ public class CategoryWeight extends BaseEntity {
      * 초기값으로 변환하기 위함
      */
     public boolean isExpiredCategoryWeight() {
-        return MIN_WEIGHT.isGreaterThan(this.value) || isUnreadPastDays(this.lastReadAt);
+        return MIN_WEIGHT.isGreaterThan(this.weightValue) || isUnreadPastDays(this.lastReadAt);
     }
 
 
@@ -71,7 +72,7 @@ public class CategoryWeight extends BaseEntity {
     }
 
     public void accumulateWeight() {
-        this.value = INCREASE_WEIGHT.sum(this.value);
+        this.weightValue = INCREASE_WEIGHT.sum(this.weightValue);
     }
 
     /**
@@ -85,7 +86,7 @@ public class CategoryWeight extends BaseEntity {
         final double minusWeight = getDecreasedWeightValueByHours(lastUpdatedAt, LocalDateTime.now());
 
         //가중치 범위 검증
-        this.value = limitWeightValue(this.value, minusWeight, isPreferred);
+        this.weightValue = limitWeightValue(this.weightValue, minusWeight, isPreferred);
     }
 
     /**
@@ -96,8 +97,8 @@ public class CategoryWeight extends BaseEntity {
         double updateWeight = weightValue - minusWeight;
         //최대 가중치를 넘어갈 경우 MAX_WEIGHT으로 설정
         updateWeight = Math.max(Math.min(updateWeight, WeightConstants.MAX_WEIGHT.getValue()), MIN_WEIGHT.getValue());
-        //선호하는 카테고리에 대해서는 최소 가중치 할당
-        if (updateWeight == MIN_WEIGHT.getValue() && isPreferred) {
+        //선호하는 카테고리가 선호카테고리가중치 최소값에 못 미치면 선호카테고리가중치 값으로 할당
+        if (updateWeight < MIN_CONDITIONAL_WEIGHT.getValue() && isPreferred) {
             updateWeight = WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue();
         }
         return updateWeight;
