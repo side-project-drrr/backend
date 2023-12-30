@@ -196,7 +196,7 @@ public class TechBlogPostE2ETest {
                 categoryWeightList.add(CategoryWeight.builder()
                         .member(memberList.get(j))
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());

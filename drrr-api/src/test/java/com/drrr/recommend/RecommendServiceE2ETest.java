@@ -156,7 +156,7 @@ public class RecommendServiceE2ETest {
                 categoryWeightList.add(CategoryWeight.builder()
                         .member(memberList.get(j))
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
@@ -315,22 +315,17 @@ public class RecommendServiceE2ETest {
     @Test
     void 사용자_게시물_추천_동시성_테스트가_잘_수행됩니다() throws InterruptedException {
         //when
-        String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         CountDownLatch latch = new CountDownLatch(1);
         ExecutorService executorService = Executors.newFixedThreadPool(500);
         List<List<Long>> membersRecommendedPosts = new ArrayList<>();
         IntStream.rangeClosed(1, 500).forEach(i -> {
+            String accessToken = jwtProvider.createAccessToken(Long.valueOf(i), Instant.now());
             Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .body("""
-                            {
-                                "memberId":""" + i + """
-                            }
-                            """)
-                    .post("/api/v1/recommendation/posts/{memberId}", (long) i);
+                    .post("/api/v1/recommendation/posts");
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
