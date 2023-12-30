@@ -9,6 +9,7 @@ import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,10 +28,11 @@ public class MemberPreferredCategoryServiceModificationService {
     private final CategoryWeightRepository categoryWeightRepository;
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
+    private final WeightValidationService weightValidationService;
 
     public void changeMemberPreferredCategory(final Long memberId, final List<Long> updateCategoryIds) {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> {
-            log.error("사용자 가중치를 찾을 수 없습니다.");
+            log.error("사용자를 찾을 수 없습니다.");
             log.error("memberId -> " + memberId);
             return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
         });
@@ -60,11 +62,13 @@ public class MemberPreferredCategoryServiceModificationService {
         //기존에 있던 사용자의 카테고리 가중치 정보를 업데이트
         final List<CategoryWeight> updatedCategoryWeights = categoryWeights.stream()
                 .map(categoryWeight -> {
+                    //선호 카테고리가 아니였던 카테고리가 선호 카테고리로 바꿔야 한다면 true
                     boolean isPreferred = updateCategoryIdsSet.contains(categoryWeight.getCategory().getId());
                     return CategoryWeight.builder()
                             .member(categoryWeight.getMember())
                             .preferred(isPreferred)
-                            .value(categoryWeight.getValue())
+                            .weightValue(categoryWeight.getWeightValue())
+                            .lastReadAt(LocalDateTime.now())
                             .category(categoryWeight.getCategory())
                             .build();
                 })
@@ -79,20 +83,22 @@ public class MemberPreferredCategoryServiceModificationService {
 
         //카테고리 가중치 테이블에 없는 신규 카테고리 가중치 추가
         final List<CategoryWeight> updates = Stream.concat(remainedCategories.stream()
-                .map(category -> {
-                    return CategoryWeight.builder()
-                            .member(member)
-                            .preferred(true)
-                            .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
-                            .category(category)
-                            .build();
-                }), updatedCategoryWeights.stream()).toList();
+                .map(category -> CategoryWeight.builder()
+                        .member(member)
+                        .preferred(true)
+                        .weightValue(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
+                        .lastReadAt(LocalDateTime.now())
+                        .category(category)
+                        .build()), updatedCategoryWeights.stream()).toList();
 
         //memberId에 해당하는 categoryWeight를 다 지우기
         categoryWeightRepository.deleteByMemberId(memberId);
 
         //다시 새로 categoryWeight를 넣어주기
         categoryWeightRepository.saveAll(updates);
+
+        //가중치 검증, 선호 카테고리가 최소 가중치에 못 미치는 경우가 있을 수 있음
+        weightValidationService.validateWeight(memberId);
     }
 
 }
