@@ -7,6 +7,7 @@ import com.drrr.domain.category.service.CategoryService;
 import com.drrr.domain.category.service.CategoryService.CategoryDto;
 import com.drrr.domain.category.service.RedisCategoryService;
 import com.drrr.domain.jpa.entity.BaseEntity;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,11 +27,12 @@ public class ExternalCategoryService {
      */
     public List<CategoryDto> execute() {
         return categoryService.findAllCategories().stream()
-                .sorted((o1, o2) -> o1.categoryName().compareTo(o2.categoryName())).toList();
+                .sorted(Comparator.comparing(CategoryDto::categoryName)).toList();
     }
 
-    public List<CategoryDto> execute(final Long topN) {
-        return categoryService.findTopCategories(topN);
+    public List<CategoryDto> execute(final Long count) {
+        //
+        return categoryService.findTopCategories(count);
     }
 
     /**
@@ -38,37 +40,40 @@ public class ExternalCategoryService {
      */
     public List<CategoryDto> execute(final CategoryRequest request) {
         final List<Category> redisCategories = redisCategoryService.findByIds(request.categoryIds());
-        if (redisCategories.size() != request.categoryIds().size()) {
-            final Set<Long> requestIds = new HashSet<>(request.categoryIds());
-            final Set<Long> redisCategoryIds = redisCategories.stream().map(BaseEntity::getId)
-                    .collect(Collectors.toSet());
-            //redis에 없는 카테고리를 뽑아냄
-            requestIds.removeAll(redisCategoryIds);
 
-            final List<Long> ids = requestIds.stream().toList();
-
-            final List<CategoryDto> selectedCategories = categoryService.findSelectedCategories(ids);
-
-            final List<RedisCategory> redisCategoryList = selectedCategories.stream()
-                    .filter(redisCategory -> requestIds.contains(redisCategory.id()))
-                    .map(filteredCategory -> RedisCategory.builder()
-                            .id(filteredCategory.id())
-                            .name(filteredCategory.categoryName())
-                            .build())
-                    .toList();
-
-            redisCategoryService.saveCategories(redisCategoryList);
-            //redis에 기존에 있었던 카테고리 dto로 변환
-
-            return Stream.concat(
-                            redisCategories.stream()
-                                    .map(redisCategory -> CategoryDto.builder()
-                                            .id(redisCategory.getId())
-                                            .categoryName(redisCategory.getName())
-                                            .build()),
-                            selectedCategories.stream())
-                    .collect(Collectors.toList());
+        if (redisCategories.size() == request.categoryIds().size()) {
+            return categoryService.findSelectedCategories(request.categoryIds());
         }
-        return categoryService.findSelectedCategories(request.categoryIds());
+
+        //redis에 없는 경우
+        final Set<Long> requestIds = new HashSet<>(request.categoryIds());
+        final Set<Long> redisCategoryIds = redisCategories.stream().map(BaseEntity::getId)
+                .collect(Collectors.toSet());
+        //redis에 없는 카테고리를 뽑아냄
+        requestIds.removeAll(redisCategoryIds);
+
+        final List<Long> ids = requestIds.stream().toList();
+
+        final List<CategoryDto> selectedCategories = categoryService.findSelectedCategories(ids);
+
+        final List<RedisCategory> redisCategoryList = selectedCategories.stream()
+                .filter(redisCategory -> requestIds.contains(redisCategory.id()))
+                .map(filteredCategory -> RedisCategory.builder()
+                        .id(filteredCategory.id())
+                        .name(filteredCategory.categoryName())
+                        .build())
+                .toList();
+
+        redisCategoryService.saveCategories(redisCategoryList);
+
+        //redis에 기존에 있었던 카테고리와 없는 카테고리의 정보를 합쳐서 반환
+        return Stream.concat(
+                        redisCategories.stream()
+                                .map(redisCategory -> CategoryDto.builder()
+                                        .id(redisCategory.getId())
+                                        .categoryName(redisCategory.getName())
+                                        .build()),
+                        selectedCategories.stream())
+                .collect(Collectors.toList());
     }
 }
