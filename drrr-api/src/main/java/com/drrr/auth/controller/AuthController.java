@@ -17,6 +17,8 @@ import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.auth.service.impl.UnregisterService;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
+import com.drrr.web.interceptor.annotation.Auth;
+import com.drrr.web.resolver.annotation.UserId;
 import com.drrr.web.security.annotation.UserAuthority;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -116,12 +117,13 @@ public class AuthController {
         return emailVerificationService.execute(request);
     }
 
+    @Auth
     @Operation(summary = "회원탈퇴 API", description = "호출 성공 시 회원탈퇴")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원탈퇴 성공", content = @Content(schema = @Schema(implementation = String.class)))
     })
-    @DeleteMapping("/member/{memberId}")
-    public ResponseEntity<String> memberUnregister(@PathVariable("memberId") final Long memberId) {
+    @DeleteMapping("/member/unregister")
+    public ResponseEntity<String> memberUnregister(@UserId final Long memberId) {
         unregisterService.execute(memberId);
         return ResponseEntity.ok().build();
     }
