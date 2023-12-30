@@ -19,15 +19,14 @@ public class RedisCategoryService {
     private final RedisTemplate<String, RedisCategory> redisCategoryTemplate;
 
     public List<Category> findByIds(List<Long> categoryIds) {
+        //Long를 String으로 변경
         final List<String> keys = categoryIds.stream()
                 .map(Object::toString)
                 .toList();
 
-        final List<RedisCategory> redisCategories = redisCategoryTemplate.opsForValue().multiGet(keys).stream()
-                .filter(Objects::nonNull).toList();
-
-        return redisCategories.stream()
-                .map(category -> Category.builder()
+        //key 해당하는 value가 없으면 filtering
+        return redisCategoryTemplate.opsForValue().multiGet(keys).stream()
+                .filter(Objects::nonNull).map(category -> Category.builder()
                         .name(category.getName())
                         .build()).sorted(Comparator.comparing(Category::getName)).toList();
     }
@@ -39,7 +38,6 @@ public class RedisCategoryService {
                         .name(category.getName())
                         .build())
                 .toList();
-        System.out.println("사이즈 ######:" + redisCategories.size());
 
         redisCategoryRepository.saveAll(redisCategories);
     }
