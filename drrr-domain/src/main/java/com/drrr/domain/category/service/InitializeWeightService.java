@@ -26,24 +26,27 @@ public class InitializeWeightService {
     public void initializeCategoryWeight(final Long memberId, final List<Long> categories) {
         List<Category> categoryList = categoryRepository.findIds(categories);
 
-        if (categories.isEmpty()) {
-            log.error("InitializeWeightService Class initializeCategoryWeight(final Long memberId, final List<Long> categories) Method RuntimeException Error");
+        if (categoryList.isEmpty()) {
+            log.error("카테고리 ids 중 존재하는 않는 카테고리가 있습니다 -> {}", categories);
             throw new RuntimeException(
-                    "InitializeWeightService.initializeCategoryWeight() - Cannot find such categories");
+                    "InitializeWeightService.initializeCategoryWeight() - Cannot find such categories -> "
+                            + categories);
         }
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
-                    log.error("initializeCategoryWeight(final Long memberId, final List<Long> categories) Method NoSuchElementException Error");
+                    log.error(
+                            "사용자 id를 찾을 수 없습니다. -> " + memberId);
                     return new NoSuchElementException(
-                            "InitializeWeightService.initializeCategoryWeight() - No Member Weight found with memberId: "
+                            "InitializeWeightService.initializeCategoryWeight() - 사용자 id를 찾을 수 없습니다."
                                     + memberId);
                 });
+
         List<CategoryWeight> initialCategoryWeight = categoryList.stream()
                 .map(category -> CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
+                        .weightValue(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
                         .preferred(true)
                         .build()).toList();
 
