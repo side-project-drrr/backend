@@ -20,12 +20,14 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) {
 
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Auth auth = handlerMethod.getMethodAnnotation(Auth.class);
+        if (handler instanceof HandlerMethod) {
+            HandlerMethod handlerMethod = (HandlerMethod) handler;
+            Auth auth = handlerMethod.getMethodAnnotation(Auth.class);
 
-        //Controller api 중 @Auth 어노테이션이 붙여있는 경우에 jwt 토큰 헤더가 있는 경우만 통과
-        if (!Objects.isNull(auth)) {
-            return jwtProvider.jwtHeaderExists(request);
+            //Controller api 중 @Auth 어노테이션이 붙여있는 경우에 jwt 토큰 헤더가 있는 경우만 통과
+            if (!Objects.isNull(auth)) {
+                return jwtProvider.jwtHeaderExists(request);
+            }
         }
 
         return true;
