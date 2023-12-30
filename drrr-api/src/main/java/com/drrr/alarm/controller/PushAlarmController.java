@@ -5,6 +5,8 @@ import com.drrr.alarm.service.impl.ExternalNotificationEmailService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
 import com.drrr.infra.notifications.kafka.webpush.WebPushProducer;
 import com.drrr.infra.push.entity.PushMessage;
+import com.drrr.web.resolver.annotation.UserId;
+import com.drrr.web.security.annotation.UserAuthority;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,8 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
+@UserAuthority
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class PushAlarmController {
@@ -38,12 +39,10 @@ public class PushAlarmController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자의 구독 신청 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
-    @PostMapping("/subscription")
-    public ResponseEntity<HttpStatus> addSubscription(@RequestBody final SubscriptionRequest request) throws Exception {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long memberId = Long.valueOf(authentication.getName());
-        externalMemberSubscriptionService.executeSubscription(request, memberId);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping("/member/{id}/subscription")
+    public void addSubscription(@RequestBody final SubscriptionRequest request,
+                                @PathVariable("id") @UserId @NotNull Long memberId) {
+        externalMemberSubscriptionService.execute(request, memberId);
     }
 
     @Operation(summary = "구독 취소 API",
@@ -51,10 +50,10 @@ public class PushAlarmController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자의 구독 취소 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
-    @DeleteMapping("/subscription/{memberId}")
+    @DeleteMapping("/member/{id}/subscription")
     public ResponseEntity<HttpStatus> cancelSubscription(
-            @NotNull @PathVariable(name = "memberId") final Long memberId) {
-        externalMemberSubscriptionService.executeUnsubscription(memberId);
+            @NotNull @PathVariable(name = "id") @UserId final Long memberId) {
+        externalMemberSubscriptionService.execute(memberId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
