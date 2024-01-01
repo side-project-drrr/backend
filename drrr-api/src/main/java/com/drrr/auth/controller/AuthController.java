@@ -17,7 +17,7 @@ import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.auth.service.impl.UnregisterService;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
-import com.drrr.web.security.annotation.UserAuthority;
+import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -27,11 +27,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +40,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@UserAuthority
 @RequestMapping("/auth")
 public class AuthController {
     private final SignUpService signUpService;
@@ -51,6 +49,7 @@ public class AuthController {
     private final ExchangeOAuth2AccessTokenService exchangeOAuth2AccessTokenService;
     private final IssuanceVerificationCode issuanceVerificationCode;
     private final EmailVerificationService emailVerificationService;
+    private final JwtProvider jwtProvider;
 
 
     @Operation(summary = "Front에서 준 code로 provider ID를 반환하는 API",
@@ -91,10 +90,10 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "access token 재발급 성공", content = @Content(schema = @Schema(implementation = AccessTokenResponse.class)))
     })
     @PostMapping("/access-token")
-    public ResponseEntity<AccessTokenResponse> regenerateAccessToken(
+    public AccessTokenResponse regenerateAccessToken(
             @Validated @RequestBody final AccessTokenRequest request) {
         AccessTokenResponse accessTokenResponse = issuanceTokenService.regenerateAccessToken(request);
-        return ResponseEntity.ok(accessTokenResponse);
+        return accessTokenResponse;
     }
 
     @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
@@ -102,9 +101,8 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PostMapping("/email")
-    public ResponseEntity<String> createEmailVerification(@RequestBody final EmailRequest emailRequest) {
+    public void createEmailVerification(@RequestBody final EmailRequest emailRequest) {
         issuanceVerificationCode.execute(emailRequest);
-        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "이메일 인증코드 확인 API", description = "호출 성공 시 이메일 인증코드 확인 여부")
@@ -120,10 +118,11 @@ public class AuthController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원탈퇴 성공", content = @Content(schema = @Schema(implementation = String.class)))
     })
-    @DeleteMapping("/member/{memberId}")
-    public ResponseEntity<String> memberUnregister(@PathVariable("memberId") final Long memberId) {
+    @Secured("USER")
+    @DeleteMapping("/member/unregister")
+    public void memberUnregister() {
+        Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         unregisterService.execute(memberId);
-        return ResponseEntity.ok().build();
     }
 
 
