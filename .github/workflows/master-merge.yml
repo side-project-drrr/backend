@@ -28,6 +28,7 @@ jobs:
         run: |
           if [[ "${{ github.base_ref }}" == "main" ]]; then
                echo "spring.profiles.default=main" >> drrr-api/src/main/resources/application.yml
+          fi
 
       ## docker compose up (docker-compose 기반)
       - name: Build and run Docker Compose
