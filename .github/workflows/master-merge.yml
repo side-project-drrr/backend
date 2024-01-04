@@ -63,9 +63,9 @@ jobs:
         env:
           TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
-          docker build -t youngkyonyou/drrr-github-action:latest .
+          docker build -t youngkyonyou/drrr-master:latest .
           docker login -u youngyou1324@naver.com -p $TOKEN
-          docker push youngkyonyou/drrr-github-action:latest
+          docker push youngkyonyou/drrr-master:latest
 
   deploy:
     needs: build
