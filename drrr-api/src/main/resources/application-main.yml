@@ -28,10 +28,6 @@ spring:
       #서버가 켜지면 컨테이너들이 켜지고 꺼지면 알아서 꺼지나 필요할 때만 주석 제거
       lifecycle-management: start_only
 
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
   datasource:
     #    profileSQL=true: Driver 에서 전송하는 쿼리를 출력합니다.
     #    logger=Slf4JLogger: Driver 에서 쿼리 출력시 사용할 로거를 설정합니다.
