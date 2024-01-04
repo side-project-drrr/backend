@@ -75,4 +75,4 @@ jobs:
         # ${{ env.NAME}} - drrr-runner
         run: |
           docker stop drrr-runner && docker rm drrr-runner && docker rmi -f youngkyonyou/drrr-github-action
-          docker run -d -p 8081:8081 --name ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} --restart always youngkyonyou/drrr-github-action:latest
+          docker run -d -p 8081:8081 --name drrr-runner --restart always youngkyonyou/drrr-github-action:latest
