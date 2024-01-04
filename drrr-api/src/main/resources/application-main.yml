@@ -8,17 +8,16 @@ spring:
     allow-bean-definition-overriding: true
   data:
     redis:
-      time-to-live: 3600 # 데이터 유지 시간(sec) 1시간
-      host: localhost
+      host: http://3.35.204.21
       port: 6379
   kafka:
     consumer:
-      bootstrap-servers: localhost:9093
+      bootstrap-servers: http://3.35.204.21:9093
       auto-offset-reset: earliest
       enable-auto-commit: false
       auto-commit-interval: 10
     producer:
-      bootstrap-servers: localhost:9093
+      bootstrap-servers: http://3.35.204.21:9093
     backoff:
       interval: 1000
       max_failure: 3
@@ -39,10 +38,10 @@ spring:
     #    MySQL 드라이버: 기본값은 System.err 로 출력하도록 설정되어 있기 때문에 필수로 지정해 줘야 합니다.
     #    MariaDB 드라이버: Slf4j 를 이용하여 로그를 출력하기 때문에 설정할 필요가 없습니다.
     #    maxQuerySizeToLog=999999: 출력할 쿼리 길이
-    url: jdbc:mysql://localhost:3306/TEST_DOMAIN?profileSQL=true&logger=Slf4JLogger&useSSL=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&maxQuerySizeToLog=999999
+    url: jdbc:mysql://drrr-databse.cxucsa028e73.ap-northeast-2.rds.amazonaws.com:3306/TEST_DOMAIN?profileSQL=true&logger=Slf4JLogger&useSSL=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&maxQuerySizeToLog=999999
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 1234
+    username: drrrDB
+    password: drrr-app-rds
     hikari:
       connection-timeout: 300000
   jpa:
@@ -98,9 +97,9 @@ management:
   otlp:
     metrics:
       export:
-        url: http://localhost:4318/v1/metrics
+        url: http://3.35.204.21:4318/v1/metrics
       tracing:
-        endpoint: http://localhost:4318/v1/traces
+        endpoint: http://3.35.204.21:4318/v1/traces
   tracing:
     sampling:
       probability: 1.0
@@ -108,7 +107,7 @@ opentracing:
   jaeger:
     service-name: dr--r--r-- # jaeger service name
     udp-sender:
-      host: localhost # jaeger server ip
+      host: http://3.35.204.21 # jaeger server ip
       port: 6831           # jaeger udp port
     enabled: true
     log-spans: true
