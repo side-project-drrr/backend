@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    group:
+      test:
+        - test
+      local:
+        - local
+      dev:
+        - develop
+      main:
+        - main
+      batch:
+        - batch
+    default: local
+  batch:
+    job:
+      name: ${job.name:NONE}
+

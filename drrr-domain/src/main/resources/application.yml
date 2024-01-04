@@ -1,0 +1,13 @@
+server:
+  port: 8080
+spring:
+  datasource: # datasource 설정
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create

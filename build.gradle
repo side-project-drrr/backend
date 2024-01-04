@@ -1,22 +1,30 @@
-buildscript {
-    ext {
-        springBootVersion = '3.1.2'
-        queryDslVersion = '5.0.0'
-        querydslPluginVersion = '1.0.10'
-    }
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0-M2'
+    id 'io.spring.dependency-management' version '1.1.3'
+}
+
+allprojects {
+    apply plugin: 'java'
+    group = 'com.example'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '17'
+
     repositories {
         mavenCentral()
-        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url 'https://repo.spring.io/milestone' }
     }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "io.spring.gradle:dependency-management-plugin:1.1.2.RELEASE"
-        // Querydsl 의존성
-        classpath "gradle.plugin.com.ewerk.gradle.plugins:querydsl-plugin:${querydslPluginVersion}"
+    bootJar {
+        enabled = false
     }
+
+    jar {
+        enabled = true
+    }
+
 }
-subprojects  {
-    apply plugin: 'java'
+
+subprojects {
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
 
@@ -25,9 +33,16 @@ subprojects  {
     version = '0.0.1-SNAPSHOT'
 
     sourceCompatibility = '17'
+    bootJar {
+        enabled = false
+    }
 
+    jar {
+        enabled = true
+    }
     repositories {
         mavenCentral()
+        maven { url 'https://repo.spring.io/milestone' }
     }
     configurations {
         compileOnly {
@@ -35,91 +50,20 @@ subprojects  {
         }
     }
 
-    apply plugin: "com.ewerk.gradle.plugins.querydsl"
     dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-        implementation 'org.springframework.boot:spring-boot-starter-web'
-        implementation 'org.springframework.kafka:spring-kafka'
-        implementation 'com.h2database:h2'
+
         compileOnly 'org.projectlombok:lombok'
-        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+        //developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
         annotationProcessor 'org.projectlombok:lombok'
+
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
-        testImplementation 'io.projectreactor:reactor-test'
-        testImplementation 'org.springframework.kafka:spring-kafka-test'
-        testImplementation 'org.springframework.security:spring-security-test'
-
-        // === QueryDsl 시작 ===
-
-        // == 스프링 부트 3.0 이상 ==
-        // for QueryDSL
-        implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-        annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
-        annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-        annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-        // === QueryDsl 끝 ===
 
     }
 
     tasks.named('test') {
         useJUnitPlatform()
     }
-
-    // QueryDSL 설정
-    def querydslDir = "$buildDir/generated/querydsl"
-
-    querydsl {
-        library = "com.querydsl:querydsl-apt"
-        jpa = true
-        querydslSourcesDir = querydslDir
-    }
-
-    sourceSets {
-        main {
-            java {
-                srcDirs = ['src/main/java', querydslDir]
-            }
-        }
-    }
-
-    compileQuerydsl{
-        options.annotationProcessorPath = configurations.querydsl
-    }
-
-    configurations {
-        querydsl.extendsFrom compileClasspath
-    }
-
-    compileQuerydsl {
-        if(file(querydslDir).exists() )
-            delete(file(querydslDir))
-    }
-
-}
-
-
-project(':api') {
-    bootJar { enabled = false }
-    jar { enabled = true }
-
-    dependencies {
-        implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
-        implementation 'org.springframework.boot:spring-boot-starter-security'
-        implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    }
-
-
-    project(':batch') {
-        bootJar { enabled = true }
-        jar { enabled = false }
-
-        dependencies {
-            implementation 'org.springframework.boot:spring-boot-starter-batch'
-            implementation 'org.springframework.boot:spring-boot-starter-quartz'
-            testImplementation 'org.springframework.batch:spring-batch-test'
-            implementation 'org.seleniumhq.selenium:selenium-java:3.141.59'
-        }
-    }
-
 }
