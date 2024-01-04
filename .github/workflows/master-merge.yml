@@ -59,7 +59,7 @@ jobs:
       #jar 파일 생성 후 docker hub에 푸시(Dockerfile 기반)
       - name: Build and push Docker image
         env:
-          TOKEN: ${{ secrets.TOKEN_DOCKER }}
+          TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
           docker build -t ${{ secrets.DOCKER_HUB_MASTER }} .
           docker login -u ${{ secrets.DOCKER_HUB_YYK_LOGIN }} -p $TOKEN
