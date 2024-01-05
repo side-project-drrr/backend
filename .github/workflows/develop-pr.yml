@@ -27,7 +27,7 @@ jobs:
       - name: Set spring.profiles.default value
         run: |
           if [[ "${{ github.base_ref }}" == "develop" ]]; then
-               echo "spring.profiles.default=develop" >> drrr-api/src/main/resources/application.yml
+               sed -i 's/default: local/default: develop/' drrr-api/src/main/resources/application.yml
           fi
 
       ## docker compose up (docker-compose 기반)
