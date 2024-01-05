@@ -80,5 +80,5 @@ jobs:
       - name: Docker run
         # ${{ env.NAME}} - drrr-runner
         run: |
-          docker stop ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} && docker rm ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} && docker rmi -f ${{ secrets.DOCKER_HUB_MASTER }}
+          docker stop ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} && docker rm ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} && docker rmi -f ${{ secrets.DOCKER_HUB_MASTER_WITHOUT_TAG }}
           docker run -d -p 8081:8081 --name ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} --restart always ${{ secrets.DOCKER_HUB_MASTER }}
