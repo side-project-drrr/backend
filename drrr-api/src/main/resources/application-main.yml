@@ -95,7 +95,7 @@ management:
       export:
         url: classpath:security-storage-api/aws/otlp/url.txt
       tracing:
-        endpoint: classpath:security-storage-api/aws/otlp/endpoint.txt.txt
+        endpoint: classpath:security-storage-api/aws/otlp/endpoint.txt
   tracing:
     sampling:
       probability: 1.0
@@ -103,7 +103,7 @@ opentracing:
   jaeger:
     service-name: dr--r--r-- # jaeger service name
     udp-sender:
-      host: classpath:security-storage-api/aws/ec2-http-ip.txt.txt # jaeger server ip
+      host: classpath:security-storage-api/aws/ec2-http-ip.txt # jaeger server ip
       port: 6831           # jaeger udp port
     enabled: true
     log-spans: true
