@@ -61,6 +61,7 @@ jobs:
         env:
           TOKEN: ${{ secrets.DOCKER_TOKEN }}
         run: |
+          cp drrr-api/build/libs/*.jar drrr-api/src/main/resources/security-storage-api
           cd drrr-api/src/main/resources/security-storage-api
           docker build -t ${{ secrets.DOCKER_HUB_DEV }} .
           docker login -u ${{ secrets.DOCKER_HUB_YYK_LOGIN }} -p $TOKEN
