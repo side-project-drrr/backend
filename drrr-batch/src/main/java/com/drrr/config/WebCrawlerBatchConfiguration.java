@@ -60,7 +60,7 @@ public class WebCrawlerBatchConfiguration {
     @Bean(JOB_NAME)
     public Job webCrawleJob() {
         return new JobBuilder(JOB_NAME, jobRepository)
-                .start(crawlingStep(null))
+                .start(crawlingStep(null, null))
                 .next(techBlogProcessStep(null))
                 .next(tempTechBlogProcessStep(null))
                 .next(crawlingDataSaveStep())
@@ -70,9 +70,11 @@ public class WebCrawlerBatchConfiguration {
     @Bean(CRAWLING_STEP_NAME)
     @JobScope
     public Step crawlingStep(
-            @Value("#{jobParameters[techBlogCode]}") Long code
+            @Value("#{jobParameters[techBlogCode]}") Long code,
+            @Value("#{jobParameters[requestDate]}") String requestDate
     ) {
-        final var proxyItemReader = new ProxyItemReader<>(() -> crawlerItemReaderFactory.createItemReader(TechBlogCode.valueOf(code)));
+        final var proxyItemReader = new ProxyItemReader<>(
+                () -> crawlerItemReaderFactory.createItemReader(TechBlogCode.valueOf(code)));
         return new StepBuilder(CRAWLING_STEP_NAME, jobRepository)
                 .<ExternalBlogPosts, ExternalBlogPosts>chunk(10, transactionManager)
                 .reader(proxyItemReader)
@@ -120,7 +122,8 @@ public class WebCrawlerBatchConfiguration {
                         .entityManagerFactory(entityManagerFactory)
                         .build())
                 .writer((chunk -> chunk.getItems().forEach(temporalTechBlogPost -> {
-                    final Key key = new Key(temporalTechBlogPost.getUrlSuffix(), temporalTechBlogPost.getTechBlogCode());
+                    final Key key = new Key(temporalTechBlogPost.getUrlSuffix(),
+                            temporalTechBlogPost.getTechBlogCode());
                     crawledTechBlogPostRepository.ifPresentOrElse(key,
                             () -> crawledTechBlogPostRepository.remove(key),
                             () -> temporalTechBlogPostRepository.delete(temporalTechBlogPost));

@@ -44,7 +44,7 @@ public class MigrationBatchConfiguration {
     @JobScope
     public Step migrationStep(
             @Value("#{jobParameters[techBlogCode]}") Long code,
-            @Value("#{jobParameters[requestDate]}") String requestDate
+            @Value("#{jobParameters[requestDate]}") Long requestDate
     ) {
         final var techBlogCode = TechBlogCode.valueOf(code);
         return new StepBuilder(BATCH_NAME + "Step", jobRepository)
@@ -52,7 +52,10 @@ public class MigrationBatchConfiguration {
                 .reader(new JpaCursorItemReaderBuilder<TemporalTechBlogPost>()
                         .name("migrationJbcItemReader")
                         .entityManagerFactory(entityManagerFactory)
-                        .queryString("select T from TemporalTechBlogPost T where  T.techBlogCode = :techBlogCode")
+                        .queryString("""
+                                select T from TemporalTechBlogPost  T
+                                where T.techBlogCode = :techBlogCode
+                                """)
                         .parameterValues(new HashMap<>() {{
                             this.put("techBlogCode", techBlogCode);
                         }})

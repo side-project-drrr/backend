@@ -1,7 +1,7 @@
 spring:
   jpa:
-    #hibernate:
-    #ddl-auto: create
+    hibernate:
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -10,13 +10,6 @@ spring:
   batch:
     jdbc:
       initialize-schema: ALWAYS
-
-  datasource:
-    url: jdbc:mysql://localhost:3306/BATCH_SAMPLE?rewriteBatchedStatements=true
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 1234
-
 
 logging:
   level:
