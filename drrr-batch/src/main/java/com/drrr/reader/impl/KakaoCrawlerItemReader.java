@@ -1,5 +1,8 @@
 package com.drrr.reader.impl;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
+
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
@@ -30,7 +33,7 @@ public class KakaoCrawlerItemReader extends AbstractCrawlerPageItemReader {
     @Override
     protected ExternalBlogPosts executeCrawlerPage() {
         this.selectPage();
-        return new ExternalBlogPosts(this.webDriver.findElement(By.className(POST_CLASS_NAME))
+        return this.webDriver.findElement(By.className(POST_CLASS_NAME))
                 .findElements(By.tagName("article"))
                 .stream().map(webElement -> {
                     final WebElement postElement = webElement.findElement(By.className("elementor-post__text"));
@@ -39,19 +42,20 @@ public class KakaoCrawlerItemReader extends AbstractCrawlerPageItemReader {
                     final WebElement postMetaData = postElement.findElement(By.className("elementor-post__meta-data"));
                     final WebElement postAuthor = postMetaData.findElement(By.className("elementor-post-author"));
                     final WebElement postDate = postMetaData.findElement(By.className("elementor-post-date"));
-                    final WebElement postSummary = postElement.findElement(By.className("elementor-post__excerpt")).findElement(By.tagName("p"));
+                    final WebElement postSummary = postElement.findElement(By.className("elementor-post__excerpt"))
+                            .findElement(By.tagName("p"));
 
                     return ExternalBlogPost.builder()
                             .code(TECH_BLOG_CODE)
                             .title(postTitleElement.getText())
-                            .link(PAGE_URL)
                             .suffix(postTitleElement.getAttribute("href").substring(PREFIX_LENGTH))
                             .link(PAGE_URL)
                             .author(postAuthor.getText())
                             .summary(postSummary.getText())
                             .postDate(CrawlingLocalDatePatterns.PATTERN1.parse(postDate.getText()))
                             .build();
-                }).toList());
+                }).collect(collectingAndThen(toList(), ExternalBlogPosts::new));
+
     }
 
 
