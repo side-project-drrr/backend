@@ -24,11 +24,6 @@ jobs:
           submodules: recursive
           token: ${{ secrets.TOKEN }}
 
-      - name: Set spring.profiles.default value
-        run: |
-          if [[ "${{ github.base_ref }}" == "master" ]]; then
-               sed -i 's/default: local/default: main/' drrr-api/src/main/resources/application.yml
-          fi
       ## docker compose up (docker-compose 기반)
       - name: Build and run Docker Compose
         run: |
@@ -46,7 +41,7 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1
 
-      # Docker 레이어를 캐시하는 작업 
+      # Docker 레이어를 캐시하는 작업
       - name: Cache docker layers
         uses: actions/cache@v2
         with:
