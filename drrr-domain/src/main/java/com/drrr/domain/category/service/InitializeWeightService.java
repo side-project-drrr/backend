@@ -43,7 +43,7 @@ public class InitializeWeightService {
                 .map(category -> CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
+                        .weightValue(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
                         .preferred(true)
                         .build()).toList();
 
