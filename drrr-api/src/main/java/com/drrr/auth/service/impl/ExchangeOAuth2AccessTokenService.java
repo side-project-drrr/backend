@@ -5,23 +5,26 @@ import com.drrr.auth.payload.request.GithubOAuth2Request;
 import com.drrr.auth.payload.request.KakaoOAuth2Request;
 import com.drrr.auth.payload.request.OAuth2Request;
 import com.drrr.core.exception.member.OAuth2ExceptionCode;
-import com.drrr.domain.member.service.ExistenceMemberService;
+import com.drrr.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class ExchangeOAuth2AccessTokenService {
-    private final ExistenceMemberService existenceMemberService;
     private final KakaoOAuth2Request kakaoOAuth2Request;
     private final GithubOAuth2Request githubOAuth2Request;
+    private final MemberRepository memberRepository;
 
+    @Transactional
     public OAuth2Response execute(final String code, final String provider) {
 
         final OAuth2Request oRequest = findOAuth2ProviderIdBySubject(code, provider);
-        final boolean isRegistered = existenceMemberService.checkMemberExists(oRequest.getProviderId());
+        //회원가입이 필요한 경우인지 기존 회원인지 구분하기 위함
+        final boolean isRegistered = memberRepository.existsByProviderId(oRequest.getProviderId());
         return OAuth2Response.builder()
                 .profileImageUrl(oRequest.getProfileImageUrl())
                 .providerId(oRequest.getProviderId())
