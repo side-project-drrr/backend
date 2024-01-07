@@ -1,5 +1,6 @@
 package com.drrr.domain.category.service;
 
+import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
@@ -8,7 +9,6 @@ import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,24 +26,25 @@ public class InitializeWeightService {
     public void initializeCategoryWeight(final Long memberId, final List<Long> categories) {
         List<Category> categoryList = categoryRepository.findIds(categories);
 
-        if (categories.isEmpty()) {
-            log.error("InitializeWeightService Class initializeCategoryWeight(final Long memberId, final List<Long> categories) Method RuntimeException Error");
+        if (categoryList.isEmpty()) {
+            log.error("카테고리 ids 중 존재하는 않는 카테고리가 있습니다 -> {}", categories);
             throw new RuntimeException(
-                    "InitializeWeightService.initializeCategoryWeight() - Cannot find such categories");
+                    "InitializeWeightService.initializeCategoryWeight() - Cannot find such categories -> "
+                            + categories);
         }
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
-                    log.error("initializeCategoryWeight(final Long memberId, final List<Long> categories) Method NoSuchElementException Error");
-                    return new NoSuchElementException(
-                            "InitializeWeightService.initializeCategoryWeight() - No Member Weight found with memberId: "
-                                    + memberId);
+                    log.error("사용자를 찾을 수 없습니다.");
+                    log.error("memberId -> {}", memberId);
+                    return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
                 });
+
         List<CategoryWeight> initialCategoryWeight = categoryList.stream()
                 .map(category -> CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
+                        .weightValue(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
                         .preferred(true)
                         .build()).toList();
 
