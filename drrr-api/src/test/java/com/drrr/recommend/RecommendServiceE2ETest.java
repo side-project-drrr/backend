@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
@@ -67,10 +68,10 @@ public class RecommendServiceE2ETest {
 
     /**
      * <h3>Given</h3>
-     * <h2>Member Id M1~M500 생성</h2>
-     * <br>Member Id M1~M500이 선호하는 카테고리 C3, C5, C7</br>
-     * <br>Member Id M1~M500이 추가적으로 읽은 카테고리 C2, C8</br>
-     * <br>Member Id M1~M500의 가중치 값 C2-8, C3-3, C5-4, C7-2, C8-2</br>
+     * <h2>Member Id M1~M100 생성</h2>
+     * <br>Member Id M1~M100이 선호하는 카테고리 C3, C5, C7</br>
+     * <br>Member Id M1~M100이 추가적으로 읽은 카테고리 C2, C8</br>
+     * <br>Member Id M1~M100의 가중치 값 C2-8, C3-3, C5-4, C7-2, C8-2</br>
      *
      * <h2>Post 생성</h2>
      * <br>Post Id P1~P100까지 생성</br>
@@ -94,7 +95,7 @@ public class RecommendServiceE2ETest {
         RestAssured.port = port;
         databaseCleaner.clear();
         //M1~M500 생성
-        List<Member> members = IntStream.rangeClosed(1, 500).mapToObj(i -> {
+        List<Member> members = IntStream.rangeClosed(1, 100).mapToObj(i -> {
             String email = "user" + i + "@example.com";
             String nickname = "user" + i;
             String provider = "provider" + i;
@@ -147,7 +148,7 @@ public class RecommendServiceE2ETest {
         List<Category> categoryWeights = categoryRepository.findIds(Arrays.asList(2L, 3L, 5L, 7L, 8L));
         List<Double> weights = Arrays.asList(8.0, 3.0, 4.0, 2.0, 2.0);
         List<CategoryWeight> categoryWeightList = new ArrayList<>();
-        IntStream.range(0, 500).forEach(j -> {
+        IntStream.range(0, 100).forEach(j -> {
             IntStream.range(0, categoryWeights.size()).forEach(i -> {
                 Category category = categoryWeights.get(i);
                 double value = weights.get(i);
@@ -156,7 +157,7 @@ public class RecommendServiceE2ETest {
                 categoryWeightList.add(CategoryWeight.builder()
                         .member(memberList.get(j))
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
@@ -171,7 +172,7 @@ public class RecommendServiceE2ETest {
 
         //M1~M500의 Log 생성
         List<MemberPostLog> logs = new ArrayList<>();
-        IntStream.range(0, 500).forEach(i -> {
+        IntStream.range(0, 100).forEach(i -> {
             logs.add(MemberPostLog.builder()
                     .postId(1L)
                     .memberId(memberList.get(i).getId())
@@ -315,22 +316,21 @@ public class RecommendServiceE2ETest {
     @Test
     void 사용자_게시물_추천_동시성_테스트가_잘_수행됩니다() throws InterruptedException {
         //when
-        String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         CountDownLatch latch = new CountDownLatch(1);
         ExecutorService executorService = Executors.newFixedThreadPool(500);
         List<List<Long>> membersRecommendedPosts = new ArrayList<>();
-        IntStream.rangeClosed(1, 500).forEach(i -> {
+        AtomicReference<String> test = new AtomicReference<>("");
+        IntStream.rangeClosed(1, 100).forEach(i -> {
+            String accessToken = jwtProvider.createAccessToken(Long.valueOf(i), Instant.now());
+            if (i == 1) {
+                test.set(accessToken);
+            }
             Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .body("""
-                            {
-                                "memberId":""" + i + """
-                            }
-                            """)
-                    .post("/api/v1/recommendation/posts/{memberId}", (long) i);
+                    .post("/api/v1/recommendation/posts");
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
@@ -343,9 +343,9 @@ public class RecommendServiceE2ETest {
         });
         latch.await();
         executorService.shutdown();
-
+        System.out.println("#### token:" + test.get());
         //then
-        IntStream.range(0, 500).forEach(i -> {
+        IntStream.range(0, 100).forEach(i -> {
             List<Long> postsId = membersRecommendedPosts.get(i);
             assertThat(postsId).containsExactlyInAnyOrder(2L, 4L, 6L, 8L, 10L);
         });

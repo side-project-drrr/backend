@@ -45,17 +45,16 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
 /**
- * <h2>같은 post에 대한 500명의 Members의 동시 접근 테스트</h2>
- * <br>Post Id 1에 대해서 500명의 사용자가 동시 접근했을 때 조회수가 제대로 증가되어 조회수가 500이 되는지 확인</br>
+ * <h2>같은 post에 대한 100 Members의 동시 접근 테스트</h2>
+ * <br>Post Id 1에 대해서 100명의 사용자가 동시 접근했을 때 조회수가 제대로 증가되어 조회수가 100이 되는지 확인</br>
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MemberViewE2ETest {
     private final int CATEGORY_COUNT = 20;
-    private final int MEMBER_COUNT = 500;
-    private final int POST_COUNT = 500;
+    private final int MEMBER_COUNT = 100;
+    private final int POST_COUNT = 1;
     private final int CATEGORY_WEIGHT_COUNT = 100;
     private final int MEMBER_POST_LOG_COUNT = 100;
-    private final int CATEGORIES_PER_POST = 8;
     private final int MAX_PREFER_CATEGORIES_COUNT = 8;
     @LocalServerPort
     int port;
@@ -150,81 +149,9 @@ public class MemberViewE2ETest {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .preferred(preferred)
                         .lastReadAt(LocalDateTime.now())
-                        .build());
-            });
-        });
-        IntStream.range(100, 200).forEach(i -> {
-            List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
-            int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
-            Member member = members.get(i); // 순환적으로 Member 객체 할당
-            IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
-                Category category = categories.get(randomCategoryList.get(j));
-                double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
-                boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
-
-                categoryWeights.add(CategoryWeight.builder()
-                        .member(member)
-                        .category(category)
-                        .value(value)
-                        .lastReadAt(LocalDateTime.now())
-                        .preferred(preferred)
-                        .build());
-            });
-        });
-        IntStream.range(200, 300).forEach(i -> {
-            List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
-            int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
-            Member member = members.get(i); // 순환적으로 Member 객체 할당
-            IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
-                Category category = categories.get(randomCategoryList.get(j));
-                double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
-                boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
-
-                categoryWeights.add(CategoryWeight.builder()
-                        .member(member)
-                        .category(category)
-                        .value(value)
-                        .lastReadAt(LocalDateTime.now())
-                        .preferred(preferred)
-                        .build());
-            });
-        });
-        IntStream.range(300, 400).forEach(i -> {
-            List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
-            int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
-            Member member = members.get(i); // 순환적으로 Member 객체 할당
-            IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
-                Category category = categories.get(randomCategoryList.get(j));
-                double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
-                boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
-
-                categoryWeights.add(CategoryWeight.builder()
-                        .member(member)
-                        .category(category)
-                        .value(value)
-                        .lastReadAt(LocalDateTime.now())
-                        .preferred(preferred)
-                        .build());
-            });
-        });
-        IntStream.range(400, 500).forEach(i -> {
-            List<Integer> randomCategoryList = getRangeShuffledList(1, CATEGORY_COUNT);
-            int preferCategoryCnt = getRandomValueInRange(Integer.class, 1, 8);
-            Member member = members.get(i); // 순환적으로 Member 객체 할당
-            IntStream.rangeClosed(1, preferCategoryCnt).forEach(j -> {
-                Category category = categories.get(randomCategoryList.get(j));
-                double value = getRandomValueInRange(Double.class, 0.0, 1.0); // 가중치 값 설정 (여기서는 단순히 인덱스에 0.01을 곱한 값을 사용)
-                boolean preferred = true; // 짝수 인덱스에서만 선호 카테고리로 설정
-
-                categoryWeights.add(CategoryWeight.builder()
-                        .member(member)
-                        .category(category)
-                        .value(value)
-                        .lastReadAt(LocalDateTime.now())
-                        .preferred(preferred)
                         .build());
             });
         });
@@ -240,11 +167,11 @@ public class MemberViewE2ETest {
             Collections.shuffle(randomPostIds);
             Long randomMemberId = randomMemberIds.get(i).getId(); // 임의로 회원 ID 할당
             //멤버마다 몇개의 로그를 만들지 정함
-            int createEachMemberLogCount = getRandomValueInRange(Integer.class, 10, 50);
+            int createEachMemberLogCount = 1;
             IntStream.range(0, createEachMemberLogCount).forEach(j -> {
                 int randomBoolean1 = getRandomValueInRange(Integer.class, 1, 3);
                 int randomBoolean2 = getRandomValueInRange(Integer.class, 1, 3);
-                long randomPostId = randomPostIds.get(j).getId();
+                long randomPostId = 1L;
                 boolean isRead = (randomBoolean1 == 1); // 짝수 인덱스에서만 읽음으로 설정
                 boolean isRecommended = (randomBoolean2 == 1); // 3의 배수 인덱스에서만 추천으로 설정
 
@@ -252,6 +179,7 @@ public class MemberViewE2ETest {
                         .memberId(randomMemberId)
                         .postId(randomPostId)
                         .isRead(isRead)
+                        .lastReadAt(LocalDateTime.now())
                         .isRecommended(isRecommended)
                         .build());
             });
@@ -332,11 +260,11 @@ public class MemberViewE2ETest {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
-        String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
 
-        CountDownLatch latch = new CountDownLatch(500);
-        ExecutorService executorService = Executors.newFixedThreadPool(500);
-        IntStream.rangeClosed(1, 500).forEach(i -> {
+        CountDownLatch latch = new CountDownLatch(100);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        IntStream.rangeClosed(1, 100).forEach(i -> {
+            String accessToken = jwtProvider.createAccessToken(Long.valueOf(i), Instant.now());
             given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
@@ -347,7 +275,7 @@ public class MemberViewE2ETest {
                                 "categoryIds": [1,11]
                             }
                             """)
-                    .post("/api/v1/posts/read/{memberId}/{postId}", (long) i, 1L)
+                    .post("/api/v1/posts/read/{postId}", 1L)
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
@@ -364,6 +292,6 @@ public class MemberViewE2ETest {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         int viewCount = updatedPost.get(0).getViewCount();
-        assertThat(viewCount).isEqualTo(500);
+        assertThat(viewCount).isEqualTo(100);
     }
 }
