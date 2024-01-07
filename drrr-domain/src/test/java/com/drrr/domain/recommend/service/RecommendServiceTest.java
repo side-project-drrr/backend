@@ -142,7 +142,7 @@ class RecommendServiceTest {
             categoryWeightList.add(CategoryWeight.builder()
                     .member(member)
                     .category(category)
-                    .value(value)
+                    .weightValue(value)
                     .lastReadAt(LocalDateTime.now())
                     .preferred(preferred)
                     .build());

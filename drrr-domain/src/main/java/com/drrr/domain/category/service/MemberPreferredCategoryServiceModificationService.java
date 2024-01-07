@@ -64,7 +64,7 @@ public class MemberPreferredCategoryServiceModificationService {
                     return CategoryWeight.builder()
                             .member(categoryWeight.getMember())
                             .preferred(isPreferred)
-                            .value(categoryWeight.getValue())
+                            .weightValue(categoryWeight.getWeightValue())
                             .category(categoryWeight.getCategory())
                             .build();
                 })
@@ -83,7 +83,7 @@ public class MemberPreferredCategoryServiceModificationService {
                     return CategoryWeight.builder()
                             .member(member)
                             .preferred(true)
-                            .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
+                            .weightValue(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
                             .category(category)
                             .build();
                 }), updatedCategoryWeights.stream()).toList();

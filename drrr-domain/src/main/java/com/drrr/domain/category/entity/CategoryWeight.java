@@ -38,7 +38,7 @@ public class CategoryWeight extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    private double value;
+    private double weightValue;
 
     private boolean preferred;
     private LocalDateTime lastReadAt;
@@ -58,7 +58,7 @@ public class CategoryWeight extends BaseEntity {
      * 초기값으로 변환하기 위함
      */
     public boolean isExpiredCategoryWeight() {
-        return MIN_WEIGHT.isGreaterThan(this.value) || isUnreadPastDays(this.lastReadAt);
+        return MIN_WEIGHT.isGreaterThan(this.weightValue) || isUnreadPastDays(this.lastReadAt);
     }
 
 
@@ -71,7 +71,7 @@ public class CategoryWeight extends BaseEntity {
     }
 
     public void accumulateWeight() {
-        this.value = INCREASE_WEIGHT.sum(this.value);
+        this.weightValue = INCREASE_WEIGHT.sum(this.weightValue);
     }
 
     /**
@@ -85,7 +85,7 @@ public class CategoryWeight extends BaseEntity {
         final double minusWeight = getDecreasedWeightValueByHours(lastUpdatedAt, LocalDateTime.now());
 
         //가중치 범위 검증
-        this.value = limitWeightValue(this.value, minusWeight, isPreferred);
+        this.weightValue = limitWeightValue(this.weightValue, minusWeight, isPreferred);
     }
 
     /**

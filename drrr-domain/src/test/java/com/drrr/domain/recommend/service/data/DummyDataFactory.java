@@ -127,7 +127,7 @@ class DummyDataFactory {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now().minusDays(randomDays).minusHours(randomHours))
                         .preferred(preferred)
                         .build());
@@ -145,7 +145,7 @@ class DummyDataFactory {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .preferred(preferred)
                         .build());
             });
@@ -162,7 +162,7 @@ class DummyDataFactory {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .preferred(preferred)
                         .build());
             });
@@ -179,7 +179,7 @@ class DummyDataFactory {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .preferred(preferred)
                         .build());
             });
@@ -196,7 +196,7 @@ class DummyDataFactory {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .preferred(preferred)
                         .build());
             });

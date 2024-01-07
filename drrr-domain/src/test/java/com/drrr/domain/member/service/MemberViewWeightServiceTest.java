@@ -161,7 +161,7 @@ class MemberViewWeightServiceTest {
         List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(1L);
         assertThat(categoryWeights).isNotEmpty();
 
-        categoryWeights.forEach(categoryWeight -> assertThat(categoryWeight.getValue())
+        categoryWeights.forEach(categoryWeight -> assertThat(categoryWeight.getWeightValue())
                 .isEqualTo(WeightConstants.INCREASE_WEIGHT.getValue()));
 
     }

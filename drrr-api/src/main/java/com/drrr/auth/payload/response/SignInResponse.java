@@ -1,5 +1,6 @@
 package com.drrr.auth.payload.response;
 
+import com.drrr.auth.service.impl.IssuanceTokenService.IssuanceTokenDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -10,4 +11,10 @@ public record SignInResponse(
         @NotNull String accessToken,
         @Schema(description = "refresh token", nullable = false, example = "[refresh token]")
         @NotNull String refreshToken) {
+        public static SignInResponse from(IssuanceTokenDto issuanceTokenDto) {
+                return SignInResponse.builder()
+                        .accessToken(issuanceTokenDto.getAccessToken())
+                        .refreshToken(issuanceTokenDto.getRefreshToken())
+                        .build();
+        }
 }

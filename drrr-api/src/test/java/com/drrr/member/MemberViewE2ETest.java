@@ -150,7 +150,7 @@ public class MemberViewE2ETest {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .preferred(preferred)
                         .lastReadAt(LocalDateTime.now())
                         .build());
@@ -168,7 +168,7 @@ public class MemberViewE2ETest {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
@@ -186,7 +186,7 @@ public class MemberViewE2ETest {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
@@ -204,7 +204,7 @@ public class MemberViewE2ETest {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
@@ -222,7 +222,7 @@ public class MemberViewE2ETest {
                 categoryWeights.add(CategoryWeight.builder()
                         .member(member)
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
