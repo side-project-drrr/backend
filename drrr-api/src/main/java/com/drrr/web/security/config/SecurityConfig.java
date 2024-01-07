@@ -6,10 +6,8 @@ import com.drrr.web.security.filter.JwtTokenValidationFilter;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,16 +26,12 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 
 @Configuration
-@PropertySource(value = "classpath:security-storage-api/front/front-ip.properties")
 @RequiredArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = false)
 @Slf4j
 public class SecurityConfig {
     private final JwtProvider jwtProvider;
-
-    @Value("${api.acceptance.front.ip}")
-    private String domain;
 
     @Bean
     JwtTokenValidationFilter jwtTokenValidationFilter() {
@@ -67,27 +61,7 @@ public class SecurityConfig {
         final MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
 
         // 명시적으로 허용할 url 등록
-        http.authorizeHttpRequests(
-                        (auth) -> auth.requestMatchers(
-                                        mvcMatcherBuilder.pattern("/favicon.ico"),
-                                        mvcMatcherBuilder.pattern("/login/oauth/kakao/**"),
-                                        mvcMatcherBuilder.pattern("/h2-console/**"),
-                                        mvcMatcherBuilder.pattern("/swagger-ui.html"),
-                                        mvcMatcherBuilder.pattern("/swagger-ui/**"),
-                                        mvcMatcherBuilder.pattern("/swagger-resources/**"),
-                                        mvcMatcherBuilder.pattern("/v3/api-docs/**"),
-                                        mvcMatcherBuilder.pattern("/v2/api-docs"),
-                                        mvcMatcherBuilder.pattern("/webjars/**"),
-                                        mvcMatcherBuilder.pattern("/auth/**"),
-                                        mvcMatcherBuilder.pattern("/api/notifications/**"),
-                                        mvcMatcherBuilder.pattern("/actuator"),
-                                        mvcMatcherBuilder.pattern("/actuator/**"),
-                                        mvcMatcherBuilder.pattern("/actuator/prometheus"),
-                                        mvcMatcherBuilder.pattern("/api/v1/**"))
-                                .permitAll()
-                                .anyRequest()
-                                .authenticated()
-                ).httpBasic(HttpBasicConfigurer::disable)
+        http.httpBasic(HttpBasicConfigurer::disable)
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtTokenValidationFilter(), UsernamePasswordAuthenticationFilter.class)
