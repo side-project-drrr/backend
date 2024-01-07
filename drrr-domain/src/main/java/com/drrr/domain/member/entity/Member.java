@@ -1,12 +1,9 @@
 package com.drrr.domain.member.entity;
 
-
-import com.drrr.core.code.member.Gender;
 import com.drrr.domain.jpa.entity.BaseEntity;
+import com.drrr.domain.member.service.RegisterMemberService.RegisterMemberDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -40,7 +37,7 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String profileImageUrl;
 
-    public static Member createMember(String email, String nickname,  String provider, String providerId,
+    public static Member createMember(String email, String nickname, String provider, String providerId,
                                       String profileImageUrl) {
         return Member.builder()
                 .email(email)
@@ -48,6 +45,15 @@ public class Member extends BaseEntity {
                 .provider(provider)
                 .providerId(providerId)
                 .profileImageUrl(profileImageUrl)
+                .build();
+    }
+
+    public static Member createMember(final RegisterMemberDto registerMemberDto) {
+        return Member.builder()
+                .email(registerMemberDto.email())
+                .nickname(registerMemberDto.nickname())
+                .provider(registerMemberDto.provider())
+                .providerId(registerMemberDto.providerId())
                 .build();
     }
 }
