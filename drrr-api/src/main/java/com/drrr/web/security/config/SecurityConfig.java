@@ -6,10 +6,8 @@ import com.drrr.web.security.filter.JwtTokenValidationFilter;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,16 +26,12 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 
 @Configuration
-@PropertySource(value = "classpath:security-storage-api/front/front-ip.properties")
 @RequiredArgsConstructor
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true, prePostEnabled = false)
 @Slf4j
 public class SecurityConfig {
     private final JwtProvider jwtProvider;
-
-    @Value("${api.acceptance.front.ip}")
-    private String domain;
 
     @Bean
     JwtTokenValidationFilter jwtTokenValidationFilter() {
