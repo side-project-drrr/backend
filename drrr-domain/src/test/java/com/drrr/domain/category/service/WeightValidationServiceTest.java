@@ -162,7 +162,7 @@ class WeightValidationServiceTest {
                 categoryWeightList.add(CategoryWeight.builder()
                         .member(members.get(i))
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .preferred(preferred)
                         .lastReadAt(readAt)
                         .build());
@@ -311,10 +311,10 @@ class WeightValidationServiceTest {
         List<CategoryWeight> member4CategoryWeight = categoryWeightRepository.findByMemberId(members.get(3).getId());
 
         //then
-        assertThat(member1CategoryWeight.get(0).getValue()).isEqualTo(
+        assertThat(member1CategoryWeight.get(0).getWeightValue()).isEqualTo(
                 8.0 - (WeightConstants.DECREASE_WEIGHT.getValue() * 3));
-        assertThat(member2CategoryWeight.get(1).getValue()).isEqualTo(WeightConstants.MAX_WEIGHT.getValue());
-        assertThat(member3CategoryWeight.get(2).getValue()).isEqualTo(
+        assertThat(member2CategoryWeight.get(1).getWeightValue()).isEqualTo(WeightConstants.MAX_WEIGHT.getValue());
+        assertThat(member3CategoryWeight.get(2).getWeightValue()).isEqualTo(
                 WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue());
         //가중치가 0인 카테고리에 대해서는 데이터가 삭제됨
         assertThat(member4CategoryWeight.size()).isEqualTo(3);

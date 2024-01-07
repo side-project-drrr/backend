@@ -46,7 +46,7 @@ public class RecommendPostService {
                 .map(categoryWeight -> CategoryWeightDto.builder()
                         .member(categoryWeight.getMember())
                         .category(categoryWeight.getCategory())
-                        .value(categoryWeight.getValue())
+                        .value(categoryWeight.getWeightValue())
                         .preferred(categoryWeight.isPreferred())
                         .build()).toList();
 

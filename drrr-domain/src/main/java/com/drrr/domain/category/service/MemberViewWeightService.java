@@ -63,7 +63,7 @@ public class MemberViewWeightService {
                             .preferred(false)
                             .member(member)
                             .category(category)
-                            .value(WeightConstants.INCREASE_WEIGHT.getValue())
+                            .weightValue(WeightConstants.INCREASE_WEIGHT.getValue())
                             .build())
                     .toList();
             categoryWeightRepository.saveAll(updatedCategoryWeights);
