@@ -128,7 +128,7 @@ public class CategoryModificationTest {
                     .category(categories.get(i))
                     .lastReadAt(LocalDateTime.now().minusDays(3))
                     .preferred(true)
-                    .value(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
+                    .weightValue(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
                     .build());
         });
 
