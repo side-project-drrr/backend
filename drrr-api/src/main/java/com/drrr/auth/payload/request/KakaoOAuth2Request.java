@@ -44,6 +44,12 @@ public class KakaoOAuth2Request {
         public String getProfileImageUrl() {
             return this.profileImageUrl;
         }
+        public static OAuth2KakaoResponse from(JsonNode jsonNode) {
+            return OAuth2KakaoResponse.builder()
+                    .providerId(jsonNode.get("id").asText())
+                    .profileImageUrl(jsonNode.get("profile_image").asText())
+                    .build();
+        }
     }
 
 }
