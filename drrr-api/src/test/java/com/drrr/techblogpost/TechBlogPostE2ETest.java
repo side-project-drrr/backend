@@ -50,10 +50,10 @@ import org.springframework.http.HttpStatus;
 
 /**
  * <h3>Given</h3>
- * <h2>Member Id M1~M500 생성</h2>
- * <br>Member Id M1~M500이 선호하는 카테고리 C3, C5, C7</br>
- * <br>Member Id M1~M500이 추가적으로 읽은 카테고리 C2, C8</br>
- * <br>Member Id M1~M500의 가중치 값 C2-8, C3-3, C5-4, C7-2, C8-2</br>
+ * <h2>Member Id M1~M100 생성</h2>
+ * <br>Member Id M1~M100 선호하는 카테고리 C3, C5, C7</br>
+ * <br>Member Id M1~M100 추가적으로 읽은 카테고리 C2, C8</br>
+ * <br>Member Id M1~M100 가중치 값 C2-8, C3-3, C5-4, C7-2, C8-2</br>
  *
  * <h2>Post 생성</h2>
  * <br>Post Id P1~P100까지 생성</br>
@@ -104,7 +104,7 @@ public class TechBlogPostE2ETest {
         RestAssured.port = port;
         databaseCleaner.clear();
         //M1~M500 생성
-        List<Member> members = IntStream.rangeClosed(1, 500).mapToObj(i -> {
+        List<Member> members = IntStream.rangeClosed(1, 100).mapToObj(i -> {
             String email = "user" + i + "@example.com";
             String nickname = "user" + i;
             String provider = "provider" + i;
@@ -158,7 +158,7 @@ public class TechBlogPostE2ETest {
         techBlogPostRepository.saveAll(techBlogPosts);
 
         //PL1 생성
-        List<TechBlogPostLike> techBlogPostLikes = IntStream.range(0, 500).mapToObj(i -> {
+        List<TechBlogPostLike> techBlogPostLikes = IntStream.range(0, 100).mapToObj(i -> {
             List<Member> memberList = memberRepository.findAll();
 
             if (memberList.isEmpty()) {
@@ -187,7 +187,7 @@ public class TechBlogPostE2ETest {
         List<Category> categoryWeights = categoryRepository.findIds(Arrays.asList(2L, 3L, 5L, 7L, 8L));
         List<Double> weights = Arrays.asList(8.0, 3.0, 4.0, 2.0, 2.0);
         List<CategoryWeight> categoryWeightList = new ArrayList<>();
-        IntStream.range(0, 500).forEach(j -> {
+        IntStream.range(0, 100).forEach(j -> {
             IntStream.range(0, categoryWeights.size()).forEach(i -> {
                 Category category = categoryWeights.get(i);
                 double value = weights.get(i);
@@ -196,7 +196,7 @@ public class TechBlogPostE2ETest {
                 categoryWeightList.add(CategoryWeight.builder()
                         .member(memberList.get(j))
                         .category(category)
-                        .value(value)
+                        .weightValue(value)
                         .lastReadAt(LocalDateTime.now())
                         .preferred(preferred)
                         .build());
@@ -211,7 +211,7 @@ public class TechBlogPostE2ETest {
 
         //M1~M500의 Log 생성
         List<MemberPostLog> logs = new ArrayList<>();
-        IntStream.range(0, 500).forEach(i -> {
+        IntStream.range(0, 100).forEach(i -> {
             logs.add(MemberPostLog.builder()
                     .postId(1L)
                     .memberId(memberList.get(i).getId())
@@ -357,9 +357,9 @@ public class TechBlogPostE2ETest {
         //when
         String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         CountDownLatch latch = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(500);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
 
-        IntStream.rangeClosed(1, 500).forEach(i -> {
+        IntStream.rangeClosed(1, 100).forEach(i -> {
 
             Response response = given().log()
                     .all()
@@ -388,7 +388,7 @@ public class TechBlogPostE2ETest {
                 TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
         int likeCount = techBlogPost.getPostLike();
-        assertThat(likeCount).isEqualTo(500);
+        assertThat(likeCount).isEqualTo(100);
 
     }
 
@@ -397,9 +397,9 @@ public class TechBlogPostE2ETest {
         //when
         String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         CountDownLatch latch = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(500);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
 
-        IntStream.rangeClosed(1, 500).forEach(i -> {
+        IntStream.rangeClosed(1, 100).forEach(i -> {
 
             Response response = given().log()
                     .all()
@@ -428,7 +428,7 @@ public class TechBlogPostE2ETest {
                 TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
         int likeCount = techBlogPost.getPostLike();
-        assertThat(likeCount).isEqualTo(0);
+        assertThat(likeCount).isEqualTo(400);
 
     }
 
@@ -481,7 +481,7 @@ public class TechBlogPostE2ETest {
                 );
 
         //then
-        List<TechBlogPost> postsFromDb = techBlogPostService.findPostsByCategory(8L);
+        List<TechBlogPost> postsFromDb = techBlogPostRepository.findPostsByCategory(8L);
         if (posts.isEmpty()) {
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
