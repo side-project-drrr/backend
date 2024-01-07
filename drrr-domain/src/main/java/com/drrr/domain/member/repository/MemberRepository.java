@@ -10,12 +10,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
-    Member findByEmail(String email);
+    Optional<Member> findByEmail(String email);
 
     @Query("select m.nickname from Member m where m.id =:id")
     String findNicknameById(@Param("id") Long id);
 
     Optional<Member> findByProviderId(String providerId);
 
-    Optional<Member> findByNicknameOrEmail(String nickname, String email);
+
+    boolean existsByProviderId(String providerId);
 }
