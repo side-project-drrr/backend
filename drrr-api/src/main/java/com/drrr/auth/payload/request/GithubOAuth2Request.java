@@ -23,19 +23,18 @@ public class GithubOAuth2Request {
                         reader.getGithubClientSecret(),
                         OAuth2Provider.GITHUB_REQEUST_ACCESS_TOKEN_URI.getRequestUrl()
                 );
-        final String accessToken =  oAuth2Client.exchangeGitHubOAuth2AccessToken(githubRequest);
-        final JsonNode jsonNode = oAuth2Client.getUserProfile("Bearer " + accessToken, OAuth2Provider.GITHUB_PROFILE_URI.getRequestUrl());
-        return OAuth2GithubResponse.builder()
-                .providerId(jsonNode.get("id").asText())
-                .profileImageUrl(jsonNode.get("avatar_url").asText())
-                .build();
+        final String accessToken = oAuth2Client.exchangeGitHubOAuth2AccessToken(githubRequest);
+        final JsonNode jsonNode = oAuth2Client.getUserProfile(accessToken,
+                OAuth2Provider.GITHUB_PROFILE_URI.getRequestUrl());
+        return OAuth2GithubResponse.from(jsonNode);
     }
 
     @Builder
     public record OAuth2GithubResponse(
             String profileImageUrl,
             String providerId
-    ) implements OAuth2Request{
+    ) implements OAuth2Request {
+
 
         @Override
         public String getProviderId() {
@@ -45,6 +44,13 @@ public class GithubOAuth2Request {
         @Override
         public String getProfileImageUrl() {
             return this.profileImageUrl;
+        }
+
+        public static OAuth2GithubResponse from(JsonNode jsonNode) {
+            return OAuth2GithubResponse.builder()
+                    .providerId(jsonNode.get("id").asText())
+                    .profileImageUrl(jsonNode.get("avatar_url").asText())
+                    .build();
         }
 
     }

@@ -22,19 +22,16 @@ public class KakaoOAuth2Request {
                         code,
                         OAuth2Provider.KAKAO_REQUEST_ACCESS_TOKEN_URI.getRequestUrl()
                 );
-        final String accessToken =  oAuth2Client.exchangeKakaoOAuth2AccessToken(kakaoRequest);
-        JsonNode jsonNode = oAuth2Client.getUserProfile("Bearer " + accessToken, OAuth2Provider.KAKAO_PROFILE_URI.getRequestUrl());
-        return OAuth2KakaoResponse.builder()
-                .providerId(jsonNode.get("id").asText())
-                .profileImageUrl(jsonNode.get("profile_image").asText())
-                .build();
+        final String accessToken = oAuth2Client.exchangeKakaoOAuth2AccessToken(kakaoRequest);
+        JsonNode jsonNode = oAuth2Client.getUserProfile(accessToken, OAuth2Provider.KAKAO_PROFILE_URI.getRequestUrl());
+        return OAuth2KakaoResponse.from(jsonNode);
     }
 
     @Builder
     public record OAuth2KakaoResponse(
             String profileImageUrl,
             String providerId
-    ) implements OAuth2Request{
+    ) implements OAuth2Request {
         @Override
         public String getProviderId() {
             return this.providerId;
@@ -43,6 +40,13 @@ public class KakaoOAuth2Request {
         @Override
         public String getProfileImageUrl() {
             return this.profileImageUrl;
+        }
+
+        public static OAuth2KakaoResponse from(JsonNode jsonNode) {
+            return OAuth2KakaoResponse.builder()
+                    .providerId(jsonNode.get("id").asText())
+                    .profileImageUrl(jsonNode.get("profile_image").asText())
+                    .build();
         }
     }
 
