@@ -46,6 +46,12 @@ public class GithubOAuth2Request {
         public String getProfileImageUrl() {
             return this.profileImageUrl;
         }
+        public static OAuth2GithubResponse from(JsonNode jsonNode) {
+            return OAuth2GithubResponse.builder()
+                    .providerId(jsonNode.get("id").asText())
+                    .profileImageUrl(jsonNode.get("avatar_url").asText())
+                    .build();
+        }
 
     }
 }
