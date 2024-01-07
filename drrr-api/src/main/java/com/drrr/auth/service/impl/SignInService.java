@@ -22,9 +22,6 @@ public class SignInService {
         final Long memberId = memberIdRetrievalService.findByProviderId(socialId);
         final IssuanceTokenDto tokenDto = issuanceTokenService.execute(memberId);
 
-        return SignInResponse.builder()
-                .accessToken(tokenDto.getAccessToken())
-                .refreshToken(tokenDto.getRefreshToken())
-                .build();
+        return SignInResponse.from(tokenDto);
     }
 }
