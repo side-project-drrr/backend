@@ -43,23 +43,11 @@ public class ExternalRecommendService {
             //합치기
             posts.addAll(notCachedPosts);
         }
-
-        //로그 쌓기
-        logUpdateService.updateMemberPostRecommendLog(memberId, postIds);
-
+        
         return RecommendResponse.builder()
                 .posts(posts.stream()
-                        .map(post -> TechBlogPostDto.builder()
-                                .id(post.getId())
-                                .title(post.getTitle())
-                                .createdDate(post.getWrittenAt())
-                                .url(post.getUrl())
-                                .urlSuffix(post.getUrlSuffix())
-                                .summary(post.getSummary())
-                                .techBlogCode(post.getTechBlogCode())
-                                .thumbnailUrl(post.getThumbnailUrl())
-                                .viewCount(post.getViewCount())
-                                .build()).toList())
+                        .map(TechBlogPostDto::from)
+                        .toList())
                 .build();
     }
 }
