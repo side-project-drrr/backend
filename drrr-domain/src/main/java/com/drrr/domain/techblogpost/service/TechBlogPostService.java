@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class TechBlogPostService {
-    private final JPAQueryFactory queryFactory;
     private final TechBlogPostRepository techBlogPostRepository;
     public List<TechBlogPostOuterDto> findAllPostsOuter() {
         final List<TechBlogPost> posts = techBlogPostRepository.findAll();
@@ -71,6 +70,11 @@ public class TechBlogPostService {
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
         return posts;
+    }
+
+    public TechBlogPost findTechBlogPostsById(final Long postId) {
+        return techBlogPostRepository.findById(1L).orElseThrow(
+                TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
     }
 
 }
