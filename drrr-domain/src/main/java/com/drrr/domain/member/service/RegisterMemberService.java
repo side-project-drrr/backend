@@ -11,34 +11,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class RegisterMemberService {
     private final MemberRepository memberRepository;
 
 
-    @Transactional
-    public Long execute(final String socialId, final RegisterMemberDto registerMemberDto) {
-        memberRepository.findByNicknameOrEmail(registerMemberDto.nickname, registerMemberDto.email)
+    public Long execute(final RegisterMemberDto registerMemberDto) {
+        memberRepository.findByEmail(registerMemberDto.email)
                 .ifPresent((member) -> {
                     log.error(
                             "RegisterMemberService Class execute(final String socialId, final RegisterMemberDto registerMemberDto) Method IllegalArgumentException Error");
                     if (registerMemberDto.email.equals(member.getEmail())) {
+                        //이메일이 중복으로 등록되어 있음
                         throw MemberExceptionCode.DUPLICATE_EMAIL.newInstance();
                     } else if (registerMemberDto.nickname.equals(member.getNickname())) {
+                        //닉네임이 중복으로 등록되어 있음
                         throw MemberExceptionCode.DUPLICATE_NICKNAME.newInstance();
-                    } else {
-                        throw MemberExceptionCode.UNKNOWN_ERROR.newInstance();
                     }
+                    throw MemberExceptionCode.UNKNOWN_ERROR.newInstance();
                 });
-        Member member = Member.builder()
-                .email(registerMemberDto.email)
-                .providerId(socialId)
-                .nickname(registerMemberDto.nickname)
-                .provider(registerMemberDto.provider)
-                .providerId(registerMemberDto.providerId)
-                .build();
-        var savedMember = memberRepository.save(member);
-        return savedMember.getId();
+
+        return memberRepository.save(Member.createMember(registerMemberDto)).getId();
     }
 
     @Builder

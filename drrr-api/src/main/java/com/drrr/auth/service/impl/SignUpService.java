@@ -19,14 +19,10 @@ public class SignUpService {
     private final InitializeWeightService initializeWeightService;
 
     public SignUpResponse execute(final SignUpRequest signUpRequest) {
-        String providerId = signUpRequest.providerId();
-        Long memberId = registerMemberService.execute(providerId, signUpRequest.toRegisterMemberDto());
+        Long memberId = registerMemberService.execute(signUpRequest.toRegisterMemberDto());
         IssuanceTokenDto issuanceTokenDto = issuanceTokenService.execute(memberId);
         initializeWeightService.initializeCategoryWeight(memberId, signUpRequest.categoryIds());
 
-        return SignUpResponse.builder()
-                .accessToken(issuanceTokenDto.getAccessToken())
-                .refreshToken(issuanceTokenDto.getRefreshToken())
-                .build();
+        return SignUpResponse.from(issuanceTokenDto);
     }
 }
