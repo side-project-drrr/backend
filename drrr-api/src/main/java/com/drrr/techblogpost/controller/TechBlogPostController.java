@@ -5,6 +5,7 @@ import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
+import com.drrr.techblogpost.service.ExternalTechBlogPostLikeService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,6 +32,8 @@ public class TechBlogPostController {
     private final String ADD = "ADD";
     private final String DELETE = "REMOVE";
     private final ExternalTechBlogPostService externalTechBlogPostService;
+    private final ExternalTechBlogPostLikeService externalTechBlogPostLikeService;
+
     private final TechBlogPostRepository techBlogPostRepository;
 
 
@@ -64,8 +67,8 @@ public class TechBlogPostController {
 
     @Operation(summary = "조회수가 가장 높은 기술 블로그를 반환 api", description = "호출 성공 시 넘겨준 개수만큼 조회수가 가장 높은 기술 블로그 반환")
     @DeleteMapping("/post/top/{count}")
-    public List<TechBlogPost> findTopNPosts(@NotNull @PathVariable("count") final int count) {
-        return techBlogPostRepository.findTopLikePost(count);
+    public List<TechBlogPostOuterDto> findTopNPosts(@NotNull @PathVariable("count") final int count) {
+        return externalTechBlogPostLikeService.execute(count);
     }
 
 }
