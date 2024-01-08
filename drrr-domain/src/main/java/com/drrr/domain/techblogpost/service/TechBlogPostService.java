@@ -4,6 +4,7 @@ import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
 import com.drrr.core.exception.techblog.TechBlogExceptionCode;
+import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,23 +23,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class TechBlogPostService {
     private final JPAQueryFactory queryFactory;
     private final TechBlogPostRepository techBlogPostRepository;
-
-    public List<TechBlogPost> findAllPosts() {
+    public List<TechBlogPostOuterDto> findAllPostsOuter() {
         final List<TechBlogPost> posts = techBlogPostRepository.findAll();
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return posts;
+        return TechBlogPostOuterDto.from(posts);
     }
 
     public List<TechBlogPost> findPostsByCategory(final Long postId) {
-        final List<TechBlogPost> posts = queryFactory.select(techBlogPost)
-                .from(techBlogPostCategory)
-                .leftJoin(techBlogPost)
-                .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
-                .where(techBlogPostCategory.category.id.eq(postId))
-                .fetch();
+        final List<TechBlogPost> posts = techBlogPostRepository.findPostsByCategory(postId);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
@@ -46,17 +41,13 @@ public class TechBlogPostService {
         return posts;
     }
 
-    public List<TechBlogPost> findTopLikePost(final int topN) {
-        final List<TechBlogPost> topPosts = queryFactory.select(techBlogPost)
-                .from(techBlogPost)
-                .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
-                .limit(topN)
-                .fetch();
+    public List<TechBlogPostOuterDto> findTopLikePost(final int count) {
+        final List<TechBlogPost> topPosts = techBlogPostRepository.findTopLikePost(count);
         if (topPosts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return topPosts;
+        return TechBlogPostOuterDto.from(topPosts);
     }
 
     public List<TechBlogPost> findNotCachedTechBlogPosts(final List<TechBlogPost> postsInRedis,
