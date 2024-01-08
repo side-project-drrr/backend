@@ -29,11 +29,16 @@ public class RedisTechBlogPostService {
 
         final List<RedisTechBlogPost> redisTechBlogPosts = redisTechBlogPostTemplate.opsForValue().multiGet(keys);
 
-        assert redisTechBlogPosts != null;
         return redisTechBlogPosts.stream()
                 .filter(Objects::nonNull)
                 .map(RedisTechBlogPost::getTechBlogPost)
                 .toList();
+    }
+
+    public TechBlogPost findPostByIdInRedis(final Long postId) {
+        //redis repository에서는 찾고자하는 데이터가 없으면 빈 리스트 대신 null를 반환함
+        return redisTechBlogPostRepository.findById(postId).map(RedisTechBlogPost::getTechBlogPost)
+                .orElse(null);
     }
 
     public List<TechBlogPost> findPostsByCategoryIdInRedis(final Long categoryId) {
