@@ -22,7 +22,7 @@ import org.springframework.security.oauth2.jwt.JwtValidationException;
 @RequiredArgsConstructor
 @Configuration
 public class JwtProvider {
-    private static final String issuer = "TEAM-SAIDA-BE"; // 발급자 명칭 변경 예정
+    private static final String issuer = "DRRR-BE"; // 발급자 명칭 변경 예정
     private static final Long accessTokenExpiry = 7 * 24 * 60 * 60L; // 1주
     private static final Long refreshTokenExpiry = 14 * 24 * 60 * 60L; // 2주
     private static final String TOKEN_PREFIX = "Bearer ";
