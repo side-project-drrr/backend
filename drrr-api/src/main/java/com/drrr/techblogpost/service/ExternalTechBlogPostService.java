@@ -1,6 +1,7 @@
 package com.drrr.techblogpost.service;
 
 import com.drrr.domain.like.service.TechBlogPostLikeService;
+import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
@@ -16,8 +17,8 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostLikeService techBlogPostLikeService;
     private final RedisTechBlogPostService redisTechBlogPostService;
 
-    public List<TechBlogPost> execute() {
-        return techBlogPostService.findAllPosts();
+    public List<TechBlogPostOuterDto> execute() {
+        return techBlogPostService.findAllPostsOuter();
     }
 
     public List<TechBlogPost> execute(final Long categoryId) {
