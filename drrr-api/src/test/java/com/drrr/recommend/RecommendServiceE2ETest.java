@@ -101,7 +101,7 @@ public class RecommendServiceE2ETest {
             String providerId = "providerId" + i;
             String imageUrl = "http://example.com/image" + i + ".jpg";
             MemberRole role = MemberRole.USER; // 임의로 USER와 ADMIN을 번갈아가며 설정
-            return Member.createMember(email, nickname, provider, providerId, imageUrl, true);
+            return Member.createMember(email, nickname, provider, providerId, imageUrl);
         }).collect(Collectors.toList());
         memberRepository.saveAll(members);
 

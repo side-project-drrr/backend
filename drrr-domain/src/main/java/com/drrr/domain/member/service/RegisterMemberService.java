@@ -42,8 +42,7 @@ public class RegisterMemberService {
             String nickname,
             String provider,
             String providerId,
-            String profileImageUrl,
-            boolean isActive
+            String profileImageUrl
     ) {
     }
 }

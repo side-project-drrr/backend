@@ -110,7 +110,7 @@ public class TechBlogPostE2ETest {
             String provider = "provider" + i;
             String providerId = "providerId" + i;
             String imageUrl = "http://example.com/image" + i + ".jpg";
-            return Member.createMember(email, nickname, provider, providerId, imageUrl, true);
+            return Member.createMember(email, nickname, provider, providerId, imageUrl);
         }).collect(Collectors.toList());
         memberRepository.saveAll(members);
 

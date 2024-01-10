@@ -41,14 +41,14 @@ public class Member extends BaseEntity {
     private boolean isActive;
 
     public static Member createMember(final String email, final String nickname, final String provider, final String providerId,
-                                      final String profileImageUrl, final boolean isActive) {
+                                      final String profileImageUrl) {
         return Member.builder()
                 .email(email)
                 .nickname(nickname)
                 .provider(provider)
                 .providerId(providerId)
                 .profileImageUrl(profileImageUrl)
-                .isActive(isActive)
+                .isActive(true)
                 .build();
     }
 
@@ -59,7 +59,7 @@ public class Member extends BaseEntity {
                 .provider(registerMemberDto.provider())
                 .providerId(registerMemberDto.providerId())
                 .profileImageUrl(registerMemberDto.profileImageUrl())
-                .isActive(registerMemberDto.isActive())
+                .isActive(true)
                 .build();
     }
 }
