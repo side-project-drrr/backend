@@ -1,6 +1,7 @@
 package com.drrr.domain.category.entity;
 
 import static com.drrr.core.recommandation.constant.constant.WeightConstants.INCREASE_WEIGHT;
+import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN_CONDITIONAL_WEIGHT;
 import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN_WEIGHT;
 
 import com.drrr.core.recommandation.constant.constant.DaysConstants;
@@ -96,8 +97,8 @@ public class CategoryWeight extends BaseEntity {
         double updateWeight = weightValue - minusWeight;
         //최대 가중치를 넘어갈 경우 MAX_WEIGHT으로 설정
         updateWeight = Math.max(Math.min(updateWeight, WeightConstants.MAX_WEIGHT.getValue()), MIN_WEIGHT.getValue());
-        //선호하는 카테고리에 대해서는 최소 가중치 할당
-        if (updateWeight == MIN_WEIGHT.getValue() && isPreferred) {
+        //선호하는 카테고리가 선호카테고리가중치 최소값에 못 미치면 선호카테고리가중치 값으로 할당
+        if (updateWeight < MIN_CONDITIONAL_WEIGHT.getValue() && isPreferred) {
             updateWeight = WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue();
         }
         return updateWeight;
