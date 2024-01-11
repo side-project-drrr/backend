@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CategoryWeightRepository extends JpaRepository<CategoryWeight, Long>{
+public interface CategoryWeightRepository extends JpaRepository<CategoryWeight, Long>, CustomCategoryWeightRepository{
 
     List<CategoryWeight> findByMemberId(Long memberId);
 
