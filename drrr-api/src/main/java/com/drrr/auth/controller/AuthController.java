@@ -92,8 +92,7 @@ public class AuthController {
     @PostMapping("/access-token")
     public AccessTokenResponse regenerateAccessToken(
             @Validated @RequestBody final AccessTokenRequest request) {
-        AccessTokenResponse accessTokenResponse = issuanceTokenService.regenerateAccessToken(request);
-        return accessTokenResponse;
+        return issuanceTokenService.regenerateAccessToken(request);
     }
 
     @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
