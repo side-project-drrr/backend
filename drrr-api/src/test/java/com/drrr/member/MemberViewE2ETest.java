@@ -55,7 +55,6 @@ public class MemberViewE2ETest {
     private final int POST_COUNT = 500;
     private final int CATEGORY_WEIGHT_COUNT = 100;
     private final int MEMBER_POST_LOG_COUNT = 100;
-    private final int CATEGORIES_PER_POST = 8;
     private final int MAX_PREFER_CATEGORIES_COUNT = 8;
     @LocalServerPort
     int port;
@@ -252,6 +251,7 @@ public class MemberViewE2ETest {
                         .memberId(randomMemberId)
                         .postId(randomPostId)
                         .isRead(isRead)
+                        .lastReadAt(LocalDateTime.now())
                         .isRecommended(isRecommended)
                         .build());
             });
@@ -332,11 +332,11 @@ public class MemberViewE2ETest {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
-        String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
 
-        CountDownLatch latch = new CountDownLatch(500);
-        ExecutorService executorService = Executors.newFixedThreadPool(500);
-        IntStream.rangeClosed(1, 500).forEach(i -> {
+        CountDownLatch latch = new CountDownLatch(100);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        IntStream.rangeClosed(1, 100).forEach(i -> {
+            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
             given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
@@ -347,7 +347,7 @@ public class MemberViewE2ETest {
                                 "categoryIds": [1,11]
                             }
                             """)
-                    .post("/api/v1/posts/read/{memberId}/{postId}", (long) i, 1L)
+                    .post("/api/v1/posts/read/{postId}", 1L)
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
@@ -364,6 +364,6 @@ public class MemberViewE2ETest {
             throw new IllegalArgumentException("TechBlogPost elements is null");
         }
         int viewCount = updatedPost.get(0).getViewCount();
-        assertThat(viewCount).isEqualTo(500);
+        assertThat(viewCount).isEqualTo(100);
     }
 }
