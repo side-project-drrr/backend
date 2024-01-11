@@ -38,10 +38,8 @@ public class LogUpdateService {
 
     public void updateMemberPostRecommendLog(final Long memberId, final List<Long> postIds) {
         //해당 유저의 추천받은 기술블로그 ids와 member id로 log 정보 가져오기
-        final List<MemberPostLog> logs = queryFactory
-                .selectFrom(memberPostLog)
-                .where(postIdsInOrEq(postIds), memberPostLog.memberId.eq(memberId))
-                .fetch();
+        final List<MemberPostLog> logs = memberPostLogRepository.updateMemberPostLog(memberId, postIds);
+
 
         //추천 받은적이 없고 읽었던 기술블로그가 아니여야함
         //getFilteredPost 메서드에서 log 테이블에 존재하지 않는 posts를 추천하기 때문
