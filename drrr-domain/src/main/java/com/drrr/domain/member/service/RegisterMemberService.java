@@ -41,7 +41,8 @@ public class RegisterMemberService {
             String email,
             String nickname,
             String provider,
-            String providerId
+            String providerId,
+            String profileImageUrl
     ) {
     }
 }
