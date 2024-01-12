@@ -33,7 +33,7 @@ public class EmailProducer {
     public void sendVerificationMessage(String email, String verificationCode) {
         final PushMessage emailMessage = PushMessage.builder()
                 .to(email)
-                .subject("이메일 인증 제목")
+                .subject("DRRR 이메일 인증")
                 .body(verificationCode)
                 .build();
         this.kafkaTemplate.send("verification-email", emailMessage);
