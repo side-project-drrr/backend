@@ -73,7 +73,7 @@ public class TechBlogPostService {
     }
 
     public TechBlogPost findTechBlogPostsById(final Long postId) {
-        return techBlogPostRepository.findById(1L).orElseThrow(
+        return techBlogPostRepository.findById(postId).orElseThrow(
                 TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
     }
 
