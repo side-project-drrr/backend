@@ -40,12 +40,11 @@ public class LogUpdateService {
         //해당 유저의 추천받은 기술블로그 ids와 member id로 log 정보 가져오기
         final List<MemberPostLog> logs = memberPostLogRepository.updateMemberPostLog(memberId, postIds);
 
-
         //추천 받은적이 없고 읽었던 기술블로그가 아니여야함
         //getFilteredPost 메서드에서 log 테이블에 존재하지 않는 posts를 추천하기 때문
         if (!logs.isEmpty()) {
             log.error("기술 블로그 추천 후 로깅이 제대로 동작하지 않습니다.");
-            log.error("memberId -> " + memberId);
+            log.error("memberId -> {}", memberId);
             throw LoggingExceptionCode.INVALID_RECOMMEND_POSTS_LOGGING.newInstance();
 
         }

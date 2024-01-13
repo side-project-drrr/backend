@@ -13,7 +13,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +38,7 @@ public class RecommendPostService {
 
         if (categoryWeights.isEmpty()) {
             log.error("카테고리 가중치를 찾을 수 없습니다.");
-            log.error("memberId -> " + memberId);
+            log.error("memberId -> {}", memberId);
             throw CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
 
