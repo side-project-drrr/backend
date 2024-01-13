@@ -10,4 +10,8 @@ public interface CustomCategoryRepository {
 
     List<Category> findByNameContaining(String text, Pageable pageable);
 
+    List<Category> findAllOrderByNames();
+
+    List<Category> findTopCategories(final Long count);
+
 }

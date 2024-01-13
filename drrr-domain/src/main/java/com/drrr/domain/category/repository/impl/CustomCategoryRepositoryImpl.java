@@ -1,6 +1,7 @@
 package com.drrr.domain.category.repository.impl;
 
 import static com.drrr.domain.category.entity.QCategory.category;
+import static com.drrr.domain.category.entity.QCategoryWeight.categoryWeight;
 
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CustomCategoryRepository;
@@ -34,6 +35,25 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .where(uniqueNameOrDisplayNameSearchCondition)
                 .limit(pageable.getPageSize())
                 .orderBy(category.name.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<Category> findAllOrderByNames() {
+        return queryFactory.select(category)
+                .from(category)
+                .orderBy(category.name.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<Category> findTopCategories(Long count) {
+        return queryFactory.select(categoryWeight.category)
+                .from(categoryWeight)
+                .where(categoryWeight.preferred.eq(true))
+                .groupBy(categoryWeight.category.id)
+                .orderBy(categoryWeight.category.id.count().desc())
+                .limit(count)
                 .fetch();
     }
 
