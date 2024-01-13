@@ -21,13 +21,13 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final JPAQueryFactory queryFactory;
 
-    public List<CategoryDto> findTopCategories(final Long topN) {
+    public List<CategoryDto> findTopCategories(final Long count) {
         List<Category> categories = queryFactory.select(categoryWeight.category)
                 .from(categoryWeight)
                 .leftJoin(category)
                 .on(categoryWeight.category.id.eq(category.id))
                 .groupBy(categoryWeight.id)
-                .limit(topN)
+                .limit(count)
                 .fetch();
 
         if (categories.isEmpty()) {

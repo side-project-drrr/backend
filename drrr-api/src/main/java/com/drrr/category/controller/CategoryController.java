@@ -65,8 +65,8 @@ public class CategoryController {
             parameters = {
                     @Parameter(name = "topN", description = "탑 카테고리 개수", in = ParameterIn.PATH, schema = @Schema(type = "Long"))
             })
-    @GetMapping("/top/categories/{topN}")
-    public List<CategoryDto> findTopCategories(@PathVariable("topN") @NotNull final Long topN) {
-        return externalCategoryService.execute(topN);
+    @GetMapping("/top/categories/{count}")
+    public List<CategoryDto> findTopCategories(@PathVariable("count") @NotNull final Long count) {
+        return externalCategoryService.execute(count);
     }
 }

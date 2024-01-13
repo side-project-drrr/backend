@@ -29,8 +29,8 @@ public class ExternalCategoryService {
                 .sorted((o1, o2) -> o1.categoryName().compareTo(o2.categoryName())).toList();
     }
 
-    public List<CategoryDto> execute(final Long topN) {
-        return categoryService.findTopCategories(topN);
+    public List<CategoryDto> execute(final Long count) {
+        return categoryService.findTopCategories(count);
     }
 
     /**
