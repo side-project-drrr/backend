@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class RecommendController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "게시물 추천 성공", content = @Content(schema = @Schema(implementation = RecommendResponse.class)))
     })
+    @Secured("USER")
     @PostMapping("/recommendation/posts/{memberId}")
     public RecommendResponse recommendPost(@NotNull @PathVariable(name = "memberId") final Long memberId) {
         return recommendService.execute(memberId);
