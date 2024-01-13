@@ -63,7 +63,7 @@ public class CategoryController {
 
     @Operation(summary = "사용자가 가장 많이 선호하는 top 카테고리들을 가져오는 API", description = "호출 성공 시 사용자가 선호하는 카테고리들 반환 - 올림차순 반환",
             parameters = {
-                    @Parameter(name = "topN", description = "탑 카테고리 개수", in = ParameterIn.PATH, schema = @Schema(type = "Long"))
+                    @Parameter(name = "count", description = "탑 카테고리 개수", in = ParameterIn.PATH, schema = @Schema(type = "Long"))
             })
     @GetMapping("/top/categories/{count}")
     public List<CategoryDto> findTopCategories(@PathVariable("count") @NotNull final Long count) {
