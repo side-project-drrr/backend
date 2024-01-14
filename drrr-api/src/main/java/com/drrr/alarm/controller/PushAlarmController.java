@@ -34,7 +34,7 @@ public class PushAlarmController {
     private final JwtProvider jwtProvider;
     private final SubscriptionRepository subscriptionRepository;
 
-    @Operation(summary = "구독 요청 API",
+    @Operation(summary = "구독 요청 API - [JWT TOKEN REQUIRED]",
             description = "호출 성공 시 사용자의 구독을 요청함")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자의 구독 신청 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
@@ -45,7 +45,7 @@ public class PushAlarmController {
         externalMemberSubscriptionService.execute(request, memberId);
     }
 
-    @Operation(summary = "구독 취소 API",
+    @Operation(summary = "구독 취소 API - [JWT TOKEN REQUIRED]",
             description = "호출 성공 시 사용자의 구독을 취소함")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자의 구독 취소 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))

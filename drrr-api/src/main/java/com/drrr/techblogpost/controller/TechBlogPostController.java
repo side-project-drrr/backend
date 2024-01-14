@@ -1,6 +1,5 @@
 package com.drrr.techblogpost.controller;
 
-import com.drrr.domain.category.service.CategoryService.CategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostInnerDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
 import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
@@ -16,6 +15,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,22 +49,25 @@ public class TechBlogPostController {
         return externalTechBlogPostService.execute(id);
     }
 
-    @Operation(summary = "특정 게시물에 대한 상세보기 API", description = "호출 성공 시 특정 게시물에 대한 상세 정보 반환")
+    @Operation(summary = "특정 게시물에 대한 상세보기 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 특정 게시물에 대한 상세 정보 반환")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "특정 게시물에 대한 상세 정보 반환", content =  @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostInnerDto.class))))
+            @ApiResponse(responseCode = "200", description = "특정 게시물에 대한 상세 정보 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostInnerDto.class))))
     })
+    @Secured("USER")
     @GetMapping("/post/{id}")
     public TechBlogPostInnerDto findPostDetail(@NotNull @PathVariable("id") final Long id) {
         return externalTechBlogPostService.executeFindPostDetail(id);
     }
 
-    @Operation(summary = "사용자가 기술 블로그에 좋아요를 누를 때 사용하는 api", description = "호출 성공 시 게시물 좋아요 증가")
+    @Operation(summary = "사용자가 기술 블로그에 좋아요를 누를 때 사용하는 api - [JWT TOKEN REQUIRED]", description = "호출 성공 시 게시물 좋아요 증가")
+    @Secured("USER")
     @PostMapping("/post/like")
     public void addPostLike(@RequestBody @NotNull final TechBlogPostLikeDto request) {
         externalTechBlogPostService.execute(request, ADD);
     }
 
-    @Operation(summary = "사용자가 기술 블로그에 좋아요 해제할 때 사용하는 api", description = "호출 성공 시 게시물 좋아요 감소")
+    @Operation(summary = "사용자가 기술 블로그에 좋아요 해제할 때 사용하는 api - [JWT TOKEN REQUIRED]", description = "호출 성공 시 게시물 좋아요 감소")
+    @Secured("USER")
     @DeleteMapping("/post/like")
     public void deletePostLike(@RequestBody @NotNull final TechBlogPostLikeDto request) {
         externalTechBlogPostService.execute(request, DELETE);
