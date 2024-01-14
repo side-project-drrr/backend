@@ -113,7 +113,7 @@ public class AuthController {
         return emailVerificationService.execute(request);
     }
 
-    @Operation(summary = "회원탈퇴 API", description = "호출 성공 시 회원탈퇴")
+    @Operation(summary = "회원탈퇴 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 회원탈퇴")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원탈퇴 성공", content = @Content(schema = @Schema(implementation = String.class)))
     })
