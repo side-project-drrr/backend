@@ -1,16 +1,10 @@
 package com.drrr.domain.category.service;
 
-import static com.drrr.domain.category.entity.QCategory.category;
-import static com.drrr.domain.category.entity.QCategoryWeight.categoryWeight;
-
 import com.drrr.core.exception.category.CategoryExceptionCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import java.util.Comparator;
-import java.util.List;
-
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,17 +44,11 @@ public class CategoryService {
             log.error("카테고리가 존재하지 않습니다.");
             throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
         }
-        return categories.stream()
-                .map(category -> CategoryDto.builder()
-                        .id(category.getId())
-                        .categoryName(category.getName())
-                        .build())
-                .sorted(Comparator.comparing(o -> o.categoryName))
-                .toList();
+        return CategoryDto.from(categories);
     }
 
     public List<CategoryDto> findSelectedCategories(final List<Long> ids) {
-        final List<Category> categories = categoryRepository.findByIdIn(ids);
+        final List<Category> categories = categoryRepository.findByIdInOrderByName(ids);
 
         return getCategoryDtos(categories);
     }
@@ -70,6 +58,14 @@ public class CategoryService {
             Long id,
             String categoryName
     ) {
+        public static List<CategoryDto> from(final List<Category> categories) {
+            return categories.stream()
+                    .map(category -> CategoryDto.builder()
+                            .id(category.getId())
+                            .categoryName(category.getName())
+                            .build())
+                    .toList();
+        }
 
     }
 }
