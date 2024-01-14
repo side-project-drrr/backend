@@ -173,8 +173,7 @@ class MemberViewWeightServiceTest {
         Long memberId = memberRepository.findAll().get(0).getId();
         Long postId = techBlogPostRepository.findAll().get(0).getId();
 
-        logUpdateService.insertMemberPostReadLog(memberId, postId);
-        logUpdateService.insertMemberPostHistory(memberId, postId);
+        logUpdateService.insertMemberLogAndHistory(memberId, postId);
 
         //then
         List<MemberPostLog> memberLogs = memberPostLogRepository.findByMemberId(memberId);

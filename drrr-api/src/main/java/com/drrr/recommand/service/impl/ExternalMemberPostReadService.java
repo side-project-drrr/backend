@@ -24,7 +24,6 @@ public class ExternalMemberPostReadService {
                 request.categoryIds());
 
         //로깅 및 히스토리 데이터 insert
-        logUpdateService.insertMemberPostReadLog(memberId, postId);
-        logUpdateService.insertMemberPostHistory(memberId, postId);
+        logUpdateService.insertMemberLogAndHistory(memberId, postId);
     }
 }

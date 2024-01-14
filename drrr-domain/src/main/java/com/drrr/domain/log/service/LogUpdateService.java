@@ -1,14 +1,10 @@
 package com.drrr.domain.log.service;
 
-import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
-
 import com.drrr.core.exception.log.LoggingExceptionCode;
 import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,11 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Transactional
 public class LogUpdateService {
-    private final JPAQueryFactory queryFactory;
     private final MemberPostHistoryRepository memberPostHistoryRepository;
     private final MemberPostLogRepository memberPostLogRepository;
 
-    public void insertMemberPostReadLog(final Long memberId, final Long postId) {
+    public void insertMemberLogAndHistory(final Long memberId, final Long postId) {
         memberPostLogRepository.findByPostIdAndMemberId(memberId, postId)
                 .orElseGet(() -> memberPostLogRepository.save(MemberPostLog.builder()
                         .memberId(memberId)
@@ -34,7 +29,14 @@ public class LogUpdateService {
                         .isRead(true)
                         .isRecommended(false)
                         .build()));
+
+        MemberPostHistory history = MemberPostHistory.builder()
+                .postId(postId)
+                .memberId(memberId)
+                .build();
+        memberPostHistoryRepository.save(history);
     }
+
 
     public void updateMemberPostRecommendLog(final Long memberId, final List<Long> postIds) {
         //해당 유저의 추천받은 기술블로그 ids와 member id로 log 정보 가져오기
@@ -68,18 +70,5 @@ public class LogUpdateService {
                 }).toList();
 
         memberPostLogRepository.saveAll(insertList);
-    }
-
-    public void insertMemberPostHistory(final Long memberId, final Long postId) {
-        MemberPostHistory history = MemberPostHistory.builder()
-                .postId(postId)
-                .memberId(memberId)
-                .build();
-        memberPostHistoryRepository.save(history);
-    }
-
-    private BooleanExpression postIdsInOrEq(final List<Long> postIds) {
-        return postIds.size() == 1 ? memberPostLog.postId.eq(postIds.get(0))
-                : memberPostLog.postId.in(postIds);
     }
 }
