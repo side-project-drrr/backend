@@ -37,13 +37,13 @@ public class MemberViewWeightService {
         final TechBlogPost post = techBlogPostRepository.findByIdWithPessimisticLock(postId)
                 .orElseThrow(() -> {
                     log.error("기술블로그를 찾을 수 없습니다.");
-                    log.error("postId -> " + postId);
+                    log.error("postId -> {}", +postId);
                     return TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     log.error("사용자를 찾을 수 없습니다.");
-                    log.error("memberId -> " + memberId);
+                    log.error("memberId -> {}", memberId);
                     return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
                 });
 
@@ -57,7 +57,7 @@ public class MemberViewWeightService {
             final List<Category> categories = categoryRepository.findIds(categoryIds);
             if (categories.isEmpty()) {
                 log.error("카테고리를 찾을 수 없습니다.");
-                log.error("categoryIds -> " + categoryIds);
+                log.error("categoryIds -> {}", categoryIds);
                 throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
             }
 

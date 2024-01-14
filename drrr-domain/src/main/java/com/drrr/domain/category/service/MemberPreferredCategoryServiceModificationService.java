@@ -33,14 +33,14 @@ public class MemberPreferredCategoryServiceModificationService {
     public void changeMemberPreferredCategory(final Long memberId, final List<Long> updateCategoryIds) {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             log.error("사용자를 찾을 수 없습니다.");
-            log.error("memberId -> " + memberId);
+            log.error("memberId -> {}", memberId);
             return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
         });
 
         List<Category> categories = categoryRepository.findByIdIn(updateCategoryIds);
         if (categories.isEmpty()) {
             log.error("카테고리가 존재하지 않습니다.");
-            log.error("category id -> " + updateCategoryIds.toString());
+            log.error("category id -> {}", updateCategoryIds.toString());
             throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
         }
 
@@ -48,7 +48,7 @@ public class MemberPreferredCategoryServiceModificationService {
         final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
         if (categoryWeights.isEmpty()) {
             log.error("카테고리 가중치 정보를 찾을 수 없습니다.");
-            log.error("memberId -> " + memberId);
+            log.error("memberId -> {}", memberId);
             throw CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
 

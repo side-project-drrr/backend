@@ -44,7 +44,7 @@ public class EmailConsumer {
             return mimeMessage;
         } catch (MessagingException e) {
             log.error("[Message Push Failed Error]");
-            log.error("Message Send Failed To Member Email Address : " + message.to());
+            log.error("Message Send Failed To Member Email Address : {}", message.to());
             throw new RuntimeException(e);
         }
     }

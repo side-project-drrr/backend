@@ -28,14 +28,14 @@ public class TechBlogPostLikeService {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     log.error("사용자를 찾을 수 없습니다.");
-                    log.error("memberId -> " + memberId);
+                    log.error("memberId -> {}", memberId);
                     return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
                 });
 
         final TechBlogPost post = techBlogPostRepository.findByIdWithPessimisticLock(postId)
                 .orElseThrow(() -> {
                     log.error("기술블로그를 찾을 수 없습니다.");
-                    log.error("postId -> " + postId);
+                    log.error("postId -> {}", postId);
                     return TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
 
@@ -48,8 +48,8 @@ public class TechBlogPostLikeService {
                     .build();
             postLikeRepository.save(like);
         } else {
-            log.error("memberId -> " + memberId);
-            log.error("postId -> " + postId);
+            log.error("memberId -> {}", memberId);
+            log.error("postId -> {}", postId);
             log.error("사용자가 하나의 게시물에 중복으로 좋아요를 눌렀습니다.");
             throw TechBlogPostLikeExceptionCode.DUPLICATE_LIKE.newInstance();
         }
@@ -61,7 +61,7 @@ public class TechBlogPostLikeService {
         final TechBlogPost post = techBlogPostRepository.findByIdWithPessimisticLock(postId)
                 .orElseThrow(() -> {
                     log.error("기술블로그를 찾을 수 없습니다.");
-                    log.error("postId -> " + postId);
+                    log.error("postId -> {}", postId);
                     return TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
 

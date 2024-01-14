@@ -33,8 +33,8 @@ public class KafkaConfig {
         //Max 재시도가 끝나고도 에러가 나면 해당 람다가 실행됨
         final DefaultErrorHandler errorHandler = new DefaultErrorHandler((consumerRecord, exception) -> {
             log.error("Message Consume Error");
-            log.error("Record -> " + consumerRecord);
-            log.error("Exception -> " + exception);
+            log.error("Record -> {}", consumerRecord);
+            log.error("Exception -> {}", exception);
         }, fixedBackOff);
         //해당 에러는 시도함
         errorHandler.addRetryableExceptions(SocketTimeoutException.class);

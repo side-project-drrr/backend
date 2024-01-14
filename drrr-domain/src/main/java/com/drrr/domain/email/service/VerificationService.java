@@ -47,7 +47,7 @@ public class VerificationService {
     public VerificationDto verifyCode(final String providerId, final String verificationCode) {
         final Email email = emailRepository.findByProviderId(providerId).orElseThrow(() -> {
             log.error("provider id로 이메일 인증 정보를 찾을 수 없습니다.");
-            log.error("providerId -> " + providerId);
+            log.error("providerId -> {}", providerId);
             return EmailExceptionCode.EMAIL_VERIFICATION_INFORMATION_NOT_FOUND.newInstance();
         });
 
@@ -61,7 +61,7 @@ public class VerificationService {
             emailRepository.deleteByProviderId(providerId);
 
             log.error("이메일 인증 정보가 만료되었습니다.");
-            log.error("providerId -> " + providerId);
+            log.error("providerId -> {}", providerId);
             throw EmailExceptionCode.EMAIL_VERIFICATION_CODE_EXPIRED.newInstance();
         }
 
