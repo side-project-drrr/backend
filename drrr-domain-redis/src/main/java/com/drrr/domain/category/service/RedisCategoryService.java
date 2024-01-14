@@ -6,6 +6,7 @@ import com.drrr.domain.category.repository.RedisCategoryRepository;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -23,13 +24,13 @@ public class RedisCategoryService {
                 .map(Object::toString)
                 .toList();
 
-        final List<RedisCategory> redisCategories = redisCategoryTemplate.opsForValue().multiGet(keys).stream()
-                .filter(Objects::nonNull).toList();
-
-        return redisCategories.stream()
-                .map(category -> Category.builder()
-                        .name(category.getName())
-                        .build()).sorted(Comparator.comparing(Category::getName)).toList();
+        return Optional.ofNullable(redisCategoryTemplate.opsForValue().multiGet(keys))
+                .map(categories -> categories.stream()
+                        .filter(Objects::nonNull)
+                        .map(RedisCategory::getName)
+                        .map(Category::new)
+                        .sorted(Comparator.comparing(Category::getName)).toList())
+                .orElse(List.of());
     }
 
     public void saveCategories(List<RedisCategory> categories) {

@@ -48,10 +48,8 @@ public class ExternalCategoryService {
     private List<CategoryDto> registerNewCategoryToCache(List<Long> categoryIds, List<Category> redisCategories) {
         //redis에 없는 경우
         final Set<Long> requestIds = new HashSet<>(categoryIds);
-        final Set<Long> redisCategoryIds = redisCategories.stream().map(BaseEntity::getId)
-                .collect(Collectors.toSet());
-        //redis에 없는 카테고리를 뽑아냄
-        requestIds.removeAll(redisCategoryIds);
+        redisCategories.stream().map(BaseEntity::getId)
+                .forEach(requestIds::remove);
 
         final List<Long> ids = requestIds.stream().toList();
 
