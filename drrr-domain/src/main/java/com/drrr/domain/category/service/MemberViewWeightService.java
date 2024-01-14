@@ -8,6 +8,7 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.domain.log.service.MemberPostLogService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -27,6 +28,7 @@ public class MemberViewWeightService {
     private final TechBlogPostRepository techBlogPostRepository;
     private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
+    private final MemberPostLogService memberPostLogService;
 
     /**
      * 사용자가 특정 게시물을 읽었을 때 그 게시물에 대한 가중치 증가
@@ -58,6 +60,7 @@ public class MemberViewWeightService {
                 log.error("categoryIds -> " + categoryIds);
                 throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
             }
+
             final List<CategoryWeight> updatedCategoryWeights = categories.stream()
                     .map(category -> CategoryWeight.builder()
                             .preferred(false)
@@ -67,11 +70,14 @@ public class MemberViewWeightService {
                             .build())
                     .toList();
             categoryWeightRepository.saveAll(updatedCategoryWeights);
-        } else {
-            //기존에 해당 게시물을 읽은 기록이 있다면 INCREASE_WEIGHT 값만큼 가중치 증가
+            return;
+        }
+        //기존에 해당 게시물을 읽은 기록이 있다면 INCREASE_WEIGHT 값만큼 가중치 증가
+        //단, 다시 읽는 게시물일 경우 새벽 12:00 를 넘어야지만 증가가 됨
+        if (memberPostLogService.hasDayPassedAfterReading(memberId, postId)) {
             categoryWeights.forEach(CategoryWeight::accumulateWeight);
         }
-
     }
+
 
 }
