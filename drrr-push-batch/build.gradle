@@ -1,0 +1,18 @@
+dependencies {
+    implementation project(path: ':drrr-domain')
+    implementation project(path: ':drrr-core')
+    implementation project(path: ':drrr-infra')
+
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.kafka:spring-kafka'
+
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+    runtimeOnly 'com.mysql:mysql-connector-j'
+}
+
+bootJar {
+    enabled = true
+}
