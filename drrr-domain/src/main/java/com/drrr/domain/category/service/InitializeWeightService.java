@@ -7,6 +7,8 @@ import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,7 @@ public class InitializeWeightService {
                         .member(member)
                         .category(category)
                         .weightValue(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue())
+                        .lastReadAt(LocalDateTime.now())
                         .preferred(true)
                         .build()).toList();
 
