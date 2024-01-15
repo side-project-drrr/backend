@@ -10,6 +10,8 @@ import com.drrr.recommand.dto.RecommendResponse;
 import com.drrr.recommand.dto.TechBlogPostDto;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,17 +42,14 @@ public class ExternalRecommendService {
         //캐싱해야 할 포스트가 있다면
         if (!notCachedPosts.isEmpty()) {
             redisTechBlogPostService.savePostsInRedis(notCachedPosts);
-            //합치기
-            posts.addAll(notCachedPosts);
         }
 
         //로그 쌓기
         logUpdateService.updateMemberPostRecommendLog(memberId, postIds);
 
         return RecommendResponse.builder()
-                .posts(posts.stream()
-                        .map(TechBlogPostDto::from)
-                        .toList())
+                .posts(Stream.concat(posts.stream().map(TechBlogPostDto::from)
+                                , notCachedPosts.stream().map(TechBlogPostDto::from)).toList())
                 .build();
     }
 }
