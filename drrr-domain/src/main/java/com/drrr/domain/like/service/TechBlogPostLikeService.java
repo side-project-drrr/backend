@@ -38,23 +38,21 @@ public class TechBlogPostLikeService {
                     log.error("postId -> {}", postId);
                     return TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
-
-        final Optional<TechBlogPostLike> postLike = postLikeRepository.findByPostIdAndMemberId(memberId, postId);
-
-        if (postLike.isEmpty()) {
-            final TechBlogPostLike like = TechBlogPostLike.builder()
-                    .member(member)
-                    .post(post)
-                    .build();
-            postLikeRepository.save(like);
-        } else {
-            log.error("memberId -> {}", memberId);
-            log.error("postId -> {}", postId);
-            log.error("사용자가 하나의 게시물에 중복으로 좋아요를 눌렀습니다.");
-            throw TechBlogPostLikeExceptionCode.DUPLICATE_LIKE.newInstance();
-        }
-
-        post.increaseLikeCount();
+        
+        postLikeRepository.findByPostIdAndMemberId(memberId, postId)
+                .ifPresentOrElse((__)->{
+                    log.error("memberId -> {}", memberId);
+                    log.error("postId -> {}", postId);
+                    log.error("사용자가 하나의 게시물에 중복으로 좋아요를 눌렀습니다.");
+                    throw TechBlogPostLikeExceptionCode.DUPLICATE_LIKE.newInstance();
+                }, ()->{
+                    final TechBlogPostLike like = TechBlogPostLike.builder()
+                            .member(member)
+                            .post(post)
+                            .build();
+                    postLikeRepository.save(like);
+                    post.increaseLikeCount();
+                });
     }
 
     public void deletePostLike(final Long memberId, final Long postId) {
