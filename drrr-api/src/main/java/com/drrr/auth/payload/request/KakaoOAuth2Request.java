@@ -45,7 +45,7 @@ public class KakaoOAuth2Request {
         public static OAuth2KakaoResponse from(JsonNode jsonNode) {
             return OAuth2KakaoResponse.builder()
                     .providerId(jsonNode.get("id").asText())
-                    .profileImageUrl(jsonNode.get("profile_image").asText())
+                    .profileImageUrl(jsonNode.get("properties").get("profile_image").asText())
                     .build();
         }
     }
