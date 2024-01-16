@@ -27,6 +27,7 @@ public class OAuth2Client {
     private final ObjectMapper objectMapper;
 
     public JsonNode getUserProfile(final String accessToken, final String uri) {
+        System.out.println("access token: "+accessToken);
         return restClient.get()
                 .uri(uri)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
@@ -34,8 +35,8 @@ public class OAuth2Client {
                 .exchange((request, response) -> {
                     if (response.getStatusCode().is3xxRedirection() || response.getStatusCode().is4xxClientError()) {
                         throw new IllegalArgumentException(
-                                "Access Token이 유효하지  않습니다. request uri -> " + uri + ", response -> "
-                                        + response.getBody());
+                                "Error Occurred, request uri -> " + uri + ", response -> "
+                                        + objectMapper.readTree(response.getBody()).toPrettyString());
                     }
                     final JsonNode jsonNode = objectMapper.readTree(response.getBody());
                     //asText()에서 code가 잘못 됐을 경우 null 반환
@@ -66,8 +67,7 @@ public class OAuth2Client {
                 .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
                 .exchange((request, response) -> {
                     if (response.getStatusCode().is3xxRedirection() || response.getStatusCode().is4xxClientError()) {
-                        log.error(
-                                "OAuth2Client Class exchangeKakaoOAuth2AccessToken(final OAuth2KakaoAccessTokenRequest requestParams) Method IllegalArgumentException Error");
+                        log.error("Error Occurred, response ->{}", objectMapper.readTree(response.getBody()).toPrettyString());
                         throw OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
                     }
 
@@ -77,7 +77,7 @@ public class OAuth2Client {
                             .orElseThrow(() -> {
                                 log.error(
                                         "OAuth2Client Class exchangeKakaoOAuth2AccessToken(final OAuth2KakaoAccessTokenRequest requestParams) Method NullPointerException Error");
-                                throw OAuth2ExceptionCode.PROVIDER_ID_NULL.newInstance();
+                                return OAuth2ExceptionCode.PROVIDER_ID_NULL.newInstance();
                             });
                 });
     }
@@ -91,8 +91,7 @@ public class OAuth2Client {
                 .body(OAuth2GithubBody.from(requestBody))
                 .exchange((request, response) -> {
                     if (response.getStatusCode().is4xxClientError()) {
-                        log.error(
-                                "OAuth2Client Class exchangeGitHubOAuth2AccessToken(OAuth2GithubAccessTokenRequest requestBody) Method IllegalArgumentException Error");
+                        log.error("Error Occurred, response ->{}", objectMapper.readTree(response.getBody()).toPrettyString());
                         throw OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
                     }
                     final JsonNode jsonNode = objectMapper.readTree(response.getBody());
@@ -102,7 +101,7 @@ public class OAuth2Client {
                             .orElseThrow(() -> {
                                 log.error(
                                         "OAuth2Client Class exchangeGitHubOAuth2AccessToken(OAuth2GithubAccessTokenRequest requestBody) Method NullPointerException Error");
-                                throw OAuth2ExceptionCode.PROVIDER_ID_NULL.newInstance();
+                                return OAuth2ExceptionCode.PROVIDER_ID_NULL.newInstance();
                             });
                 });
     }
