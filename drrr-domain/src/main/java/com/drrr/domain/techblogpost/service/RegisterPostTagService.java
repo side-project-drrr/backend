@@ -23,7 +23,7 @@ public class RegisterPostTagService {
     private final TemporalTechPostTagRepository temporalTechPostTagRepository;
     private final CategoryRepository categoryRepository;
 
-    public void execute(final Long postId, final List<String> tagNames) {
+    public void execute(final Long postId, final List<String> tagNames, String aiSummarizedText) {
         AdminExceptionCode.DID_NOT_EXISTS_TAG_NAMES.invokeByCondition(tagNames.isEmpty());
 
         final TemporalTechBlogPost temporalTechBlogPost = temporalTechBlogPostRepository.findById(postId)
@@ -38,11 +38,12 @@ public class RegisterPostTagService {
 
         List<TemporalTechPostTag> temporalTechPostTags = temporalTechPostTagRepository.saveAll(categories);
         temporalTechBlogPost.registerCategory(temporalTechPostTags);
+        temporalTechBlogPost.updateAiSummarizedText(aiSummarizedText);
 
     }
 
     private Category ifPresetGetOrCreateNewTag(String name) {
         return categoryRepository.findByName(name)
-                .orElse(categoryRepository.save(new Category(name)));
+                .orElseGet(() -> categoryRepository.save(new Category(name)));
     }
 }

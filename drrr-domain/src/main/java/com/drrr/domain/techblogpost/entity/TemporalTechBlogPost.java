@@ -109,6 +109,10 @@ public class TemporalTechBlogPost extends BaseEntity {
         }
         this.temporalTechPostTags.removeAll(tags);
     }
+
+    public void updateAiSummarizedText(String aiSummarizedText) {
+        this.aiSummary = aiSummarizedText;
+    }
 }
 
 
