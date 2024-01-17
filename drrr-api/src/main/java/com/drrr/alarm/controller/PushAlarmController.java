@@ -60,7 +60,9 @@ public class PushAlarmController {
             description = "사용하지 말 것, 개인 테스트 용 Controller")
     @PostMapping("/notifications/email")
     public void emailNotifications(@RequestBody PushMessage message) {
-        webPushProducer.sendNotifications();
-        // externalNotificationEmailService.execute(message);
+        for(int i=0;i<50;i++){
+            webPushProducer.sendNotifications();
+        }
+
     }
 }

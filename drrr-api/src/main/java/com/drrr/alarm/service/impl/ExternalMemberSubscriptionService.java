@@ -15,13 +15,9 @@ public class ExternalMemberSubscriptionService {
 
     public void execute(final SubscriptionRequest request, final Long memberId) {
         final Subscription memberSubscriptionData = Subscription.builder()
-                .endpoint(request.endpoint())
-                .auth(request.auth())
-                .p256dh(request.p256dh())
-                .expirationTime(request.expirationTime())
+                .token(request.token())
                 .memberId(memberId)
                 .build();
-
         subscriptionService.saveMemberSubscriptionData(memberSubscriptionData);
     }
 
