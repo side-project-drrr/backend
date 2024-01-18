@@ -50,7 +50,7 @@ public class KakaoCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .code(TECH_BLOG_CODE)
                             .title(postTitleElement.getText())
                             .suffix(postTitleElement.getAttribute("href").substring(PREFIX_LENGTH))
-                            .link(PAGE_URL)
+                            .link(postTitleElement.getAttribute("href"))
                             .author(postAuthor.getText())
                             .summary(postSummary.getText())
                             .postDate(CrawlingLocalDatePatterns.PATTERN1.parse(postDate.getText()))
