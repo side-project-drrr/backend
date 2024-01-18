@@ -2,6 +2,7 @@ package com.drrr.domain.techblogpost.entity;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.jpa.entity.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -61,7 +62,7 @@ public class TemporalTechBlogPost extends BaseEntity {
     @Column(nullable = false)
     private boolean registrationCompleted;
 
-    @OneToMany(mappedBy = "temporalTechBlogPost")
+    @OneToMany(mappedBy = "temporalTechBlogPost", cascade = CascadeType.REMOVE)
     private List<TemporalTechPostTag> temporalTechPostTags;
 
     @Builder
