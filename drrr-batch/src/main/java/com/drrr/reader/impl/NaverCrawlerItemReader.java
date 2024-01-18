@@ -49,7 +49,7 @@ public class NaverCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .getText();
 
                     return ExternalBlogPost.builder()
-                            .link(PREFIX_URL)
+                            .link(url)
                             .suffix(url.substring(PREFIX_URL.length()))
                             .title(title)
                             .author("") // naver는 작성자가 없음

@@ -32,18 +32,22 @@ public class MarketKurlyItemReader extends AbstractCrawlerPageItemReader {
                 .stream().map(webElement -> {
                     var postLink = EmptyFinder.get(() -> webElement.findElement(By.tagName("a")))
                             .orElseThrow(IllegalArgumentException::new);
-                    var postTitle = EmptyFinder.get(() -> postLink.findElement(By.className("post-title")).getText()).get();
-                    var postSummary = EmptyFinder.get(() -> postLink.findElement(By.className("title-summary")).getText()).orElse("");
+                    var postTitle = EmptyFinder.get(() -> postLink.findElement(By.className("post-title")).getText())
+                            .get();
+                    var postSummary = EmptyFinder.get(
+                            () -> postLink.findElement(By.className("title-summary")).getText()).orElse("");
                     var postMeta = EmptyFinder.get(() -> webElement.findElement(By.className("post-meta"))).get();
-                    var postAuthor = EmptyFinder.get(() -> postMeta.findElement(By.className("post-autor")).getText()).orElse("");
-                    var postDate = EmptyFinder.get(() -> postMeta.findElement(By.className("post-date")).getText()).orElse("");
+                    var postAuthor = EmptyFinder.get(() -> postMeta.findElement(By.className("post-autor")).getText())
+                            .orElse("");
+                    var postDate = EmptyFinder.get(() -> postMeta.findElement(By.className("post-date")).getText())
+                            .orElse("");
 
                     return ExternalBlogPost.builder()
                             .title(postTitle)
                             .summary(postSummary)
                             .author(postAuthor)
                             .postDate(CrawlingLocalDatePatterns.PATTERN2.parse(postDate))
-                            .link(BLOG_PREFIX)
+                            .link(postLink.getAttribute("href"))
                             .suffix(postLink.getAttribute("href").substring(BLOG_PREFIX.length() + 1))
                             .code(code)
                             .build();

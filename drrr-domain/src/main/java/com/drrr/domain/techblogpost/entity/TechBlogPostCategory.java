@@ -31,4 +31,7 @@ public class TechBlogPostCategory extends BaseEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
+    public static TechBlogPostCategory from(TechBlogPost techBlogPost, TemporalTechPostTag temporalTechPostTag) {
+        return new TechBlogPostCategory(techBlogPost, temporalTechPostTag.getCategory());
+    }
 }
