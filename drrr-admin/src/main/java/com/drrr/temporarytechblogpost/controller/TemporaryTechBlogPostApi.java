@@ -57,7 +57,10 @@ public class TemporaryTechBlogPostApi {
             @PathVariable(name = "id") Long id,
             @RequestBody @Valid RegisterPostTagRequest registerPostTagRequest) {
 
-        registerPostTagService.execute(id, registerPostTagRequest.tagNames());
+        registerPostTagService.execute(id,
+                registerPostTagRequest.tagNames(),
+                registerPostTagRequest.aiSummarizedText()
+        );
     }
 
     public record RegisterPostTagRequest(
