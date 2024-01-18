@@ -62,7 +62,7 @@ class WebCrawlerBatchConfigurationTest extends SpringBatchTestSupport {
     }
 
     @Test
-    void 기술블로그_혹은_임시기술블로그_모두_데이터가_없는_상태에는_전체저장_됩니다() throws Exception {
+    void 기술블로그_혹은_임시기술블로그_모두_데이터가_없는_상태에는_전체저장_됩니다() {
         // given
         given(crawlerItemReaderFactory.createItemReader(TechBlogCode.BASE))
                 .willReturn(new FakeItemReader(generateMockData()));
