@@ -24,7 +24,10 @@ public record SignUpRequest(
         @Pattern(regexp = "^[a-zA-Z]*$", message = "provider는 영문자로만 이루어져야 합니다")
         String provider,
         @Schema(description = "소셜 로그인 id", nullable = false, example = "12343")
-        String providerId
+        String providerId,
+
+        @Schema(description = "소셜 로그인 프로파일 url", nullable = false, example = "https~")
+        String profileImageUrl
 ) {
 
     public RegisterMemberDto toRegisterMemberDto() {
@@ -33,6 +36,7 @@ public record SignUpRequest(
                 .nickname(nickname)
                 .provider(provider)
                 .providerId(providerId)
+                .profileImageUrl(profileImageUrl)
                 .build();
     }
 }
