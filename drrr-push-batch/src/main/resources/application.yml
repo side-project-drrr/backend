@@ -12,7 +12,4 @@ spring:
       batch:
         - batch
     default: local
-  batch:
-    job:
-      name: subscriptionStep
 
