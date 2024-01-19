@@ -13,16 +13,10 @@ import org.springframework.util.backoff.FixedBackOff;
 @Configuration
 public class KafkaConfig {
     //재시도 간격 (milliseconds)
-    private final Long interval;
+    private final static Long interval = 1000L;
 
     //Error로 남기기 전 Max 재시도 값
-    private final Long maxAttempts;
-
-    public KafkaConfig(@Value(value = "${spring.kafka.backoff.interval}") final Long interval,
-                       @Value(value = "${spring.kafka.backoff.max_failure}") final Long maxAttempts) {
-        this.interval = interval;
-        this.maxAttempts = maxAttempts;
-    }
+     private final static Long maxAttempts = 3L;
 
     @Bean
     public DefaultErrorHandler errorHandler() {
