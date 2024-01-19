@@ -6,6 +6,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import com.drrr.auth.payload.dto.OAuth2GithubAccessTokenRequest;
 import com.drrr.auth.payload.dto.OAuth2GithubBody;
 import com.drrr.auth.payload.dto.OAuth2KakaoAccessTokenRequest;
+import com.drrr.core.exception.member.MemberException;
+import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.core.exception.member.OAuth2ExceptionCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,14 +29,13 @@ public class OAuth2Client {
     private final ObjectMapper objectMapper;
 
     public JsonNode getUserProfile(final String accessToken, final String uri) {
-        System.out.println("access token: "+accessToken);
         return restClient.get()
                 .uri(uri)
                 .header(HttpHeaders.AUTHORIZATION, BEARER + accessToken)
                 .accept(APPLICATION_JSON)
                 .exchange((request, response) -> {
                     if (response.getStatusCode().is3xxRedirection() || response.getStatusCode().is4xxClientError()) {
-                        throw new IllegalArgumentException(
+                        throw MemberExceptionCode.INVALID_ACCESS_TOKEN.newInstance(
                                 "Error Occurred, request uri -> " + uri + ", response -> "
                                         + objectMapper.readTree(response.getBody()).toPrettyString());
                     }
