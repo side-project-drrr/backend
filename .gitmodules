@@ -1,3 +1,6 @@
 [submodule "drrr-api/src/main/resources/security-storage-api"]
 	path = drrr-api/src/main/resources/security-storage-api
 	url = https://github.com/side-proejct/security-storage-api.git
+[submodule "drrr-infra/src/main/resources/security-storage-infra"]
+	path = drrr-infra/src/main/resources/security-storage-infra
+	url = https://github.com/side-proejct/security-storage-infra.git
