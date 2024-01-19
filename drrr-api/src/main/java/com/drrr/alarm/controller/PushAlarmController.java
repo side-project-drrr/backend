@@ -56,16 +56,4 @@ public class PushAlarmController {
         final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         subscriptionRepository.deleteByMemberId(memberId);
     }
-
-    @Operation(summary = "사용하지 말 것, 개인 테스트 용 Controller",
-            description = "사용하지 말 것, 개인 테스트 용 Controller")
-    @PostMapping("/notifications/email")
-    public void emailNotifications(@RequestBody PushMessage message) {
-        Subscription subscription = Subscription.builder().memberId(1L)
-                .token("eHhZn2pIpOgMl_lj0bxEFQ:APA91bHhQrGcoJpG0j6k6FK6_MgNRnXDnVfE2WJMlFtNiDpQtf4xhIHM745cZgAGqoIRSpoJA917MRea-BeaM5G0_5ptjkB-wlzRrRc_CTEP12dUCnm2c3fmkOSvfVrFQR0Sr8rFMvSz")
-                .build();
-        for(int i=0;i<1;i++){
-            webPushProducer.sendNotifications(subscription);
-        }
-    }
 }
