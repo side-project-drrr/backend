@@ -31,8 +31,8 @@ public class FCMConfig {
 
             return FirebaseMessaging.getInstance(FirebaseApp.initializeApp(options));
         }
-        
-        firebaseAppList.stream()
+
+        firebaseApp = firebaseAppList.stream()
                 .filter((app) -> Objects.equals(app.getName(), FirebaseApp.DEFAULT_APP_NAME))
                 .findFirst()
                 .orElseThrow(IllegalArgumentException::new);
