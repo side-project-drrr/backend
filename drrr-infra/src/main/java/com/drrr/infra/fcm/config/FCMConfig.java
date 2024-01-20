@@ -4,13 +4,13 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 public class FCMConfig {
@@ -23,20 +23,19 @@ public class FCMConfig {
         FirebaseApp firebaseApp = null;
         List<FirebaseApp> firebaseAppList = FirebaseApp.getApps();
 
-        if (!firebaseAppList.isEmpty()) {
-            for (FirebaseApp app : firebaseAppList) {
-                if (app.getName().equals(FirebaseApp.DEFAULT_APP_NAME)) {
-                    firebaseApp = app;
-                }
-            }
-        } else {
+        if (firebaseAppList.isEmpty()) {
             GoogleCredentials googleCredentials = GoogleCredentials.fromStream(refreshToken);
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(googleCredentials)
                     .build();
 
-            firebaseApp = FirebaseApp.initializeApp(options);
+            return FirebaseMessaging.getInstance(FirebaseApp.initializeApp(options));
         }
+        
+        firebaseAppList.stream()
+                .filter((app) -> Objects.equals(app.getName(), FirebaseApp.DEFAULT_APP_NAME))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
 
         return FirebaseMessaging.getInstance(firebaseApp);
     }
