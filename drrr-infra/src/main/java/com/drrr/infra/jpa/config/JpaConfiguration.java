@@ -13,14 +13,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration("infraJpaConfiguration")
-@EnableJpaAuditing
+//@EnableJpaAuditing
 @EntityScan(basePackageClasses = Persistence.class)
 @EnableJpaRepositories(basePackageClasses = {Persistence.class})
 public class JpaConfiguration {
-    @Bean
-    public AuditorAware<LocalDateTime> auditorProvider() {
-        return () -> Optional.of(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
-    }
 }
 
 
