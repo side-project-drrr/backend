@@ -1,0 +1,18 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 1000
+  batch:
+    jdbc:
+      initialize-schema: ALWAYS
+
+logging:
+  level:
+    org.hibernate: error
+server:
+  port: 0

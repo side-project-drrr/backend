@@ -5,6 +5,7 @@ import com.drrr.alarm.service.impl.ExternalNotificationEmailService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
 import com.drrr.infra.notifications.kafka.webpush.WebPushProducer;
 import com.drrr.infra.push.entity.PushMessage;
+import com.drrr.infra.push.entity.Subscription;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@Secured("USER")
+//@Secured("USER")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class PushAlarmController {
@@ -54,13 +55,5 @@ public class PushAlarmController {
     public void cancelSubscription() {
         final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         subscriptionRepository.deleteByMemberId(memberId);
-    }
-
-    @Operation(summary = "사용하지 말 것, 개인 테스트 용 Controller",
-            description = "사용하지 말 것, 개인 테스트 용 Controller")
-    @PostMapping("/notifications/email")
-    public void emailNotifications(@RequestBody PushMessage message) {
-        webPushProducer.sendNotifications();
-        // externalNotificationEmailService.execute(message);
     }
 }
