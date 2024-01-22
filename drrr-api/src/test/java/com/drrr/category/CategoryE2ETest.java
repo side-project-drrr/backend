@@ -3,10 +3,10 @@ package com.drrr.category;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.exception.category.CategoryExceptionCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.service.CategoryService.CategoryDto;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.util.DatabaseCleaner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -77,7 +77,7 @@ public class CategoryE2ETest {
         //then
         List<Category> categories = categoryRepository.findAll();
         if (categories.isEmpty()) {
-            throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
         }
         categories = categories.stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).toList();
 
@@ -110,7 +110,7 @@ public class CategoryE2ETest {
         //then
         List<Category> categories = categoryRepository.findByIdIn(Arrays.asList(1L, 2L, 3L, 4L, 5L));
         if (categories.isEmpty()) {
-            throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
         }
         categories = categories.stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).toList();
 

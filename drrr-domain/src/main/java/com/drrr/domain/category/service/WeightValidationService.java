@@ -1,8 +1,9 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.member.MemberExceptionCode;
+
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.domain.exception.DomainExceptionCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class WeightValidationService {
         if (categoryWeights.isEmpty()) {
             log.error("사용자 가중치를 찾을 수 없습니다.");
             log.error("memberId -> {}", memberId);
-            throw MemberExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
+            throw DomainExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
         }
 
         categoryWeights.stream()

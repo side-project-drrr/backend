@@ -1,7 +1,7 @@
 package com.drrr.infra.notifications.kafka.email;
 
-import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.domain.category.service.RecommendPostService;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -45,7 +45,7 @@ public class EmailProducer {
         if (members.size() == 0) {
             log.error("사용자를 찾을 수 없습니다.");
 
-            throw MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
         }
         final Context context = new Context();
 

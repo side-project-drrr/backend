@@ -1,6 +1,6 @@
 package com.drrr.web.security.filter;
 
-import com.drrr.core.exception.jwt.JwtExceptionCode;
+import com.drrr.web.exception.ApiExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -51,7 +51,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
         final Long memberId = jwtTokenProvider.extractToValueFrom(token);
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new IllegalArgumentException(JwtExceptionCode.JWT_UNAUTHORIZED.newInstance("토큰 검증 실패"));
+            throw new IllegalArgumentException(ApiExceptionCode.JWT_UNAUTHORIZED.newInstance("토큰 검증 실패"));
         }
 
         // 권한 부여

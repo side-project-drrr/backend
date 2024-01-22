@@ -1,7 +1,7 @@
 package com.drrr.web.jwt.util;
 
 
-import com.drrr.core.exception.jwt.JwtExceptionCode;
+import com.drrr.web.exception.ApiExceptionCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.Map;
@@ -64,7 +64,7 @@ public class JwtProvider {
         try {
             return Long.parseLong(this.decode(token).get("id").toString());
         } catch (JwtValidationException ex) {
-            throw JwtExceptionCode.JWT_UNAUTHORIZED.newInstance();
+            throw ApiExceptionCode.JWT_UNAUTHORIZED.newInstance();
         }
     }
 

@@ -1,13 +1,11 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryExceptionCode;
-import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.core.exception.techblog.TechBlogExceptionCode;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.log.service.MemberPostLogService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
@@ -38,13 +36,13 @@ public class MemberViewWeightService {
                 .orElseThrow(() -> {
                     log.error("기술블로그를 찾을 수 없습니다.");
                     log.error("postId -> {}", +postId);
-                    return TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+                    return DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
                     log.error("사용자를 찾을 수 없습니다.");
                     log.error("memberId -> {}", memberId);
-                    return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
+                    return DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
                 });
 
         //조회수 증가
@@ -58,7 +56,7 @@ public class MemberViewWeightService {
             if (categories.isEmpty()) {
                 log.error("카테고리를 찾을 수 없습니다.");
                 log.error("categoryIds -> {}", categoryIds);
-                throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+                throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
             }
 
             final List<CategoryWeight> updatedCategoryWeights = categories.stream()

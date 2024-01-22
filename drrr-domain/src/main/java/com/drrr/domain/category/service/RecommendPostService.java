@@ -1,10 +1,10 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryExceptionCode;
 import com.drrr.core.recommandation.constant.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import com.drrr.domain.techblogpost.repository.impl.CustomTechBlogPostRepositoryImpl;
 import java.util.List;
@@ -39,7 +39,7 @@ public class RecommendPostService {
         if (categoryWeights.isEmpty()) {
             log.error("카테고리 가중치를 찾을 수 없습니다.");
             log.error("memberId -> {}", memberId);
-            throw CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
 
         //entity -> dto 변환

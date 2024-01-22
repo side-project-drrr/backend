@@ -6,9 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import com.drrr.auth.payload.dto.OAuth2GithubAccessTokenRequest;
 import com.drrr.auth.payload.dto.OAuth2GithubBody;
 import com.drrr.auth.payload.dto.OAuth2KakaoAccessTokenRequest;
-import com.drrr.core.exception.member.MemberException;
-import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.core.exception.member.OAuth2ExceptionCode;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.oauth2.sdk.GrantType;
@@ -35,7 +33,7 @@ public class OAuth2Client {
                 .accept(APPLICATION_JSON)
                 .exchange((request, response) -> {
                     if (response.getStatusCode().is3xxRedirection() || response.getStatusCode().is4xxClientError()) {
-                        throw MemberExceptionCode.INVALID_ACCESS_TOKEN.newInstance(
+                        throw DomainExceptionCode.INVALID_ACCESS_TOKEN.newInstance(
                                 "Error Occurred, request uri -> " + uri + ", response -> "
                                         + objectMapper.readTree(response.getBody()).toPrettyString());
                     }
@@ -45,7 +43,7 @@ public class OAuth2Client {
                         return jsonNode;
                     } catch (NullPointerException npe) {
                         log.error("provider ID를 받아오지 못했습니다. Access Token를 확인해주세요.");
-                        throw OAuth2ExceptionCode.INVALID_ACCESS_TOKEN.newInstance();
+                        throw DomainExceptionCode.INVALID_ACCESS_TOKEN.newInstance();
                     }
 
                 });
@@ -68,8 +66,9 @@ public class OAuth2Client {
                 .header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8")
                 .exchange((request, response) -> {
                     if (response.getStatusCode().is3xxRedirection() || response.getStatusCode().is4xxClientError()) {
-                        log.error("Error Occurred, response ->{}", objectMapper.readTree(response.getBody()).toPrettyString());
-                        throw OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
+                        log.error("Error Occurred, response ->{}",
+                                objectMapper.readTree(response.getBody()).toPrettyString());
+                        throw DomainExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
                     }
 
                     final JsonNode jsonNode = objectMapper.readTree(response.getBody());
@@ -78,7 +77,7 @@ public class OAuth2Client {
                             .orElseThrow(() -> {
                                 log.error(
                                         "OAuth2Client Class exchangeKakaoOAuth2AccessToken(final OAuth2KakaoAccessTokenRequest requestParams) Method NullPointerException Error");
-                                return OAuth2ExceptionCode.PROVIDER_ID_NULL.newInstance();
+                                return DomainExceptionCode.PROVIDER_ID_NULL.newInstance();
                             });
                 });
     }
@@ -92,8 +91,9 @@ public class OAuth2Client {
                 .body(OAuth2GithubBody.from(requestBody))
                 .exchange((request, response) -> {
                     if (response.getStatusCode().is4xxClientError()) {
-                        log.error("Error Occurred, response ->{}", objectMapper.readTree(response.getBody()).toPrettyString());
-                        throw OAuth2ExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
+                        log.error("Error Occurred, response ->{}",
+                                objectMapper.readTree(response.getBody()).toPrettyString());
+                        throw DomainExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
                     }
                     final JsonNode jsonNode = objectMapper.readTree(response.getBody());
 
@@ -102,7 +102,7 @@ public class OAuth2Client {
                             .orElseThrow(() -> {
                                 log.error(
                                         "OAuth2Client Class exchangeGitHubOAuth2AccessToken(OAuth2GithubAccessTokenRequest requestBody) Method NullPointerException Error");
-                                return OAuth2ExceptionCode.PROVIDER_ID_NULL.newInstance();
+                                return DomainExceptionCode.PROVIDER_ID_NULL.newInstance();
                             });
                 });
     }

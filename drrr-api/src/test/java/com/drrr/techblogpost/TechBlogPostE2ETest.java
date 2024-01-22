@@ -4,12 +4,11 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.drrr.core.code.techblog.TechBlogCode;
-import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.core.exception.techblog.TechBlogExceptionCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.like.entity.TechBlogPostLike;
 import com.drrr.domain.like.repository.TechBlogPostLikeRepository;
 import com.drrr.domain.log.entity.post.MemberPostLog;
@@ -162,7 +161,7 @@ public class TechBlogPostE2ETest {
             List<Member> memberList = memberRepository.findAll();
 
             if (memberList.isEmpty()) {
-                throw MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
+                throw DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
             }
 
             return TechBlogPostLike.builder()
@@ -385,7 +384,7 @@ public class TechBlogPostE2ETest {
 
         //then
         TechBlogPost techBlogPost = techBlogPostRepository.findById(1L).orElseThrow(
-                TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+                DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
         int likeCount = techBlogPost.getPostLike();
         assertThat(likeCount).isEqualTo(500);
@@ -425,7 +424,7 @@ public class TechBlogPostE2ETest {
 
         //then
         TechBlogPost techBlogPost = techBlogPostRepository.findById(100L).orElseThrow(
-                TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+                DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
         int likeCount = techBlogPost.getPostLike();
         assertThat(likeCount).isEqualTo(0);
@@ -452,7 +451,7 @@ public class TechBlogPostE2ETest {
         //then
         List<TechBlogPost> postsFromDb = techBlogPostRepository.findAll();
         if (posts.isEmpty()) {
-            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
 
         assertThat(postsFromDb.size()).isEqualTo(posts.size());
@@ -483,7 +482,7 @@ public class TechBlogPostE2ETest {
         //then
         List<TechBlogPost> postsFromDb = techBlogPostService.findPostsByCategory(8L);
         if (posts.isEmpty()) {
-            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
 
         assertThat(postsFromDb.size()).isEqualTo(posts.size());

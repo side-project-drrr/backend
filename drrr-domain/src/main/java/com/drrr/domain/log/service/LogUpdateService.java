@@ -1,6 +1,6 @@
 package com.drrr.domain.log.service;
 
-import com.drrr.core.exception.log.LoggingExceptionCode;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;
@@ -47,7 +47,7 @@ public class LogUpdateService {
         if (!logs.isEmpty()) {
             log.error("기술 블로그 추천 후 로깅이 제대로 동작하지 않습니다.");
             log.error("memberId -> {}", memberId);
-            throw LoggingExceptionCode.INVALID_RECOMMEND_POSTS_LOGGING.newInstance();
+            throw DomainExceptionCode.INVALID_RECOMMEND_POSTS_LOGGING.newInstance();
 
         }
 
