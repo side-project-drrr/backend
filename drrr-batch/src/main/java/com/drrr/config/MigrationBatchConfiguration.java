@@ -3,9 +3,14 @@ package com.drrr.config;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
+import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
+import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.TemporalTechPostTagRepository;
 import jakarta.persistence.EntityManagerFactory;
+import java.util.ArrayList;
 import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
@@ -14,28 +19,30 @@ import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
-import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @RequiredArgsConstructor
 @Configuration
-@ConditionalOnProperty(name = "spring.batch.job.name", havingValue = "migrationJob")
 public class MigrationBatchConfiguration {
-    private static final String BATCH_NAME = "migration";
+    public static final String BATCH_NAME = "migration";
+    public static final String JOB_NAME = BATCH_NAME + "Job";
 
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
     private final EntityManagerFactory entityManagerFactory;
     private final TechBlogPostRepository techBlogPostRepository;
+    private final TechBlogPostCategoryRepository techBlogPostCategoryRepository;
+    private final TemporalTechPostTagRepository temporalTechPostTagRepository;
+    private final TemporalTechBlogPostRepository temporalTechBlogPostRepository;
 
-    @Bean(name = BATCH_NAME + "Job")
+    @Bean(name = JOB_NAME)
     public Job migrationJob() {
-        return new JobBuilder(BATCH_NAME + "Job", jobRepository)
+        return new JobBuilder(JOB_NAME, jobRepository)
                 .start(migrationStep(null, null))
                 .build();
     }
@@ -48,7 +55,7 @@ public class MigrationBatchConfiguration {
     ) {
         final var techBlogCode = TechBlogCode.valueOf(code);
         return new StepBuilder(BATCH_NAME + "Step", jobRepository)
-                .<TemporalTechBlogPost, TechBlogPost>chunk(100, transactionManager)
+                .<TemporalTechBlogPost, TemporalTechBlogPost>chunk(100, transactionManager)
                 .reader(new JpaCursorItemReaderBuilder<TemporalTechBlogPost>()
                         .name("migrationJbcItemReader")
                         .entityManagerFactory(entityManagerFactory)
@@ -66,12 +73,31 @@ public class MigrationBatchConfiguration {
                             temporalTechBlogEntity.getUrlSuffix())) {
                         return null;
                     }
-                    return TechBlogPost.from(temporalTechBlogEntity);
+                    if (temporalTechBlogEntity.isRegistrationCompleted()) {
+                        return temporalTechBlogEntity;
+                    }
+                    return null;
                 })
-                .writer(new JpaItemWriterBuilder<TechBlogPost>()
-                        .usePersist(true)
-                        .entityManagerFactory(entityManagerFactory)
-                        .build())
+                .writer(this::executeMigration)
                 .build();
+    }
+
+    private void executeMigration(Chunk<? extends TemporalTechBlogPost> temporalTechBlogPosts) {
+
+        final var deleteList = new ArrayList<TemporalTechBlogPost>();
+        for (var temporalTechBlogPost : temporalTechBlogPosts) {
+            final var techBlogPost = this.techBlogPostRepository.save(TechBlogPost.from(temporalTechBlogPost));
+            final var techBlogPostCategories = this.temporalTechPostTagRepository.findByTemporalTechBlogPostId(
+                            temporalTechBlogPost.getId())
+                    .stream()
+                    .map(temporalTechPostTag -> TechBlogPostCategory.from(techBlogPost,
+                            temporalTechPostTag))
+                    .toList();
+            techBlogPostCategoryRepository.saveAll(techBlogPostCategories);
+
+            deleteList.add(temporalTechBlogPost);
+        }
+
+        temporalTechBlogPostRepository.deleteAll(deleteList);
     }
 }

@@ -23,7 +23,7 @@ public class RegisterPostTagService {
     private final TemporalTechPostTagRepository temporalTechPostTagRepository;
     private final CategoryRepository categoryRepository;
 
-    public void execute(final Long postId, final List<String> tagNames) {
+    public void execute(final Long postId, final List<String> tagNames, String aiSummarizedText) {
         AdminExceptionCode.DID_NOT_EXISTS_TAG_NAMES.invokeByCondition(tagNames.isEmpty());
 
         final TemporalTechBlogPost temporalTechBlogPost = temporalTechBlogPostRepository.findById(postId)
@@ -31,18 +31,27 @@ public class RegisterPostTagService {
 
         AdminExceptionCode.REGISTER_COMPLETE_TAG.invokeByCondition(temporalTechBlogPost.isRegistrationCompleted());
 
-        final List<TemporalTechPostTag> categories = tagNames.stream()
+        // replace 이후 중복 카테고리이름에 대한 중복 제거
+        final var categories = tagNames.stream()
                 .map(this::ifPresetGetOrCreateNewTag)
+                .filter(Category::isRegistrationAllowed)
+                .distinct()
                 .map(category -> new TemporalTechPostTag(category, temporalTechBlogPost))
                 .toList();
 
         List<TemporalTechPostTag> temporalTechPostTags = temporalTechPostTagRepository.saveAll(categories);
         temporalTechBlogPost.registerCategory(temporalTechPostTags);
-
+        temporalTechBlogPost.updateAiSummarizedText(aiSummarizedText);
     }
 
     private Category ifPresetGetOrCreateNewTag(String name) {
         return categoryRepository.findByName(name)
-                .orElse(categoryRepository.save(new Category(name)));
+                .map(category -> category.isReplaceType() ? replaceCategory(category) : category)
+                .orElseGet(() -> categoryRepository.save(new Category(name)));
+    }
+
+    private Category replaceCategory(Category category) {
+        return categoryRepository.findById(category.getReferenceId())
+                .orElseThrow(AdminExceptionCode.DID_NOT_EXISTS_REFERENCE_ID::create);
     }
 }

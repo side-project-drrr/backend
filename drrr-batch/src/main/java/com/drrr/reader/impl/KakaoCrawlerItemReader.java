@@ -33,6 +33,7 @@ public class KakaoCrawlerItemReader extends AbstractCrawlerPageItemReader {
     @Override
     protected ExternalBlogPosts executeCrawlerPage() {
         this.selectPage();
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className(POST_CLASS_NAME)));
         return this.webDriver.findElement(By.className(POST_CLASS_NAME))
                 .findElements(By.tagName("article"))
                 .stream().map(webElement -> {
@@ -49,7 +50,7 @@ public class KakaoCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .code(TECH_BLOG_CODE)
                             .title(postTitleElement.getText())
                             .suffix(postTitleElement.getAttribute("href").substring(PREFIX_LENGTH))
-                            .link(PAGE_URL)
+                            .link(postTitleElement.getAttribute("href"))
                             .author(postAuthor.getText())
                             .summary(postSummary.getText())
                             .postDate(CrawlingLocalDatePatterns.PATTERN1.parse(postDate.getText()))
@@ -75,7 +76,7 @@ public class KakaoCrawlerItemReader extends AbstractCrawlerPageItemReader {
     @Override
     protected String getPageUrlByParameter(int page) {
         final String url = String.format(PAGE_FORMAT, page);
-        log.info("crawler naver url: {}", url);
+        log.info("crawler kakao url: {}", url);
         return url;
     }
 

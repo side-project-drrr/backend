@@ -5,7 +5,6 @@ import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.reader.AbstractCrawlerPageItemReader;
 import com.drrr.reader.CrawlerPageStrategy;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +12,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.springframework.batch.core.StepExecutionListener;
 
 @Slf4j
-public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader implements StepExecutionListener {
+public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader {
     private static final TechBlogCode CODE = TechBlogCode.WOOWAHAN;
     private static final String PREFIX_URL = "https://techblog.woowahan.com/";
 
@@ -26,19 +24,11 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader imp
         this.webDriver.get(PREFIX_URL);
     }
 
-    static Optional<WebElement> emptyElementFinder(WebDriver driver, By by) {
-        try {
-            return Optional.of(driver.findElement(by));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
 
     @Override
     protected ExternalBlogPosts executeCrawlerPage() {
         log.info("start crawler woowahan blog");
-
-        setLastPage(this.getLastPage());
+        this.selectPage();
 
         WebElement postsElement = this.webDriver.findElement(By.className("post-list"));
 
@@ -48,8 +38,7 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader imp
         ));
 
         log.info("{}", postsElement.findElement(By.className("post-item")));
-
-        ExternalBlogPosts externalBlogPosts = postsElement.findElements(By.cssSelector(".post-item:not(.firstpaint)"))
+        final var externalBlogPosts = postsElement.findElements(By.cssSelector(".post-item:not(.firstpaint)"))
                 .stream()
                 .map(webElement -> {
 
@@ -72,8 +61,6 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader imp
                 }).collect(Collectors.collectingAndThen(Collectors.toList(), ExternalBlogPosts::new));
 
         log.info("{}", externalBlogPosts.posts().size());
-        this.navigateToNextPage(super.getPage());
-
         return externalBlogPosts;
     }
 
@@ -81,45 +68,35 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader imp
         return (className) -> element.findElement(By.className(className)).getText();
     }
 
+
+    boolean isNumber(String text) {
+        try {
+            Integer.parseInt(text);
+            return true;
+        } catch (NumberFormatException exception) {
+            return false;
+        }
+    }
+
+
+    @Override
+    protected String getPageUrlByParameter(int page) {
+        final var url = "https://techblog.woowahan.com/?paged=" + page;
+        log.info("crawler naver url: {}", url);
+        return url;
+    }
+
     @Override
     protected int getLastPage() {
-        String cssSelectorTarget = "a[class='page larger']";
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("wp-pagenavi")));
 
-        webDriverWait.until(ExpectedConditions.and(
-                ExpectedConditions.visibilityOfElementLocated(By.className("current")),
-                ExpectedConditions.textToBePresentInElementLocated(By.className("current"),
-                        String.valueOf(super.getPage()))
-        ));
-
-        Optional<WebElement> lastPageElement = emptyElementFinder(webDriver, By.cssSelector(cssSelectorTarget));
-        if (lastPageElement.isEmpty()) {
-            cssSelectorTarget = "a[class='page smaller']";
-        }
-
-        return this.webDriver.findElements(By.cssSelector(cssSelectorTarget))
+        return this.webDriver.findElement(By.className("wp-pagenavi"))
+                .findElements(By.tagName("a"))
                 .stream()
                 .map(WebElement::getText)
+                .filter(this::isNumber)
                 .mapToInt(Integer::parseInt)
                 .max()
                 .orElseThrow(IllegalArgumentException::new);
     }
-
-    @Override
-    protected void navigateToNextPage(int page) {
-        Optional<WebElement> targetPageElementOpt = emptyElementFinder(webDriver,
-                By.cssSelector("a[title='" + (page + 1) + " 쪽']"));
-        WebElement targetPageElement = targetPageElementOpt.orElse(null);
-
-        // 요소를 클릭합니다.
-        if (targetPageElement != null) {
-            targetPageElement.click();
-            webDriverWait.until(ExpectedConditions.and(
-                    ExpectedConditions.visibilityOfElementLocated(By.className("current")),
-                    ExpectedConditions.textToBePresentInElementLocated(By.className("current"),
-                            String.valueOf(page))
-            ));
-        }
-    }
-
-
 }
