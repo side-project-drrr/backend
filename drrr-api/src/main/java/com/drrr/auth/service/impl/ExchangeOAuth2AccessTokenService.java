@@ -4,7 +4,7 @@ import com.drrr.auth.payload.dto.OAuth2Response;
 import com.drrr.auth.payload.request.GithubOAuth2Request;
 import com.drrr.auth.payload.request.KakaoOAuth2Request;
 import com.drrr.auth.payload.request.OAuth2Request;
-import com.drrr.core.exception.member.OAuth2ExceptionCode;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +39,7 @@ public class ExchangeOAuth2AccessTokenService {
             default -> {
                 log.error(
                         "OAuth2Client Class findOAuth2ProviderIdBySubject(String code, String provider) Method InvalidUriException Error");
-                throw OAuth2ExceptionCode.INVALID_OAUTH2_SUBJECT.newInstance();
+                throw DomainExceptionCode.INVALID_OAUTH2_SUBJECT.newInstance();
             }
         };
     }
