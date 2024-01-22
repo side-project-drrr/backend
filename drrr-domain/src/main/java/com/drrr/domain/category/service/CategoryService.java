@@ -1,6 +1,6 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryExceptionCode;
+import com.drrr.domain.category.exception.CategoryExceptionCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import jakarta.validation.constraints.NotNull;

@@ -4,7 +4,7 @@ import com.drrr.auth.payload.dto.OAuth2Response;
 import com.drrr.auth.payload.request.GithubOAuth2Request;
 import com.drrr.auth.payload.request.KakaoOAuth2Request;
 import com.drrr.auth.payload.request.OAuth2Request;
-import com.drrr.core.exception.member.OAuth2ExceptionCode;
+import com.drrr.domain.member.exception.OAuth2ExceptionCode;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

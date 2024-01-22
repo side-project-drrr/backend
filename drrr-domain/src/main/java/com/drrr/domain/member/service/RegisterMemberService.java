@@ -1,6 +1,6 @@
 package com.drrr.domain.member.service;
 
-import com.drrr.core.exception.member.MemberExceptionCode;
+import com.drrr.domain.member.exception.MemberExceptionCode;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.Builder;

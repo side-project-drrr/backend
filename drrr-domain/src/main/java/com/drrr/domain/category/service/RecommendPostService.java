@@ -1,6 +1,6 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryExceptionCode;
+import com.drrr.domain.category.exception.CategoryExceptionCode;
 import com.drrr.core.recommandation.constant.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.entity.CategoryWeight;

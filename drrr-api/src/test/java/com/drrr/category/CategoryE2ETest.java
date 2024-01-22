@@ -3,7 +3,7 @@ package com.drrr.category;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.exception.category.CategoryExceptionCode;
+import com.drrr.domain.category.exception.CategoryExceptionCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.service.CategoryService.CategoryDto;

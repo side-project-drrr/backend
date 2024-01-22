@@ -4,8 +4,8 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.drrr.core.code.techblog.TechBlogCode;
-import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.core.exception.techblog.TechBlogExceptionCode;
+import com.drrr.domain.member.exception.MemberExceptionCode;
+import com.drrr.domain.techblogpost.exception.TechBlogExceptionCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;

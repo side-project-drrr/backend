@@ -1,4 +1,4 @@
-package com.drrr.core.exception.jwt;
+package com.drrr.web.jwt.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

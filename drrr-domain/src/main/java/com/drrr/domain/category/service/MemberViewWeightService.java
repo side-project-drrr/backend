@@ -1,8 +1,8 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryExceptionCode;
-import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.core.exception.techblog.TechBlogExceptionCode;
+import com.drrr.domain.category.exception.CategoryExceptionCode;
+import com.drrr.domain.member.exception.MemberExceptionCode;
+import com.drrr.domain.techblogpost.exception.TechBlogExceptionCode;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;

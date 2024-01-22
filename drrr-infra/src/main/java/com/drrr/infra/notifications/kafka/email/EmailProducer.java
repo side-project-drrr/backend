@@ -1,6 +1,6 @@
 package com.drrr.infra.notifications.kafka.email;
 
-import com.drrr.core.exception.member.MemberExceptionCode;
+import com.drrr.domain.member.exception.MemberExceptionCode;
 import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;

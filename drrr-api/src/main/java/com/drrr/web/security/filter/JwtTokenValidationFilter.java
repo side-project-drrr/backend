@@ -1,6 +1,6 @@
 package com.drrr.web.security.filter;
 
-import com.drrr.core.exception.jwt.JwtExceptionCode;
+import com.drrr.web.jwt.exception.JwtExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

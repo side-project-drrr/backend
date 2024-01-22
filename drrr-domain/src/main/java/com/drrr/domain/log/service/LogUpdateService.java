@@ -1,6 +1,6 @@
 package com.drrr.domain.log.service;
 
-import com.drrr.core.exception.log.LoggingExceptionCode;
+import com.drrr.domain.log.exception.LoggingExceptionCode;
 import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;

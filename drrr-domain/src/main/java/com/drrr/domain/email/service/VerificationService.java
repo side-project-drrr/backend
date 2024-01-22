@@ -1,6 +1,6 @@
 package com.drrr.domain.email.service;
 
-import com.drrr.core.exception.email.EmailExceptionCode;
+import com.drrr.domain.email.exception.EmailExceptionCode;
 import com.drrr.domain.email.entity.Email;
 import com.drrr.domain.email.repository.EmailRepository;
 import java.time.Duration;

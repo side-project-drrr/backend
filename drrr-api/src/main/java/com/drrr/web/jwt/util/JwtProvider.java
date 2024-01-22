@@ -1,7 +1,7 @@
 package com.drrr.web.jwt.util;
 
 
-import com.drrr.core.exception.jwt.JwtExceptionCode;
+import com.drrr.web.jwt.exception.JwtExceptionCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.Map;

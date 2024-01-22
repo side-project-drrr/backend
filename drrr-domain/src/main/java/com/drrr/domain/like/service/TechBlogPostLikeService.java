@@ -1,15 +1,14 @@
 package com.drrr.domain.like.service;
 
-import com.drrr.core.exception.like.TechBlogPostLikeExceptionCode;
-import com.drrr.core.exception.member.MemberExceptionCode;
-import com.drrr.core.exception.techblog.TechBlogExceptionCode;
+import com.drrr.domain.like.exception.TechBlogPostLikeExceptionCode;
+import com.drrr.domain.member.exception.MemberExceptionCode;
+import com.drrr.domain.techblogpost.exception.TechBlogExceptionCode;
 import com.drrr.domain.like.entity.TechBlogPostLike;
 import com.drrr.domain.like.repository.TechBlogPostLikeRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

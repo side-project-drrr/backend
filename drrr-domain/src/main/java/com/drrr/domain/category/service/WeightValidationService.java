@@ -1,6 +1,6 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.member.MemberExceptionCode;
+import com.drrr.domain.member.exception.MemberExceptionCode;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import java.util.List;
