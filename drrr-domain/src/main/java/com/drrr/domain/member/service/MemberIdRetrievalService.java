@@ -1,7 +1,7 @@
 package com.drrr.domain.member.service;
 
 
-import com.drrr.core.exception.member.MemberExceptionCode;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class MemberIdRetrievalService {
                 .orElseThrow(() -> {
                     log.error(
                             "MemberIdRetrievalService Class findByProviderId(final String userSocialId) Method IllegalArgumentException Error");
-                    return MemberExceptionCode.UNREGISTERED_MEMBER.newInstance();
+                    return DomainExceptionCode.UNREGISTERED_MEMBER.newInstance();
                 });
         return member.getId();
     }

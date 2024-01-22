@@ -1,8 +1,8 @@
 package com.drrr.domain.email.service;
 
-import com.drrr.core.exception.email.EmailExceptionCode;
 import com.drrr.domain.email.entity.Email;
 import com.drrr.domain.email.repository.EmailRepository;
+import com.drrr.domain.exception.DomainExceptionCode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -48,7 +48,7 @@ public class VerificationService {
         final Email email = emailRepository.findByProviderId(providerId).orElseThrow(() -> {
             log.error("provider id로 이메일 인증 정보를 찾을 수 없습니다.");
             log.error("providerId -> {}", providerId);
-            return EmailExceptionCode.EMAIL_VERIFICATION_INFORMATION_NOT_FOUND.newInstance();
+            return DomainExceptionCode.EMAIL_VERIFICATION_INFORMATION_NOT_FOUND.newInstance();
         });
 
         final Duration duration = Duration.between(email.getCreatedAt(), LocalDateTime.now());
@@ -62,7 +62,7 @@ public class VerificationService {
 
             log.error("이메일 인증 정보가 만료되었습니다.");
             log.error("providerId -> {}", providerId);
-            throw EmailExceptionCode.EMAIL_VERIFICATION_CODE_EXPIRED.newInstance();
+            throw DomainExceptionCode.EMAIL_VERIFICATION_CODE_EXPIRED.newInstance();
         }
 
         final VerificationDto verificationDto = VerificationDto.builder()

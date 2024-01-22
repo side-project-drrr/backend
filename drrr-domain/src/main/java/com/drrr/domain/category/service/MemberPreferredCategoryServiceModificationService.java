@@ -1,12 +1,11 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.exception.category.CategoryExceptionCode;
-import com.drrr.core.exception.member.MemberExceptionCode;
 import com.drrr.core.recommandation.constant.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import java.time.LocalDateTime;
@@ -34,14 +33,14 @@ public class MemberPreferredCategoryServiceModificationService {
         final Member member = memberRepository.findById(memberId).orElseThrow(() -> {
             log.error("사용자를 찾을 수 없습니다.");
             log.error("memberId -> {}", memberId);
-            return MemberExceptionCode.MEMBER_NOT_FOUND.newInstance();
+            return DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
         });
 
         List<Category> categories = categoryRepository.findByIdIn(updateCategoryIds);
         if (categories.isEmpty()) {
             log.error("카테고리가 존재하지 않습니다.");
             log.error("category id -> {}", updateCategoryIds.toString());
-            throw CategoryExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
         }
 
         //현재 사용자의 카테고리 정보 가져오기
@@ -49,7 +48,7 @@ public class MemberPreferredCategoryServiceModificationService {
         if (categoryWeights.isEmpty()) {
             log.error("카테고리 가중치 정보를 찾을 수 없습니다.");
             log.error("memberId -> {}", memberId);
-            throw CategoryExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
 
         //사용자의 기존 선호하는 카테고리 id set

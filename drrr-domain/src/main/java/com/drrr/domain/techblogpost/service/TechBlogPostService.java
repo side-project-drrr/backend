@@ -1,13 +1,9 @@
 package com.drrr.domain.techblogpost.service;
 
-import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
-import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
-
-import com.drrr.core.exception.techblog.TechBlogExceptionCode;
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,11 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
+
     public List<TechBlogPostOuterDto> findAllPostsOuter() {
         final List<TechBlogPost> posts = techBlogPostRepository.findAll();
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
-            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
         return TechBlogPostOuterDto.from(posts);
     }
@@ -35,7 +32,7 @@ public class TechBlogPostService {
         final List<TechBlogPost> posts = techBlogPostRepository.findPostsByCategory(postId);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
-            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
         return posts;
     }
@@ -44,7 +41,7 @@ public class TechBlogPostService {
         final List<TechBlogPost> topPosts = techBlogPostRepository.findTopLikePost(count);
         if (topPosts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
-            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
         return TechBlogPostOuterDto.from(topPosts);
     }
@@ -67,14 +64,14 @@ public class TechBlogPostService {
         final List<TechBlogPost> posts = techBlogPostRepository.findByIdIn(postIds);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
-            throw TechBlogExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+            throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
         return posts;
     }
 
     public TechBlogPost findTechBlogPostsById(final Long postId) {
         return techBlogPostRepository.findById(postId).orElseThrow(
-                TechBlogExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+                DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
     }
 
 }
