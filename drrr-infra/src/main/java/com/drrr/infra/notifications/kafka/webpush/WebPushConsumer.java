@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @PropertySource(value = {"classpath:security-storage-api/notification/web-push/web-push-vapid.properties"})
 public class WebPushConsumer {
-    private final static String ACTIVE = "ACTIVE";
-    private final static String EXPIRED = "EXPIRED";
     private final SubscriptionRepository subscriptionRepository;
     private final String publicKey;
     private final String privateKey;
@@ -55,7 +53,7 @@ public class WebPushConsumer {
         );
 
         if (Objects.equals(sendState, SubscriptionState.EXPIRED)) {
-            subscriptionRepository.deleteByMemberId(notificationDto.memberId());
+            subscriptionRepository.deleteById(notificationDto.id());
         }
     }
 
