@@ -1,9 +1,7 @@
 package com.drrr.alarm.controller;
 
 import com.drrr.alarm.service.impl.ExternalMemberSubscriptionService;
-import com.drrr.alarm.service.impl.ExternalNotificationEmailService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
-import com.drrr.infra.notifications.kafka.webpush.WebPushProducer;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,9 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class PushAlarmController {
-    private final ExternalNotificationEmailService externalNotificationEmailService;
     private final ExternalMemberSubscriptionService externalMemberSubscriptionService;
-    private final WebPushProducer webPushProducer;
+
     private final JwtProvider jwtProvider;
     private final SubscriptionRepository subscriptionRepository;
 
@@ -54,4 +51,5 @@ public class PushAlarmController {
         final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         subscriptionRepository.deleteByMemberId(memberId);
     }
+
 }
