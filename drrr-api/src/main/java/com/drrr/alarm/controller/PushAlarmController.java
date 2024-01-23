@@ -4,8 +4,6 @@ import com.drrr.alarm.service.impl.ExternalMemberSubscriptionService;
 import com.drrr.alarm.service.impl.ExternalNotificationEmailService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
 import com.drrr.infra.notifications.kafka.webpush.WebPushProducer;
-import com.drrr.infra.push.entity.PushMessage;
-import com.drrr.infra.push.entity.Subscription;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-//@Secured("USER")
+@Secured("USER")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 public class PushAlarmController {
