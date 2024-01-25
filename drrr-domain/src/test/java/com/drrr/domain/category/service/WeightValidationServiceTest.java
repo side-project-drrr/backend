@@ -93,7 +93,6 @@ class WeightValidationServiceTest {
         databaseCleaner.clear();
 
         List<Member> members = IntStream.rangeClosed(0, 4).mapToObj(i -> {
-            System.out.println("test test test");
             return Member.builder()
                     .email("example" + i + "@drrr.com")
                     .nickname("user" + i)
