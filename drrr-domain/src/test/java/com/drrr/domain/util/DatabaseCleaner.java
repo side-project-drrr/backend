@@ -20,7 +20,6 @@ public class DatabaseCleaner {
     @Transactional
     public void clear() {
         this.afterPropertiesSet();
-        System.out.println(tableNames);
         entityManager.flush();
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 
