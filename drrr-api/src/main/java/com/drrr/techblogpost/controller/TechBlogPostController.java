@@ -78,7 +78,7 @@ public class TechBlogPostController {
             @ApiResponse(responseCode = "200", description = "조회수가 가장 높은 기술 블로그를 반환",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostOuterDto.class))))
     })
-    @DeleteMapping("/post/top/{count}")
+    @GetMapping("/post/top/{count}")
     public List<TechBlogPostOuterDto> findTopNPosts(@NotNull @PathVariable("count") final int count) {
         return externalTechBlogPostLikeService.execute(count);
     }
