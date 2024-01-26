@@ -84,7 +84,7 @@ public class CategoryE2ETest {
         assertThat(categories.size()).isEqualTo(categoryDtos.size());
         assertThat(categories)
                 .zipSatisfy(categoryDtos, (actual, expected) -> {
-                    assertThat(actual.getName()).isEqualTo(expected.categoryName());
+                    assertThat(actual.getName()).isEqualTo(expected.name());
                     // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
                 });
     }
@@ -117,7 +117,7 @@ public class CategoryE2ETest {
         assertThat(categories.size()).isEqualTo(categoryDtos.size());
         assertThat(categories)
                 .zipSatisfy(categoryDtos, (actual, expected) -> {
-                    assertThat(actual.getName()).isEqualTo(expected.categoryName());
+                    assertThat(actual.getName()).isEqualTo(expected.name());
                     // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
                 });
     }
