@@ -1,9 +1,9 @@
 package com.drrr.category.service.impl;
 
+import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.RedisCategory;
 import com.drrr.domain.category.service.CategoryService;
-import com.drrr.domain.category.service.CategoryService.CategoryDto;
 import com.drrr.domain.category.service.RedisCategoryService;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import java.util.HashSet;
@@ -59,7 +59,7 @@ public class ExternalCategoryService {
                 .filter(redisCategory -> requestIds.contains(redisCategory.id()))
                 .map(filteredCategory -> RedisCategory.builder()
                         .id(filteredCategory.id())
-                        .name(filteredCategory.categoryName())
+                        .name(filteredCategory.name())
                         .build())
                 .toList();
 
@@ -70,7 +70,7 @@ public class ExternalCategoryService {
                         redisCategories.stream()
                                 .map(redisCategory -> CategoryDto.builder()
                                         .id(redisCategory.getId())
-                                        .categoryName(redisCategory.getName())
+                                        .name(redisCategory.getName())
                                         .build()),
                         selectedCategories.stream())
                 .collect(Collectors.toList());

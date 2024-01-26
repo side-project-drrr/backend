@@ -3,9 +3,9 @@ package com.drrr.category;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
-import com.drrr.domain.category.service.CategoryService.CategoryDto;
 import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.util.DatabaseCleaner;
 import com.fasterxml.jackson.core.JsonProcessingException;
