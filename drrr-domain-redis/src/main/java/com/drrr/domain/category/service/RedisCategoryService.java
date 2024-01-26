@@ -6,13 +6,13 @@ import com.drrr.domain.category.entity.RedisCategoryPosts;
 import com.drrr.domain.category.entity.RedisCategoryPosts.CompoundCategoryId;
 import com.drrr.domain.category.repository.RedisCategoryRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -40,7 +40,7 @@ public class RedisCategoryService {
                 .orElse(List.of());
     }
 
-    public Set<Stream<TechBlogPost>> findPostsByCompoundIds(final List<CompoundCategoryId> categoryIds) {
+    public Set<TechBlogPost> findPostsByCompoundIds(final List<CompoundCategoryId> categoryIds) {
         final List<String> keys = categoryIds.stream()
                 .map(Object::toString)
                 .toList();
@@ -48,10 +48,9 @@ public class RedisCategoryService {
         return Optional.ofNullable(redisCategoryPostsRedisTemplate.opsForValue().multiGet(keys))
                 .map(posts -> posts.stream()
                         .filter(Objects::nonNull)
-                        .map(RedisCategoryPosts::getPosts)
-                        .map(Set::stream)
+                        .flatMap(redisCategoryPosts -> redisCategoryPosts.getPosts().stream())
                         .collect(Collectors.toSet()))
-                .orElse(Set.of());
+                .orElse(Collections.emptySet());
     }
 
     public void saveCategories(final List<RedisCategory> categories) {
