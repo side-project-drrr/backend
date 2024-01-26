@@ -1,46 +1,60 @@
 package com.drrr.infra.notifications.kafka.webpush;
 
-
-import com.drrr.infra.notifications.kafka.dto.PushMessage;
+import com.drrr.infra.notifications.kafka.webpush.dto.NotificationDto;
 import com.drrr.infra.push.repository.SubscriptionRepository;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.messaging.*;
-import lombok.RequiredArgsConstructor;
+import com.interaso.webpush.VapidKeys;
+import com.interaso.webpush.WebPush.SubscriptionState;
+import com.interaso.webpush.WebPushService;
+import java.util.Base64;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@PropertySource(value = {"classpath:security-storage-api/notification/web-push/web-push-vapid.properties"})
 public class WebPushConsumer {
-    private static int count =1;
     private final SubscriptionRepository subscriptionRepository;
+    private final String publicKey;
+    private final String privateKey;
+
+    public WebPushConsumer(@Value("${vapid.public.pub}") final String publicKey,
+                           @Value("${vapid.private.key}") final String privateKey,
+                           SubscriptionRepository subscriptionRepository) {
+        this.publicKey = publicKey;
+        this.privateKey = privateKey;
+        this.subscriptionRepository = subscriptionRepository;
+    }
 
     @KafkaListener(topics = "alarm-web-push", groupId = "group_web_push", containerFactory = "kafkaWebPushListenerContainerFactory")
-    public void consume(final PushMessage payload) throws FirebaseMessagingException {
+    public void consume(final NotificationDto notificationDto) {
+        VapidKeys vapidKeys = VapidKeys.fromUncompressedBytes(
+                publicKey,
+                privateKey);
 
-        Notification notification = Notification.builder()
-                .setTitle("DR--R--R--")
-                .setBody("count -> "+(count))
-                .build();
+        WebPushService webPushService = new WebPushService(
+                "mailto:youngyou1324@naver.com",
+                vapidKeys);
 
-        Message message2 = Message.builder()
-                .setNotification(notification)
-                .setToken(payload.token())
-                .build();
+        byte[] p256 = Base64.getUrlDecoder().decode(notificationDto.p256dh());
+        byte[] auth = Base64.getUrlDecoder().decode(notificationDto.auth());
 
-        try{
-            String response = FirebaseMessaging.getInstance().send(message2);
-            System.out.println("Successfully sent message: " + response+" count -> "+(count++));
-        }catch(FirebaseMessagingException fe){
-            //토큰이 유효하지 않은 경우엔 토큰 삭제 후 카프카에 exception를 던지지 않음
-            if(fe.getMessagingErrorCode().equals(MessagingErrorCode.UNREGISTERED)){
-                subscriptionRepository.deleteByMemberId(payload.memberId());
-                return;
-            }
-            log.error("Firebase Messaging Exception Occurred -> "+fe.getMessage());
-            throw fe;
+        SubscriptionState sendState = webPushService.send(
+                notificationDto.payload().getBytes(),
+                notificationDto.endpoint(),
+                p256,
+                auth,
+                null,
+                null,
+                null
+        );
+
+        if (Objects.equals(sendState, SubscriptionState.EXPIRED)) {
+            subscriptionRepository.deleteById(notificationDto.id());
         }
     }
+
 }

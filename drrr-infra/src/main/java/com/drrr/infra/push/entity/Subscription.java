@@ -20,6 +20,9 @@ import lombok.NoArgsConstructor;
 @PrimaryKeyJoinColumn(name = "SUBSCRIPTION_ID")
 public class Subscription extends BaseEntity {
     @Column(length = 500)
-    private String token;
+    private String endpoint;
+    private String expirationTime;
+    private String p256dh; // public key
+    private String auth;   // authentication secret
     private Long memberId;
 }
