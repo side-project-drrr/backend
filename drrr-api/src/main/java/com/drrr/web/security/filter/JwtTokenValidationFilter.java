@@ -1,7 +1,9 @@
 package com.drrr.web.security.filter;
 
+import com.drrr.error.ErrorResponse;
 import com.drrr.web.exception.ApiExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -49,20 +52,37 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             return;
         }
 
-        final Long memberId = jwtTokenProvider.extractToValueFrom(token);
-        if (!jwtTokenProvider.validateToken(token)) {
-            throw new IllegalArgumentException(ApiExceptionCode.JWT_UNAUTHORIZED.newInstance("토큰 검증 실패"));
+        try {
+            final Long memberId = jwtTokenProvider.extractToValueFrom(token);
+            jwtTokenProvider.validateToken(token);
+            final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(memberId, null,
+                    List.of(new SimpleGrantedAuthority("USER")));
+            // Detail을 넣어줌
+            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            returnErrorResponse(response, ApiExceptionCode.JWT_UNAUTHORIZED);
         }
+    }
 
-        // 권한 부여
-
-        final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(memberId, null,
-                List.of(new SimpleGrantedAuthority("USER")));
-        // Detail을 넣어줌
-        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-        SecurityContextHolder.getContext().setAuthentication(auth);
-        filterChain.doFilter(request, response);
+    private void returnErrorResponse(
+            HttpServletResponse response,
+            ApiExceptionCode errorCode
+    ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.setStatus(errorCode.getCode());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
+        try {
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
