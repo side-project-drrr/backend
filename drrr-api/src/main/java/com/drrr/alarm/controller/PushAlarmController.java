@@ -1,7 +1,9 @@
 package com.drrr.alarm.controller;
 
 import com.drrr.alarm.service.impl.ExternalMemberSubscriptionService;
+import com.drrr.alarm.service.impl.ExternalMemberWebPushPostsService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
+import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,11 +11,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class PushAlarmController {
     private final ExternalMemberSubscriptionService externalMemberSubscriptionService;
+    private final ExternalMemberWebPushPostsService externalMemberWebPushPostsService;
 
     private final JwtProvider jwtProvider;
     private final SubscriptionRepository subscriptionRepository;
@@ -50,6 +55,12 @@ public class PushAlarmController {
     public void cancelSubscription() {
         final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         subscriptionRepository.deleteByMemberId(memberId);
+    }
+
+    @GetMapping("/web/push/subscription/member")
+    public List<TechBlogPostOuterDto> findMemberWebPushPosts() {
+        final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
+        return externalMemberWebPushPostsService.execute(memberId);
     }
 
 }
