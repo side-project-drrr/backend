@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public List<TechBlogPostOuterDto> findAllPostsOuter() {
-        final List<TechBlogPost> posts = techBlogPostRepository.findAll();
+    public Slice<TechBlogPostOuterDto> findAllPostsOuter(final Pageable pageable) {
+        Slice<TechBlogPost> posts = techBlogPostRepository.findAllByProvided(pageable);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return TechBlogPostOuterDto.from(posts);
+
+        return posts.map(TechBlogPostOuterDto::from);
     }
 
     public List<TechBlogPost> findPostsByCategory(final Long postId) {

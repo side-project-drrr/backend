@@ -18,7 +18,7 @@ public record TechBlogPostOuterDto(
         LocalDate writtenAt
 
 ) {
-    static public List<TechBlogPostOuterDto> from (final List<TechBlogPost> posts){
+    static public List<TechBlogPostOuterDto> from(final List<TechBlogPost> posts) {
         return posts.stream()
                 .map(post -> TechBlogPostOuterDto.builder()
                         .title(post.getTitle())
@@ -31,5 +31,18 @@ public record TechBlogPostOuterDto(
                         .writtenAt(post.getWrittenAt())
                         .build())
                 .toList();
+    }
+
+    static public TechBlogPostOuterDto from(final TechBlogPost post) {
+        return TechBlogPostOuterDto.builder()
+                .title(post.getTitle())
+                .techBlogCode(post.getTechBlogCode())
+                .summary(post.getSummary())
+                .postLike(post.getPostLike())
+                .thumbnailUrl(post.getThumbnailUrl())
+                .viewCount(post.getViewCount())
+                .id(post.getId())
+                .writtenAt(post.getWrittenAt())
+                .build();
     }
 }
