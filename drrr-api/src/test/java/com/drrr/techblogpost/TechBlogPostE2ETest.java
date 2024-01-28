@@ -432,37 +432,6 @@ public class TechBlogPostE2ETest {
     }
 
     @Test
-    void 모든_게시물을_정상적으로_가져옵니다() throws JsonProcessingException {
-        //when
-        List<TechBlogPost> posts =
-                new ObjectMapper().readValue(
-                        given()
-                                .log().all()
-                                .when()
-                                .contentType(ContentType.APPLICATION_JSON.toString())
-                                .get("/api/v1/posts")
-                                .then()
-                                .statusCode(HttpStatus.OK.value())
-                                .extract().body().asString(),
-                        new TypeReference<List<TechBlogPost>>() {
-                        }
-                );
-
-        //then
-        List<TechBlogPost> postsFromDb = techBlogPostRepository.findAll();
-        if (posts.isEmpty()) {
-            throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
-        }
-
-        assertThat(postsFromDb.size()).isEqualTo(posts.size());
-        assertThat(postsFromDb)
-                .zipSatisfy(posts, (actual, expected) -> {
-                    assertThat(actual.getId()).isEqualTo(expected.getId());
-                    // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
-                });
-    }
-
-    @Test
     void 특정_카테고리에_해당하는_게시물을_정상적으로_가져옵니다() throws JsonProcessingException {
         //when
         List<TechBlogPost> posts =

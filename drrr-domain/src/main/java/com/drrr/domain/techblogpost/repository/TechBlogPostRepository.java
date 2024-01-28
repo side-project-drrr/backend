@@ -21,7 +21,7 @@ public interface TechBlogPostRepository extends JpaRepository<TechBlogPost, Long
     @Query("select tbp from TechBlogPost tbp where tbp.id =:id")
     Optional<TechBlogPost> findByIdWithPessimisticLock(@Param("id") Long id);
 
-    Slice<TechBlogPost> findAllByProvided(Pageable pageable);
+    Slice<TechBlogPost> findBy(Pageable pageable);
 
     List<TechBlogPost> findByIdIn(List<Long> postIds);
 

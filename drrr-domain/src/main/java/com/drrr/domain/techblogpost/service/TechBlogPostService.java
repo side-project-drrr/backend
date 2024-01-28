@@ -22,7 +22,7 @@ public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
     public Slice<TechBlogPostOuterDto> findAllPostsOuter(final Pageable pageable) {
-        Slice<TechBlogPost> posts = techBlogPostRepository.findAllByProvided(pageable);
+        Slice<TechBlogPost> posts = techBlogPostRepository.findBy(pageable);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
