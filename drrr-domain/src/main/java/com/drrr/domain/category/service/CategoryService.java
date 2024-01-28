@@ -1,11 +1,11 @@
 package com.drrr.domain.category.service;
 
+import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.exception.DomainExceptionCode;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class CategoryService {
         return categories.stream()
                 .map(category -> CategoryDto.builder()
                         .id(category.getId())
-                        .categoryName(category.getName())
+                        .name(category.getName())
                         .build())
                 .toList();
     }
@@ -53,19 +53,4 @@ public class CategoryService {
         return getCategoryDtos(categories);
     }
 
-    @Builder
-    public record CategoryDto(
-            Long id,
-            String categoryName
-    ) {
-        public static List<CategoryDto> from(final List<Category> categories) {
-            return categories.stream()
-                    .map(category -> CategoryDto.builder()
-                            .id(category.getId())
-                            .categoryName(category.getName())
-                            .build())
-                    .toList();
-        }
-
-    }
 }

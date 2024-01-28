@@ -2,7 +2,8 @@ package com.drrr.category.controller;
 
 import com.drrr.category.dto.CategoryRequest;
 import com.drrr.category.service.impl.ExternalCategoryService;
-import com.drrr.domain.category.service.CategoryService.CategoryDto;
+import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,6 +34,7 @@ public class CategoryController {
     private final ExternalCategoryService externalCategoryService;
     private final ExternalMemberPreferredCategoryModificationService modificationService;
     private final JwtProvider jwtProvider;
+    private final CategoryRepository categoryRepository;
 
     @Operation(summary = "모든 카테고리를 가져오는 API", description = "호출 성공 시 모든 카테고리 정보 반환")
     @GetMapping("/categories")
@@ -47,6 +49,20 @@ public class CategoryController {
     @GetMapping("/categories/selection")
     public List<CategoryDto> findSelectedCategory(@NotNull @RequestParam("ids") final List<Long> categoryIds) {
         return externalCategoryService.execute(categoryIds);
+    }
+
+    @Operation(summary = "특정 카테고리를 가져오는 API", description = "호출 성공 시 body 안에 명시한 카테고리 정보 반환 - 올림차순 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "body 안에 명시한 카테고리 정보 반환 - 올림차순", content = @Content(schema = @Schema(implementation = CategoryDto.class)))
+    })
+    @GetMapping("/categories/member/{memberId}")
+    public List<CategoryDto> findMemberCategory(@NotNull @PathVariable("memberId") final Long memberId) {
+        return categoryRepository.findCategoriesByMemberId(memberId)
+                .stream().map(category -> CategoryDto.builder()
+                        .id(category.id())
+                        .name(category.name())
+                        .build())
+                .toList();
     }
 
 
@@ -67,7 +83,7 @@ public class CategoryController {
                     @Parameter(name = "count", description = "탑 카테고리 개수", in = ParameterIn.PATH, schema = @Schema(type = "Long"))
             })
     @GetMapping("/top/categories/{count}")
-    public List<CategoryDto> findTopCategories(@PathVariable("count") @NotNull final Long count) {
+    public List<CategoryDto> findTopCategories(@NotNull @PathVariable("count") @NotNull final Long count) {
         return externalCategoryService.execute(count);
     }
 }

@@ -3,9 +3,9 @@ package com.drrr.category;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
-import com.drrr.domain.category.service.CategoryService.CategoryDto;
 import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.util.DatabaseCleaner;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -84,7 +84,7 @@ public class CategoryE2ETest {
         assertThat(categories.size()).isEqualTo(categoryDtos.size());
         assertThat(categories)
                 .zipSatisfy(categoryDtos, (actual, expected) -> {
-                    assertThat(actual.getName()).isEqualTo(expected.categoryName());
+                    assertThat(actual.getName()).isEqualTo(expected.name());
                     // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
                 });
     }
@@ -117,7 +117,7 @@ public class CategoryE2ETest {
         assertThat(categories.size()).isEqualTo(categoryDtos.size());
         assertThat(categories)
                 .zipSatisfy(categoryDtos, (actual, expected) -> {
-                    assertThat(actual.getName()).isEqualTo(expected.categoryName());
+                    assertThat(actual.getName()).isEqualTo(expected.name());
                     // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
                 });
     }

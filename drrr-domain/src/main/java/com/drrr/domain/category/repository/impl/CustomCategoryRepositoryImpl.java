@@ -3,8 +3,10 @@ package com.drrr.domain.category.repository.impl;
 import static com.drrr.domain.category.entity.QCategory.category;
 import static com.drrr.domain.category.entity.QCategoryWeight.categoryWeight;
 
+import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CustomCategoryRepository;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -23,6 +25,17 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
         return queryFactory.select(category)
                 .from(category)
                 .where(category.id.in(ids))
+                .fetch();
+    }
+
+    @Override
+    public List<CategoryDto> findCategoriesByMemberId(Long memberId) {
+        return queryFactory.select(Projections.constructor(CategoryDto.class, category.id, category.name))
+                .from(category)
+                .innerJoin(categoryWeight)
+                .on(category.id.eq(categoryWeight.category.id), categoryWeight.member.id.eq(memberId),
+                        categoryWeight.preferred.eq(true))
+                .orderBy(category.name.asc())
                 .fetch();
     }
 
