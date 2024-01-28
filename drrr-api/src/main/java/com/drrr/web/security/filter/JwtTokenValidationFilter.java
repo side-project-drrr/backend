@@ -61,10 +61,11 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             SecurityContextHolder.getContext().setAuthentication(auth);
-            filterChain.doFilter(request, response);
         } catch (Exception e) {
             returnErrorResponse(response, ApiExceptionCode.JWT_UNAUTHORIZED);
         }
+
+        filterChain.doFilter(request, response);
     }
 
     private void returnErrorResponse(
