@@ -15,6 +15,9 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -34,10 +38,15 @@ public class TechBlogPostController {
     private final ExternalTechBlogPostService externalTechBlogPostService;
     private final ExternalTechBlogPostLikeService externalTechBlogPostLikeService;
 
-    @Operation(summary = "모든 기술 블로그를 가져오는 API", description = "호출 성공 시 모든 기술 블로그 정보 반환")
+    @Operation(summary = "모든 기술 블로그를 가져오는 API", description = "호출 성공 시 모든 기술 블로그 정보 반환 [ page 값은 0부터 시작, "
+            + "size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정, direction은 오름차순(ASC), 내림차순(DESC)")
     @GetMapping("/posts")
-    public List<TechBlogPostOuterDto> findAllPosts() {
-        return externalTechBlogPostService.execute();
+    public Slice<TechBlogPostOuterDto> findAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
+                                                    @RequestParam(value = "size", defaultValue = "10") int size,
+                                                    @RequestParam(value = "sort", defaultValue = "createdAt") String sort,
+                                                    @RequestParam(value = "direction", defaultValue = "DESC") Sort.Direction direction) {
+        return externalTechBlogPostService.execute(
+                PageRequest.of(page, size, Sort.by(direction, sort)));
     }
 
     @Operation(summary = "특정 카테고리에 해당하는 기술블로그를 가져오는 API", description = "호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 정보 반환")

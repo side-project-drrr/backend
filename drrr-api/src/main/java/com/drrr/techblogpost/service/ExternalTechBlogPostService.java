@@ -10,6 +10,8 @@ import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -19,8 +21,8 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostLikeService techBlogPostLikeService;
     private final RedisTechBlogPostService redisTechBlogPostService;
 
-    public List<TechBlogPostOuterDto> execute() {
-        return techBlogPostService.findAllPostsOuter();
+    public Slice<TechBlogPostOuterDto> execute(final Pageable pageable) {
+        return techBlogPostService.findAllPostsOuter(pageable);
     }
 
     public List<TechBlogPostOuterDto> execute(final Long categoryId) {
