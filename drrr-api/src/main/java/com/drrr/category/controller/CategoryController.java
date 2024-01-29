@@ -9,6 +9,7 @@ import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,24 +37,30 @@ public class CategoryController {
     private final JwtProvider jwtProvider;
     private final CategoryRepository categoryRepository;
 
-    @Operation(summary = "모든 카테고리를 가져오는 API", description = "호출 성공 시 모든 카테고리 정보 반환")
+    @Operation(summary = "모든 카테고리를 가져오는 API - 올림차순 반환", description = "호출 성공 시 모든 카테고리 정보 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "현재 존재하는 모든 카테고리 정보를 반환함",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
+    })
     @GetMapping("/categories")
     public List<CategoryDto> findAllCategory() {
         return externalCategoryService.execute();
     }
 
-    @Operation(summary = "특정 카테고리를 가져오는 API", description = "호출 성공 시 body 안에 명시한 카테고리 정보 반환 - 올림차순 반환")
+    @Operation(summary = "특정 카테고리를 가져오는 API - 올림차순 반환", description = "호출 성공 시 카테고리 정보 반환 사용 예시) /categories/selection?categoryIds=1,2,3")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "body 안에 명시한 카테고리 정보 반환 - 올림차순", content = @Content(schema = @Schema(implementation = CategoryDto.class)))
+            @ApiResponse(responseCode = "200", description = "request로 넘겨준 category ids에 해당하는 카테고리 정보 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
     })
     @GetMapping("/categories/selection")
     public List<CategoryDto> findSelectedCategory(@NotNull @RequestParam("ids") final List<Long> categoryIds) {
         return externalCategoryService.execute(categoryIds);
     }
 
-    @Operation(summary = "특정 카테고리를 가져오는 API", description = "호출 성공 시 body 안에 명시한 카테고리 정보 반환 - 올림차순 반환")
+    @Operation(summary = "사용자의 선호 카테고리를 가져오는 API - 올림차순 반환", description = "사용자의 선호 카테고리 정보 반환")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "body 안에 명시한 카테고리 정보 반환 - 올림차순", content = @Content(schema = @Schema(implementation = CategoryDto.class)))
+            @ApiResponse(responseCode = "200", description = "사용자의 선호 카테고리 정보 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
     })
     @GetMapping("/categories/member/{memberId}")
     public List<CategoryDto> findMemberCategory(@NotNull @PathVariable("memberId") final Long memberId) {
@@ -78,10 +85,14 @@ public class CategoryController {
         modificationService.execute(memberId, request.categoryIds());
     }
 
-    @Operation(summary = "사용자가 가장 많이 선호하는 top 카테고리들을 가져오는 API(가장 선호도가 많은 카테고리순, 내림차순)", description = "호출 성공 시 사용자가 선호하는 카테고리들 반환 - 올림차순 반환",
+    @Operation(summary = "사용자가 가장 많이 선호하는 top 카테고리들을 가져오는 API - 인기 카테고리 순", description = "호출 성공 시 사용자가 선호하는 카테고리들 반환 - 올림차순 반환",
             parameters = {
                     @Parameter(name = "count", description = "탑 카테고리 개수", in = ParameterIn.PATH, schema = @Schema(type = "Long"))
             })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "모든 사용자가 선호하는 카테고리 중 가장 많이 선호하는 카테고리 순으로 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
+    })
     @GetMapping("/top/categories/{count}")
     public List<CategoryDto> findTopCategories(@NotNull @PathVariable("count") @NotNull final Long count) {
         return externalCategoryService.execute(count);
