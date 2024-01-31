@@ -7,7 +7,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -39,8 +38,8 @@ public class TemporalTechBlogPost extends BaseEntity {
     // 설명이 없는 기술블로그가 있음
     @Column(length = 1000)
     private String summary;
-
-    @Lob
+    
+    @Column(columnDefinition = "TEXT")
     private String aiSummary;
 
     @Column(nullable = false)
