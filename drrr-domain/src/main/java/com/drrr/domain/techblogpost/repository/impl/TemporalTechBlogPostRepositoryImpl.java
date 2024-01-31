@@ -34,11 +34,13 @@ public class TemporalTechBlogPostRepositoryImpl implements CustomTemporalTechBlo
     }
 
     private BooleanExpression betweenBy(final DateRangeBound rangeBound) {
-        return generateNullCondition(rangeBound, () -> temporalTechBlogPost.crawledDate.between(rangeBound.getStartDate(), rangeBound.getLastDate()));
+        return generateNullCondition(rangeBound,
+                () -> temporalTechBlogPost.crawledDate.between(rangeBound.getStartDate(), rangeBound.getLastDate()));
     }
 
     private BooleanExpression isRegistrationCompleted(final Boolean assignTagCompleted) {
-        return generateNullCondition(assignTagCompleted, () -> temporalTechBlogPost.registrationCompleted.eq(assignTagCompleted));
+        return generateNullCondition(assignTagCompleted,
+                () -> temporalTechBlogPost.registrationCompleted.eq(assignTagCompleted));
     }
 
     private BooleanExpression startsWithTitle(final String title) {
@@ -63,7 +65,8 @@ public class TemporalTechBlogPostRepositoryImpl implements CustomTemporalTechBlo
     }
 
     @Override
-    public Page<TemporalTechBlogPost> findBy(SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto, Pageable pageable) {
+    public Page<TemporalTechBlogPost> findBy(SearchTemporaryTechBlogPostDto searchTemporaryTechBlogPostDto,
+                                             Pageable pageable) {
         final var techBlogPosts = queryFactory.select(temporalTechBlogPost)
                 .from(temporalTechBlogPost)
                 .leftJoin(temporalTechBlogPost.temporalTechPostTags, temporalTechPostTag).fetchJoin()
@@ -76,6 +79,7 @@ public class TemporalTechBlogPostRepositoryImpl implements CustomTemporalTechBlo
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy(temporalTechBlogPost.techBlogCode.asc(), temporalTechBlogPost.writtenAt.desc())
                 .fetch();
 
         final var countQuery = queryFactory.select(temporalTechBlogPost.count())
