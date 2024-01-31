@@ -2,6 +2,7 @@ package com.drrr.reader;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPosts;
+import com.drrr.reader.impl.DevOceanCrawlerItemReader;
 import com.drrr.reader.impl.KakaoCrawlerItemReader;
 import com.drrr.reader.impl.MarketKurlyItemReader;
 import com.drrr.reader.impl.NaverCrawlerItemReader;
@@ -30,6 +31,7 @@ public class CrawlerItemReaderFactory {
             case MARKET_KURLY -> MarketKurlyItemReader::new;
             case NAVER -> NaverCrawlerItemReader::new;
             case KAKAO -> KakaoCrawlerItemReader::new;
+            case DEVOCEAN -> DevOceanCrawlerItemReader::new;
         };
     }
 }
