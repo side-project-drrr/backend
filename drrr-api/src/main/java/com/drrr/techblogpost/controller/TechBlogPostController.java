@@ -40,6 +40,10 @@ public class TechBlogPostController {
 
     @Operation(summary = "모든 기술 블로그를 가져오는 API", description = "호출 성공 시 모든 기술 블로그 정보 반환 [ page 값은 0부터 시작, "
             + "size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정, direction은 오름차순(ASC), 내림차순(DESC)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "query param에 담긴 정보를 기반으로 기술 블로그의 기본 정보를 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostOuterDto.class))))
+    })
     @GetMapping("/posts")
     public Slice<TechBlogPostOuterDto> findAllPosts(@RequestParam(value = "page", defaultValue = "0") int page,
                                                     @RequestParam(value = "size", defaultValue = "10") int size,
@@ -49,9 +53,10 @@ public class TechBlogPostController {
                 PageRequest.of(page, size, Sort.by(direction, sort)));
     }
 
-    @Operation(summary = "특정 카테고리에 해당하는 기술블로그를 가져오는 API", description = "호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 정보 반환")
+    @Operation(summary = "특정 카테고리에 해당하는 기술블로그의 기본정보를 가져오는 API", description = "호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "특정 카테고리 id에 해당하는 기술 블로그 정보 반환", content = @Content(schema = @Schema(implementation = TechBlogPostOuterDto.class)))
+            @ApiResponse(responseCode = "200", description = "호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostOuterDto.class))))
     })
     @GetMapping("/posts/category/{id}")
     public List<TechBlogPostOuterDto> findPostsByCategory(@NotNull @PathVariable("id") final Long id) {
