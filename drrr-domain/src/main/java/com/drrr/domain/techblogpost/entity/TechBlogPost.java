@@ -10,7 +10,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Lob;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -39,7 +38,7 @@ public class TechBlogPost extends BaseEntity {
     @Column(length = 1000)
     private String summary;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String aiSummary;
 
     @Column(nullable = false)
