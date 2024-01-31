@@ -6,7 +6,6 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -21,17 +20,15 @@ public class EmailConsumer {
     private final JavaMailSender javaMailSender;
 
     @KafkaListener(topics = "alarm-email", groupId = "group_email", containerFactory = "kafkaEmailListenerContainerFactory")
-    public void consumePush(final PushMessage message, Acknowledgment ack) {
+    public void consumePush(final PushMessage message) {
         MimeMessage mimeMessage = buildMessage(message);
         javaMailSender.send(mimeMessage);
-        ack.acknowledge();
     }
 
     @KafkaListener(topics = "verification-email", groupId = "group_email", containerFactory = "kafkaEmailListenerContainerFactory")
-    public void consumeVerification(final PushMessage message, Acknowledgment ack) {
+    public void consumeVerification(final PushMessage message) {
         MimeMessage mimeMessage = buildMessage(message);
         javaMailSender.send(mimeMessage);
-        ack.acknowledge();
     }
 
     private MimeMessage buildMessage(final PushMessage message) {

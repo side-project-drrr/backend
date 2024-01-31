@@ -2,6 +2,7 @@ package com.drrr.infra.notifications.kafka.config;
 
 
 import com.drrr.infra.notifications.kafka.webpush.dto.NotificationDto;
+import com.drrr.infra.push.entity.PushMessage;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -42,12 +43,29 @@ public class KafkaConsumerConfig {
         return prop;
     }
 
+    //ConsumerFactory는 KafkaConsumer를 생성하는 팩토리 클래스
+    //PushMessage를 받는 ConsumerFactory
+    //String은 Kafka의 key를 의미
+    //PushMessage는 Kafka의 value를 의미
+    //JsonDeserializer는 Kafka의 value를 Json으로 deserialize하는 클래스
     @Bean
-    public ConsumerFactory<String, com.drrr.infra.push.entity.PushMessage> consumerEmailFactory() {
-        final JsonDeserializer<com.drrr.infra.push.entity.PushMessage> deserializer = getDeserializer(
-                new JsonDeserializer<>(com.drrr.infra.push.entity.PushMessage.class));
+    public ConsumerFactory<String, PushMessage> consumerEmailFactory() {
+        final JsonDeserializer<PushMessage> deserializer = getDeserializer(
+                new JsonDeserializer<>(PushMessage.class));
         final Map<String, Object> prop = getProp(deserializer);
 
+        return new DefaultKafkaConsumerFactory<>(
+                prop,
+                new StringDeserializer(),
+                deserializer);
+    }
+
+    @Bean
+    public ConsumerFactory<String, NotificationDto> consumerWebPushFactory() {
+
+        final JsonDeserializer<NotificationDto> deserializer = getDeserializer(
+                new JsonDeserializer<>(NotificationDto.class, false));
+        final Map<String, Object> prop = getProp(deserializer);
         return new DefaultKafkaConsumerFactory<>(
                 prop,
                 new StringDeserializer(),
@@ -70,25 +88,13 @@ public class KafkaConsumerConfig {
      * 데 도움이 됨
      */
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, com.drrr.infra.push.entity.PushMessage> kafkaEmailListenerContainerFactory() {
-        final ConcurrentKafkaListenerContainerFactory<String, com.drrr.infra.push.entity.PushMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, PushMessage> kafkaEmailListenerContainerFactory() {
+        final ConcurrentKafkaListenerContainerFactory<String, PushMessage> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerEmailFactory());
         factory.setCommonErrorHandler(kafkaConfig.errorHandler());
         return factory;
     }
 
-
-    @Bean
-    public ConsumerFactory<String, NotificationDto> consumerWebPushFactory() {
-
-        final JsonDeserializer<NotificationDto> deserializer = getDeserializer(
-                new JsonDeserializer<>(NotificationDto.class, false));
-        final Map<String, Object> prop = getProp(deserializer);
-        return new DefaultKafkaConsumerFactory<>(
-                prop,
-                new StringDeserializer(),
-                deserializer);
-    }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, NotificationDto> kafkaWebPushListenerContainerFactory() {
