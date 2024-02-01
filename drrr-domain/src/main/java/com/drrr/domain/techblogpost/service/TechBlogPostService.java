@@ -31,13 +31,13 @@ public class TechBlogPostService {
         return posts.map(TechBlogPostOuterDto::from);
     }
 
-    public List<TechBlogPost> findPostsByCategory(final Long postId) {
-        final List<TechBlogPost> posts = techBlogPostRepository.findPostsByCategory(postId);
-        if (posts.isEmpty()) {
+    public Slice<TechBlogPostOuterDto> findPostsByCategory(final Long categoryId, final Pageable pageable) {
+        Slice<TechBlogPostOuterDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId, pageable);
+        if (postsByCategory.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return posts;
+        return postsByCategory;
     }
 
     public List<TechBlogPostOuterDto> findTopLikePost(final int count) {

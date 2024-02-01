@@ -7,11 +7,12 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
-import java.util.List;
+import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -21,21 +22,17 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostLikeService techBlogPostLikeService;
     private final RedisTechBlogPostService redisTechBlogPostService;
 
-    public Slice<TechBlogPostOuterDto> execute(final Pageable pageable) {
-        return techBlogPostService.findAllPostsOuter(pageable);
+    public Slice<TechBlogPostOuterDto> execute(final TechBlogPostSliceRequest request) {
+        PageRequest pageRequest = PageRequest.of(request.page(), request.size(),
+                Sort.by(request.direction(), request.sort()));
+        return techBlogPostService.findAllPostsOuter(pageRequest);
     }
 
-    public List<TechBlogPostOuterDto> execute(final Long categoryId) {
-        final List<TechBlogPost> postsByCategoryIdInRedis = redisTechBlogPostService.findPostsByCategoryIdInRedis(
-                categoryId);
+    public Slice<TechBlogPostOuterDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
+        PageRequest pageRequest = PageRequest.of(request.page(), request.size(),
+                Sort.by(request.direction(), request.sort()));
 
-        //redis에서 가져온 데이터가 null인 경우
-        if (Objects.isNull(postsByCategoryIdInRedis)) {
-            List<TechBlogPost> postsByCategory = techBlogPostService.findPostsByCategory(categoryId);
-            redisTechBlogPostService.saveCategoryPostsInRedis(categoryId, postsByCategory);
-            return TechBlogPostOuterDto.from(postsByCategory);
-        }
-        return TechBlogPostOuterDto.from(postsByCategoryIdInRedis);
+        return techBlogPostService.findPostsByCategory(categoryId, pageRequest);
     }
 
     public void execute(final TechBlogPostLikeDto request, final String type) {
@@ -56,4 +53,5 @@ public class ExternalTechBlogPostService {
         TechBlogPost post = techBlogPostService.findTechBlogPostsById(postId);
         return TechBlogPostInnerDto.from(post);
     }
+
 }
