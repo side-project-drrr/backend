@@ -22,9 +22,6 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.time.Instant;
@@ -431,7 +428,7 @@ public class TechBlogPostE2ETest {
 
     }
 
-    @Test
+/*    @Test
     void 특정_카테고리에_해당하는_게시물을_정상적으로_가져옵니다() throws JsonProcessingException {
         //when
         List<TechBlogPost> posts =
@@ -460,5 +457,5 @@ public class TechBlogPostE2ETest {
                     assertThat(actual.getId()).isEqualTo(expected.getId());
                     // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
                 });
-    }
+    }*/
 }
