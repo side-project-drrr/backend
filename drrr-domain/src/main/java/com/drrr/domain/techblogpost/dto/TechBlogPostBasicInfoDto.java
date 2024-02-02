@@ -20,7 +20,8 @@ public record TechBlogPostBasicInfoDto(
 
 ) {
     @QueryProjection
-    public TechBlogPostBasicInfoDto(Long id, String title, String summary, TechBlogCode techBlogCode, String thumbnailUrl,
+    public TechBlogPostBasicInfoDto(Long id, String title, String summary, TechBlogCode techBlogCode,
+                                    String thumbnailUrl,
                                     int viewCount, int postLike, LocalDate writtenAt) {
         this.id = id;
         this.title = title;
@@ -59,4 +60,5 @@ public record TechBlogPostBasicInfoDto(
                 .writtenAt(post.getWrittenAt())
                 .build();
     }
+
 }

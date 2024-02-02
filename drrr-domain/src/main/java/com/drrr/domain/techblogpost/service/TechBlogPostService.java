@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public Slice<TechBlogPostBasicInfoDto> findAllPostsOuter(final Pageable pageable) {
-        Slice<TechBlogPost> posts = techBlogPostRepository.findBy(pageable);
+    public Slice<TechBlogPostBasicInfoDto> findAllPostsBasic(final Pageable pageable) {
+        final Slice<TechBlogPost> posts = techBlogPostRepository.findBy(pageable);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
@@ -32,7 +32,8 @@ public class TechBlogPostService {
     }
 
     public Slice<TechBlogPostBasicInfoDto> findPostsByCategory(final Long categoryId, final Pageable pageable) {
-        Slice<TechBlogPostBasicInfoDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId, pageable);
+        final Slice<TechBlogPostBasicInfoDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId,
+                pageable);
         if (postsByCategory.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
