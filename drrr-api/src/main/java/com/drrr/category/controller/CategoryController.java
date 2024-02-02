@@ -1,6 +1,7 @@
 package com.drrr.category.controller;
 
 import com.drrr.category.dto.CategoryRequest;
+import com.drrr.category.request.CategorySliceRequest;
 import com.drrr.category.service.impl.ExternalCategoryService;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.repository.CategoryRepository;
@@ -18,6 +19,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,8 +45,8 @@ public class CategoryController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
     })
     @GetMapping("/categories")
-    public List<CategoryDto> findAllCategory() {
-        return externalCategoryService.execute();
+    public Slice<CategoryDto> findAllCategory(@RequestBody final CategorySliceRequest request) {
+        return externalCategoryService.execute(request);
     }
 
     @Operation(summary = "특정 카테고리를 가져오는 API - 올림차순 반환", description = "호출 성공 시 카테고리 정보 반환 사용 예시) /categories/selection?categoryIds=1,2,3")
