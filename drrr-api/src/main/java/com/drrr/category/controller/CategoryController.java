@@ -2,6 +2,7 @@ package com.drrr.category.controller;
 
 import com.drrr.category.dto.CategoryRequest;
 import com.drrr.category.service.impl.ExternalCategoryService;
+import com.drrr.category.service.impl.ExternalFindCategoryService;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
@@ -34,8 +35,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryController {
     private final ExternalCategoryService externalCategoryService;
     private final ExternalMemberPreferredCategoryModificationService modificationService;
+    private final ExternalFindCategoryService externalFindCategoryService;
     private final JwtProvider jwtProvider;
     private final CategoryRepository categoryRepository;
+
+    @Operation(summary = "특정 기술 블로그에 해당하는 카테고리 정보를 가져오는 API - 올림차순 반환", description = "호출 성공 시 특정 블로그에 해당하는 카테고리 정보 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "카테고리 정보를 반환함",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
+    })
+    @GetMapping("/categories/post/{postId}")
+    public List<CategoryDto> findPostCategories(@PathVariable("postId") final Long postId) {
+        return externalFindCategoryService.execute(postId);
+    }
 
     @Operation(summary = "모든 카테고리를 가져오는 API - 올림차순 반환", description = "호출 성공 시 모든 카테고리 정보 반환")
     @ApiResponses(value = {
