@@ -1,7 +1,7 @@
 package com.drrr.techblogpost.controller;
 
-import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
 import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
 import com.drrr.techblogpost.service.ExternalTechBlogPostLikeService;
@@ -31,8 +31,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class TechBlogPostController {
-    private final String ADD = "ADD";
-    private final String DELETE = "REMOVE";
+    private static final String ADD = "ADD";
+    private static final String DELETE = "REMOVE";
     private final ExternalTechBlogPostService externalTechBlogPostService;
     private final ExternalTechBlogPostLikeService externalTechBlogPostLikeService;
 

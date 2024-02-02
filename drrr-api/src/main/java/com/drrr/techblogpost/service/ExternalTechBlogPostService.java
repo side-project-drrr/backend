@@ -1,8 +1,8 @@
 package com.drrr.techblogpost.service;
 
 import com.drrr.domain.like.service.TechBlogPostLikeService;
-import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
@@ -23,14 +23,14 @@ public class ExternalTechBlogPostService {
     private final RedisTechBlogPostService redisTechBlogPostService;
 
     public Slice<TechBlogPostBasicInfoDto> execute(final TechBlogPostSliceRequest request) {
-        PageRequest pageRequest = PageRequest.of(request.page(), request.size(),
-                Sort.by(request.direction(), request.sort()));
+        final Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSort());
+        final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
         return techBlogPostService.findAllPostsOuter(pageRequest);
     }
 
     public Slice<TechBlogPostBasicInfoDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
-        PageRequest pageRequest = PageRequest.of(request.page(), request.size(),
-                Sort.by(request.direction(), request.sort()));
+        final Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSort());
+        final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         return techBlogPostService.findPostsByCategory(categoryId, pageRequest);
     }
