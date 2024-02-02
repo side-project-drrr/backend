@@ -1,5 +1,6 @@
 package com.drrr.techblogpost.controller;
 
+import com.drrr.core.techblogpost.constant.ProcessConstants;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
@@ -31,8 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class TechBlogPostController {
-    private static final String ADD = "ADD";
-    private static final String DELETE = "REMOVE";
     private final ExternalTechBlogPostService externalTechBlogPostService;
     private final ExternalTechBlogPostLikeService externalTechBlogPostLikeService;
 
@@ -72,14 +71,14 @@ public class TechBlogPostController {
     @Secured("USER")
     @PostMapping("/post/like")
     public void addPostLike(@RequestBody @NotNull final TechBlogPostLikeDto request) {
-        externalTechBlogPostService.execute(request, ADD);
+        externalTechBlogPostService.execute(request, ProcessConstants.ADD);
     }
 
     @Operation(summary = "사용자가 기술 블로그에 좋아요 해제할 때 사용하는 api - [JWT TOKEN REQUIRED]", description = "호출 성공 시 게시물 좋아요 감소")
     @Secured("USER")
     @DeleteMapping("/post/like")
     public void deletePostLike(@RequestBody @NotNull final TechBlogPostLikeDto request) {
-        externalTechBlogPostService.execute(request, DELETE);
+        externalTechBlogPostService.execute(request, ProcessConstants.DELETE);
     }
 
     @Operation(summary = "조회수가 가장 높은 기술 블로그를 반환 api", description = "호출 성공 시 넘겨준 개수만큼 조회수가 가장 높은 기술 블로그 반환")

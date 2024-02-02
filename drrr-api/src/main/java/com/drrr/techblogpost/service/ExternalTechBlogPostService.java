@@ -1,5 +1,6 @@
 package com.drrr.techblogpost.service;
 
+import com.drrr.core.techblogpost.constant.ProcessConstants;
 import com.drrr.domain.like.service.TechBlogPostLikeService;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
@@ -25,7 +26,8 @@ public class ExternalTechBlogPostService {
     public Slice<TechBlogPostBasicInfoDto> execute(final TechBlogPostSliceRequest request) {
         final Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSort());
         final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
-        return techBlogPostService.findAllPostsOuter(pageRequest);
+
+        return techBlogPostService.findAllPostsBasic(pageRequest);
     }
 
     public Slice<TechBlogPostBasicInfoDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
@@ -35,8 +37,8 @@ public class ExternalTechBlogPostService {
         return techBlogPostService.findPostsByCategory(categoryId, pageRequest);
     }
 
-    public void execute(final TechBlogPostLikeDto request, final String type) {
-        if ("ADD".equals(type)) {
+    public void execute(final TechBlogPostLikeDto request, final ProcessConstants type) {
+        if (type.equals(ProcessConstants.ADD)) {
             techBlogPostLikeService.addPostLike(request.memberId(), request.postId());
         } else {
             techBlogPostLikeService.deletePostLike(request.memberId(), request.postId());
