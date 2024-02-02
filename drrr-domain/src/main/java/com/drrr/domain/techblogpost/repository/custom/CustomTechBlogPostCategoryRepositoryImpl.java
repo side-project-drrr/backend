@@ -6,7 +6,7 @@ import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlog
 import com.drrr.core.recommandation.constant.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
-import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.StringExpression;
@@ -87,10 +87,10 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
     }
 
     @Override
-    public List<TechBlogPostOuterDto> getUniquePostsByCategoryIds(final List<Long> categoryIds) {
+    public List<TechBlogPostBasicInfoDto> getUniquePostsByCategoryIds(final List<Long> categoryIds) {
         StringExpression formattedDate = Expressions.stringTemplate("FUNCTION('DATE_FORMAT', {0}, '%Y-%m-%d')"
                 , techBlogPost.createdAt);
-        return queryFactory.select(Projections.constructor(TechBlogPostOuterDto.class
+        return queryFactory.select(Projections.constructor(TechBlogPostBasicInfoDto.class
                         , techBlogPost.id
                         , techBlogPost.title
                         , techBlogPost.summary

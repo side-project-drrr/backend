@@ -5,7 +5,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import lombok.Builder;
 
 @Builder
-public record TechBlogPostInnerDto(
+public record TechBlogPostDetailedInfoDto(
         Long id,
         String title,
         TechBlogCode techBlogCode,
@@ -13,8 +13,8 @@ public record TechBlogPostInnerDto(
         String aiSummary,
         String url
 ) {
-    public static TechBlogPostInnerDto from(final TechBlogPost post){
-        return TechBlogPostInnerDto.builder()
+    public static TechBlogPostDetailedInfoDto from(final TechBlogPost post){
+        return TechBlogPostDetailedInfoDto.builder()
                 .aiSummary(post.getAiSummary())
                 .techBlogCode(post.getTechBlogCode())
                 .id(post.getId())

@@ -4,7 +4,7 @@ import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
-import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.CustomTechBlogPostRepository;
 import com.querydsl.core.types.Projections;
@@ -37,8 +37,8 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @Override
-    public Slice<TechBlogPostOuterDto> findPostsByCategory(Long categoryId, Pageable pageable) {
-        List<TechBlogPostOuterDto> content = queryFactory.select(Projections.constructor(TechBlogPostOuterDto.class
+    public Slice<TechBlogPostBasicInfoDto> findPostsByCategory(Long categoryId, Pageable pageable) {
+        List<TechBlogPostBasicInfoDto> content = queryFactory.select(Projections.constructor(TechBlogPostBasicInfoDto.class
                         , techBlogPost.id
                         , techBlogPost.title
                         , techBlogPost.summary

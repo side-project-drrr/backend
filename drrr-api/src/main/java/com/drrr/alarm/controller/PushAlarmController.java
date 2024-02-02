@@ -3,7 +3,7 @@ package com.drrr.alarm.controller;
 import com.drrr.alarm.service.impl.ExternalMemberSubscriptionService;
 import com.drrr.alarm.service.impl.ExternalMemberWebPushPostsService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
-import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,7 +58,7 @@ public class PushAlarmController {
     }
 
     @GetMapping("/web/push/subscription/member")
-    public List<TechBlogPostOuterDto> findMemberWebPushPosts() {
+    public List<TechBlogPostBasicInfoDto> findMemberWebPushPosts() {
         final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         return externalMemberWebPushPostsService.execute(memberId);
     }

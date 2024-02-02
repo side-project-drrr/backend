@@ -1,8 +1,8 @@
 package com.drrr.techblogpost.service;
 
 import com.drrr.domain.like.service.TechBlogPostLikeService;
-import com.drrr.domain.techblogpost.dto.TechBlogPostInnerDto;
-import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
@@ -22,13 +22,13 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostLikeService techBlogPostLikeService;
     private final RedisTechBlogPostService redisTechBlogPostService;
 
-    public Slice<TechBlogPostOuterDto> execute(final TechBlogPostSliceRequest request) {
+    public Slice<TechBlogPostBasicInfoDto> execute(final TechBlogPostSliceRequest request) {
         PageRequest pageRequest = PageRequest.of(request.page(), request.size(),
                 Sort.by(request.direction(), request.sort()));
         return techBlogPostService.findAllPostsOuter(pageRequest);
     }
 
-    public Slice<TechBlogPostOuterDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
+    public Slice<TechBlogPostBasicInfoDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
         PageRequest pageRequest = PageRequest.of(request.page(), request.size(),
                 Sort.by(request.direction(), request.sort()));
 
@@ -43,15 +43,15 @@ public class ExternalTechBlogPostService {
         }
     }
 
-    public TechBlogPostInnerDto executeFindPostDetail(final Long postId) {
+    public TechBlogPostDetailedInfoDto executeFindPostDetail(final Long postId) {
         TechBlogPost postByIdInRedis = redisTechBlogPostService.findPostByIdInRedis(postId);
 
         if (!Objects.isNull(postByIdInRedis)) {
-            return TechBlogPostInnerDto.from(postByIdInRedis);
+            return TechBlogPostDetailedInfoDto.from(postByIdInRedis);
         }
 
         TechBlogPost post = techBlogPostService.findTechBlogPostsById(postId);
-        return TechBlogPostInnerDto.from(post);
+        return TechBlogPostDetailedInfoDto.from(post);
     }
 
 }
