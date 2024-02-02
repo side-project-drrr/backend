@@ -1,4 +1,4 @@
-package com.drrr.core.recommandation.constant.constant;
+package com.drrr.core.recommandation.constant;
 
 import lombok.Getter;
 

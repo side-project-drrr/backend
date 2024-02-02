@@ -3,8 +3,8 @@ package com.drrr.domain.category.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.drrr.core.code.techblog.TechBlogCode;
-import com.drrr.core.recommandation.constant.constant.HoursConstants;
-import com.drrr.core.recommandation.constant.constant.WeightConstants;
+import com.drrr.core.recommandation.constant.HoursConstants;
+import com.drrr.core.recommandation.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;

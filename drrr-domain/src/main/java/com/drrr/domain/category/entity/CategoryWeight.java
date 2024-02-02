@@ -1,12 +1,12 @@
 package com.drrr.domain.category.entity;
 
-import static com.drrr.core.recommandation.constant.constant.WeightConstants.INCREASE_WEIGHT;
-import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN_CONDITIONAL_WEIGHT;
-import static com.drrr.core.recommandation.constant.constant.WeightConstants.MIN_WEIGHT;
+import static com.drrr.core.recommandation.constant.WeightConstants.INCREASE_WEIGHT;
+import static com.drrr.core.recommandation.constant.WeightConstants.MIN_CONDITIONAL_WEIGHT;
+import static com.drrr.core.recommandation.constant.WeightConstants.MIN_WEIGHT;
 
-import com.drrr.core.recommandation.constant.constant.DaysConstants;
-import com.drrr.core.recommandation.constant.constant.HoursConstants;
-import com.drrr.core.recommandation.constant.constant.WeightConstants;
+import com.drrr.core.recommandation.constant.DaysConstants;
+import com.drrr.core.recommandation.constant.HoursConstants;
+import com.drrr.core.recommandation.constant.WeightConstants;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import com.drrr.domain.member.entity.Member;
 import jakarta.persistence.Entity;

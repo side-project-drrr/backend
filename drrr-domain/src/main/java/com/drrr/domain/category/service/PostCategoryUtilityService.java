@@ -1,6 +1,6 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.recommandation.constant.constant.PostConstants;
+import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
 import java.util.Comparator;
