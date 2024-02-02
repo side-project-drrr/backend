@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public Slice<TechBlogPostBasicInfoDto> findAllPostsOuter(final Pageable pageable) {
+    public Slice<TechBlogPostBasicInfoDto> findAllPostsBasic(final Pageable pageable) {
         final Slice<TechBlogPost> posts = techBlogPostRepository.findBy(pageable);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
