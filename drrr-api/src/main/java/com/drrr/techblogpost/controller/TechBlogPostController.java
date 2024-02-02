@@ -70,6 +70,15 @@ public class TechBlogPostController {
         return externalTechBlogPostService.executeFindPostDetail(id);
     }
 
+    @Operation(summary = "특정 게시물에 대한 상세보기 API", description = "호출 성공 시 특정 게시물에 대한 상세 정보 반환")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "특정 게시물에 대한 상세 정보 반환", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostDetailedInfoDto.class))))
+    })
+    @GetMapping("/post/detail/{id}")
+    public TechBlogPostDetailedInfoDto findPostDetailed(@NotNull @PathVariable("id") final Long id) {
+        return externalTechBlogPostService.executeFindPostDetail(id);
+    }
+
     @Operation(summary = "사용자가 기술 블로그에 좋아요를 누를 때 사용하는 api - [JWT TOKEN REQUIRED]", description = "호출 성공 시 게시물 좋아요 증가")
     @Secured("USER")
     @PostMapping("/post/like")
