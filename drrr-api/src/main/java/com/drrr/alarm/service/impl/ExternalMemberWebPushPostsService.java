@@ -2,7 +2,7 @@ package com.drrr.alarm.service.impl;
 
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.exception.DomainExceptionCode;
-import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class ExternalMemberWebPushPostsService {
     private final CategoryWeightRepository categoryWeightRepository;
     private final TechBlogPostCategoryRepository techBlogPostCategoryRepository;
 
-    public List<TechBlogPostOuterDto> execute(final Long memberId) {
+    public List<TechBlogPostBasicInfoDto> execute(final Long memberId) {
         List<Long> categories = categoryWeightRepository.findCategoryIdsByMemberId(memberId);
         if (categories.isEmpty()) {
             log.error("카테고리가 존재하지 않습니다 -> {}", categories);

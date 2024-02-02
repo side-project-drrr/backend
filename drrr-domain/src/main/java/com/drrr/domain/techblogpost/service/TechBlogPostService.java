@@ -1,7 +1,7 @@
 package com.drrr.domain.techblogpost.service;
 
 import com.drrr.domain.exception.DomainExceptionCode;
-import com.drrr.domain.techblogpost.dto.TechBlogPostOuterDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import java.util.List;
@@ -21,32 +21,32 @@ import org.springframework.transaction.annotation.Transactional;
 public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public Slice<TechBlogPostOuterDto> findAllPostsOuter(final Pageable pageable) {
+    public Slice<TechBlogPostBasicInfoDto> findAllPostsOuter(final Pageable pageable) {
         Slice<TechBlogPost> posts = techBlogPostRepository.findBy(pageable);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
 
-        return posts.map(TechBlogPostOuterDto::from);
+        return posts.map(TechBlogPostBasicInfoDto::from);
     }
 
-    public List<TechBlogPost> findPostsByCategory(final Long postId) {
-        final List<TechBlogPost> posts = techBlogPostRepository.findPostsByCategory(postId);
-        if (posts.isEmpty()) {
+    public Slice<TechBlogPostBasicInfoDto> findPostsByCategory(final Long categoryId, final Pageable pageable) {
+        Slice<TechBlogPostBasicInfoDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId, pageable);
+        if (postsByCategory.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return posts;
+        return postsByCategory;
     }
 
-    public List<TechBlogPostOuterDto> findTopLikePost(final int count) {
+    public List<TechBlogPostBasicInfoDto> findTopLikePost(final int count) {
         final List<TechBlogPost> topPosts = techBlogPostRepository.findTopLikePost(count);
         if (topPosts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return TechBlogPostOuterDto.from(topPosts);
+        return TechBlogPostBasicInfoDto.from(topPosts);
     }
 
     public List<TechBlogPost> findNotCachedTechBlogPosts(final List<TechBlogPost> postsInRedis,

@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record TechBlogPostOuterDto(
+public record TechBlogPostBasicInfoDto(
         Long id,
         String title,
         String summary,
@@ -20,8 +20,8 @@ public record TechBlogPostOuterDto(
 
 ) {
     @QueryProjection
-    public TechBlogPostOuterDto(Long id, String title, String summary, TechBlogCode techBlogCode, String thumbnailUrl,
-                                int viewCount, int postLike, LocalDate writtenAt) {
+    public TechBlogPostBasicInfoDto(Long id, String title, String summary, TechBlogCode techBlogCode, String thumbnailUrl,
+                                    int viewCount, int postLike, LocalDate writtenAt) {
         this.id = id;
         this.title = title;
         this.summary = summary;
@@ -32,9 +32,9 @@ public record TechBlogPostOuterDto(
         this.writtenAt = writtenAt;
     }
 
-    static public List<TechBlogPostOuterDto> from(final List<TechBlogPost> posts) {
+    static public List<TechBlogPostBasicInfoDto> from(final List<TechBlogPost> posts) {
         return posts.stream()
-                .map(post -> TechBlogPostOuterDto.builder()
+                .map(post -> TechBlogPostBasicInfoDto.builder()
                         .title(post.getTitle())
                         .techBlogCode(post.getTechBlogCode())
                         .summary(post.getSummary())
@@ -47,8 +47,8 @@ public record TechBlogPostOuterDto(
                 .toList();
     }
 
-    static public TechBlogPostOuterDto from(final TechBlogPost post) {
-        return TechBlogPostOuterDto.builder()
+    static public TechBlogPostBasicInfoDto from(final TechBlogPost post) {
+        return TechBlogPostBasicInfoDto.builder()
                 .title(post.getTitle())
                 .techBlogCode(post.getTechBlogCode())
                 .summary(post.getSummary())
