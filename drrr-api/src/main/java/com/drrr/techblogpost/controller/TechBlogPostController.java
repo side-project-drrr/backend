@@ -1,10 +1,11 @@
 package com.drrr.techblogpost.controller;
 
-import com.drrr.core.techblogpost.constant.ProcessConstants;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
 import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
+import com.drrr.techblogpost.service.ExternalPostDislikeService;
+import com.drrr.techblogpost.service.ExternalPostLikeService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostLikeService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class TechBlogPostController {
     private final ExternalTechBlogPostService externalTechBlogPostService;
     private final ExternalTechBlogPostLikeService externalTechBlogPostLikeService;
+    private final ExternalPostLikeService externalPostLikeService;
+    private final ExternalPostDislikeService externalPostDislikeService;
 
     @Operation(summary = "모든 기술 블로그를 가져오는 API", description = "호출 성공 시 모든 기술 블로그 정보 반환 [ page 값은 0부터 시작, "
             + "size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정, direction은 오름차순(ASC), 내림차순(DESC)")
@@ -71,14 +74,14 @@ public class TechBlogPostController {
     @Secured("USER")
     @PostMapping("/post/like")
     public void addPostLike(@RequestBody @NotNull final TechBlogPostLikeDto request) {
-        externalTechBlogPostService.execute(request, ProcessConstants.ADD);
+        externalPostLikeService.execute(request);
     }
 
     @Operation(summary = "사용자가 기술 블로그에 좋아요 해제할 때 사용하는 api - [JWT TOKEN REQUIRED]", description = "호출 성공 시 게시물 좋아요 감소")
     @Secured("USER")
     @DeleteMapping("/post/like")
     public void deletePostLike(@RequestBody @NotNull final TechBlogPostLikeDto request) {
-        externalTechBlogPostService.execute(request, ProcessConstants.DELETE);
+        externalPostDislikeService.execute(request);
     }
 
     @Operation(summary = "조회수가 가장 높은 기술 블로그를 반환 api", description = "호출 성공 시 넘겨준 개수만큼 조회수가 가장 높은 기술 블로그 반환")
