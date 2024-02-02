@@ -1,13 +1,11 @@
 package com.drrr.techblogpost.service;
 
-import com.drrr.core.techblogpost.constant.ProcessConstants;
 import com.drrr.domain.like.service.TechBlogPostLikeService;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
-import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
 import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -35,14 +33,6 @@ public class ExternalTechBlogPostService {
         final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         return techBlogPostService.findPostsByCategory(categoryId, pageRequest);
-    }
-
-    public void execute(final TechBlogPostLikeDto request, final ProcessConstants type) {
-        if (type.equals(ProcessConstants.ADD)) {
-            techBlogPostLikeService.addPostLike(request.memberId(), request.postId());
-        } else {
-            techBlogPostLikeService.deletePostLike(request.memberId(), request.postId());
-        }
     }
 
     public TechBlogPostDetailedInfoDto executeFindPostDetail(final Long postId) {
