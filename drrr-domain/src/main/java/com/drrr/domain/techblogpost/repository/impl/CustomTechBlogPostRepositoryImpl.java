@@ -38,15 +38,16 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
 
     @Override
     public Slice<TechBlogPostBasicInfoDto> findPostsByCategory(Long categoryId, Pageable pageable) {
-        List<TechBlogPostBasicInfoDto> content = queryFactory.select(Projections.constructor(TechBlogPostBasicInfoDto.class
-                        , techBlogPost.id
-                        , techBlogPost.title
-                        , techBlogPost.summary
-                        , techBlogPost.techBlogCode
-                        , techBlogPost.thumbnailUrl
-                        , techBlogPost.viewCount
-                        , techBlogPost.postLike
-                        , techBlogPost.writtenAt))
+        List<TechBlogPostBasicInfoDto> content = queryFactory.select(
+                        Projections.constructor(TechBlogPostBasicInfoDto.class
+                                , techBlogPost.id
+                                , techBlogPost.title
+                                , techBlogPost.summary
+                                , techBlogPost.techBlogCode
+                                , techBlogPost.thumbnailUrl
+                                , techBlogPost.viewCount
+                                , techBlogPost.postLike
+                                , techBlogPost.writtenAt))
                 .from(techBlogPostCategory)
                 .leftJoin(techBlogPostCategory.post, techBlogPost)
                 .where(techBlogPostCategory.category.id.eq(categoryId))
@@ -54,11 +55,10 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = queryFactory.select(techBlogPost.id)
+        Long total = queryFactory.select(techBlogPost.count())
                 .from(techBlogPostCategory)
                 .leftJoin(techBlogPostCategory.post, techBlogPost)
-                .where(techBlogPostCategory.category.id.eq(categoryId))
-                .fetchCount();
+                .where(techBlogPostCategory.category.id.eq(categoryId)).fetchOne();
 
         boolean hasNext = (pageable.getOffset() + content.size()) < total;
 
