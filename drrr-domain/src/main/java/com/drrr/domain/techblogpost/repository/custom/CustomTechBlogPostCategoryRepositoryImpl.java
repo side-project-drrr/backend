@@ -3,7 +3,7 @@ package com.drrr.domain.techblogpost.repository.custom;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
-import com.drrr.core.recommandation.constant.constant.PostConstants;
+import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;

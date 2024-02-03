@@ -1,6 +1,6 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.recommandation.constant.constant.WeightConstants;
+import com.drrr.core.recommandation.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;

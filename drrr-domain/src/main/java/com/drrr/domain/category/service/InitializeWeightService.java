@@ -1,13 +1,12 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.recommandation.constant.constant.WeightConstants;
+import com.drrr.core.recommandation.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -29,14 +28,16 @@ public class InitializeWeightService {
         List<Category> categoryList = categoryRepository.findIds(categories);
 
         if (categories.isEmpty()) {
-            log.error("InitializeWeightService Class initializeCategoryWeight(final Long memberId, final List<Long> categories) Method RuntimeException Error");
+            log.error(
+                    "InitializeWeightService Class initializeCategoryWeight(final Long memberId, final List<Long> categories) Method RuntimeException Error");
             throw new RuntimeException(
                     "InitializeWeightService.initializeCategoryWeight() - Cannot find such categories");
         }
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> {
-                    log.error("initializeCategoryWeight(final Long memberId, final List<Long> categories) Method NoSuchElementException Error");
+                    log.error(
+                            "initializeCategoryWeight(final Long memberId, final List<Long> categories) Method NoSuchElementException Error");
                     return new NoSuchElementException(
                             "InitializeWeightService.initializeCategoryWeight() - No Member Weight found with memberId: "
                                     + memberId);
