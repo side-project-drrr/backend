@@ -4,8 +4,10 @@ import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
+import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
-import com.drrr.domain.techblogpost.entity.TechBlogPost;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.repository.CustomTechBlogPostRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 @Repository
 public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepository {
+    private final CategoryRepository categoryRepository;
     private final JPAQueryFactory queryFactory;
 
     public List<Long> recommendRemain(final Long memberId, final int remainedPostCount) {
@@ -37,7 +40,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @Override
-    public Slice<TechBlogPostBasicInfoDto> findPostsByCategory(Long categoryId, Pageable pageable) {
+    public Slice<TechBlogPostCategoryDto> findPostsByCategory(Long categoryId, Pageable pageable) {
         List<TechBlogPostBasicInfoDto> content = queryFactory.select(
                         Projections.constructor(TechBlogPostBasicInfoDto.class
                                 , techBlogPost.id
@@ -47,7 +50,8 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                                 , techBlogPost.thumbnailUrl
                                 , techBlogPost.viewCount
                                 , techBlogPost.postLike
-                                , techBlogPost.writtenAt))
+                                , techBlogPost.writtenAt)
+                )
                 .from(techBlogPostCategory)
                 .leftJoin(techBlogPostCategory.post, techBlogPost)
                 .where(techBlogPostCategory.category.id.eq(categoryId))
@@ -62,15 +66,74 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
 
         boolean hasNext = (pageable.getOffset() + content.size()) < total;
 
-        return new SliceImpl<>(content, pageable, hasNext);
+        List<TechBlogPostCategoryDto> techBlogPostCategoryDtos = content.stream()
+                .map(post -> {
+                    List<CategoryDto> categoriesByPostId = categoryRepository.findCategoriesByPostId(post.id());
+                    return TechBlogPostCategoryDto.builder()
+                            .techBlogPostBasicInfoDto(post)
+                            .categoryDto(categoriesByPostId)
+                            .build();
+                })
+                .toList();
+
+        return new SliceImpl<>(techBlogPostCategoryDtos, pageable, hasNext);
     }
 
     @Override
-    public List<TechBlogPost> findTopLikePost(final int count) {
-        return queryFactory.select(techBlogPost)
+    public List<TechBlogPostBasicInfoDto> findTopLikePost(final int count) {
+        return queryFactory.select(
+                        Projections.constructor(TechBlogPostBasicInfoDto.class
+                                , techBlogPost.id
+                                , techBlogPost.title
+                                , techBlogPost.summary
+                                , techBlogPost.techBlogCode
+                                , techBlogPost.thumbnailUrl
+                                , techBlogPost.viewCount
+                                , techBlogPost.postLike
+                                , techBlogPost.writtenAt)
+                )
                 .from(techBlogPost)
                 .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
                 .limit(count)
                 .fetch();
     }
+
+    @Override
+    public Slice<TechBlogPostCategoryDto> findAllPosts(Pageable pageable) {
+        List<TechBlogPostBasicInfoDto> content = queryFactory.select(
+                        Projections.constructor(TechBlogPostBasicInfoDto.class
+                                , techBlogPost.id
+                                , techBlogPost.title
+                                , techBlogPost.summary
+                                , techBlogPost.techBlogCode
+                                , techBlogPost.thumbnailUrl
+                                , techBlogPost.viewCount
+                                , techBlogPost.postLike
+                                , techBlogPost.writtenAt)
+                )
+                .from(techBlogPost)
+                .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = queryFactory.select(techBlogPost.count())
+                .from(techBlogPost)
+                .fetchOne();
+
+        boolean hasNext = (pageable.getOffset() + content.size()) < total;
+
+        List<TechBlogPostCategoryDto> techBlogPostCategoryDtos = content.stream()
+                .map(post -> {
+                    List<CategoryDto> categoriesByPostId = categoryRepository.findCategoriesByPostId(post.id());
+                    return TechBlogPostCategoryDto.builder()
+                            .techBlogPostBasicInfoDto(post)
+                            .categoryDto(categoriesByPostId)
+                            .build();
+                })
+                .toList();
+
+        return new SliceImpl<>(techBlogPostCategoryDtos, pageable, hasNext);
+    }
+
 }

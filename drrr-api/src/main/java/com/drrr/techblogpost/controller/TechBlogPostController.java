@@ -1,6 +1,7 @@
 package com.drrr.techblogpost.controller;
 
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
 import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
@@ -47,8 +48,9 @@ public class TechBlogPostController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostBasicInfoDto.class))))
     })
     @GetMapping("/posts")
-    public Slice<TechBlogPostBasicInfoDto> findAllPosts(@Valid @ModelAttribute final TechBlogPostSliceRequest request) {
-        return externalTechBlogPostService.execute(request);
+    public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final TechBlogPostSliceRequest request) {
+        Slice<TechBlogPostCategoryDto> execute = externalTechBlogPostService.execute(request);
+        return execute;
     }
 
     @Operation(summary = "특정 카테고리에 해당하는 기술블로그의 기본정보를 가져오는 API", description =
@@ -59,8 +61,8 @@ public class TechBlogPostController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostBasicInfoDto.class))))
     })
     @GetMapping("/posts/category/{id}")
-    public Slice<TechBlogPostBasicInfoDto> findPostsByCategory(@PathVariable("id") final Long id,
-                                                               @Valid @ModelAttribute final TechBlogPostSliceRequest request) {
+    public Slice<TechBlogPostCategoryDto> findPostsByCategory(@PathVariable("id") final Long id,
+                                                              @Valid @ModelAttribute final TechBlogPostSliceRequest request) {
         return externalTechBlogPostService.execute(id, request);
     }
 
