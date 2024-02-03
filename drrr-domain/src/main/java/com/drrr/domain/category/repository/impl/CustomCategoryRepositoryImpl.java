@@ -58,7 +58,8 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                                                 IndexConstants indexConstants) {
         return language.equals(LanguageConstants.ENGLISH) ? category.name.like(
                 indexConstants.getCharacter() + "%")
-                : category.name.between(indexConstants.getCharacter(), indexConstants.getNext().getCharacter());
+                : category.name.goe(indexConstants.getCharacter()).
+                        and(category.name.lt(indexConstants.getNext().getCharacter()));
     }
 
     @Override
