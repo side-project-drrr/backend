@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +47,7 @@ public class TechBlogPostController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostBasicInfoDto.class))))
     })
     @GetMapping("/posts")
-    public Slice<TechBlogPostBasicInfoDto> findAllPosts(@RequestBody final TechBlogPostSliceRequest request) {
+    public Slice<TechBlogPostBasicInfoDto> findAllPosts(@Valid @ModelAttribute final TechBlogPostSliceRequest request) {
         return externalTechBlogPostService.execute(request);
     }
 
@@ -58,7 +60,7 @@ public class TechBlogPostController {
     })
     @GetMapping("/posts/category/{id}")
     public Slice<TechBlogPostBasicInfoDto> findPostsByCategory(@PathVariable("id") final Long id,
-                                                               @RequestBody final TechBlogPostSliceRequest request) {
+                                                               @Valid @ModelAttribute final TechBlogPostSliceRequest request) {
         return externalTechBlogPostService.execute(id, request);
     }
 
