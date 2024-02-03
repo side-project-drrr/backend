@@ -80,7 +80,7 @@ public class CategoryController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
     })
     @GetMapping("/categories")
-    public Slice<CategoryDto> findAllCategory(@RequestBody final CategorySliceRequest request) {
+    public Slice<CategoryDto> findAllCategory(@ModelAttribute final CategorySliceRequest request) {
         return externalCategoryService.execute(request);
     }
 

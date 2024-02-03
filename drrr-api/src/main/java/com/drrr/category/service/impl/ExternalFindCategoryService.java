@@ -20,9 +20,9 @@ public class ExternalFindCategoryService {
     }
 
     public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request) {
-        final Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSort());
-        final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
+        final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
+        final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
 
-        return categoryService.findIndexCategory(pageRequest, request.getLanguage(), request.getIndex());
+        return categoryService.findIndexCategory(pageRequest, request.language(), request.index());
     }
 }

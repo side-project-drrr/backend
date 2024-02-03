@@ -29,8 +29,8 @@ public class ExternalCategoryService {
      * 모든 카테고리 정보를 가져옴, redis를 사용하지 않음 파라미터 없이 redis에서 findAll할 경우 문제가 발생할 수 있음 기존에 20개중 3개가 들어갔다고 하면 3개만 끌고 오는 문제 발생
      */
     public Slice<CategoryDto> execute(final CategorySliceRequest request) {
-        final Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSort());
-        final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
+        final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
+        final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
 
         return categoryService.findAllCategories(pageRequest);
     }
