@@ -2,6 +2,7 @@ package com.drrr.domain.techblogpost.service;
 
 import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import java.util.List;
@@ -21,18 +22,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public Slice<TechBlogPostBasicInfoDto> findAllPostsBasic(final Pageable pageable) {
-        final Slice<TechBlogPost> posts = techBlogPostRepository.findBy(pageable);
+    public Slice<TechBlogPostCategoryDto> findAllPostsBasic(final Pageable pageable) {
+        final Slice<TechBlogPostCategoryDto> posts = techBlogPostRepository.findAllPosts(pageable);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
 
-        return posts.map(TechBlogPostBasicInfoDto::from);
+        return posts;
     }
 
-    public Slice<TechBlogPostBasicInfoDto> findPostsByCategory(final Long categoryId, final Pageable pageable) {
-        final Slice<TechBlogPostBasicInfoDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId,
+    public Slice<TechBlogPostCategoryDto> findPostsByCategory(final Long categoryId, final Pageable pageable) {
+        final Slice<TechBlogPostCategoryDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId,
                 pageable);
         if (postsByCategory.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
@@ -42,12 +43,12 @@ public class TechBlogPostService {
     }
 
     public List<TechBlogPostBasicInfoDto> findTopLikePost(final int count) {
-        final List<TechBlogPost> topPosts = techBlogPostRepository.findTopLikePost(count);
+        final List<TechBlogPostBasicInfoDto> topPosts = techBlogPostRepository.findTopLikePost(count);
         if (topPosts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return TechBlogPostBasicInfoDto.from(topPosts);
+        return topPosts;
     }
 
     public List<TechBlogPost> findNotCachedTechBlogPosts(final List<TechBlogPost> postsInRedis,

@@ -5,8 +5,6 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -20,8 +18,6 @@ public interface TechBlogPostRepository extends JpaRepository<TechBlogPost, Long
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select tbp from TechBlogPost tbp where tbp.id =:id")
     Optional<TechBlogPost> findByIdWithPessimisticLock(@Param("id") final Long id);
-
-    Slice<TechBlogPost> findBy(final Pageable pageable);
 
     List<TechBlogPost> findByIdIn(final List<Long> postIds);
 
