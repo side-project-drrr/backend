@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -56,7 +57,7 @@ public class CategoryService {
     }
 
     @NotNull
-    private List<CategoryDto> getCategoryDtos(List<Category> categories) {
+    private List<CategoryDto> getCategoryDtos(final List<Category> categories) {
         if (categories.isEmpty()) {
             log.error("카테고리가 존재하지 않습니다.");
             throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
@@ -70,4 +71,12 @@ public class CategoryService {
         return getCategoryDtos(categories);
     }
 
+    public Slice<CategoryDto> findIndexCategory(final PageRequest pageRequest, String index) {
+        final Slice<CategoryDto> categoriesSlice = categoryRepository.findCategoryByNameLike(index, pageRequest);
+        if (categoriesSlice.getContent().isEmpty()) {
+            log.error("카테고리가 존재하지 않습니다 -> {}", categoriesSlice.getContent());
+            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+        }
+        return categoriesSlice;
+    }
 }

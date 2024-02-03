@@ -13,6 +13,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 
@@ -48,6 +50,29 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .on(category.id.eq(techBlogPostCategory.category.id), techBlogPostCategory.post.id.eq(postId))
                 .orderBy(category.name.asc())
                 .fetch();
+    }
+
+    @Override
+    public Slice<CategoryDto> findCategoryByNameLike(String index, Pageable pageable) {
+        index = index + "%";
+        List<CategoryDto> content = queryFactory.select(
+                        Projections.constructor(CategoryDto.class
+                                , category.id
+                                , category.name))
+                .from(category)
+                .where(category.name.like(index))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = queryFactory.select(category.count())
+                .from(category)
+                .where(category.name.like(index))
+                .fetchOne();
+
+        boolean hasNext = (pageable.getOffset() + content.size()) < total;
+
+        return new SliceImpl<>(content, pageable, hasNext);
     }
 
     @Override

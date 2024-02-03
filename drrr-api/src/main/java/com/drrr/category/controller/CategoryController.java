@@ -1,6 +1,7 @@
 package com.drrr.category.controller;
 
 import com.drrr.category.dto.CategoryRequest;
+import com.drrr.category.request.CategoryIndexSliceRequest;
 import com.drrr.category.request.CategorySliceRequest;
 import com.drrr.category.service.impl.ExternalCategoryService;
 import com.drrr.category.service.impl.ExternalFindCategoryService;
@@ -41,6 +42,20 @@ public class CategoryController {
     private final JwtProvider jwtProvider;
     private final CategoryRepository categoryRepository;
 
+    @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API - 올림차순 반환", description = """
+            호출 성공 시 Index에 따른 카테고리 정보 반환 [page 값은 0부터 시작 
+            size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정,
+             direction은 오름차순(ASC), 내림차순(DESC), index는 카테고리의 인덱스 값]
+            """)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "카테고리 정보를 반환함",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
+    })
+    @GetMapping("/categories/index")
+    public Slice<CategoryDto> findIndexCategory(@RequestBody final CategoryIndexSliceRequest request) {
+        return externalFindCategoryService.execute(request);
+    }
+
     @Operation(summary = "특정 기술 블로그에 해당하는 카테고리 정보를 가져오는 API - 올림차순 반환", description = "호출 성공 시 특정 블로그에 해당하는 카테고리 정보 반환")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "카테고리 정보를 반환함",
@@ -51,7 +66,11 @@ public class CategoryController {
         return externalFindCategoryService.execute(postId);
     }
 
-    @Operation(summary = "모든 카테고리를 가져오는 API - 올림차순 반환", description = "호출 성공 시 모든 카테고리 정보 반환")
+    @Operation(summary = "모든 카테고리를 가져오는 API - 올림차순 반환", description = """
+            호출 성공 시 모든 카테고리 정보 반환 [page 값은 0부터 시작 
+            size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정,
+             direction은 오름차순(ASC), 내림차순(DESC) ]
+            """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "현재 존재하는 모든 카테고리 정보를 반환함",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
