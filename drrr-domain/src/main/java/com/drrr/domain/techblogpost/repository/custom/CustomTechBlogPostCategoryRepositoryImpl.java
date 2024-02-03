@@ -89,7 +89,7 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
     @Override
     public List<TechBlogPostBasicInfoDto> getUniquePostsByCategoryIds(final List<Long> categoryIds) {
         StringExpression formattedDate = Expressions.stringTemplate("FUNCTION('DATE_FORMAT', {0}, '%Y-%m-%d')"
-                , techBlogPost.createdAt);
+                , techBlogPost.writtenAt);
         return queryFactory.select(Projections.constructor(TechBlogPostBasicInfoDto.class
                         , techBlogPost.id
                         , techBlogPost.title

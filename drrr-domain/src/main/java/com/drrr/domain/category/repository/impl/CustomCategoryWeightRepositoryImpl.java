@@ -23,7 +23,7 @@ public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightR
     @Override
     public List<Long> findMemberIdsByCategoryWeights() {
         StringExpression formattedDate = Expressions.stringTemplate("FUNCTION('DATE_FORMAT', {0}, '%Y-%m-%d')"
-                , techBlogPost.createdAt);
+                , techBlogPost.writtenAt);
         return queryFactory.select(categoryWeight.member.id)
                 .from(categoryWeight)
                 .where(categoryWeight.category.id
