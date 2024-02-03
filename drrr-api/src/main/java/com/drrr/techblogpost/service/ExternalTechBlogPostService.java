@@ -22,15 +22,15 @@ public class ExternalTechBlogPostService {
     private final RedisTechBlogPostService redisTechBlogPostService;
 
     public Slice<TechBlogPostBasicInfoDto> execute(final TechBlogPostSliceRequest request) {
-        final Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSort());
-        final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
+        final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
+        final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
 
         return techBlogPostService.findAllPostsBasic(pageRequest);
     }
 
     public Slice<TechBlogPostBasicInfoDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
-        final Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSort());
-        final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
+        final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
+        final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
 
         return techBlogPostService.findPostsByCategory(categoryId, pageRequest);
     }
