@@ -2,6 +2,7 @@ package com.drrr.domain.category.repository.impl;
 
 import static com.drrr.domain.category.entity.QCategory.category;
 import static com.drrr.domain.category.entity.QCategoryWeight.categoryWeight;
+import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
@@ -35,6 +36,16 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .innerJoin(categoryWeight)
                 .on(category.id.eq(categoryWeight.category.id), categoryWeight.member.id.eq(memberId),
                         categoryWeight.preferred.eq(true))
+                .orderBy(category.name.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<CategoryDto> findCategoriesByPostId(final Long postId) {
+        return queryFactory.select(Projections.constructor(CategoryDto.class, category.id, category.name))
+                .from(category)
+                .innerJoin(techBlogPostCategory)
+                .on(category.id.eq(techBlogPostCategory.category.id), techBlogPostCategory.post.id.eq(postId))
                 .orderBy(category.name.asc())
                 .fetch();
     }

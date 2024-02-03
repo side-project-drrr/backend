@@ -15,4 +15,6 @@ public interface CustomCategoryRepository {
 
     List<Category> findTopCategories(final Long count);
 
+    List<CategoryDto> findCategoriesByPostId(final Long postId);
+
 }

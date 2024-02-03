@@ -18,6 +18,17 @@ import org.springframework.stereotype.Service;
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
+    public List<CategoryDto> findCategoriesByPostId(final Long postId) {
+        List<CategoryDto> categories = categoryRepository.findCategoriesByPostId(postId);
+
+        if (categories.isEmpty()) {
+            log.error("카테고리가 존재하지 않습니다 -> {}", categories);
+            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+        }
+
+        return categories;
+    }
+
     public List<CategoryDto> findTopCategories(final Long count) {
         //사용자들의 총 선호 카테고리를 group by 해서 선호도가 가장 많은 카테고리 순으로 반환
         List<Category> categories = categoryRepository.findTopCategories(count);
