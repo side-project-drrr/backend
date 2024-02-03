@@ -57,39 +57,6 @@ public class CategoryE2ETest {
     }
 
     @Test
-    void 모든_카테고리를_정상적으로_가져옵니다() throws JsonProcessingException {
-        //when
-
-        List<CategoryDto> categoryDtos =
-                new ObjectMapper().readValue(
-                        given()
-                                .log().all()
-                                .when()
-                                .contentType(ContentType.APPLICATION_JSON.toString())
-                                .get("/api/v1/categories")
-                                .then()
-                                .statusCode(HttpStatus.OK.value())
-                                .extract().body().asString(),
-                        new TypeReference<List<CategoryDto>>() {
-                        }
-                );
-
-        //then
-        List<Category> categories = categoryRepository.findAll();
-        if (categories.isEmpty()) {
-            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
-        }
-        categories = categories.stream().sorted((o1, o2) -> o1.getName().compareTo(o2.getName())).toList();
-
-        assertThat(categories.size()).isEqualTo(categoryDtos.size());
-        assertThat(categories)
-                .zipSatisfy(categoryDtos, (actual, expected) -> {
-                    assertThat(actual.getName()).isEqualTo(expected.name());
-                    // 필요하다면 추가적인 필드 비교 로직을 여기에 작성
-                });
-    }
-
-    @Test
     void 특정_카테고리를_정상적으로_가져옵니다() throws JsonProcessingException {
         //when
         String ids = String.join(",", "1", "2", "3", "4", "5");

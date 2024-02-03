@@ -52,14 +52,6 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Override
-    public List<Category> findAllOrderByNames() {
-        return queryFactory.select(category)
-                .from(category)
-                .orderBy(category.name.asc())
-                .fetch();
-    }
-
-    @Override
     public List<Category> findTopCategories(Long count) {
         return queryFactory.select(categoryWeight.category)
                 .from(categoryWeight)

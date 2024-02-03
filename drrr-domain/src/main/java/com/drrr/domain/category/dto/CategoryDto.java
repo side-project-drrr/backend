@@ -24,4 +24,11 @@ public record CategoryDto(
                         .build())
                 .toList();
     }
+
+    public static CategoryDto from(final Category category) {
+        return CategoryDto.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .build();
+    }
 }
