@@ -18,6 +18,13 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(e.getCode(), e.getMessage()));
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleException2(RuntimeException e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.of(400, e.getMessage()));
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> constraintViolationException(ConstraintViolationException exception) {
         return ResponseEntity.badRequest()
