@@ -5,30 +5,21 @@ import com.drrr.core.category.constant.LanguageConstants;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
+@Setter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CategoryIndexSliceRequest {
-    @Default
-    private final int page = 0;
-    @Default
-    private final int size = 10;
-    @Default
-    private final String sort = "name";
-    @Default
-    private final String direction = "ASC";
-    private LanguageRequest languageRequest;
+    private int page;
+    private int size;
+    private String sort;
+    private String direction;
+    private LanguageConstants language;
+    private IndexConstants index;
 
-    @AllArgsConstructor(access = AccessLevel.PROTECTED)
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @Getter
-    public static class LanguageRequest {
-        private LanguageConstants language;
-        private IndexConstants index;
-    }
 }
