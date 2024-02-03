@@ -14,13 +14,14 @@ public record TechBlogPostBasicInfoDto(
         String thumbnailUrl,
         int viewCount,
         int postLike,
-        LocalDate writtenAt
+        LocalDate writtenAt,
+        String url
 
 ) {
     @QueryProjection
     public TechBlogPostBasicInfoDto(Long id, String title, String summary, TechBlogCode techBlogCode,
                                     String thumbnailUrl,
-                                    int viewCount, int postLike, LocalDate writtenAt) {
+                                    int viewCount, int postLike, LocalDate writtenAt, String url) {
         this.id = id;
         this.title = title;
         this.summary = summary;
@@ -29,6 +30,7 @@ public record TechBlogPostBasicInfoDto(
         this.viewCount = viewCount;
         this.postLike = postLike;
         this.writtenAt = writtenAt;
+        this.url = url;
     }
 
 }

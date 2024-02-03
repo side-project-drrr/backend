@@ -51,7 +51,8 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                                 , techBlogPost.thumbnailUrl
                                 , techBlogPost.viewCount
                                 , techBlogPost.postLike
-                                , techBlogPost.writtenAt)
+                                , techBlogPost.writtenAt
+                                , techBlogPost.url)
                 )
                 .from(techBlogPostCategory)
                 .leftJoin(techBlogPostCategory.post, techBlogPost)
@@ -79,7 +80,8 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                                 , techBlogPost.thumbnailUrl
                                 , techBlogPost.viewCount
                                 , techBlogPost.postLike
-                                , techBlogPost.writtenAt)
+                                , techBlogPost.writtenAt
+                                , techBlogPost.url)
                 )
                 .from(techBlogPost)
                 .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
@@ -98,7 +100,9 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                                 , techBlogPost.thumbnailUrl
                                 , techBlogPost.viewCount
                                 , techBlogPost.postLike
-                                , techBlogPost.writtenAt)
+                                , techBlogPost.writtenAt
+                                , techBlogPost.url
+                        )
                 )
                 .from(techBlogPost)
                 .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
