@@ -10,6 +10,7 @@ public enum IndexConstants {
     A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G"),
     H("H"), I("I"), J("J"), K("K"), L("L"), M("M"), N("N"),
     O("O"), P("P"), Q("Q"), R("R"), S("S"), T("T"), U("U"),
+
     V("V"), W("W"), X("X"), Y("Y"), Z("Z");
 
     private final String character;
@@ -27,9 +28,8 @@ public enum IndexConstants {
         // 마지막 enum 값이면 첫 번째 값으로 순환
         if (ordinal == values.length - 1) {
             return values[0];
-        } else {
-            return values[ordinal + 1];
         }
+        return values[ordinal + 1];
     }
 
 

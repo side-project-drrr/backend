@@ -56,10 +56,12 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 
     private BooleanExpression languageCondition(final LanguageConstants language,
                                                 IndexConstants indexConstants) {
-        return language.equals(LanguageConstants.ENGLISH) ? category.name.like(
-                indexConstants.getCharacter() + "%")
-                : category.name.goe(indexConstants.getCharacter()).
-                        and(category.name.lt(indexConstants.getNext().getCharacter()));
+        if (language.equals(LanguageConstants.ENGLISH)) {
+            return category.name.like(
+                    indexConstants.getCharacter() + "%");
+        }
+        return category.name.goe(indexConstants.getCharacter()).
+                and(category.name.lt(indexConstants.getNext().getCharacter()));
     }
 
     @Override
