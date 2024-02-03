@@ -4,6 +4,7 @@ import com.drrr.category.request.CategorySliceRequest;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.RedisCategory;
+import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.service.CategoryService;
 import com.drrr.domain.category.service.RedisCategoryService;
 import com.drrr.domain.jpa.entity.BaseEntity;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class ExternalCategoryService {
     private final CategoryService categoryService;
     private final RedisCategoryService redisCategoryService;
+    private final CategoryRepository categoryRepository;
 
 
     /**
@@ -32,7 +34,7 @@ public class ExternalCategoryService {
         final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
         final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
 
-        return categoryService.findAllCategories(pageRequest);
+        return categoryRepository.findBy(pageRequest).map(CategoryDto::from);
     }
 
     public List<CategoryDto> execute(final Long count) {
