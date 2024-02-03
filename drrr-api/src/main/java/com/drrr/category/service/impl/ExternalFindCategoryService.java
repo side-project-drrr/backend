@@ -23,6 +23,7 @@ public class ExternalFindCategoryService {
         final Sort sort = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSort());
         final PageRequest pageRequest = PageRequest.of(request.getPage(), request.getSize(), sort);
 
-        return categoryService.findIndexCategory(pageRequest, request.getIndex());
+        return categoryService.findIndexCategory(pageRequest, request.getLanguageRequest().getLanguage(),
+                request.getLanguageRequest().getIndex());
     }
 }

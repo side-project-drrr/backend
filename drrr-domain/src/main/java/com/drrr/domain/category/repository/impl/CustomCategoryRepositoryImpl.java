@@ -4,6 +4,8 @@ import static com.drrr.domain.category.entity.QCategory.category;
 import static com.drrr.domain.category.entity.QCategoryWeight.categoryWeight;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
+import com.drrr.core.category.constant.IndexConstants;
+import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CustomCategoryRepository;
@@ -52,22 +54,31 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .fetch();
     }
 
+    private BooleanExpression languageCondition(final LanguageConstants language,
+                                                IndexConstants indexConstants) {
+        return language.equals(LanguageConstants.ENGLISH) ? category.name.like(
+                indexConstants.getCharacter() + "%")
+                : category.name.between(indexConstants.getCharacter(), indexConstants.getNext().getCharacter());
+    }
+
     @Override
-    public Slice<CategoryDto> findCategoryByNameLike(String index, Pageable pageable) {
-        index = index + "%";
+    public Slice<CategoryDto> findCategoryByNameLike(final LanguageConstants language,
+                                                     IndexConstants indexConstants,
+                                                     Pageable pageable) {
+
         List<CategoryDto> content = queryFactory.select(
                         Projections.constructor(CategoryDto.class
                                 , category.id
                                 , category.name))
                 .from(category)
-                .where(category.name.like(index))
+                .where(languageCondition(language, indexConstants))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         Long total = queryFactory.select(category.count())
                 .from(category)
-                .where(category.name.like(index))
+                .where(languageCondition(language, indexConstants))
                 .fetchOne();
 
         boolean hasNext = (pageable.getOffset() + content.size()) < total;

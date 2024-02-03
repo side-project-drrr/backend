@@ -1,5 +1,7 @@
 package com.drrr.category.request;
 
+import com.drrr.core.category.constant.IndexConstants;
+import com.drrr.core.category.constant.LanguageConstants;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +22,13 @@ public class CategoryIndexSliceRequest {
     private final String sort = "name";
     @Default
     private final String direction = "ASC";
-    @Default
-    private final String index = "A";
+    private LanguageRequest languageRequest;
+
+    @AllArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @Getter
+    public static class LanguageRequest {
+        private LanguageConstants language;
+        private IndexConstants index;
+    }
 }

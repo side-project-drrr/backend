@@ -45,7 +45,9 @@ public class CategoryController {
     @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API - 올림차순 반환", description = """
             호출 성공 시 Index에 따른 카테고리 정보 반환 [page 값은 0부터 시작 
             size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정,
-             direction은 오름차순(ASC), 내림차순(DESC), index는 카테고리의 인덱스 값]
+             direction은 오름차순(ASC), 내림차순(DESC), index는 카테고리의 인덱스 값, language는 어떤 언어로 가져올지 결정 
+             (ex "KOREAN", "ENGLISH")
+             index는 시작하는 캐릭터 값(ex "A" (알파벳은 무조건 대문자만 허용), "가", "나" 등)
             """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "카테고리 정보를 반환함",

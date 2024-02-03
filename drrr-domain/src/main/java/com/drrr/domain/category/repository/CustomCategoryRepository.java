@@ -1,6 +1,8 @@
 package com.drrr.domain.category.repository;
 
 
+import com.drrr.core.category.constant.IndexConstants;
+import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import java.util.List;
@@ -18,6 +20,7 @@ public interface CustomCategoryRepository {
 
     List<CategoryDto> findCategoriesByPostId(final Long postId);
 
-    Slice<CategoryDto> findCategoryByNameLike(final String index, final Pageable pageable);
+    Slice<CategoryDto> findCategoryByNameLike(final LanguageConstants language, final IndexConstants indexConstants,
+                                              final Pageable pageable);
 
 }
