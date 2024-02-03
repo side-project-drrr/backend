@@ -45,7 +45,7 @@ public class TechBlogPostController {
             + "size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정, direction은 오름차순(ASC), 내림차순(DESC) ]")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "query param에 담긴 정보를 기반으로 기술 블로그의 기본 정보를 반환",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostBasicInfoDto.class))))
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     })
     @GetMapping("/posts")
     public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final TechBlogPostSliceRequest request) {
@@ -58,7 +58,7 @@ public class TechBlogPostController {
                     + "size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정, direction은 오름차순(ASC), 내림차순(DESC) ]")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostBasicInfoDto.class))))
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     })
     @GetMapping("/posts/category/{id}")
     public Slice<TechBlogPostCategoryDto> findPostsByCategory(@PathVariable("id") final Long id,
