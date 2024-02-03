@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @RequiredArgsConstructor
@@ -64,19 +65,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                 .leftJoin(techBlogPostCategory.post, techBlogPost)
                 .where(techBlogPostCategory.category.id.eq(categoryId)).fetchOne();
 
-        boolean hasNext = (pageable.getOffset() + content.size()) < total;
-
-        List<TechBlogPostCategoryDto> techBlogPostCategoryDtos = content.stream()
-                .map(post -> {
-                    List<CategoryDto> categoriesByPostId = categoryRepository.findCategoriesByPostId(post.id());
-                    return TechBlogPostCategoryDto.builder()
-                            .techBlogPostBasicInfoDto(post)
-                            .categoryDto(categoriesByPostId)
-                            .build();
-                })
-                .toList();
-
-        return new SliceImpl<>(techBlogPostCategoryDtos, pageable, hasNext);
+        return getTechBlogPostCategoryDtos(pageable, content, total);
     }
 
     @Override
@@ -121,6 +110,13 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                 .from(techBlogPost)
                 .fetchOne();
 
+        return getTechBlogPostCategoryDtos(pageable, content, total);
+    }
+
+    @NonNull
+    private Slice<TechBlogPostCategoryDto> getTechBlogPostCategoryDtos(Pageable pageable,
+                                                                       List<TechBlogPostBasicInfoDto> content,
+                                                                       Long total) {
         boolean hasNext = (pageable.getOffset() + content.size()) < total;
 
         List<TechBlogPostCategoryDto> techBlogPostCategoryDtos = content.stream()
