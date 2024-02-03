@@ -20,4 +20,5 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Custo
     List<Category> findByIdInOrderByName(final List<Long> categoryIds);
 
     Optional<Category> findByName(final String tagName);
+
 }
