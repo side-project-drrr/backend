@@ -1,5 +1,7 @@
 package com.drrr.domain.category.service;
 
+import com.drrr.core.category.constant.IndexConstants;
+import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
@@ -8,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -56,7 +59,7 @@ public class CategoryService {
     }
 
     @NotNull
-    private List<CategoryDto> getCategoryDtos(List<Category> categories) {
+    private List<CategoryDto> getCategoryDtos(final List<Category> categories) {
         if (categories.isEmpty()) {
             log.error("카테고리가 존재하지 않습니다.");
             throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
@@ -70,4 +73,15 @@ public class CategoryService {
         return getCategoryDtos(categories);
     }
 
+    public Slice<CategoryDto> findIndexCategory(final PageRequest pageRequest, final LanguageConstants language,
+                                                final IndexConstants indexConstants) {
+        final Slice<CategoryDto> categoriesSlice = categoryRepository.findCategoryByNameLike(language
+                , indexConstants
+                , pageRequest);
+        if (categoriesSlice.getContent().isEmpty()) {
+            log.error("카테고리가 존재하지 않습니다 -> {}", categoriesSlice.getContent());
+            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+        }
+        return categoriesSlice;
+    }
 }
