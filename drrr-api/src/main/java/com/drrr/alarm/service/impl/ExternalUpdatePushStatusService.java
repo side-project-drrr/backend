@@ -17,8 +17,4 @@ public class ExternalUpdatePushStatusService {
     public void execute(final Long memberId, final LocalDate pushDate) {
         pushStatusRepository.updatePushStatus(memberId, pushDate);
     }
-
-    public void execute(final Long memberId) {
-        subscriptionRepository.deleteByMemberId(memberId);
-    }
 }
