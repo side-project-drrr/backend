@@ -51,7 +51,7 @@ public class MigrationBatchConfiguration {
     @JobScope
     public Step migrationStep(
             @Value("#{jobParameters[techBlogCode]}") Long code,
-            @Value("#{jobParameters[requestDate]}") Long requestDate
+            @Value("#{jobParameters[requestDate]}") String requestDate
     ) {
         final var techBlogCode = TechBlogCode.valueOf(code);
         return new StepBuilder(BATCH_NAME + "Step", jobRepository)
