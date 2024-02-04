@@ -5,6 +5,7 @@ import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.reader.impl.DevOceanCrawlerItemReader;
 import com.drrr.reader.impl.KakaoCrawlerItemReader;
 import com.drrr.reader.impl.MarketKurlyItemReader;
+import com.drrr.reader.impl.NHNCloudCrawlerItemReader;
 import com.drrr.reader.impl.NaverCrawlerItemReader;
 import com.drrr.reader.impl.TechobleCrawlerItemReader;
 import com.drrr.reader.impl.TestCrawlerPageItemReader;
@@ -34,6 +35,7 @@ public class CrawlerItemReaderFactory {
             case KAKAO -> KakaoCrawlerItemReader::new;
             case DEVOCEAN -> DevOceanCrawlerItemReader::new;
             case TECHOBLE -> TechobleCrawlerItemReader::new;
+            case NHN_CLOUD -> NHNCloudCrawlerItemReader::new;
         };
     }
 }
