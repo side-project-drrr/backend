@@ -10,6 +10,7 @@ import com.drrr.category.service.impl.ExternalSearchCategoryService;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
+import com.drrr.web.annotation.JwtToken;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -135,8 +136,7 @@ public class CategoryController {
             })
     @Secured("USER")
     @PutMapping("/member/preferences/categories")
-    public void modifyCategory(@RequestBody @NotNull final CategoryRequest request) {
-        Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
+    public void modifyCategory(@JwtToken final Long memberId, @RequestBody @NotNull final CategoryRequest request) {
         modificationService.execute(memberId, request.categoryIds());
     }
 
