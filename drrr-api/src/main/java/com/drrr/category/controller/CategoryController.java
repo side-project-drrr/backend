@@ -10,7 +10,7 @@ import com.drrr.category.service.impl.ExternalSearchCategoryService;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
-import com.drrr.web.jwt.util.JwtProvider;
+import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -44,7 +44,6 @@ public class CategoryController {
     private final ExternalMemberPreferredCategoryModificationService modificationService;
     private final ExternalFindCategoryService externalFindCategoryService;
     private final ExternalSearchCategoryService externalSearchCategoryService;
-    private final JwtProvider jwtProvider;
     private final CategoryRepository categoryRepository;
 
     @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API", description = """
@@ -135,8 +134,7 @@ public class CategoryController {
             })
     @Secured("USER")
     @PutMapping("/member/preferences/categories")
-    public void modifyCategory(@RequestBody @NotNull final CategoryRequest request) {
-        Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
+    public void modifyCategory(@MemberId final Long memberId, @RequestBody @NotNull final CategoryRequest request) {
         modificationService.execute(memberId, request.categoryIds());
     }
 

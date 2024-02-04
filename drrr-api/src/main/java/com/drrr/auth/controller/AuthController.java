@@ -17,7 +17,7 @@ import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.auth.service.impl.UnregisterService;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
-import com.drrr.web.jwt.util.JwtProvider;
+import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -49,7 +49,6 @@ public class AuthController {
     private final ExchangeOAuth2AccessTokenService exchangeOAuth2AccessTokenService;
     private final IssuanceVerificationCode issuanceVerificationCode;
     private final EmailVerificationService emailVerificationService;
-    private final JwtProvider jwtProvider;
 
 
     @Operation(summary = "Front에서 준 code로 provider ID를 반환하는 API",
@@ -119,8 +118,7 @@ public class AuthController {
     })
     @Secured("USER")
     @DeleteMapping("/member/unregister")
-    public void memberUnregister() {
-        Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
+    public void memberUnregister(@MemberId final Long memberId) {
         unregisterService.execute(memberId);
     }
 

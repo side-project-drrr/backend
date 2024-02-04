@@ -2,7 +2,7 @@ package com.drrr.recommand.controller;
 
 import com.drrr.recommand.dto.AdjustPostWeightRequest;
 import com.drrr.recommand.service.impl.ExternalMemberPostReadService;
-import com.drrr.web.jwt.util.JwtProvider;
+import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class MemberPostWeightController {
     private final ExternalMemberPostReadService memberPostReadService;
-    private final JwtProvider jwtProvider;
 
     @Operation(summary = "사용자가 특정 기술 블로그를 읽으려고 클릭했을 때 요청하는 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 조회한 기술 블로그 기준으로 가중치 계산, 로깅, 조회수 증가",
             parameters = {
@@ -34,9 +33,9 @@ public class MemberPostWeightController {
     @Secured("USER")
     @PostMapping("/posts/read/{postId}")
     public void MemberPostReadController(
+            @MemberId final Long memberId,
             @Validated @RequestBody final AdjustPostWeightRequest request,
             @NotNull @PathVariable(name = "postId") final Long postId) {
-        Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         memberPostReadService.execute(request, memberId, postId);
     }
 
