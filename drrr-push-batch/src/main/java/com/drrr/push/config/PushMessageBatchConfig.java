@@ -10,6 +10,7 @@ import com.drrr.infra.push.repository.PushStatusRepository;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -62,19 +63,13 @@ public class PushMessageBatchConfig {
                     pushStatusRepository.saveAll(pushStatuses);
 
                     //PushPost 저장
-                    pushPostDtos.stream()
-                            .forEach((pushPostDto) -> {
-                                List<PushPost> pushPosts = pushPostDto.postIds().stream()
+                    IntStream.range(0, pushPostDtos.size())
+                            .forEach((i) -> {
+                                List<PushPost> pushPosts = pushPostDtos.get(i).postIds().stream()
                                         .map((postId) -> {
                                             return PushPost.builder()
                                                     .postId(postId)
-                                                    .pushStatus(
-                                                            PushStatus.builder()
-                                                                    .memberId(pushPostDto.memberId())
-                                                                    .pushDate(LocalDate.now())
-                                                                    .status(true)
-                                                                    .build()
-                                                    )
+                                                    .pushStatus(pushStatuses.get(i))
                                                     .build();
                                         }).toList();
                                 pushPostRepository.saveAll(pushPosts);
