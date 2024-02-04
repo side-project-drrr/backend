@@ -5,13 +5,15 @@ spring:
         - test
       local:
         - local
+      local1:
+        - local1
       dev:
         - develop
       main:
         - main
       batch:
         - batch
-    default: batch
+    default: local1
   batch:
     job:
       name: ${job.name:NONE}
