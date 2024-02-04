@@ -2,15 +2,12 @@ package com.drrr.push.config;
 
 import com.drrr.domain.category.dto.PushPostDto;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import com.drrr.infra.push.entity.PushPost;
 import com.drrr.infra.push.entity.PushStatus;
 import com.drrr.infra.push.entity.Subscription;
-import com.drrr.infra.push.repository.PushPostRepository;
 import com.drrr.infra.push.repository.PushStatusRepository;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -36,7 +33,6 @@ public class PushMessageBatchConfig {
     private final PlatformTransactionManager transactionManager;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     private final PushStatusRepository pushStatusRepository;
-    private final PushPostRepository pushPostRepository;
     private final JobRepository jobRepository;
 
     @Bean("webPushStep")
@@ -57,24 +53,13 @@ public class PushMessageBatchConfig {
                                         .memberId(pushPostDto.memberId())
                                         .pushDate(LocalDate.now())
                                         .status(false)
+                                        .postIds(pushPostDto.postIds())
                                         .build();
                             }).toList();
 
                     pushStatusRepository.saveAll(pushStatuses);
 
                     //PushPost 저장
-                    IntStream.range(0, pushPostDtos.size())
-                            .forEach((i) -> {
-                                List<PushPost> pushPosts = pushPostDtos.get(i).postIds().stream()
-                                        .map((postId) -> {
-                                            return PushPost.builder()
-                                                    .postId(postId)
-                                                    .pushStatus(pushStatuses.get(i))
-                                                    .build();
-                                        }).toList();
-                                pushPostRepository.saveAll(pushPosts);
-                            });
-
                     return subscriptionRepository.findByMemberIdIn(
                             pushPostDtos.stream()
                                     .map(PushPostDto::memberId)
