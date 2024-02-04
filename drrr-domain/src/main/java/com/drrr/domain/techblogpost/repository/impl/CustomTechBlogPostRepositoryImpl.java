@@ -5,13 +5,17 @@ import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
 import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.dto.CategoryPostDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.repository.CustomTechBlogPostRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -142,14 +146,25 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                                                                        Long total) {
         boolean hasNext = (pageable.getOffset() + content.size()) < total;
 
+        List<CategoryPostDto> eachPostCategoriesByPostIds = categoryRepository.findEachPostCategoriesByPostIds(
+                content.stream().map(TechBlogPostBasicInfoDto::id).toList());
+
+        Map<Long, List<CategoryDto>> postCategories = eachPostCategoriesByPostIds.stream()
+                .collect(Collectors.groupingBy(
+                        CategoryPostDto::postId,
+                        LinkedHashMap::new,
+                        Collectors.mapping(categoryPostDto -> CategoryDto.builder()
+                                        .id(categoryPostDto.categoryId())
+                                        .name(categoryPostDto.name())
+                                        .build(),
+                                Collectors.toList())
+                ));
+
         List<TechBlogPostCategoryDto> techBlogPostCategoryDtos = content.stream()
-                .map(post -> {
-                    List<CategoryDto> categoriesByPostId = categoryRepository.findCategoriesByPostId(post.id());
-                    return TechBlogPostCategoryDto.builder()
-                            .techBlogPostBasicInfoDto(post)
-                            .categoryDto(categoriesByPostId)
-                            .build();
-                })
+                .map(post -> TechBlogPostCategoryDto.builder()
+                        .techBlogPostBasicInfoDto(post)
+                        .categoryDto(postCategories.get(post.id()))
+                        .build())
                 .toList();
 
         return new SliceImpl<>(techBlogPostCategoryDtos, pageable, hasNext);
