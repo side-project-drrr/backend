@@ -11,7 +11,6 @@ import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
 import com.drrr.web.annotation.JwtToken;
-import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -45,7 +44,6 @@ public class CategoryController {
     private final ExternalMemberPreferredCategoryModificationService modificationService;
     private final ExternalFindCategoryService externalFindCategoryService;
     private final ExternalSearchCategoryService externalSearchCategoryService;
-    private final JwtProvider jwtProvider;
     private final CategoryRepository categoryRepository;
 
     @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API", description = """
