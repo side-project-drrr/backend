@@ -86,6 +86,7 @@ public class TechBlogPost extends BaseEntity {
                 .author(temporalTechBlogEntity.getAuthor())
                 .crawlerGroup(temporalTechBlogEntity.getTechBlogCode())
                 .writtenAt(temporalTechBlogEntity.getWrittenAt())
+                .thumbnailUrl(temporalTechBlogEntity.getThumbnailUrl())
                 .url(temporalTechBlogEntity.getUrl())
                 .summary(temporalTechBlogEntity.getSummary())
                 .aiSummary(temporalTechBlogEntity.getAiSummary())
