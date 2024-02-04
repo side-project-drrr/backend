@@ -12,9 +12,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 
@@ -25,11 +25,11 @@ public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightR
 
 
     @Override
-    public Slice<PushPostDto> findMemberIdsByCategoryWeights(final Pageable pageable) {
+    public Page<PushPostDto> findMemberIdsByCategoryWeights(final Pageable pageable) {
         StringExpression formattedDate = Expressions.stringTemplate("FUNCTION('DATE_FORMAT', {0}, '%Y-%m-%d')"
                 , techBlogPost.writtenAt);
         List<Long> postIds = queryFactory
-                .select(techBlogPostCategory.category.id)
+                .select(techBlogPost.id)
                 .from(techBlogPost)
                 .leftJoin(techBlogPostCategory)
                 .on(techBlogPost.id.eq(techBlogPostCategory.id)
@@ -49,19 +49,10 @@ public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightR
         Long total = queryFactory.select(categoryWeight.count())
                 .from(categoryWeight)
                 .where(categoryWeight.category.id
-                        .in(
-                                queryFactory
-                                        .select(techBlogPostCategory.category.id)
-                                        .from(techBlogPost)
-                                        .leftJoin(techBlogPostCategory)
-                                        .on(techBlogPost.id.eq(techBlogPostCategory.id)
-                                                , formattedDate.eq(String.valueOf(LocalDate.now())))
-                                        .groupBy(techBlogPostCategory.category.id))
+                        .in(postIds)
                 )
                 .groupBy(categoryWeight.member.id)
                 .fetchOne();
-
-        boolean hasNext = total > pageable.getOffset() + pageable.getPageSize();
 
         List<PushPostDto> pushPostDtos = memberIds.stream()
                 .map(memberId -> PushPostDto.builder()
@@ -70,7 +61,7 @@ public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightR
                         .build()
                 ).toList();
 
-        return new SliceImpl<>(pushPostDtos, pageable, hasNext);
+        return new PageImpl<>(pushPostDtos, pageable, total);
     }
 
 }

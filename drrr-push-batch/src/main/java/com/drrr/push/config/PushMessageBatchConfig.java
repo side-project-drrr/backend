@@ -8,6 +8,7 @@ import com.drrr.infra.push.repository.PushStatusRepository;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -19,6 +20,7 @@ import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -38,11 +40,21 @@ public class PushMessageBatchConfig {
 
     @Bean("webPushStep")
     public Step webPushStep() {
-        Pageable pageable = PageRequest.of(0, 100);
+        AtomicInteger currentPage = new AtomicInteger(0);
+        int pageSize = 100;
 
         return new StepBuilder("webPushJob", jobRepository).<List<PushPostDto>, List<PushStatus>>chunk(10,
                         transactionManager)
-                .reader(() -> categoryWeightRepository.findMemberIdsByCategoryWeights(pageable).getContent())
+                .reader(() -> {
+                    Pageable pageable = PageRequest.of(currentPage.getAndIncrement(), pageSize);
+                    Page<PushPostDto> page = categoryWeightRepository.findMemberIdsByCategoryWeights(pageable);
+                    
+                    if (!page.hasNext()) {
+                        return null; // 종료 조건: 다음 페이지가 없으면 null 반환
+                    }
+
+                    return page.getContent();
+                })
                 .processor(new ItemProcessor<List<PushPostDto>, List<PushStatus>>() {
                     @Override
                     public List<PushStatus> process(List<PushPostDto> pushPostDtos) {
