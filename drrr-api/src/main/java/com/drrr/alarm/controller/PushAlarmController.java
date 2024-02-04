@@ -7,7 +7,6 @@ import com.drrr.alarm.service.impl.ExternalUpdatePushStatusService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.web.annotation.JwtToken;
-import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -37,7 +36,6 @@ public class PushAlarmController {
     private final ExternalDeleteSubscriptionService externalDeleteSubscriptionService;
     private final ExternalMemberSubscriptionService externalMemberSubscriptionService;
     private final ExternalUpdatePushStatusService externalUpdatePushStatusService;
-    private final JwtProvider jwtProvider;
 
     @Operation(summary = "사용자가 푸시 알림 클릭 시 보여줄 블로그 정보 반환 API - [JWT TOKEN REQUIRED]",
             description = "호출 성공 시 사용자의 푸시 알림 클릭 시 보여줄 블로그 정보 반환")
