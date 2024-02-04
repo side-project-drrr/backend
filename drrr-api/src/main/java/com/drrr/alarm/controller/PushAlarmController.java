@@ -1,6 +1,6 @@
 package com.drrr.alarm.controller;
 
-import com.drrr.alarm.dto.PushRequest;
+import com.drrr.alarm.dto.PushStatusRequest;
 import com.drrr.alarm.service.impl.ExternalMemberSubscriptionService;
 import com.drrr.alarm.service.impl.ExternalMemberWebPushPostsService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
@@ -45,7 +45,7 @@ public class PushAlarmController {
             @ApiResponse(responseCode = "200", description = "사용자의 푸시 알림 상태를 변경", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
     @PatchMapping("/push/status/read")
-    public void changeMemberPushStatus(@RequestBody final PushRequest request) {
+    public void changeMemberPushStatus(@RequestBody final PushStatusRequest request) {
         pushStatusRepository.updatePushStatus(request.memberId(), request.pushDate());
     }
 
