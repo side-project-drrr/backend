@@ -1,19 +1,11 @@
 package com.drrr.domain.techblogpost.repository.custom;
 
-import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
-import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
-
 import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
-import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -85,27 +77,5 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
                         .build())
                 .toList();
     }
-
-    @Override
-    public List<TechBlogPostBasicInfoDto> getUniquePostsByCategoryIds(final List<Long> categoryIds) {
-        StringExpression formattedDate = Expressions.stringTemplate("FUNCTION('DATE_FORMAT', {0}, '%Y-%m-%d')"
-                , techBlogPost.writtenAt);
-        return queryFactory.select(Projections.constructor(TechBlogPostBasicInfoDto.class
-                        , techBlogPost.id
-                        , techBlogPost.title
-                        , techBlogPost.summary
-                        , techBlogPost.techBlogCode
-                        , techBlogPost.thumbnailUrl
-                        , techBlogPost.viewCount
-                        , techBlogPost.postLike
-                        , techBlogPost.writtenAt))
-                .from(techBlogPost)
-                .where(techBlogPost.id.in(
-                        queryFactory
-                                .select(techBlogPostCategory.post.id)
-                                .from(techBlogPostCategory)
-                                .where(techBlogPostCategory.category.id.in(categoryIds),
-                                        formattedDate.eq(String.valueOf(LocalDate.now())))
-                                .groupBy(techBlogPostCategory.post.id))).fetch();
-    }
+    
 }
