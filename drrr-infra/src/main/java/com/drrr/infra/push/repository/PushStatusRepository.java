@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PushStatusRepository extends JpaRepository<PushStatus, Long> {
     @Modifying
-    @Query("UPDATE PushStatus ps set ps.status = true where ps.memberId = :memberId and ps.pushDate = :pushDate")
+    @Query("update PushStatus ps set ps.status = true where ps.memberId = :memberId and ps.pushDate = :pushDate")
     int updatePushStatus(@Param("memberId") final Long memberId, @Param("pushDate") final LocalDate pushDate);
 }
