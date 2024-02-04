@@ -17,7 +17,7 @@ import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.auth.service.impl.UnregisterService;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
-import com.drrr.web.annotation.JwtToken;
+import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -118,7 +118,7 @@ public class AuthController {
     })
     @Secured("USER")
     @DeleteMapping("/member/unregister")
-    public void memberUnregister(@JwtToken final Long memberId) {
+    public void memberUnregister(@MemberId final Long memberId) {
         unregisterService.execute(memberId);
     }
 

@@ -2,7 +2,7 @@ package com.drrr.recommand.controller;
 
 import com.drrr.recommand.dto.AdjustPostWeightRequest;
 import com.drrr.recommand.service.impl.ExternalMemberPostReadService;
-import com.drrr.web.annotation.JwtToken;
+import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -33,7 +33,7 @@ public class MemberPostWeightController {
     @Secured("USER")
     @PostMapping("/posts/read/{postId}")
     public void MemberPostReadController(
-            @JwtToken final Long memberId,
+            @MemberId final Long memberId,
             @Validated @RequestBody final AdjustPostWeightRequest request,
             @NotNull @PathVariable(name = "postId") final Long postId) {
         memberPostReadService.execute(request, memberId, postId);
