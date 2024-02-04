@@ -39,4 +39,5 @@ public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightR
                 .groupBy(categoryWeight.member.id)
                 .fetch();
     }
+
 }
