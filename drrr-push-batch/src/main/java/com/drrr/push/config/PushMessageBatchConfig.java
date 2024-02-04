@@ -16,6 +16,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
@@ -39,36 +40,36 @@ public class PushMessageBatchConfig {
     public Step webPushStep() {
         Pageable pageable = PageRequest.of(0, 100);
 
-        return new StepBuilder("webPushJob", jobRepository).<List<Subscription>, List<Subscription>>chunk(10,
+        return new StepBuilder("webPushJob", jobRepository).<List<PushPostDto>, List<PushStatus>>chunk(10,
                         transactionManager)
-                .reader(() -> {
-                    List<PushPostDto> pushPostDtos = categoryWeightRepository.findMemberIdsByCategoryWeights(pageable)
-                            .getContent();
-                    pageable.next();
-
-                    //PushStatus 저장
-                    List<PushStatus> pushStatuses = pushPostDtos.stream()
-                            .map((pushPostDto) -> {
-                                return PushStatus.builder()
+                .reader(() -> categoryWeightRepository.findMemberIdsByCategoryWeights(pageable).getContent())
+                .processor(new ItemProcessor<List<PushPostDto>, List<PushStatus>>() {
+                    @Override
+                    public List<PushStatus> process(List<PushPostDto> pushPostDtos) {
+                        return pushPostDtos.stream()
+                                .map(pushPostDto -> PushStatus.builder()
                                         .memberId(pushPostDto.memberId())
                                         .pushDate(LocalDate.now())
                                         .status(false)
                                         .postIds(pushPostDto.postIds())
-                                        .build();
-                            }).toList();
-
-                    pushStatusRepository.saveAll(pushStatuses);
-
-                    //PushPost 저장
-                    return subscriptionRepository.findByMemberIdIn(
-                            pushPostDtos.stream()
-                                    .map(PushPostDto::memberId)
-                                    .toList()
-                    );
+                                        .build())
+                                .toList();
+                    }
                 })
-                .writer((chunk) -> chunk.getItems().forEach(subscription -> {
-                    kafkaTemplate.send("alarm-web-push", subscription);
-                }))
+                .writer(chunk -> {
+                    chunk.getItems().stream()
+                            .forEach(pushStatuses -> {
+                                pushStatusRepository.saveAll(pushStatuses);
+
+                                List<Subscription> subscriptions = subscriptionRepository.findByMemberIdIn(
+                                        pushStatuses.stream()
+                                                .map(PushStatus::getMemberId)
+                                                .toList()
+                                );
+                                subscriptions.forEach(subscription ->
+                                        kafkaTemplate.send("alarm-web-push", subscription));
+                            });
+                })
                 .build();
     }
 
