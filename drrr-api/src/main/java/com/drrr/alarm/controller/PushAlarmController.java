@@ -3,10 +3,8 @@ package com.drrr.alarm.controller;
 import com.drrr.alarm.dto.PushRequest;
 import com.drrr.alarm.service.impl.ExternalDeleteSubscriptionService;
 import com.drrr.alarm.service.impl.ExternalMemberSubscriptionService;
-import com.drrr.alarm.service.impl.ExternalMemberWebPushPostsService;
 import com.drrr.alarm.service.impl.ExternalUpdatePushStatusService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
-import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PushAlarmController {
     private final ExternalDeleteSubscriptionService externalDeleteSubscriptionService;
     private final ExternalMemberSubscriptionService externalMemberSubscriptionService;
-    private final ExternalMemberWebPushPostsService externalMemberWebPushPostsService;
     private final ExternalUpdatePushStatusService externalUpdatePushStatusService;
     private final JwtProvider jwtProvider;
 
@@ -82,12 +79,6 @@ public class PushAlarmController {
     public void cancelSubscription() {
         final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
         externalDeleteSubscriptionService.execute(memberId);
-    }
-
-    @GetMapping("/web/push/subscription/member")
-    public List<TechBlogPostBasicInfoDto> findMemberWebPushPosts() {
-        final Long memberId = jwtProvider.getMemberIdFromAuthorizationToken();
-        return externalMemberWebPushPostsService.execute(memberId);
     }
 
 }
