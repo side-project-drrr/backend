@@ -11,6 +11,8 @@ public interface CustomTechBlogPostRepository {
 
     Slice<TechBlogPostCategoryDto> findPostsByCategory(Long categoryId, Pageable pageable);
 
+    List<TechBlogPostBasicInfoDto> findPostsByPostIds(List<Long> postIds);
+
     List<TechBlogPostBasicInfoDto> findTopLikePost(final int count);
 
     Slice<TechBlogPostCategoryDto> findAllPosts(final Pageable pageable);

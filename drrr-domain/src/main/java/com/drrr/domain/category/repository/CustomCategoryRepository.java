@@ -4,6 +4,7 @@ package com.drrr.domain.category.repository;
 import com.drrr.core.category.constant.IndexConstants;
 import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.dto.CategoryPostDto;
 import com.drrr.domain.category.entity.Category;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -24,5 +25,7 @@ public interface CustomCategoryRepository {
                                               final Pageable pageable);
 
     Slice<CategoryDto> searchCategoriesByWord(final String word, final Pageable pageable);
+
+    List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postId);
 
 }

@@ -7,6 +7,7 @@ import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlog
 import com.drrr.core.category.constant.IndexConstants;
 import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.dto.CategoryPostDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CustomCategoryRepository;
 import com.querydsl.core.types.Projections;
@@ -87,6 +88,19 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
         boolean hasNext = (pageable.getOffset() + content.size()) < total;
 
         return new SliceImpl<>(content, pageable, hasNext);
+    }
+
+    @Override
+    public List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postId) {
+        return queryFactory.select(Projections.constructor(CategoryPostDto.class
+                        , category.id
+                        , techBlogPostCategory.post.id
+                        , category.name))
+                .from(category)
+                .innerJoin(techBlogPostCategory)
+                .on(category.id.eq(techBlogPostCategory.category.id))
+                .where(techBlogPostCategory.post.id.in(postId))
+                .fetch();
     }
 
     @Override

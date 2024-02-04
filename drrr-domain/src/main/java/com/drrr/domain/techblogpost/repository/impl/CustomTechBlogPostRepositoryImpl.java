@@ -70,6 +70,25 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @Override
+    public List<TechBlogPostBasicInfoDto> findPostsByPostIds(List<Long> postIds) {
+        return queryFactory.select(
+                        Projections.constructor(TechBlogPostBasicInfoDto.class
+                                , techBlogPost.id
+                                , techBlogPost.title
+                                , techBlogPost.summary
+                                , techBlogPost.techBlogCode
+                                , techBlogPost.thumbnailUrl
+                                , techBlogPost.viewCount
+                                , techBlogPost.postLike
+                                , techBlogPost.writtenAt
+                                , techBlogPost.url)
+                )
+                .from(techBlogPost)
+                .where(techBlogPost.id.in(postIds))
+                .fetch();
+    }
+
+    @Override
     public List<TechBlogPostBasicInfoDto> findTopLikePost(final int count) {
         return queryFactory.select(
                         Projections.constructor(TechBlogPostBasicInfoDto.class
