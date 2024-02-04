@@ -6,7 +6,7 @@ import com.drrr.alarm.service.impl.ExternalMemberSubscriptionService;
 import com.drrr.alarm.service.impl.ExternalUpdatePushStatusService;
 import com.drrr.alarm.service.request.SubscriptionRequest;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
-import com.drrr.web.annotation.JwtToken;
+import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -64,7 +64,7 @@ public class PushAlarmController {
             @ApiResponse(responseCode = "200", description = "사용자의 구독 신청 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
     @PostMapping("/member/subscription")
-    public void addSubscription(@JwtToken final Long memberId, @RequestBody final SubscriptionRequest request) {
+    public void addSubscription(@MemberId final Long memberId, @RequestBody final SubscriptionRequest request) {
         externalMemberSubscriptionService.execute(request, memberId);
     }
 
@@ -74,7 +74,7 @@ public class PushAlarmController {
             @ApiResponse(responseCode = "200", description = "사용자의 구독 취소 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
     @DeleteMapping("/member/subscription")
-    public void cancelSubscription(@JwtToken final Long memberId) {
+    public void cancelSubscription(@MemberId final Long memberId) {
         externalDeleteSubscriptionService.execute(memberId);
     }
 

@@ -1,6 +1,6 @@
 package com.drrr.web.resolver;
 
-import com.drrr.web.annotation.JwtToken;
+import com.drrr.web.annotation.MemberId;
 import com.drrr.web.exception.ApiExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ public class JwtTokenResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(JwtToken.class) && Long.class.equals(
+        return parameter.hasParameterAnnotation(MemberId.class) && Long.class.equals(
                 parameter.getParameterType());
     }
 
