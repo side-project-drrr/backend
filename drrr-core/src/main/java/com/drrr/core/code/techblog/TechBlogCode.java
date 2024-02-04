@@ -17,7 +17,8 @@ public enum TechBlogCode {
     WOOWAHAN(BASE.id + 3, "우아한 형제들"),
     KAKAO(BASE.id + 4, "카카오"),
     DEVOCEAN(BASE.id + 5, "데보션"),
-    TECHOBLE(BASE.id + 6, "우테코 기술블로그");
+    TECHOBLE(BASE.id + 6, "우테코 기술블로그"),
+    NHN_CLOUD(BASE.id + 7, "NHN 클라우드");
 
     // enum 성능 최적화
     private static final Map<Long, TechBlogCode> cache = Arrays.stream(values())
