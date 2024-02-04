@@ -1,10 +1,16 @@
 package com.drrr.domain.techblogpost.service;
 
+import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.dto.CategoryPostDto;
+import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class TechBlogPostService {
+    private final CategoryRepository categoryRepository;
     private final TechBlogPostRepository techBlogPostRepository;
 
     public List<TechBlogPostBasicInfoDto> findTopLikePost(final int count) {
@@ -54,6 +61,38 @@ public class TechBlogPostService {
     public TechBlogPost findTechBlogPostsById(final Long postId) {
         return techBlogPostRepository.findById(postId).orElseThrow(
                 DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+    }
+
+    public List<TechBlogPostCategoryDto> findPushPosts(final List<Long> postIds) {
+        List<TechBlogPostBasicInfoDto> posts = techBlogPostRepository.findPostsByPostIds(postIds);
+        if (posts.isEmpty()) {
+            log.error("기술블로그를 찾을 수 없습니다.");
+            throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
+        }
+
+        List<CategoryPostDto> eachPostCategoriesByPostIds = categoryRepository.findEachPostCategoriesByPostIds(postIds);
+        if (eachPostCategoriesByPostIds.isEmpty()) {
+            log.error("카테고리를 찾을 수 없습니다.");
+            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
+        }
+
+        Map<Long, List<CategoryDto>> postCategories = eachPostCategoriesByPostIds.stream()
+                .collect(Collectors.groupingBy(
+                        CategoryPostDto::postId,
+                        LinkedHashMap::new,
+                        Collectors.mapping(categoryPostDto -> CategoryDto.builder()
+                                        .id(categoryPostDto.categoryId())
+                                        .name(categoryPostDto.name())
+                                        .build(),
+                                Collectors.toList())
+                ));
+
+        return posts.stream()
+                .map(post -> TechBlogPostCategoryDto.builder()
+                        .techBlogPostBasicInfoDto(post)
+                        .categoryDto(postCategories.get(post.id()))
+                        .build())
+                .toList();
     }
 
 }
