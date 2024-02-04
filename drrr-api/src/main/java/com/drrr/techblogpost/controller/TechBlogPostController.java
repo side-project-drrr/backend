@@ -49,8 +49,7 @@ public class TechBlogPostController {
     })
     @GetMapping("/posts")
     public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final TechBlogPostSliceRequest request) {
-        Slice<TechBlogPostCategoryDto> execute = externalTechBlogPostService.execute(request);
-        return execute;
+        return externalTechBlogPostService.execute(request);
     }
 
     @Operation(summary = "특정 카테고리에 해당하는 기술블로그의 기본정보를 가져오는 API", description =
