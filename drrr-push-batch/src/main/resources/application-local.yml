@@ -11,7 +11,7 @@ spring:
     producer:
       bootstrap-servers: localhost:9093
   datasource:
-    url: jdbc:mysql://localhost:3306/TEST_DOMAIN?rewriteBatchedStatements=true
+    url: jdbc:mysql://localhost:3306/TEST_DOMAIN?profileSQL=true&logger=Slf4JLogger&useSSL=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&maxQuerySizeToLog=999999
     username: root
     password: 1234
     driverClassName: com.mysql.jdbc.Driver

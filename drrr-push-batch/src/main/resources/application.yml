@@ -11,5 +11,9 @@ spring:
         - main
       batch:
         - batch
-    default: local
+    default: batch
+  batch:
+    job:
+      name: memberWebPushJob
+      enabled: true
 

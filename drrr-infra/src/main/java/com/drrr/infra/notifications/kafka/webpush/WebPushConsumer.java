@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@PropertySource(value = {"classpath:security-storage-infra/notification/web-push/web-push-vapid.properties"})
+@PropertySource(value = {"classpath:security-storage-infra/web-push/web-push-vapid.properties"})
 public class WebPushConsumer {
     private final SubscriptionRepository subscriptionRepository;
     private final String publicKey;

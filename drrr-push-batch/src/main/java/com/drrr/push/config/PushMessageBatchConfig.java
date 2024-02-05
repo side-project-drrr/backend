@@ -2,18 +2,20 @@ package com.drrr.push.config;
 
 import com.drrr.domain.category.dto.PushPostDto;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.infra.notifications.kafka.webpush.dto.NotificationDto;
 import com.drrr.infra.push.entity.PushStatus;
 import com.drrr.infra.push.entity.Subscription;
 import com.drrr.infra.push.repository.PushStatusRepository;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -28,7 +30,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
 @RequiredArgsConstructor
-@EnableBatchProcessing
 @Configuration
 public class PushMessageBatchConfig {
     private final SubscriptionRepository subscriptionRepository;
@@ -38,19 +39,25 @@ public class PushMessageBatchConfig {
     private final PushStatusRepository pushStatusRepository;
     private final JobRepository jobRepository;
 
-    @Bean("webPushStep")
+    @Bean("memberWebPushStep")
+    @JobScope
     public Step webPushStep() {
         AtomicInteger currentPage = new AtomicInteger(0);
+        AtomicBoolean lastPage = new AtomicBoolean(false);
         int pageSize = 100;
 
-        return new StepBuilder("webPushJob", jobRepository).<List<PushPostDto>, List<PushStatus>>chunk(10,
+        return new StepBuilder("memberWebPushStep", jobRepository).<List<PushPostDto>, List<PushStatus>>chunk(10,
                         transactionManager)
                 .reader(() -> {
+                    if (lastPage.get()) {
+                        return null;
+                    }
+
                     Pageable pageable = PageRequest.of(currentPage.getAndIncrement(), pageSize);
                     Page<PushPostDto> page = categoryWeightRepository.findMemberIdsByCategoryWeights(pageable);
-                    
+
                     if (!page.hasNext()) {
-                        return null; // 종료 조건: 다음 페이지가 없으면 null 반환
+                        lastPage.set(true); // 종료 조건: 다음 페이지가 없으면 null 반환
                     }
 
                     return page.getContent();
@@ -78,8 +85,17 @@ public class PushMessageBatchConfig {
                                                 .map(PushStatus::getMemberId)
                                                 .toList()
                                 );
-                                subscriptions.forEach(subscription ->
-                                        kafkaTemplate.send("alarm-web-push", subscription));
+                                subscriptions.stream().forEach(subscription -> {
+                                    NotificationDto notification = NotificationDto.builder()
+                                            .id(subscription.getId())
+                                            .endpoint(subscription.getEndpoint())
+                                            .p256dh(subscription.getP256dh())
+                                            .payload("DRRR에서 새로 업데이트된 게시물을 만나보세요!")
+                                            .auth(subscription.getAuth())
+                                            .memberId(subscription.getMemberId())
+                                            .build();
+                                    this.kafkaTemplate.send("alarm-web-push", notification);
+                                });
                             });
                 })
                 .build();
