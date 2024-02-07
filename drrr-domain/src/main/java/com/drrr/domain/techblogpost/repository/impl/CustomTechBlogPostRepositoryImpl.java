@@ -128,7 +128,38 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                         )
                 )
                 .from(techBlogPost)
-                .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
+                .orderBy(techBlogPost.writtenAt.desc(), techBlogPost.postLike.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = queryFactory.select(techBlogPost.count())
+                .from(techBlogPost)
+                .fetchOne();
+
+        boolean hasNext = (pageable.getOffset() + content.size()) < total;
+
+        return getTechBlogPostCategoryDtos(pageable, content, total);
+    }
+
+    @Override
+    public Slice<TechBlogPostCategoryDto> searchPostsTitleByWord(final String index, final Pageable pageable) {
+        List<TechBlogPostBasicInfoDto> content = queryFactory.select(
+                        Projections.constructor(TechBlogPostBasicInfoDto.class
+                                , techBlogPost.id
+                                , techBlogPost.title
+                                , techBlogPost.summary
+                                , techBlogPost.techBlogCode
+                                , techBlogPost.thumbnailUrl
+                                , techBlogPost.viewCount
+                                , techBlogPost.postLike
+                                , techBlogPost.writtenAt
+                                , techBlogPost.url
+                        )
+                )
+                .from(techBlogPost)
+                .where(techBlogPost.title.like("%" + index + "%"))
+                .orderBy(techBlogPost.writtenAt.desc(), techBlogPost.postLike.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
