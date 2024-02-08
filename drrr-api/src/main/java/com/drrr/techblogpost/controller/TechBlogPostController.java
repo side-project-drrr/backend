@@ -3,11 +3,13 @@ package com.drrr.techblogpost.controller;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
+import com.drrr.techblogpost.dto.TechBlogPostIndexSliceRequest;
 import com.drrr.techblogpost.dto.TechBlogPostLikeDto;
 import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
 import com.drrr.techblogpost.service.ExternalPostDislikeService;
 import com.drrr.techblogpost.service.ExternalPostLikeService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostLikeService;
+import com.drrr.techblogpost.service.ExternalTechBlogPostSearchService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -40,6 +42,7 @@ public class TechBlogPostController {
     private final ExternalTechBlogPostLikeService externalTechBlogPostLikeService;
     private final ExternalPostLikeService externalPostLikeService;
     private final ExternalPostDislikeService externalPostDislikeService;
+    private final ExternalTechBlogPostSearchService externalTechBlogPostSearchService;
 
     @Operation(summary = "모든 기술 블로그를 가져오는 API", description = "호출 성공 시 모든 기술 블로그 정보 반환 [ page 값은 0부터 시작, "
             + "size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정, direction은 오름차순(ASC), 내림차순(DESC) ]")
@@ -50,6 +53,19 @@ public class TechBlogPostController {
     @GetMapping("/posts")
     public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final TechBlogPostSliceRequest request) {
         return externalTechBlogPostService.execute(request);
+    }
+
+    @Operation(summary = "search keyword가 기술 블로그 제목에 담긴 기술 블로그를 가져오는 API", description =
+            "호출 성공 시 search keyword가 제목에 담긴 기술 블로그 정보 반환 [ page 값은 0부터 시작, "
+                    + "size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정, direction은 오름차순(ASC), 내림차순(DESC) ]")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "query param에 담긴 정보를 기반으로 기술 블로그의 기본 정보를 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
+    })
+    @GetMapping("/posts/index")
+    public Slice<TechBlogPostCategoryDto> searchPosts(
+            @Valid @ModelAttribute final TechBlogPostIndexSliceRequest request) {
+        return externalTechBlogPostSearchService.execute(request);
     }
 
     @Operation(summary = "특정 카테고리에 해당하는 기술블로그의 기본정보를 가져오는 API", description =
