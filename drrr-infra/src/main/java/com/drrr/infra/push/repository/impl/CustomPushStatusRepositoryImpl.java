@@ -1,4 +1,4 @@
-package com.drrr.domain.category.repository.impl;
+package com.drrr.infra.push.repository.impl;
 
 import static com.drrr.domain.category.entity.QCategoryWeight.categoryWeight;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
@@ -6,8 +6,7 @@ import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlog
 
 import com.drrr.domain.category.dto.MemberPostsDto;
 import com.drrr.domain.category.dto.PushPostDto;
-import com.drrr.domain.category.repository.CustomCategoryWeightRepository;
-import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
+import com.drrr.infra.push.repository.CustomPushStatusRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
@@ -15,37 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
 
 @Repository
 @RequiredArgsConstructor
-public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightRepository {
+public class CustomPushStatusRepositoryImpl implements CustomPushStatusRepository {
     private final JPAQueryFactory queryFactory;
-    private final TechBlogPostCategoryRepository techBlogPostCategoryRepository;
-
 
     @Override
-    public Page<PushPostDto> findMemberIdsByCategoryWeights(final Pageable pageable) {
-
-        //정해진 페이지에 해당하는 member ids 가져오기
-        List<Long> memberIds = queryFactory
-                .select(
-                        categoryWeight.member.id
-                )
-                .from(categoryWeight)
-                .leftJoin(techBlogPostCategory)
-                .on(categoryWeight.category.id.eq(techBlogPostCategory.category.id))
-                .leftJoin(techBlogPost)
-                .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
-                .where(techBlogPost.writtenAt.eq(LocalDate.now()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .groupBy(categoryWeight.member.id)
-                .fetch();
+    public List<PushPostDto> findPushByMemberIds(final Long memberIds) {
 
         //정해진 페이지에 해당하는 member ids에 해당하는 member : posts 가져오기
         List<MemberPostsDto> memberPostsDtos = queryFactory
@@ -57,7 +34,7 @@ public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightR
                 .from(categoryWeight)
                 .leftJoin(techBlogPostCategory)
                 .on(categoryWeight.category.id.eq(techBlogPostCategory.category.id),
-                        categoryWeight.member.id.in(memberIds))
+                        categoryWeight.member.id.eq(memberIds))
                 .leftJoin(techBlogPost)
                 .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
                 .where(techBlogPost.writtenAt.eq(LocalDate.now()))
@@ -71,19 +48,7 @@ public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightR
                         Collectors.mapping(MemberPostsDto::postId, Collectors.toList())
                 ));
 
-        Long total = queryFactory
-                .select(
-                        categoryWeight.member.id.countDistinct()
-                )
-                .from(categoryWeight)
-                .leftJoin(techBlogPostCategory)
-                .on(categoryWeight.category.id.eq(techBlogPostCategory.category.id))
-                .leftJoin(techBlogPost)
-                .on(techBlogPostCategory.post.id.eq(techBlogPost.id))
-                .where(techBlogPost.writtenAt.eq(LocalDate.now()))
-                .fetchOne();
-
-        List<PushPostDto> pushPostDtos = memberPostsMap.keySet()
+        return memberPostsMap.keySet()
                 .stream()
                 .map(key -> {
                     return PushPostDto.builder()
@@ -91,8 +56,5 @@ public class CustomCategoryWeightRepositoryImpl implements CustomCategoryWeightR
                             .postIds(memberPostsMap.get(key))
                             .build();
                 }).toList();
-
-        return new PageImpl<>(pushPostDtos, pageable, total);
     }
-
 }
