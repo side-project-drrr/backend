@@ -1,7 +1,6 @@
 package com.drrr.infra.notifications.kafka.webpush;
 
 
-import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.infra.notifications.kafka.webpush.dto.NotificationDto;
 import com.drrr.infra.push.entity.Subscription;
 import com.drrr.infra.push.repository.SubscriptionRepository;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 public class WebPushProducer {
     private final SubscriptionRepository subscriptionRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
-    private final CategoryWeightRepository categoryWeightRepository;
 
 
     public void sendNotifications() {
