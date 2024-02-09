@@ -1,11 +1,16 @@
 package com.drrr.infra.push.entity;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,5 +29,9 @@ public class PushStatus {
     private Long id;
     private LocalDate pushDate;
     private Long memberId;
+    @ElementCollection
+    @CollectionTable(name = "drrr_push_post_ids", joinColumns = @JoinColumn(name = "push_status_id"))
+    @Column(name = "post_id")
+    private List<Long> postIds;
     private boolean status;
 }
