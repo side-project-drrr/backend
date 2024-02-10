@@ -12,6 +12,8 @@ import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,9 +52,22 @@ public class MemberViewWeightService {
 
         final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
 
-        //사용자의 category weight에 대한 정보가 없는 경우 새로 삽입
-        if (categoryWeights.isEmpty()) {
-            final List<Category> categories = categoryRepository.findIds(categoryIds);
+        //기존 CategoryWeight에 없는 category id 찾기
+        Set<Long> memberCategoryIdSet = categoryWeights.stream()
+                .map(cw -> {
+                    return cw.getCategory().getId();
+                }).collect(Collectors.toSet());
+
+        Set<Long> postCategoryIdSet = categoryIds.stream().collect(Collectors.toSet());
+
+        postCategoryIdSet.removeAll(memberCategoryIdSet);
+
+        //테이블에 추가해야 할 새로운 카테고리 id가 존재하는 경우
+        if (postCategoryIdSet.size() > 0) {
+            List<Long> newCategoryIds = postCategoryIdSet.stream().toList();
+
+            final List<Category> categories = categoryRepository.findIds(newCategoryIds);
+
             if (categories.isEmpty()) {
                 log.error("카테고리를 찾을 수 없습니다.");
                 log.error("categoryIds -> {}", categoryIds);
@@ -70,12 +85,11 @@ public class MemberViewWeightService {
             categoryWeightRepository.saveAll(updatedCategoryWeights);
             return;
         }
+
         //기존에 해당 게시물을 읽은 기록이 있다면 INCREASE_WEIGHT 값만큼 가중치 증가
         //단, 다시 읽는 게시물일 경우 새벽 12:00 를 넘어야지만 증가가 됨
         if (memberPostLogService.hasDayPassedAfterReading(memberId, postId)) {
             categoryWeights.forEach(CategoryWeight::accumulateWeight);
         }
     }
-
-
 }

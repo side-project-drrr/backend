@@ -3,6 +3,7 @@ package com.drrr.domain.log.service;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,12 @@ public class MemberPostLogService {
         }
 
         LocalDateTime lastReadAt = byPostIdAndMemberId.get().getLastReadAt();
+
+        //처음으로 읽는 게시물인 경우 lastReadAt이 설정되지 않음
+        if (Objects.isNull(lastReadAt)) {
+            return false;
+        }
+
         LocalDateTime startOfNextDayOfLastRead = lastReadAt.plusDays(1).toLocalDate().atStartOfDay();
 
         return lastReadAt.isAfter(startOfNextDayOfLastRead);

@@ -5,6 +5,7 @@ import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class LogUpdateService {
                 .orElseGet(() -> memberPostLogRepository.save(MemberPostLog.builder()
                         .memberId(memberId)
                         .postId(postId)
+                        .lastReadAt(LocalDateTime.now())
                         .isRead(true)
                         .isRecommended(false)
                         .build()));
