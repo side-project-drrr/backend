@@ -24,7 +24,7 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "사용자 정보 반환", content = @Content(schema = @Schema(implementation = MemberDto.class)))
     })
-    @GetMapping("/member/profile")
+    @GetMapping("/member/me")
     public MemberDto findMemberInfo(@MemberId final Long memberId) {
         return externalMemberService.execute(memberId);
     }
