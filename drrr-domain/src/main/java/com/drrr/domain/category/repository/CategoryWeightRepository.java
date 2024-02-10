@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface CategoryWeightRepository extends JpaRepository<CategoryWeight, Long> {
 
     List<CategoryWeight> findByMemberId(final Long memberId);
-
+    
     @Modifying
     void deleteByMemberId(final Long memberId);
 

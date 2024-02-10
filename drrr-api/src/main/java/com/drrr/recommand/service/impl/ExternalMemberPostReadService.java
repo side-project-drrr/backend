@@ -20,8 +20,7 @@ public class ExternalMemberPostReadService {
         //가중치 검증
         weightValidationService.validateWeight(memberId);
         //조회수 증가
-        memberViewWeightService.increaseMemberViewPost(memberId, postId,
-                request.categoryIds());
+        memberViewWeightService.increaseMemberViewPost(memberId, postId, request.categoryIds());
 
         //로깅 및 히스토리 데이터 insert
         logUpdateService.insertMemberLogAndHistory(memberId, postId);
