@@ -74,6 +74,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
         ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(errorCode.getCode());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding("UTF-8");
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
