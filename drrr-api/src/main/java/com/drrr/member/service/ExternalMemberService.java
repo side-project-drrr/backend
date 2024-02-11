@@ -22,4 +22,5 @@ public class ExternalMemberService {
 
         throw DomainExceptionCode.MEMBER_ACCOUNT_DEACTIVATED.newInstance();
     }
+
 }
