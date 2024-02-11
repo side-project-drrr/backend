@@ -3,6 +3,7 @@ package com.drrr.web.jwt.util;
 
 import com.drrr.web.exception.ApiExceptionCode;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
@@ -57,6 +58,16 @@ public class JwtProvider {
         return jwtDecoder.decode(token).getClaims();
     }
 
+    public Long extractTtlMillisFromAccessToken(final String accessToken) {
+        Instant expiresAt = jwtDecoder.decode(accessToken).getExpiresAt();
+        Instant now = Instant.now();
+
+        // 만료 시간과 현재 시간의 차이를 계산
+        Duration duration = Duration.between(now, expiresAt);
+
+        // 남은 시간을 초 단위로 반환
+        return duration.toMillis();
+    }
 
     public Long extractToValueFrom(final String token) {
         try {

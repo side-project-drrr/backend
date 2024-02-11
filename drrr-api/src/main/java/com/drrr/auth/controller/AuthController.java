@@ -5,6 +5,7 @@ import com.drrr.auth.payload.request.AccessTokenRequest;
 import com.drrr.auth.payload.request.EmailRequest;
 import com.drrr.auth.payload.request.EmailVerificationRequest;
 import com.drrr.auth.payload.request.SignInRequest;
+import com.drrr.auth.payload.request.SignOutRequest;
 import com.drrr.auth.payload.request.SignUpRequest;
 import com.drrr.auth.payload.response.AccessTokenResponse;
 import com.drrr.auth.payload.response.SignInResponse;
@@ -82,6 +83,17 @@ public class AuthController {
     @PostMapping("/signin")
     public SignInResponse signIn(@Validated @RequestBody final SignInRequest signInRequest) {
         return signInService.execute(signInRequest);
+    }
+
+    @Operation(summary = "로그아웃 API", description = """
+            호출 성공 시 기존 토큰 레디스에서 제거 및 key : access token, value : "logout", ttl : 기존 token의 ttl만큼 삽입""
+            """)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    @PostMapping("/signout")
+    public void signOut(@Validated @RequestBody final SignOutRequest signOutRequest) {
+        issuanceTokenService.negateToken(signOutRequest);
     }
 
     @Operation(summary = "토큰 재발급", description = "호출 성공 시 JWT Access 토큰 반환")
