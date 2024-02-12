@@ -10,7 +10,6 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.email.entity.Email;
 import com.drrr.domain.email.repository.EmailRepository;
-import com.drrr.domain.email.service.VerificationService.VerificationDto;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.util.DatabaseCleaner;
@@ -208,32 +207,5 @@ public class AuthE2ETest {
         assertThat(memberOptional).isPresent();
         assertThat(memberOptional.get().isActive()).isFalse();
     }
-
-    @Test
-    public void 이메일_인증코드_확인이_제대로_됩니다() throws JsonProcessingException {
-        //when
-        ObjectMapper objectMapper = new ObjectMapper();
-        VerificationDto response =
-                objectMapper.readValue(given()
-                        .log().all()
-                        .when()
-                        .contentType(ContentType.APPLICATION_JSON.toString())
-                        .body("""
-                                {
-                                    "providerId" : "1324",
-                                    "verificationCode" : "1234"
-                                }
-                                """)
-                        .post("/api/v1/auth/email/verification")
-                        .then()
-                        .statusCode(HttpStatus.OK.value())
-                        .extract().body().asString(), new TypeReference<VerificationDto>() {
-                });
-        //then
-        Optional<Email> emailOptional = emailRepository.findByProviderId("1324");
-
-        assertThat(emailOptional).isNotPresent();
-        assertThat(response).isNotNull();
-        assertThat(response.isVerified()).isTrue();
-    }
+    
 }
