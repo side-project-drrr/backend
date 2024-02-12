@@ -210,7 +210,7 @@ public class AuthE2ETest {
     }
 
     @Test
-    public void 로그아웃이_정상적으로_작동합니다() throws JsonProcessingException {
+    public void 이메일_인증코드_확인이_제대로_됩니다() throws JsonProcessingException {
         //when
         ObjectMapper objectMapper = new ObjectMapper();
         VerificationDto response =
