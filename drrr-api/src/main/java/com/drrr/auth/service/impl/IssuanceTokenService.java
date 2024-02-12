@@ -1,6 +1,7 @@
 package com.drrr.auth.service.impl;
 
 import com.drrr.auth.payload.request.AccessTokenRequest;
+import com.drrr.auth.payload.request.SignOutRequest;
 import com.drrr.auth.payload.response.AccessTokenResponse;
 import com.drrr.domain.auth.service.AuthenticationTokenService;
 import com.drrr.domain.auth.service.AuthenticationTokenService.RegisterAuthenticationTokenDto;
@@ -33,6 +34,13 @@ public class IssuanceTokenService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public void negateToken(final SignOutRequest request) {
+        final Long memberId = tokenProvider.extractToValueFrom(request.accessToken());
+        final Long ttlMillis = tokenProvider.extractTtlMillisFromAccessToken(request.accessToken());
+
+        authenticationTokenService.logout(memberId, request.accessToken(), ttlMillis);
     }
 
     public AccessTokenResponse regenerateAccessToken(final AccessTokenRequest request) {

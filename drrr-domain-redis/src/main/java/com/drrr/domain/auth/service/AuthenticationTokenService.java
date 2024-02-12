@@ -3,8 +3,10 @@ package com.drrr.domain.auth.service;
 
 import com.drrr.domain.auth.entity.AuthenticationToken;
 import com.drrr.domain.auth.repository.RedisAuthenticationTokenRepository;
+import java.util.concurrent.TimeUnit;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class AuthenticationTokenService {
     private final RedisAuthenticationTokenRepository authenticationTokenRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
     public void register(final RegisterAuthenticationTokenDto registerAuthenticationTokenDto) {
         authenticationTokenRepository.save(AuthenticationToken.builder()
@@ -24,9 +27,19 @@ public class AuthenticationTokenService {
     }
 
     public void remove(final RemoveAuthenticationTokenDto removeAuthenticationTokenDto) {
-        final AuthenticationToken authenticationToken = authenticationTokenRepository.findById(removeAuthenticationTokenDto.memberId)
+        final AuthenticationToken authenticationToken = authenticationTokenRepository.findById(
+                        removeAuthenticationTokenDto.memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자 입니다."));
         authenticationTokenRepository.delete(authenticationToken);
+    }
+
+    public void logout(final Long memberId, final String accessToken, final Long ttlMillis) {
+        authenticationTokenRepository.findById(memberId)
+                .ifPresent((authenticationToken) -> {
+                    authenticationTokenRepository.delete(authenticationToken);
+                });
+        //key : access token, value : "Logout", ttl : access token의 유효시간만큼
+        redisTemplate.opsForValue().set(accessToken, "Logout", ttlMillis, TimeUnit.MILLISECONDS);
     }
 
     /**
