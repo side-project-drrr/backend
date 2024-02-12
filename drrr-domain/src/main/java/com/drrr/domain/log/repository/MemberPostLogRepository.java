@@ -10,9 +10,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MemberPostLogRepository extends JpaRepository<MemberPostLog, Long>, CustomMemberPostLogRepository {
-    Optional<MemberPostLog> findByPostId(Long postId);
 
     List<MemberPostLog> findByMemberId(Long memberId);
+
+    @Query("select mpl.isRead from MemberPostLog mpl where mpl.memberId =:memberId and mpl.postId =:postId")
+    Optional<Boolean> checkMemberPostRead(@Param("memberId") Long memberId, @Param("postId") Long postId);
 
     @Query("select mpl from MemberPostLog mpl where mpl.memberId =:memberId and mpl.postId =:postId")
     Optional<MemberPostLog> findByPostIdAndMemberId(@Param("memberId") Long memberId, @Param("postId") Long postId);
