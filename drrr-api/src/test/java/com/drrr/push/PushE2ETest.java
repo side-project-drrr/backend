@@ -69,7 +69,6 @@ public class PushE2ETest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
-    private final static int MEMBER_COUNT = 1;
     private final static int CATEGORY_COUNT = 3;
     private final static int POST_COUNT = 3;
     private final static int POST_CATEGORY_COUNT = 3;
@@ -98,7 +97,6 @@ public class PushE2ETest {
 
         categoryRepository.saveAll(categories);
 
-        //P1~P100 생성
         List<TechBlogPost> techBlogPosts = IntStream.rangeClosed(1, POST_COUNT).mapToObj(i -> {
             //현재로부터 몇년전까지 랜덤으로 연월일을 뽑을지 정함
             LocalDate createdDate = LocalDate.now();
