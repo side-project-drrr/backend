@@ -15,7 +15,9 @@ public interface PushStatusRepository extends JpaRepository<PushStatus, Long>, C
     @Query("update PushStatus ps set ps.status = true where ps.memberId = :memberId and ps.pushDate = :pushDate")
     int updatePushStatus(@Param("memberId") final Long memberId, @Param("pushDate") final LocalDate pushDate);
 
-    List<Long> findPostIdsByMemberIdAndPushDate(final Long memberId, final LocalDate pushDate);
+    @Query("select ps.postIds from PushStatus ps where ps.memberId = :memberId and ps.pushDate = :pushDate")
+    List<Long> findPostIdsByMemberIdAndPushDate(@Param("memberId") final Long memberId,
+                                                @Param("pushDate") final LocalDate pushDate);
 
     boolean existsPushStatusByMemberIdAndPushDate(final Long memberId, final LocalDate pushDate);
 }
