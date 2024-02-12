@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class ExternalMemberSubscriptionService {
@@ -24,11 +25,10 @@ public class ExternalMemberSubscriptionService {
         //푸시 상태 변경
         pushStatusRepository.updatePushStatus(memberId, pushDate);
 
-        List<Long> postIds = pushStatusRepository.findPostIdsByMemberIdAndPushDate(memberId, pushDate);
+        final List<Long> postIds = pushStatusRepository.findPostIdsByMemberIdAndPushDate(memberId, pushDate);
         return techBlogPostService.findPushPosts(postIds);
     }
 
-    @Transactional
     public void execute(final SubscriptionRequest request, final Long memberId) {
         final Subscription memberSubscriptionData = Subscription.builder()
                 .endpoint(request.endpoint())
