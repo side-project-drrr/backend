@@ -1,6 +1,5 @@
 package com.drrr.recommand.controller;
 
-import com.drrr.recommand.dto.AdjustPostWeightRequest;
 import com.drrr.recommand.service.impl.ExternalMemberPostReadService;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,10 +10,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,11 +29,9 @@ public class MemberPostWeightController {
             })
     @Secured("USER")
     @PostMapping("/posts/read/{postId}")
-    public void MemberPostReadController(
-            @MemberId final Long memberId,
-            @Validated @RequestBody final AdjustPostWeightRequest request,
-            @NotNull @PathVariable(name = "postId") final Long postId) {
-        memberPostReadService.execute(request, memberId, postId);
+    public void MemberPostReadController(@MemberId final Long memberId,
+                                         @NotNull @PathVariable(name = "postId") final Long postId) {
+        memberPostReadService.execute(memberId, postId);
     }
 
 }
