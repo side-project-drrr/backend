@@ -2,22 +2,17 @@ package com.drrr.auth.controller;
 
 import com.drrr.auth.payload.dto.OAuth2Response;
 import com.drrr.auth.payload.request.AccessTokenRequest;
-import com.drrr.auth.payload.request.EmailRequest;
-import com.drrr.auth.payload.request.EmailVerificationRequest;
 import com.drrr.auth.payload.request.SignInRequest;
 import com.drrr.auth.payload.request.SignOutRequest;
 import com.drrr.auth.payload.request.SignUpRequest;
 import com.drrr.auth.payload.response.AccessTokenResponse;
 import com.drrr.auth.payload.response.SignInResponse;
 import com.drrr.auth.payload.response.SignUpResponse;
-import com.drrr.auth.service.impl.EmailVerificationService;
 import com.drrr.auth.service.impl.ExchangeOAuth2AccessTokenService;
 import com.drrr.auth.service.impl.IssuanceTokenService;
-import com.drrr.auth.service.impl.IssuanceVerificationCode;
 import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.auth.service.impl.UnregisterService;
-import com.drrr.domain.email.service.VerificationService.VerificationDto;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -48,9 +43,6 @@ public class AuthController {
     private final UnregisterService unregisterService;
     private final IssuanceTokenService issuanceTokenService;
     private final ExchangeOAuth2AccessTokenService exchangeOAuth2AccessTokenService;
-    private final IssuanceVerificationCode issuanceVerificationCode;
-    private final EmailVerificationService emailVerificationService;
-
 
     @Operation(summary = "Front에서 준 code로 provider ID를 반환하는 API",
             description = "호출 성공 시 provider id와 isRegistered(isRegistered : false (신규회원) true (기존회원)), profile image url 반환",
@@ -106,24 +98,6 @@ public class AuthController {
         return issuanceTokenService.regenerateAccessToken(request);
     }
 
-    @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = String.class)))
-    })
-    @PostMapping("/email")
-    public void createEmailVerification(@RequestBody final EmailRequest emailRequest) {
-        issuanceVerificationCode.execute(emailRequest);
-    }
-
-    @Operation(summary = "이메일 인증코드 확인 API", description = "호출 성공 시 이메일 인증코드 확인 여부")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이메일 인증코드 확인 여부 반환", content = @Content(schema = @Schema(implementation = VerificationDto.class)))
-    })
-    @PostMapping("/email/verification")
-    public VerificationDto executeEmailVerification(@RequestBody final EmailVerificationRequest request) {
-        return emailVerificationService.execute(request);
-    }
-
     @Operation(summary = "회원탈퇴 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 회원탈퇴")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "회원탈퇴 성공", content = @Content(schema = @Schema(implementation = String.class)))
@@ -133,6 +107,5 @@ public class AuthController {
     public void memberUnregister(@MemberId final Long memberId) {
         unregisterService.execute(memberId);
     }
-
-
+    
 }
