@@ -17,5 +17,7 @@ public interface CustomTechBlogPostRepository {
 
     Slice<TechBlogPostCategoryDto> findAllPosts(final Pageable pageable);
 
+    List<TechBlogPostCategoryDto> categorizePosts(final List<Long> postIds);
+
     Slice<TechBlogPostCategoryDto> searchPostsTitleByWord(final String index, final Pageable pageable);
 }

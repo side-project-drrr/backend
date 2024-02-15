@@ -13,12 +13,11 @@ import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.drrr.recommand.dto.RecommendResponse;
-import com.drrr.recommand.dto.TechBlogPostDto;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
@@ -331,9 +330,9 @@ public class RecommendServiceE2ETest {
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
 
-            RecommendResponse responseBody = response.as(RecommendResponse.class);
-            membersRecommendedPosts.add(responseBody.posts().stream()
-                    .map(TechBlogPostDto::id).toList());
+            List<TechBlogPostCategoryDto> responseBody = response.jsonPath().getList("", TechBlogPostCategoryDto.class);
+            membersRecommendedPosts.add(
+                    responseBody.stream().map(post -> post.techBlogPostBasicInfoDto().id()).toList());
             latch.countDown();
 
         });
