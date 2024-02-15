@@ -2,6 +2,7 @@ package com.drrr.auth.controller;
 
 import com.drrr.auth.payload.request.EmailRequest;
 import com.drrr.auth.payload.request.EmailVerificationRequest;
+import com.drrr.auth.payload.response.EmailCheckResponse;
 import com.drrr.auth.service.impl.EmailVerificationService;
 import com.drrr.auth.service.impl.IssuanceVerificationCode;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
@@ -34,10 +35,10 @@ public class EmailController {
 
     @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = String.class)))
+            @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = EmailCheckResponse.class)))
     })
     @PostMapping("/email")
-    public void createEmailVerification(@RequestBody final EmailRequest emailRequest) {
-        issuanceVerificationCode.execute(emailRequest);
+    public EmailCheckResponse createEmailVerification(@RequestBody final EmailRequest emailRequest) {
+        return issuanceVerificationCode.execute(emailRequest);
     }
 }
