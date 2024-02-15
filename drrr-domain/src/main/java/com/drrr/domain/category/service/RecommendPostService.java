@@ -78,6 +78,7 @@ public class RecommendPostService {
         return postIds;
     }
 
+
     /**
      * 카테고리별로 추천해줄 게시물들을 추출 postCategoriesMapDto - 가장 최근 게시물 순으로 정렬되어 있는 상태 categoriesPostMap -> key : categoryId, value
      * : 카테고리별 추천해야 할 post 개수 : 할당해야 하는 게시물 개수 postCategoriesMapDto -> key : postId, value : post에 속한 categoryIds

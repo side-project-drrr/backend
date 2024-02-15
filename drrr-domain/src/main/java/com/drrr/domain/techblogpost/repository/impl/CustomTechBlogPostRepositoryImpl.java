@@ -171,14 +171,8 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
         return getTechBlogPostCategoryDtos(pageable, content, total);
     }
 
-    @NonNull
-    private Slice<TechBlogPostCategoryDto> getTechBlogPostCategoryDtos(Pageable pageable,
-                                                                       List<TechBlogPostBasicInfoDto> content,
-                                                                       Long total) {
-        boolean hasNext = (pageable.getOffset() + content.size()) < total;
-
-        List<CategoryPostDto> eachPostCategoriesByPostIds = categoryRepository.findEachPostCategoriesByPostIds(
-                content.stream().map(TechBlogPostBasicInfoDto::id).toList());
+    public List<TechBlogPostCategoryDto> categorizePosts(final List<Long> postIds) {
+        List<CategoryPostDto> eachPostCategoriesByPostIds = categoryRepository.findEachPostCategoriesByPostIds(postIds);
 
         Map<Long, List<CategoryDto>> postCategories = eachPostCategoriesByPostIds.stream()
                 .collect(Collectors.groupingBy(
@@ -191,14 +185,24 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                                 Collectors.toList())
                 ));
 
-        List<TechBlogPostCategoryDto> techBlogPostCategoryDtos = content.stream()
+        return findPostsByPostIds(postIds).stream()
                 .map(post -> TechBlogPostCategoryDto.builder()
                         .techBlogPostBasicInfoDto(post)
                         .categoryDto(postCategories.get(post.id()))
                         .build())
                 .toList();
+    }
 
-        return new SliceImpl<>(techBlogPostCategoryDtos, pageable, hasNext);
+    @NonNull
+    private Slice<TechBlogPostCategoryDto> getTechBlogPostCategoryDtos(final Pageable pageable,
+                                                                       final List<TechBlogPostBasicInfoDto> content,
+                                                                       final Long total) {
+        boolean hasNext = (pageable.getOffset() + content.size()) < total;
+
+        List<TechBlogPostCategoryDto> postCategoryDtos = categorizePosts(
+                content.stream().map(TechBlogPostBasicInfoDto::id).toList());
+
+        return new SliceImpl<>(postCategoryDtos, pageable, hasNext);
     }
 
 }

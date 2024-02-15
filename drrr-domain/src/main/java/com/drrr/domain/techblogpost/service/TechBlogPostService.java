@@ -35,6 +35,10 @@ public class TechBlogPostService {
         return topPosts;
     }
 
+    public List<TechBlogPostCategoryDto> categorize(final List<Long> postIds) {
+        return techBlogPostRepository.categorizePosts(postIds);
+    }
+
     public List<TechBlogPost> findNotCachedTechBlogPosts(final List<TechBlogPost> postsInRedis,
                                                          final List<Long> postIds) {
         //추천해줘야 할 전체 게시물 ids

@@ -3,15 +3,13 @@ package com.drrr.recommand.service.impl;
 import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.category.service.WeightValidationService;
 import com.drrr.domain.log.service.LogUpdateService;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
-import com.drrr.recommand.dto.RecommendResponse;
-import com.drrr.recommand.dto.TechBlogPostDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +25,7 @@ public class ExternalRecommendService {
     private final LogUpdateService logUpdateService;
 
     @Transactional
-    public RecommendResponse execute(final Long memberId) {
+    public List<TechBlogPostCategoryDto> execute(final Long memberId) {
         //사용자 가중치 검증
         weightValidationService.validateWeight(memberId);
 
@@ -44,12 +42,14 @@ public class ExternalRecommendService {
             redisTechBlogPostService.savePostsInRedis(notCachedPosts);
         }
 
+        List<Long> concatPostIds = Stream.concat(posts.stream().map(TechBlogPost::getId)
+                , notCachedPosts.stream().map(TechBlogPost::getId)).toList();
+
+        List<TechBlogPostCategoryDto> categorizedPosts = techBlogPostService.categorize(concatPostIds);
+
         //로그 쌓기
         logUpdateService.updateMemberPostRecommendLog(memberId, postIds);
 
-        return RecommendResponse.builder()
-                .posts(Stream.concat(posts.stream().map(TechBlogPostDto::from)
-                                , notCachedPosts.stream().map(TechBlogPostDto::from)).toList())
-                .build();
+        return categorizedPosts;
     }
 }
