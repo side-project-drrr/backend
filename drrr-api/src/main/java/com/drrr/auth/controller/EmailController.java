@@ -2,7 +2,6 @@ package com.drrr.auth.controller;
 
 import com.drrr.auth.payload.request.EmailRequest;
 import com.drrr.auth.payload.request.EmailVerificationRequest;
-import com.drrr.auth.payload.response.EmailCheckResponse;
 import com.drrr.auth.service.impl.EmailVerificationService;
 import com.drrr.auth.service.impl.IssuanceVerificationCode;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
