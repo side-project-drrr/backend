@@ -34,7 +34,7 @@ public class EmailController {
 
     @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = EmailCheckResponse.class)))
+            @ApiResponse(responseCode = "200", description = "이메일 인증코드 발급, String type", content = @Content(schema = @Schema(implementation = String.class)))
     })
     @PostMapping("/email")
     public void createEmailVerification(@RequestBody final EmailRequest emailRequest) {
