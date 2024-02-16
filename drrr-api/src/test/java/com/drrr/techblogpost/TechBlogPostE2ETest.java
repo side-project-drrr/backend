@@ -394,7 +394,7 @@ public class TechBlogPostE2ETest {
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .delete("/api/v1/post/1/like");
+                    .delete("/api/v1/post/100/like");
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
