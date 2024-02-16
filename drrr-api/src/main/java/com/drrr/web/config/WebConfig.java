@@ -1,6 +1,8 @@
 package com.drrr.web.config;
 
-import com.drrr.web.converter.StringToTopTechBlogTypeConverter;
+import com.drrr.web.converter.LanguageConverter;
+import com.drrr.web.converter.SortDirectionConverter;
+import com.drrr.web.converter.TopTechBlogTypeConverter;
 import com.drrr.web.resolver.JwtTokenResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         //탑 기술 블로그 타입 컨버터 추가
-        registry.addConverter(new StringToTopTechBlogTypeConverter());
+        registry.addConverter(new TopTechBlogTypeConverter());
+        registry.addConverter(new LanguageConverter());
+        registry.addConverter(new SortDirectionConverter());
     }
 
     @Override

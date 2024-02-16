@@ -3,7 +3,6 @@ package com.drrr.member;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.code.member.Gender;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
@@ -92,7 +91,6 @@ public class MemberViewE2ETest {
         List<Member> members = IntStream.rangeClosed(1, MEMBER_COUNT).mapToObj(i -> {
             String email = "user" + i + "@example.com";
             String nickname = "user" + i;
-            Gender gender = (i % 2 == 0) ? Gender.MAN : Gender.WOMAN; // 임의로 남성과 여성을 번갈아가며 설정
             String provider = "provider" + i;
             String providerId = "providerId" + i;
             String imageUrl = "http://example.com/image" + i + ".jpg";

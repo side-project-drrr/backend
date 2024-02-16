@@ -1,6 +1,5 @@
 package com.drrr.domain.recommend.service.data;
 
-import com.drrr.core.code.member.Gender;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.annotation.EnableMysqlProfile;
 import com.drrr.domain.category.entity.Category;
@@ -25,12 +24,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@Disabled
+
 @EnableMysqlProfile
 @SpringBootTest
 class DummyDataFactory {
@@ -67,7 +65,6 @@ class DummyDataFactory {
         List<Member> members = IntStream.rangeClosed(1, MEMBER_COUNT).mapToObj(i -> {
             String email = "user" + i + "@example.com";
             String nickname = "user" + i;
-            Gender gender = (i % 2 == 0) ? Gender.MAN : Gender.WOMAN; // 임의로 남성과 여성을 번갈아가며 설정
             String provider = "provider" + i;
             String providerId = "providerId" + i;
             String imageUrl = "http://example.com/image" + i + ".jpg";
