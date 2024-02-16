@@ -1,6 +1,7 @@
 package com.drrr.techblogpost.service;
 
-import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
+import com.drrr.core.code.techblog.TopTechBlogType;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +12,8 @@ import org.springframework.stereotype.Service;
 public class ExternalTechBlogPostLikeService {
     private final TechBlogPostService techBlogPostService;
 
-    public List<TechBlogPostBasicInfoDto> execute(final int count) {
+    public List<TechBlogPostCategoryDto> execute(final int count, final TopTechBlogType type) {
 
-        return techBlogPostService.findTopLikePost(count);
+        return techBlogPostService.findTopPost(count, type);
     }
 }

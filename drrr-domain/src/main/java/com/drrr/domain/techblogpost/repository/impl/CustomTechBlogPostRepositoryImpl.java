@@ -4,12 +4,14 @@ import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
+import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryPostDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.repository.CustomTechBlogPostRepository;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.LinkedHashMap;
@@ -93,23 +95,20 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @Override
-    public List<TechBlogPostBasicInfoDto> findTopLikePost(final int count) {
-        return queryFactory.select(
-                        Projections.constructor(TechBlogPostBasicInfoDto.class
-                                , techBlogPost.id
-                                , techBlogPost.title
-                                , techBlogPost.summary
-                                , techBlogPost.techBlogCode
-                                , techBlogPost.thumbnailUrl
-                                , techBlogPost.viewCount
-                                , techBlogPost.postLike
-                                , techBlogPost.writtenAt
-                                , techBlogPost.url)
-                )
+    public List<Long> findTopPost(final int count, final TopTechBlogType type) {
+
+        return queryFactory.select(techBlogPost.id)
                 .from(techBlogPost)
-                .orderBy(techBlogPost.postLike.desc(), techBlogPost.writtenAt.desc())
+                .orderBy(topBlogTypeCondition(type), techBlogPost.writtenAt.desc())
                 .limit(count)
                 .fetch();
+    }
+
+    private OrderSpecifier<Integer> topBlogTypeCondition(final TopTechBlogType type) {
+        if (type.equals(TopTechBlogType.VIEWS)) {
+            return techBlogPost.viewCount.desc();
+        }
+        return techBlogPost.postLike.desc();
     }
 
     @Override

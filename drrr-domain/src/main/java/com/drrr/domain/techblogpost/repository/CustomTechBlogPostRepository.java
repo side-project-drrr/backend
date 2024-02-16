@@ -1,5 +1,6 @@
 package com.drrr.domain.techblogpost.repository;
 
+import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import java.util.List;
@@ -13,7 +14,7 @@ public interface CustomTechBlogPostRepository {
 
     List<TechBlogPostBasicInfoDto> findPostsByPostIds(List<Long> postIds);
 
-    List<TechBlogPostBasicInfoDto> findTopLikePost(final int count);
+    List<Long> findTopPost(final int count, final TopTechBlogType type);
 
     Slice<TechBlogPostCategoryDto> findAllPosts(final Pageable pageable);
 

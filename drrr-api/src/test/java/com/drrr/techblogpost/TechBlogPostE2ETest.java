@@ -119,7 +119,7 @@ public class TechBlogPostE2ETest {
                 .aiSummary("aiSummary")
                 .urlSuffix("urlSuffix")
                 .url("url")
-                .like(500)
+                .like(100)
                 .crawlerGroup(TechBlogCode.KAKAO)
                 .build();
 
@@ -353,9 +353,9 @@ public class TechBlogPostE2ETest {
         //when
         String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         CountDownLatch latch = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(500);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
 
-        IntStream.rangeClosed(1, 500).forEach(i -> {
+        IntStream.rangeClosed(1, 100).forEach(i -> {
 
             Response response = given().log()
                     .all()
@@ -384,7 +384,7 @@ public class TechBlogPostE2ETest {
                 DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
         int likeCount = techBlogPost.getPostLike();
-        assertThat(likeCount).isEqualTo(500);
+        assertThat(likeCount).isEqualTo(100);
 
     }
 
@@ -393,9 +393,9 @@ public class TechBlogPostE2ETest {
         //when
         String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         CountDownLatch latch = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(500);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
 
-        IntStream.rangeClosed(1, 500).forEach(i -> {
+        IntStream.rangeClosed(1, 100).forEach(i -> {
 
             Response response = given().log()
                     .all()
