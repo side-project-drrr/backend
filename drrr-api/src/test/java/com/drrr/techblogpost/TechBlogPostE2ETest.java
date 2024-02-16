@@ -351,24 +351,17 @@ public class TechBlogPostE2ETest {
     @Test
     void 여러_사용자가_게시물에_좋아요를_누르면_정상적으로_증가합니다() throws InterruptedException {
         //when
-        String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         CountDownLatch latch = new CountDownLatch(1);
         ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         IntStream.rangeClosed(1, 100).forEach(i -> {
-
+            String accessToken = jwtProvider.createAccessToken(Long.valueOf(i), Instant.now());
             Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .body("""
-                            {
-                                "memberId":""" + i + """
-                                ,"postId" : 1
-                            }
-                            """)
-                    .post("/api/v1/post/like");
+                    .post("/api/v1/post/1/like");
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
@@ -391,24 +384,17 @@ public class TechBlogPostE2ETest {
     @Test
     void 여러_사용자가_게시물에_좋아요를_누르면_정상적으로_감소합니다() throws InterruptedException {
         //when
-        String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         CountDownLatch latch = new CountDownLatch(1);
         ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         IntStream.rangeClosed(1, 100).forEach(i -> {
-
+            String accessToken = jwtProvider.createAccessToken(Long.valueOf(i), Instant.now());
             Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .body("""
-                            {
-                                "memberId": """ + i + """
-                                ,"postId" : 100
-                            }
-                            """)
-                    .delete("/api/v1/post/like");
+                    .delete("/api/v1/post/100/like");
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
