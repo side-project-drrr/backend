@@ -1,5 +1,6 @@
 package com.drrr.domain.techblogpost.service;
 
+import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryPostDto;
 import com.drrr.domain.category.repository.CategoryRepository;
@@ -26,13 +27,13 @@ public class TechBlogPostService {
     private final CategoryRepository categoryRepository;
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public List<TechBlogPostBasicInfoDto> findTopLikePost(final int count) {
-        final List<TechBlogPostBasicInfoDto> topPosts = techBlogPostRepository.findTopLikePost(count);
-        if (topPosts.isEmpty()) {
+    public List<TechBlogPostCategoryDto> findTopPost(final int count, final TopTechBlogType type) {
+        final List<Long> topPostsIds = techBlogPostRepository.findTopPost(count, type);
+        if (topPostsIds.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return topPosts;
+        return techBlogPostRepository.categorizePosts(topPostsIds);
     }
 
     public List<TechBlogPostCategoryDto> categorize(final List<Long> postIds) {
