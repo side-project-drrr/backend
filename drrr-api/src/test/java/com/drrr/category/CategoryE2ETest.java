@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -145,7 +146,7 @@ public class CategoryE2ETest {
     }
 
     @Test
-    public void 사용자가_가장_많이_선호나는_탑_카테고리를_잘_가져옵니다() throws JsonProcessingException {
+    public void 사용자가_가장_많이_선호하는_탑_카테고리를_잘_가져옵니다() throws JsonProcessingException {
         //when
         Response response = given()
                 .log().all()
@@ -166,11 +167,13 @@ public class CategoryE2ETest {
     @Test
     public void 사용자의_선호_카테고리를_잘_가져옵니다() throws JsonProcessingException {
         //when
+        String accessToken = jwtProvider.createAccessToken(1L, Instant.now());
         Response response = given()
                 .log().all()
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
-                .get("/api/v1/categories/member/{memberId}", 1L)
+                .header("Authorization", "Bearer " + accessToken)
+                .get("/api/v1/members/me/category-preference")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -192,7 +195,7 @@ public class CategoryE2ETest {
                 .log().all()
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
-                .get("/api/v1/categories/post/{postId}", 1L)
+                .get("/api/v1/categories/posts/{postId}", 1L)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -221,7 +224,7 @@ public class CategoryE2ETest {
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .queryParams(params)
-                .get("/api/v1/categories")
+                .get("/api/v1/categories/all")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -243,24 +246,21 @@ public class CategoryE2ETest {
     }
 
     @Test
-    public void 카테고리_검색이_잘_작동합니다() throws JsonProcessingException {
-        //given
-        String index = "J";
-
+    public void 카테고리_키워드_검색이_잘_작동합니다() throws JsonProcessingException {
         //when
         Map<String, String> params = new HashMap<>();
         params.put("page", "0");
         params.put("size", "10");
         params.put("sort", "name");
         params.put("direction", "ASC");
-        params.put("searchWord", "J");
+        params.put("keyword", "J");
 
         Response response = given()
                 .log().all()
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .queryParams(params)
-                .get("/api/v1/categories/search")
+                .get("/api/v1/categories/keyword-search")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -291,7 +291,7 @@ public class CategoryE2ETest {
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .queryParams(params)
-                .get("/api/v1/categories/index")
+                .get("/api/v1/categories/index-search")
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract()
@@ -313,7 +313,7 @@ public class CategoryE2ETest {
                                 .log().all()
                                 .when()
                                 .contentType(ContentType.APPLICATION_JSON.toString())
-                                .get("/api/v1/categories/selection?ids=" + ids)
+                                .get("/api/v1/categories?ids=" + ids)
                                 .then()
                                 .statusCode(HttpStatus.OK.value())
                                 .extract().body().asString(),
