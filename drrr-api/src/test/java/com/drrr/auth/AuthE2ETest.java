@@ -199,7 +199,7 @@ public class AuthE2ETest {
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .header("Authorization", "Bearer " + accessToken)
-                .delete("/api/v1/auth/member/unregister")
+                .delete("/api/v1/auth/members/me/deletion")
                 .then()
                 .statusCode(HttpStatus.OK.value());
         //then
@@ -207,5 +207,5 @@ public class AuthE2ETest {
         assertThat(memberOptional).isPresent();
         assertThat(memberOptional.get().isActive()).isFalse();
     }
-    
+
 }

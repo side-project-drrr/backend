@@ -17,6 +17,6 @@ public class ExternalSearchCategoryService {
     public Slice<CategoryDto> execute(final CategorySearchWordRequest request) {
         final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
         final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
-        return categoryRepository.searchCategoriesByWord(request.searchWord(), pageRequest);
+        return categoryRepository.searchCategoriesByKeyWord(request.keyword(), pageRequest);
     }
 }

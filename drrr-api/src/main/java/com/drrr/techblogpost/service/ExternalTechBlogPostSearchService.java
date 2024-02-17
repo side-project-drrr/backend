@@ -19,6 +19,6 @@ public class ExternalTechBlogPostSearchService {
     public Slice<TechBlogPostCategoryDto> execute(final TechBlogPostIndexSliceRequest request) {
         final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
         final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
-        return techBlogPostRepository.searchPostsTitleByWord(request.index(), pageRequest);
+        return techBlogPostRepository.searchPostsTitleByKeyword(request.keyword(), pageRequest);
     }
 }

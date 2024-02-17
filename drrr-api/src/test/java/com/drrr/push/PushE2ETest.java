@@ -172,7 +172,7 @@ public class PushE2ETest {
                                 .when()
                                 .contentType(ContentType.APPLICATION_JSON.toString())
                                 .header("Authorization", "Bearer " + accessToken)
-                                .get("/api/v1/push/posts/member")
+                                .get("/api/v1/members/me/web-push/posts")
                                 .then()
                                 .statusCode(HttpStatus.OK.value())
                                 .extract().body().asString(),
@@ -209,7 +209,7 @@ public class PushE2ETest {
                                    "memberId" : 1
                                }
                         """)
-                .post("/api/v1/member/subscription")
+                .post("/api/v1/members/me/web-push/subscription")
                 .then()
                 .statusCode(HttpStatus.OK.value());
 
@@ -233,7 +233,7 @@ public class PushE2ETest {
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .header("Authorization", "Bearer " + accessToken)
-                .delete("/api/v1/member/subscription")
+                .delete("/api/v1/members/me/web-push/subscription")
                 .then()
                 .statusCode(HttpStatus.OK.value());
 

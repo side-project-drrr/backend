@@ -23,11 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class RecommendController {
     private final ExternalRecommendService recommendService;
 
-    @Operation(summary = "사용자 게시물 추천 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 추천해줄 게시물 리스트 반환, 추천 게시물 중 최근에 작성된 순으로 정렬됨")
-    @ApiResponse(responseCode = "200", description = "게시물 추천 성공",
+    @Operation(summary = "사용자의 추천 게시물 정보 반환 API - [JWT TOKEN REQUIRED]"
+            , description = "호출 성공 시 추천해줄 게시물 리스트 반환, 추천 게시물 중 최근에 작성된 순으로 정렬됨")
+    @ApiResponse(responseCode = "200", description = "추천해줄 게시물 리스트 반환, 추천 게시물 중 최근에 작성된 순으로 정렬",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     @Secured("USER")
-    @GetMapping("/recommendation/posts")
+    @GetMapping("/members/me/post-recommendation")
     public List<TechBlogPostCategoryDto> recommendPost(@MemberId final Long memberId) {
         return recommendService.execute(memberId);
     }

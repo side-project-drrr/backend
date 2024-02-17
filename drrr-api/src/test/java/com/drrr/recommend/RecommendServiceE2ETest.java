@@ -325,7 +325,7 @@ public class RecommendServiceE2ETest {
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .get("/api/v1/recommendation/posts");
+                    .get("/api/v1/members/me/post-recommendation");
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
