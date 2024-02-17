@@ -345,7 +345,7 @@ public class MemberViewE2ETest {
                                 "categoryIds": [1,11]
                             }
                             """)
-                    .post("/api/v1/posts/read/{postId}", 1L)
+                    .post("/api/v1/members/me/read-post/{postId}", 1L)
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
