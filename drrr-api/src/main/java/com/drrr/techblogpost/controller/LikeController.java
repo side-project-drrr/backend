@@ -33,7 +33,7 @@ public class LikeController {
                     , content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
     @Secured("USER")
-    @PostMapping("/members/me/post/{postId}/like")
+    @PostMapping("/post/{postId}/like")
     public void addPostLike(@NotNull @MemberId final Long memberId,
                             @NotNull @PathVariable("postId") final Long postId) {
         externalPostLikeService.execute(memberId, postId);
@@ -45,7 +45,7 @@ public class LikeController {
                     , content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
     @Secured("USER")
-    @DeleteMapping("/members/me/post/{postId}/like")
+    @DeleteMapping("/post/{postId}/like")
     public void deletePostLike(@NotNull @MemberId final Long memberId,
                                @NotNull @PathVariable("postId") final Long postId) {
         externalPostDislikeService.execute(memberId, postId);
