@@ -104,28 +104,6 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Override
-    public Slice<CategoryDto> searchCategoriesByKeyWord(String keyword, Pageable pageable) {
-        List<CategoryDto> content = queryFactory.select(
-                        Projections.constructor(CategoryDto.class
-                                , category.id
-                                , category.name))
-                .from(category)
-                .where(category.name.like("%" + keyword + "%"))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        Long total = queryFactory.select(category.count())
-                .from(category)
-                .where(category.name.like("%" + keyword + "%"))
-                .fetchOne();
-
-        boolean hasNext = (pageable.getOffset() + content.size()) < total;
-
-        return new SliceImpl<>(content, pageable, hasNext);
-    }
-
-    @Override
     public List<Category> findByNameContaining(final String text, final Pageable pageable) {
         final BooleanExpression uniqueNameOrDisplayNameSearchCondition = category.name.startsWith(text);
 
