@@ -72,6 +72,7 @@ public class CategoryController {
                한글과 영어 동시에 쓰지 말 것! 둘다 필요한 경우 2번 요청
                startIdx와 endIdx는 시작하는 캐릭터 값(ex ["A", "B", "C"] - 대소문자 둘다 가능, ["가", "나"] 등)
                language는 어떤 언어로 가져올지 결정 (ex "KOREAN", "ENGLISH" - 대소문자 둘다 가능)
+               size는 각 keyIndex마다 가져올 사이즈를 명시
             """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 카테고리 정보를 반환",
