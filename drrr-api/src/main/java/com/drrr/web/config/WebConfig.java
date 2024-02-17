@@ -1,5 +1,6 @@
 package com.drrr.web.config;
 
+import com.drrr.web.converter.IndexConverter;
 import com.drrr.web.converter.LanguageConverter;
 import com.drrr.web.converter.SortDirectionConverter;
 import com.drrr.web.converter.TopTechBlogTypeConverter;
@@ -23,6 +24,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addConverter(new TopTechBlogTypeConverter());
         registry.addConverter(new LanguageConverter());
         registry.addConverter(new SortDirectionConverter());
+        registry.addConverter(new IndexConverter());
     }
 
     @Override

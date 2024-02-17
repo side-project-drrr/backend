@@ -1,4 +1,4 @@
-package com.drrr.category.dto;
+package com.drrr.category.request;
 
 import jakarta.validation.constraints.NotNull;
 import java.util.List;

@@ -6,6 +6,7 @@ import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryPostDto;
 import com.drrr.domain.category.entity.Category;
+import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -27,4 +28,6 @@ public interface CustomCategoryRepository {
     List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postIds);
 
 
+    List<CategoriesKeyDto> findRangedCategories(IndexConstants startIdx, IndexConstants endIdx,
+                                                LanguageConstants language, int size);
 }

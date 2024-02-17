@@ -1,11 +1,19 @@
 package com.drrr.domain.category.service;
 
+import com.drrr.core.category.constant.IndexConstants;
+import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
+import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.domain.exception.DomainExceptionCode;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,6 +35,38 @@ public class CategoryService {
         }
 
         return categories;
+    }
+
+    public CategoryRangeDto findCategoriesByRange(final IndexConstants startIdx, final IndexConstants endIdx,
+                                                  final LanguageConstants language, final int size) {
+        final List<CategoriesKeyDto> rangedCategories = categoryRepository.findRangedCategories(startIdx, endIdx,
+                language, size);
+        
+        final Map<Character, List<CategoryDto>> postCategories = rangedCategories.stream()
+                .collect(Collectors.groupingBy(
+                        CategoriesKeyDto::keyIndex,
+                        LinkedHashMap::new,
+                        Collectors.mapping(categoryDto -> CategoryDto.builder()
+                                        .id(categoryDto.id())
+                                        .name(categoryDto.name())
+                                        .build(),
+                                Collectors.toList())
+                ));
+
+        List<CategoryRangeDto.Content> categoryRangeResponses = new ArrayList<>();
+
+        postCategories.entrySet().stream()
+                .forEach(entry -> {
+                    CategoryRangeDto.Content content = CategoryRangeDto.Content.builder()
+                            .category(postCategories.get(entry.getKey()))
+                            .keyIndex(entry.getKey())
+                            .build();
+                    categoryRangeResponses.add(content);
+                });
+
+        return CategoryRangeDto.builder()
+                .content(categoryRangeResponses)
+                .build();
     }
 
     public List<CategoryDto> findTopCategories(final Long count) {

@@ -1,7 +1,9 @@
 package com.drrr.category.service.impl;
 
 import com.drrr.category.request.CategoryIndexSliceRequest;
+import com.drrr.category.request.CategoryRangeRequest;
 import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.service.CategoryService;
 import java.util.List;
@@ -19,6 +21,12 @@ public class ExternalFindCategoryService {
 
     public List<CategoryDto> execute(final Long postId) {
         return categoryService.findCategoriesByPostId(postId);
+    }
+
+    public CategoryRangeDto execute(final CategoryRangeRequest request) {
+
+        return categoryService.findCategoriesByRange(request.startIdx(), request.endIdx(), request.language(),
+                request.size());
     }
 
     public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request) {
