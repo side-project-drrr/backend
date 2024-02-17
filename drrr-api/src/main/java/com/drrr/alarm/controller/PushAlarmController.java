@@ -7,6 +7,7 @@ import com.drrr.alarm.service.request.SubscriptionRequest;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,33 +35,33 @@ public class PushAlarmController {
     private final ExternalDeleteSubscriptionService externalDeleteSubscriptionService;
     private final ExternalMemberSubscriptionService externalMemberSubscriptionService;
 
-    @Operation(summary = "사용자가 푸시 알림 클릭 시 보여줄 블로그 정보 반환 API - [JWT TOKEN REQUIRED]",
-            description = "호출 성공 시 사용자의 푸시 알림 클릭 시 보여줄 블로그 정보 반환")
+    @Operation(summary = "지정된 날짜에 해당하는 사용자 웹 푸시 블로그 정보 반환  API - [JWT TOKEN REQUIRED]",
+            description = "호출 성공 시 지정된 pushDate(format : YYYYMMDD)에 푸시 해준 사용자의 블로그 정보 반환(작성일 내림차순)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "사용자의 푸시 알림 클릭 시 보여줄 블로그 정보 반환", content = @Content(schema = @Schema(implementation = TechBlogPostCategoryDto.class)))
+            @ApiResponse(responseCode = "200", description = "지정된 pushDate(format : YYYYMMDD)에 웹 푸시를 해준 사용자의 블로그 정보 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     })
-    @GetMapping("/push/posts/member")
+    @GetMapping("/members/me/web-push/posts")
     public List<TechBlogPostCategoryDto> findMemberPushPosts(@Valid @ModelAttribute final PushRequest request) {
         return externalMemberSubscriptionService.execute(request.memberId(), request.pushDate());
     }
 
-
-    @Operation(summary = "구독 요청 API - [JWT TOKEN REQUIRED]",
-            description = "호출 성공 시 사용자의 구독을 요청함")
+    @Operation(summary = "사용자 웹 푸시 구독 정보 저장 API - [JWT TOKEN REQUIRED]",
+            description = "호출 성공 시 사용자의 구독 정보 저장")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "사용자의 구독 신청 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
+            @ApiResponse(responseCode = "200", description = "사용자 웹 푸시 구독 정보 저장 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
-    @PostMapping("/member/subscription")
+    @PostMapping("/members/me/web-push/subscription")
     public void addSubscription(@MemberId final Long memberId, @RequestBody final SubscriptionRequest request) {
         externalMemberSubscriptionService.execute(request, memberId);
     }
 
-    @Operation(summary = "구독 취소 API - [JWT TOKEN REQUIRED]",
-            description = "호출 성공 시 사용자의 구독을 취소함")
+    @Operation(summary = "사용자 웹푸시 구독 정보 삭제 API - [JWT TOKEN REQUIRED]",
+            description = "호출 성공 시 사용자의 구독 정보 삭제")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "사용자의 구독 취소 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
+            @ApiResponse(responseCode = "200", description = "사용자의 웹푸시 구독 정보 삭제 완료", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
-    @DeleteMapping("/member/subscription")
+    @DeleteMapping("/members/me/web-push/subscription")
     public void cancelSubscription(@MemberId final Long memberId) {
         externalDeleteSubscriptionService.execute(memberId);
     }
