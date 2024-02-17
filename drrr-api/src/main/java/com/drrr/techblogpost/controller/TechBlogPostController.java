@@ -91,7 +91,7 @@ public class TechBlogPostController {
         return externalTechBlogPostService.executeFindPostDetail(id);
     }
 
-    @Operation(summary = "Request로 보낸 Type이 가장 높은 탑 기술 블로그를 반환 API", description = " 호출 성공 시 count만큼 Type이 가장 높은 기술 블로그 반환(작성일 내림차순)")
+    @Operation(summary = "Request로 보낸 Type(VIEWS or LIKES)이 가장 높은 탑 기술 블로그를 반환 API", description = " 호출 성공 시 count만큼 Type(VIEWS or LIKES)이 가장 높은 기술 블로그 반환(작성일 내림차순)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회수가 가장 높은 기술 블로그를 반환",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostBasicInfoDto.class))))
