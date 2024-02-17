@@ -13,7 +13,12 @@ import com.drrr.domain.category.repository.CustomCategoryRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -25,6 +30,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     private final JPAQueryFactory queryFactory;
+    private final EntityManager em;
 
     @Override
     public List<Category> findIds(List<Long> ids) {
@@ -61,8 +67,8 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
             return category.name.like(
                     indexConstants.getCharacter() + "%");
         }
-        return category.name.goe(indexConstants.getCharacter()).
-                and(category.name.lt(indexConstants.getNext().getCharacter()));
+        return category.name.goe(String.valueOf(indexConstants.getCharacter())).
+                and(category.name.lt(String.valueOf(indexConstants.getNext().getCharacter())));
     }
 
     @Override
@@ -103,6 +109,72 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .fetch();
     }
 
+    private String koreanRangedCategoriesQueryFactory(IndexConstants[] rangeIndexConstants, IndexConstants startIdx,
+                                                      IndexConstants endIdx, int size) {
+        return IntStream.rangeClosed(startIdx.ordinal(), endIdx.ordinal()).mapToObj(i -> {
+            Character startChar = Character.toUpperCase(rangeIndexConstants[i].getCharacter());
+            Character nextChar = Character.toUpperCase(rangeIndexConstants[i].getNext().getCharacter());
+            return String.format("""
+                            (
+                               SELECT A.id id
+                                    , A.name name
+                                    , '%s' keyIndex
+                                 FROM DRRR_CATEGORY A 
+                                WHERE A.name >= '%s' AND A.name < '%s'
+                                LIMIT %d
+                             )
+                            """, startChar
+                    , startChar
+                    , nextChar
+                    , size);
+        }).collect(Collectors.joining(" UNION ALL "));
+    }
+
+    private String englishRangedCategoriesQueryFactory(IndexConstants[] rangeIndexConstants,
+                                                       IndexConstants startIdx, IndexConstants endIdx, int size) {
+        return IntStream.rangeClosed(startIdx.ordinal(), endIdx.ordinal()).mapToObj(i -> {
+            Character startChar = Character.toUpperCase(rangeIndexConstants[i].getCharacter());
+            Character endChar = Character.toUpperCase(rangeIndexConstants[i].getCharacter());
+            return String.format("""
+                            (
+                               SELECT A.id id
+                                    , A.name name
+                                    , '%s' keyIndex
+                                 FROM DRRR_CATEGORY A
+                                WHERE A.name LIKE '%s%%'
+                                LIMIT %d
+                             )
+                            """, startChar
+                    , endChar
+                    , size);
+        }).collect(Collectors.joining(" UNION ALL "));
+    }
+
+    @Override
+    public List<CategoriesKeyDto> findRangedCategories(IndexConstants startIdx, IndexConstants endIdx,
+                                                       LanguageConstants language, int size) {
+
+        final IndexConstants[] rangeIndexConstants = IndexConstants.values();
+
+        final String unionSql = language.equals(LanguageConstants.ENGLISH) ?
+                englishRangedCategoriesQueryFactory(rangeIndexConstants, startIdx, endIdx, size) :
+                koreanRangedCategoriesQueryFactory(rangeIndexConstants, startIdx, endIdx, size);
+
+        Query nativeQuery = em.createNativeQuery(unionSql);
+
+        @SuppressWarnings("unchecked") final List<Object[]> list = nativeQuery.getResultList();
+
+        //가장 최근에 만들어진 게시물 순으로 정렬됨
+        //사용자가 관심 있는 카테고리에 대해 게시물 추출
+        return list.stream()
+                .map(elem -> CategoriesKeyDto.builder()
+                        .id((Long) elem[0])
+                        .name((String) elem[1])
+                        .keyIndex((Character) elem[2])
+                        .build())
+                .toList();
+    }
+
     @Override
     public List<Category> findByNameContaining(final String text, final Pageable pageable) {
         final BooleanExpression uniqueNameOrDisplayNameSearchCondition = category.name.startsWith(text);
@@ -124,6 +196,13 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .orderBy(categoryWeight.category.id.count().desc())
                 .limit(count)
                 .fetch();
+    }
+
+    @Builder
+    public static record CategoriesKeyDto(
+            Long id,
+            String name,
+            Character keyIndex) {
     }
 
 

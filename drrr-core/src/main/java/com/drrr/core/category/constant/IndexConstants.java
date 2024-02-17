@@ -4,18 +4,17 @@ import lombok.Getter;
 
 @Getter
 public enum IndexConstants {
-    가("\uAC00"), 나("\uB098"), 다("\uB2E4"), 라("\uB77C"), 마("\uB9C8"),
-    바("\uBC14"), 사("\uC0AC"), 아("\uC544"), 자("\uC790"), 차("\uCC28"),
-    카("\uCE74"), 타("\uD0C0"), 파("\uD30C"), 하("\uD558"), 힣("\uD7A3"),
-    A("A"), B("B"), C("C"), D("D"), E("E"), F("F"), G("G"),
-    H("H"), I("I"), J("J"), K("K"), L("L"), M("M"), N("N"),
-    O("O"), P("P"), Q("Q"), R("R"), S("S"), T("T"), U("U"),
-    V("V"), W("W"), X("X"), Y("Y"), Z("Z");
+    가('\uAC00'), 나('\uB098'), 다('\uB2E4'), 라('\uB77C'), 마('\uB9C8'),
+    바('\uBC14'), 사('\uC0AC'), 아('\uC544'), 자('\uC790'), 차('\uCC28'),
+    카('\uCE74'), 타('\uD0C0'), 파('\uD30C'), 하('\uD558'), 힣('\uD7A3'),
+    A('A'), B('B'), C('C'), D('D'), E('E'), F('F'), G('G'),
+    H('H'), I('I'), J('J'), K('K'), L('L'), M('M'), N('N'),
+    O('O'), P('P'), Q('Q'), R('R'), S('S'), T('T'), U('U'),
+    V('V'), W('W'), X('X'), Y('Y'), Z('Z');
 
-    private final String character;
-    private final static IndexConstants[] values = values();
+    private final Character character;
 
-    IndexConstants(final String character) {
+    IndexConstants(final Character character) {
         this.character = character;
     }
 
@@ -30,6 +29,5 @@ public enum IndexConstants {
         }
         return values[ordinal + 1];
     }
-
 
 }

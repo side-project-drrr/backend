@@ -1,13 +1,15 @@
 package com.drrr.category.controller;
 
-import com.drrr.category.dto.CategoryRequest;
 import com.drrr.category.request.CategoryIndexSliceRequest;
+import com.drrr.category.request.CategoryRangeRequest;
+import com.drrr.category.request.CategoryRequest;
 import com.drrr.category.request.CategorySearchWordRequest;
 import com.drrr.category.request.CategorySliceRequest;
 import com.drrr.category.service.impl.ExternalCategoryService;
 import com.drrr.category.service.impl.ExternalFindCategoryService;
 import com.drrr.category.service.impl.ExternalSearchCategoryService;
 import com.drrr.domain.category.dto.CategoryDto;
+import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
 import com.drrr.web.annotation.MemberId;
@@ -60,6 +62,24 @@ public class CategoryController {
     })
     @GetMapping("/categories/index-search")
     public Slice<CategoryDto> findIndexCategory(@ModelAttribute @Valid CategoryIndexSliceRequest request) {
+        return externalFindCategoryService.execute(request);
+    }
+
+    @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API", description = """
+               호출 성공 시 Range에 따른 카테고리 정보 반환 
+               한글 사용 예시) api/v1/categories/range?startIdx=가&endIdx=라&language=english&size=10
+               영어 사용 예시) api/v1/categories/range?startIdx=A&endIdx=C&language=korean&size=10
+               한글과 영어 동시에 쓰지 말 것! 둘다 필요한 경우 2번 요청
+               startIdx와 endIdx는 시작하는 캐릭터 값(ex ["A", "B", "C"] - 대소문자 둘다 가능, ["가", "나"] 등)
+               language는 어떤 언어로 가져올지 결정 (ex "KOREAN", "ENGLISH" - 대소문자 둘다 가능)
+            """)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 카테고리 정보를 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
+    })
+    @GetMapping("/categories/range")
+    public CategoryRangeDto findCategoryRange(
+            @NotNull @ModelAttribute final CategoryRangeRequest request) {
         return externalFindCategoryService.execute(request);
     }
 
