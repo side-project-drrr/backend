@@ -75,7 +75,7 @@ public class CategoryController {
             """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 카테고리 정보를 반환",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryRangeDto.class))))
     })
     @GetMapping("/categories/range")
     public CategoryRangeDto findCategoryRange(
