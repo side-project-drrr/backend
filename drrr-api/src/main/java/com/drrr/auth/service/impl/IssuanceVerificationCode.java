@@ -20,7 +20,7 @@ public class IssuanceVerificationCode {
         boolean isDuplicate = memberRepository.existsByEmail(email);
 
         if (isDuplicate) {
-            throw DomainExceptionCode.DUPLICATE_LIKE.newInstance();
+            throw DomainExceptionCode.EMAIL_DUPLICATE_EXCEPTION.newInstance();
         }
 
         String code = verificationService.createVerificationCode(emailRequest.providerId(), emailRequest.email());
