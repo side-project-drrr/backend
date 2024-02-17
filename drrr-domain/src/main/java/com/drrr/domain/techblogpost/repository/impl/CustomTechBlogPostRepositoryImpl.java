@@ -91,6 +91,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                 )
                 .from(techBlogPost)
                 .where(techBlogPost.id.in(postIds))
+                .orderBy(techBlogPost.writtenAt.desc())
                 .fetch();
     }
 
@@ -142,7 +143,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @Override
-    public Slice<TechBlogPostCategoryDto> searchPostsTitleByWord(final String index, final Pageable pageable) {
+    public Slice<TechBlogPostCategoryDto> searchPostsTitleByKeyword(final String keyword, final Pageable pageable) {
         List<TechBlogPostBasicInfoDto> content = queryFactory.select(
                         Projections.constructor(TechBlogPostBasicInfoDto.class
                                 , techBlogPost.id
@@ -157,7 +158,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                         )
                 )
                 .from(techBlogPost)
-                .where(techBlogPost.title.like("%" + index + "%"))
+                .where(techBlogPost.title.like("%" + keyword + "%"))
                 .orderBy(techBlogPost.writtenAt.desc(), techBlogPost.postLike.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
