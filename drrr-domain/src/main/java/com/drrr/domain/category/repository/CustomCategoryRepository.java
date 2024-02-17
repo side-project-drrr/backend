@@ -24,7 +24,7 @@ public interface CustomCategoryRepository {
     Slice<CategoryDto> findCategoryByNameLike(final LanguageConstants language, final IndexConstants indexConstants,
                                               final Pageable pageable);
 
-    Slice<CategoryDto> searchCategoriesByWord(final String word, final Pageable pageable);
+    Slice<CategoryDto> searchCategoriesByKeyWord(final String keyword, final Pageable pageable);
 
     List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postIds);
 

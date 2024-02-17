@@ -8,6 +8,6 @@ public record CategorySearchWordRequest(
         int size,
         String sort,
         String direction,
-        String searchWord
+        String keyWord
 ) {
 }
