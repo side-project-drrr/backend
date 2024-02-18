@@ -80,8 +80,23 @@ public class CategoryController {
     })
     @GetMapping("/categories/range")
     public CategoryRangeDto findCategoryRange(
-            @NotNull @ModelAttribute final CategoryRangeRequest request) {
+            @Valid @ModelAttribute final CategoryRangeRequest request) {
         return externalFindCategoryService.execute(request);
+    }
+
+    @Operation(summary = "기타 카테고리 정보 가져오는 API", description = """
+               호출 성공 시 Range에 따른 카테고리 정보 반환 
+               한글 사용 예시) api/v1/categories/range/etc?size=10
+               영어 사용 예시) api/v1/categories/range/etc?size=10
+               size는 가져올 기타 카테고리의 사이즈를 명시
+            """)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 카테고리 정보를 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryRangeDto.class))))
+    })
+    @GetMapping("/categories/range/etc")
+    public CategoryRangeDto findEtcCategoryRange(@NotNull @RequestParam("size") final int size) {
+        return externalFindCategoryService.execute(size);
     }
 
     @Operation(summary = "카테고리 검색 API", description = """
