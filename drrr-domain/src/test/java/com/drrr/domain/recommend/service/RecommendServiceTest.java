@@ -296,7 +296,7 @@ class RecommendServiceTest {
     void 게시물_추천이_정상적으로_작동합니다() {
         //when
         List<Long> postIds = recommendPostService.recommendPosts(1L);
-        List<TechBlogPost> techBlogPosts = techBlogPostRepository.findByIdIn(postIds);
+        List<TechBlogPost> techBlogPosts = techBlogPostRepository.findByIdInOrderByWrittenAt(postIds);
 
         List<Long> foundPostIds = techBlogPosts.stream()
                 .map(BaseEntity::getId).toList();
