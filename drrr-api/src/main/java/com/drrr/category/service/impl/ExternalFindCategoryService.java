@@ -23,7 +23,13 @@ public class ExternalFindCategoryService {
         return categoryService.findCategoriesByPostId(postId);
     }
 
+    public CategoryRangeDto execute(final int size) {
+        return categoryService.findEtcCategoriesByRange(size);
+    }
+
     public CategoryRangeDto execute(final CategoryRangeRequest request) {
+        //request 검증
+        CategoryRangeRequest.requestValidationCheck(request);
 
         return categoryService.findCategoriesByRange(request.startIdx(), request.endIdx(), request.language(),
                 request.size());
