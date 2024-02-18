@@ -63,6 +63,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                 .from(techBlogPostCategory)
                 .leftJoin(techBlogPostCategory.post, techBlogPost)
                 .where(techBlogPostCategory.category.id.eq(categoryId))
+                .orderBy(techBlogPost.writtenAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -128,7 +129,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                         )
                 )
                 .from(techBlogPost)
-                .orderBy(techBlogPost.writtenAt.desc(), techBlogPost.postLike.desc())
+                .orderBy(techBlogPost.writtenAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -136,8 +137,6 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
         Long total = queryFactory.select(techBlogPost.count())
                 .from(techBlogPost)
                 .fetchOne();
-
-        boolean hasNext = (pageable.getOffset() + content.size()) < total;
 
         return getTechBlogPostCategoryDtos(pageable, content, total);
     }
@@ -159,7 +158,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                 )
                 .from(techBlogPost)
                 .where(techBlogPost.title.like("%" + keyword + "%"))
-                .orderBy(techBlogPost.writtenAt.desc(), techBlogPost.postLike.desc())
+                .orderBy(techBlogPost.writtenAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

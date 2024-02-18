@@ -5,9 +5,7 @@ import lombok.Builder;
 @Builder
 public record TechBlogPostSliceRequest(
         int page,
-        int size,
-        String sort,
-        String direction
+        int size
 ) {
 
 }
