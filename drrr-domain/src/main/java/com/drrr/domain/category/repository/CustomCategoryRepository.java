@@ -28,6 +28,8 @@ public interface CustomCategoryRepository {
     List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postIds);
 
 
-    List<CategoriesKeyDto> findRangedCategories(IndexConstants startIdx, IndexConstants endIdx,
-                                                LanguageConstants language, int size);
+    List<CategoriesKeyDto> findRangedCategories(final IndexConstants startIdx, final IndexConstants endIdx,
+                                                final LanguageConstants language, final int size);
+
+    List<CategoriesKeyDto> findRangedEtcCategories(final int size);
 }

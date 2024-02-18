@@ -150,6 +150,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
         }).collect(Collectors.joining(" UNION ALL "));
     }
 
+
     @Override
     public List<CategoriesKeyDto> findRangedCategories(IndexConstants startIdx, IndexConstants endIdx,
                                                        LanguageConstants language, int size) {
@@ -160,9 +161,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 englishRangedCategoriesQueryFactory(rangeIndexConstants, startIdx, endIdx, size) :
                 koreanRangedCategoriesQueryFactory(rangeIndexConstants, startIdx, endIdx, size);
 
-        Query nativeQuery = em.createNativeQuery(unionSql);
-
-        @SuppressWarnings("unchecked") final List<Object[]> list = nativeQuery.getResultList();
+        @SuppressWarnings("unchecked") final List<Object[]> list = generateNativeQueryResultList(unionSql);
 
         //가장 최근에 만들어진 게시물 순으로 정렬됨
         //사용자가 관심 있는 카테고리에 대해 게시물 추출
@@ -170,9 +169,41 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .map(elem -> CategoriesKeyDto.builder()
                         .id((Long) elem[0])
                         .name((String) elem[1])
-                        .keyIndex((Character) elem[2])
+                        .keyIndex(((Character) elem[2]).toString())
                         .build())
                 .toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Object[]> generateNativeQueryResultList(String unionSql) {
+        Query nativeQuery = em.createNativeQuery(unionSql);
+        return nativeQuery.getResultList();
+    }
+
+    @Override
+    public List<CategoriesKeyDto> findRangedEtcCategories(int size) {
+        String query = """
+                (
+                   SELECT A.id id
+                        , A.name name
+                        , '기타' keyIndex
+                     FROM DRRR_CATEGORY A
+                    WHERE A.name NOT REGEXP '^[A-Za-z가-힣]'
+                 )
+                """;
+
+        @SuppressWarnings("unchecked") final List<Object[]> list = generateNativeQueryResultList(query);
+
+        //가장 최근에 만들어진 게시물 순으로 정렬됨
+        //사용자가 관심 있는 카테고리에 대해 게시물 추출
+        return list.stream()
+                .map(elem -> CategoriesKeyDto.builder()
+                        .id((Long) elem[0])
+                        .name((String) elem[1])
+                        .keyIndex(((String) elem[2]))
+                        .build())
+                .toList();
+
     }
 
     @Override
@@ -199,11 +230,9 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Builder
-    public static record CategoriesKeyDto(
+    public record CategoriesKeyDto(
             Long id,
             String name,
-            Character keyIndex) {
+            String keyIndex) {
     }
-
-
 }

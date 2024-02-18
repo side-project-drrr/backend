@@ -10,8 +10,7 @@ public record CategoryRangeDto(
     @Builder
     public record Content(
             List<CategoryDto> category,
-            Character keyIndex
+            String keyIndex
     ) {
-
     }
 }
