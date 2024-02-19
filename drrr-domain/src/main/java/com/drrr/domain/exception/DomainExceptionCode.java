@@ -16,7 +16,8 @@ public enum DomainExceptionCode {
     CATEGORY(2500, "정의되지 않은 에러입니다."),
     CATEGORY_NOT_FOUND(CATEGORY.code + 1, "카테고리를 찾을 수 없습니다."),
     CATEGORY_WEIGHT_NOT_FOUND(CATEGORY.code + 2, "카테고리 가중치 정보를 찾을 수 없습니다."),
-    MEMBER_CATEGORY_UNCHANGD(CATEGORY.code + 3, "수정된 카테고리가 없습니다."),
+    RANGE_PARAMTERS_OUT_OF_ORDER(CATEGORY.code + 3, "시작 인덱스(startIdx)가 끝 인덱스(endIdx)보다 큽니다."),
+
     LIKE(3000, "정의되지 않은 에러입니다."),
     DUPLICATE_LIKE(LIKE.code + 1, "사용자가 하나의 게시물에 중복으로 좋아요를 눌렀습니다."),
     EMAIL(3500, "정의되지 않은 에러입니다."),
@@ -34,7 +35,9 @@ public enum DomainExceptionCode {
     MEMBER_NOT_FOUND(MEMBER.code + 9, "사용자를 찾을 수 없습니다."),
     MEMBER_ACCOUNT_DEACTIVATED(MEMBER.code + 10, "사용자 계정이 비활성화되었습니다."),
     SUBSCRIPTION(5000, "정의되지 않은 에러입니다."),
-    SUBSCRIPTION_NOT_FOUND(SUBSCRIPTION.code + 1, "구독정보를 찾을 수 없습니다.");
+    SUBSCRIPTION_NOT_FOUND(SUBSCRIPTION.code + 1, "구독정보를 찾을 수 없습니다."),
+    LANGUAGE(5500, "정의되지 않은 에러입니다."),
+    INVALID_LANGUAGE_CHARACTER_INDEX(LANGUAGE.code + 1, "유효하지 않은 언어 인덱스입니다.");
     private final int code;
     private final String message;
 
