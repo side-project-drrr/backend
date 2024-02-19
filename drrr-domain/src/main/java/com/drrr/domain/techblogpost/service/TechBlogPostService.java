@@ -51,11 +51,11 @@ public class TechBlogPostService {
                 .filter(id -> !postsInRedisIds.contains(id))
                 .collect(Collectors.toList());
 
-        return techBlogPostRepository.findByIdIn(notCachedPostIds);
+        return techBlogPostRepository.findByIdInOrderByWrittenAt(notCachedPostIds);
     }
 
     public List<TechBlogPost> findTechBlogPostsByIds(final List<Long> postIds) {
-        final List<TechBlogPost> posts = techBlogPostRepository.findByIdIn(postIds);
+        final List<TechBlogPost> posts = techBlogPostRepository.findByIdInOrderByWrittenAt(postIds);
         if (posts.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();

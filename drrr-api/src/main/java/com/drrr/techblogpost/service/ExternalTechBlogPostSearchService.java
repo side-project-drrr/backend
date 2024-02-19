@@ -6,7 +6,6 @@ import com.drrr.techblogpost.dto.TechBlogPostIndexSliceRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +16,7 @@ public class ExternalTechBlogPostSearchService {
     private final TechBlogPostRepository techBlogPostRepository;
 
     public Slice<TechBlogPostCategoryDto> execute(final TechBlogPostIndexSliceRequest request) {
-        final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
+        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
         return techBlogPostRepository.searchPostsTitleByKeyword(request.keyword(), pageRequest);
     }
 }

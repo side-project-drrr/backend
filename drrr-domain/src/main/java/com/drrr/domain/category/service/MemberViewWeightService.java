@@ -11,6 +11,7 @@ import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class MemberViewWeightService {
                     return cw.getCategory().getId();
                 }).collect(Collectors.toSet());
 
-        Set<Long> postCategoryIdSet = categoryIds.stream().collect(Collectors.toSet());
+        Set<Long> postCategoryIdSet = new HashSet<>(categoryIds);
 
         postCategoryIdSet.removeAll(memberCategoryIdSet);
 
