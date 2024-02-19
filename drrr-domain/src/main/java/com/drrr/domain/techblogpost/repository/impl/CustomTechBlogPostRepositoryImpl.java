@@ -157,7 +157,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                         )
                 )
                 .from(techBlogPost)
-                .where(techBlogPost.title.like("%" + keyword + "%"))
+                .where(techBlogPost.title.toUpperCase().like("%" + keyword.toUpperCase() + "%"))
                 .orderBy(techBlogPost.writtenAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
