@@ -21,8 +21,18 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
     public Slice<TechBlogPostCategoryDto> execute(final TechBlogPostSliceRequest request) {
+        Slice<TechBlogPostCategoryDto> allPostsInRedis = redisTechBlogPostService.findAllPostsInRedis(request.page(),
+                request.size());
+
+        if (allPostsInRedis != null) {
+            return allPostsInRedis;
+        }
+
         final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
-        return techBlogPostRepository.findAllPosts(pageRequest);
+        Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(pageRequest);
+        redisTechBlogPostService.saveAllPostsInRedis(request.page(), request.size(), allPosts.hasNext(),
+                allPosts.getContent());
+        return allPosts;
     }
 
     public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
