@@ -2,6 +2,7 @@ package com.drrr.domain.techblogpost.dto;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.querydsl.core.annotations.QueryProjection;
+import java.io.Serializable;
 import java.time.LocalDate;
 import lombok.Builder;
 
@@ -17,7 +18,7 @@ public record TechBlogPostBasicInfoDto(
         LocalDate writtenAt,
         String url
 
-) {
+) implements Serializable {
     @QueryProjection
     public TechBlogPostBasicInfoDto(Long id, String title, String summary, TechBlogCode techBlogCode,
                                     String thumbnailUrl,
