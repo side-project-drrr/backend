@@ -5,12 +5,12 @@ import com.drrr.category.request.CategoryRangeRequest;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.repository.CategoryRepository;
+import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.domain.category.service.CategoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +21,11 @@ public class ExternalFindCategoryService {
 
     public List<CategoryDto> execute(final Long postId) {
         return categoryService.findCategoriesByPostId(postId);
+    }
+
+    public Slice<CategoriesKeyDto> execute(final int page, final int size) {
+        final PageRequest pageRequest = PageRequest.of(page, size);
+        return categoryRepository.findEtcCategoriesPage(pageRequest);
     }
 
     public CategoryRangeDto execute(final int size) {
@@ -36,8 +41,7 @@ public class ExternalFindCategoryService {
     }
 
     public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request) {
-        final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
+        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
         return categoryRepository.findCategoryByNameLike(request.language()
                 , request.index()
                 , pageRequest);
