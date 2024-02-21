@@ -11,6 +11,7 @@ import com.drrr.category.service.impl.ExternalSearchCategoryService;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.repository.CategoryRepository;
+import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,18 +52,32 @@ public class CategoryController {
 
     @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API", description = """
             호출 성공 시 Index에 따른 카테고리 정보 반환 [page 값은 0부터 시작 
-            size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정,
-             direction은 오름차순(ASC), 내림차순(DESC), index는 카테고리의 인덱스 값, language는 어떤 언어로 가져올지 결정 
-             (ex "KOREAN", "ENGLISH" - 대소문자 둘다 가능)
+            size는 한 page에 담길 게시물의 개수
              index는 시작하는 캐릭터 값(ex ["A", "B", "C"] - 대소문자 둘다 가능, ["가", "나"] 등)
             """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 카테고리 정보를 반환",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
     })
+    //기타 안 들어가 있음
     @GetMapping("/categories/index-search")
     public Slice<CategoryDto> findIndexCategory(@ModelAttribute @Valid CategoryIndexSliceRequest request) {
         return externalFindCategoryService.execute(request);
+    }
+
+    @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API", description = """
+            호출 성공 시 Index에 따른 카테고리 정보 반환 [page 값은 0부터 시작 
+            size는 한 page에 담길 게시물의 개수
+            """)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 카테고리 정보를 반환",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
+    })
+    //기타 안 들어가 있음
+    @GetMapping("/categories/search-etc")
+    public Slice<CategoriesKeyDto> findEtcCategory(@NotNull @RequestParam("page") final int page,
+                                                   @NotNull final @RequestParam("size") int size) {
+        return externalFindCategoryService.execute(page, size);
     }
 
     @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API", description = """
