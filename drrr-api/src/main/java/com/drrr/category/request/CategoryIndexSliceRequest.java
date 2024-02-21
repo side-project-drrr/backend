@@ -8,8 +8,6 @@ import lombok.Builder;
 public record CategoryIndexSliceRequest(
         int page,
         int size,
-        String sort,
-        String direction,
         LanguageConstants language,
         IndexConstants index
 ) {

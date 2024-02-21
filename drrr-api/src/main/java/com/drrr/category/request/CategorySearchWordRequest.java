@@ -6,8 +6,6 @@ import lombok.Builder;
 public record CategorySearchWordRequest(
         int page,
         int size,
-        String sort,
-        String direction,
         String keyword
 ) {
 }
