@@ -16,7 +16,8 @@ import org.springframework.stereotype.Repository;
 public interface CategoryRepository extends JpaRepository<Category, Long>, CustomCategoryRepository {
     List<Category> findByIdIn(final Set<Long> categoryIds);
 
-    Slice<Category> findBy(final Pageable pageable);
+    @Query("select c from Category c where c.id in :categoryIds order by c.name asc")
+    Slice<Category> findAllBy(final Pageable pageable);
 
     List<Category> findByIdIn(final List<Long> categoryIds);
 
@@ -24,7 +25,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long>, Custo
 
     Optional<Category> findByName(final String tagName);
 
-    @Query("select c from Category c where c.name like %:keyword%")
+    @Query("select c from Category c where c.name like %:keyword% order by c.name asc")
     Slice<CategoryDto> searchCategoriesByKeyWord(@Param("keyword") final String keyword, final Pageable pageable);
 
 }
