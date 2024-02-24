@@ -7,6 +7,7 @@ import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.domain.category.service.CategoryService;
+import com.drrr.web.page.request.PageableRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +24,8 @@ public class ExternalFindCategoryService {
         return categoryService.findCategoriesByPostId(postId);
     }
 
-    public Slice<CategoriesKeyDto> execute(final int page, final int size) {
-        final PageRequest pageRequest = PageRequest.of(page, size);
-        return categoryRepository.findEtcCategoriesPage(pageRequest);
+    public Slice<CategoriesKeyDto> execute(final PageableRequest pageRequest) {
+        return categoryRepository.findEtcCategoriesPage(PageableRequest.fromPageRequest(pageRequest));
     }
 
     public CategoryRangeDto execute(final int size) {

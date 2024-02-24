@@ -14,6 +14,7 @@ import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
 import com.drrr.web.annotation.MemberId;
+import com.drrr.web.page.request.PageableRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -75,9 +76,8 @@ public class CategoryController {
     })
     //기타 안 들어가 있음
     @GetMapping("/categories/search-etc")
-    public Slice<CategoriesKeyDto> findEtcCategory(@NotNull @RequestParam("page") final int page,
-                                                   @NotNull final @RequestParam("size") int size) {
-        return externalFindCategoryService.execute(page, size);
+    public Slice<CategoriesKeyDto> findEtcCategory(@Valid @ModelAttribute PageableRequest pageRequest) {
+        return externalFindCategoryService.execute(pageRequest);
     }
 
     @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API", description = """
