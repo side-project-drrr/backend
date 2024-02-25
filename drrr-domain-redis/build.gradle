@@ -1,5 +1,6 @@
 dependencies {
     implementation project(path: ':drrr-domain')
+    implementation project(path: ':drrr-core')
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.16.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.8' // 버전은 프로젝트에 맞게 조정
