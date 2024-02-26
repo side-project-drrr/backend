@@ -23,10 +23,6 @@ public class RedisConfig {
         objectMapper.registerModule(new JavaTimeModule()); // Java 8 날짜/시간 모듈 등록
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // 날짜/시간을 timestamp로 쓰지 않도록 설정
         template.setConnectionFactory(redisConnectionFactory());
-//        template.setKeySerializer(new GenericJackson2JsonRedisSerializer());
-//        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(objectMapper, RedisAllPostCategoriesSlice.class));
-//        template.setKeySerializer(new StringRedisSerializer());
-//        template.setValueSerializer(StringRedisSerializer.UTF_8);
 
         return template;
     }
