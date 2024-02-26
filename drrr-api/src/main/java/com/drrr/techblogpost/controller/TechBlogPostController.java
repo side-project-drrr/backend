@@ -5,10 +5,10 @@ import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.techblogpost.dto.TechBlogPostIndexSliceRequest;
-import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
 import com.drrr.techblogpost.service.ExternalTechBlogPostLikeService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostSearchService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
+import com.drrr.web.page.request.PageableRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -46,7 +46,7 @@ public class TechBlogPostController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     })
     @GetMapping("/posts/all")
-    public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final TechBlogPostSliceRequest request) {
+    public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final PageableRequest request) {
         return externalTechBlogPostService.execute(request);
     }
 
@@ -74,7 +74,7 @@ public class TechBlogPostController {
     })
     @GetMapping("/posts/categories/{categoryId}")
     public Slice<TechBlogPostCategoryDto> findPostsByCategory(@PathVariable("categoryId") final Long id,
-                                                              @Valid @ModelAttribute final TechBlogPostSliceRequest request) {
+                                                              @Valid @ModelAttribute final PageableRequest request) {
         return externalTechBlogPostService.execute(id, request);
     }
 

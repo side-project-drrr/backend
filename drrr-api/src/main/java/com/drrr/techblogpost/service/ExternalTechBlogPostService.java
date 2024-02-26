@@ -6,7 +6,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
-import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
+import com.drrr.web.page.request.PageableRequest;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -20,13 +20,13 @@ public class ExternalTechBlogPostService {
     private final RedisTechBlogPostService redisTechBlogPostService;
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public Slice<TechBlogPostCategoryDto> execute(final TechBlogPostSliceRequest request) {
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
+    public Slice<TechBlogPostCategoryDto> execute(final PageableRequest request) {
+        final PageRequest pageRequest = request.fromPageRequest();
         return techBlogPostRepository.findAllPosts(pageRequest);
     }
 
-    public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
+    public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final PageableRequest request) {
+        final PageRequest pageRequest = request.fromPageRequest();
 
         return techBlogPostRepository.findPostsByCategory(categoryId, pageRequest);
     }
