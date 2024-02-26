@@ -213,11 +213,9 @@ public class CategoryE2ETest {
         String index = "J";
 
         //when
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("page", "0");
         params.put("size", "10");
-        params.put("sort", "name");
-        params.put("direction", "ASC");
 
         Response response = given()
                 .log().all()
@@ -251,8 +249,6 @@ public class CategoryE2ETest {
         Map<String, String> params = new HashMap<>();
         params.put("page", "0");
         params.put("size", "10");
-        params.put("sort", "name");
-        params.put("direction", "ASC");
         params.put("keyword", "J");
 
         Response response = given()
@@ -281,8 +277,6 @@ public class CategoryE2ETest {
         Map<String, String> params = new HashMap<>();
         params.put("page", "0");
         params.put("size", "10");
-        params.put("sort", "name");
-        params.put("direction", "ASC");
         params.put("language", "ENGLISH");
         params.put("index", index);
 
