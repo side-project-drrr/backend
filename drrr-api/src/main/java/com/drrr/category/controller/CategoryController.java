@@ -4,7 +4,6 @@ import com.drrr.category.request.CategoryIndexSliceRequest;
 import com.drrr.category.request.CategoryRangeRequest;
 import com.drrr.category.request.CategoryRequest;
 import com.drrr.category.request.CategorySearchWordRequest;
-import com.drrr.category.request.CategorySliceRequest;
 import com.drrr.category.service.impl.ExternalCategoryService;
 import com.drrr.category.service.impl.ExternalFindCategoryService;
 import com.drrr.category.service.impl.ExternalSearchCategoryService;
@@ -115,8 +114,7 @@ public class CategoryController {
 
     @Operation(summary = "카테고리 검색 API", description = """
             호출 성공 시 request 정보를 참고하여 keyword가 들어가는 카테고리 정보 반환 [page 값은 0부터 시작 
-            size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정,
-             direction은 오름차순(ASC), 내림차순(DESC) keyWord는 앞 뒤로 like로 검색함
+            size는 한 page에 담길 게시물의 개수, keyWord는 앞 뒤로 like로 검색함
             """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 keyword가 들어가는 카테고리 정보를 반환",
@@ -139,15 +137,14 @@ public class CategoryController {
 
     @Operation(summary = "모든 카테고리를 가져오는 API", description = """
             호출 성공 시 모든 카테고리 정보 반환 [page 값은 0부터 시작 
-            size는 한 page에 담길 게시물의 개수, sort는 어떤 필드 기준으로 정렬을 할지 결정,
-             direction은 오름차순(ASC), 내림차순(DESC) ]
+            size는 한 page에 담길 게시물의 개수]
             """)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 모든 카테고리 정보 반환",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
     })
     @GetMapping("/categories/all")
-    public Slice<CategoryDto> findAllCategory(@Valid @ModelAttribute final CategorySliceRequest request) {
+    public Slice<CategoryDto> findAllCategory(@Valid @ModelAttribute final PageableRequest request) {
         return externalCategoryService.execute(request);
     }
 

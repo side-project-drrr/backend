@@ -1,11 +1,15 @@
 package com.drrr.category.request;
 
-import com.drrr.web.page.request.PageableRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record CategorySearchWordRequest(
-        PageableRequest pageableRequest,
+        @NotNull
+        int page,
+        @NotNull
+        int size,
+        @NotNull
         String keyword
 ) {
 }

@@ -41,7 +41,7 @@ public class ExternalFindCategoryService {
     }
 
     public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request) {
-        final PageRequest pageRequest = request.pageableRequest().fromPageRequest();
+        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
 
         return categoryRepository.findCategoryByNameLike(request.language()
                 , request.index()

@@ -2,13 +2,19 @@ package com.drrr.category.request;
 
 import com.drrr.core.category.constant.IndexConstants;
 import com.drrr.core.category.constant.LanguageConstants;
-import com.drrr.web.page.request.PageableRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record CategoryIndexSliceRequest(
-        PageableRequest pageableRequest,
+        @NotNull
+        int page,
+        @NotNull
+
+        int size,
+        @NotNull
         LanguageConstants language,
+        @NotNull
         IndexConstants index
 ) {
 
