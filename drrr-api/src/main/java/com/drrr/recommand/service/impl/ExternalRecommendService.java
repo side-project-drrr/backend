@@ -48,7 +48,7 @@ public class ExternalRecommendService {
         List<TechBlogPostCategoryDto> categorizedPosts = techBlogPostService.categorize(concatPostIds);
 
         //로그 쌓기
-        logUpdateService.updateMemberPostRecommendLog(memberId, postIds);
+        logUpdateService.insertTodayMemberPostRecommendLog(memberId, postIds);
 
         return categorizedPosts;
     }

@@ -1,15 +1,14 @@
 package com.drrr.domain.log.repository.impl;
 
+import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
+
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.CustomMemberPostLogRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-
-import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
 
 @Repository
 @RequiredArgsConstructor
@@ -17,7 +16,7 @@ public class CustomMemberPostLogRepositoryImpl implements CustomMemberPostLogRep
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<MemberPostLog> updateMemberPostLog(Long memberId, List<Long> postIds) {
+    public List<MemberPostLog> findByMemberPostLog(Long memberId, List<Long> postIds) {
         return queryFactory
                 .selectFrom(memberPostLog)
                 .where(postIdsInOrEq(postIds), memberPostLog.memberId.eq(memberId))
