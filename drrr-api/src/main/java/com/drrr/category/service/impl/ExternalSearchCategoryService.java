@@ -14,7 +14,7 @@ public class ExternalSearchCategoryService {
     private final CategoryRepository categoryRepository;
 
     public Slice<CategoryDto> execute(final CategorySearchWordRequest request) {
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
+        final PageRequest pageRequest = request.pageableRequest().fromPageRequest();
         return categoryRepository.searchCategoriesByKeyWord(request.keyword(), pageRequest);
     }
 }

@@ -1,11 +1,11 @@
 package com.drrr.category.request;
 
+import com.drrr.web.page.request.PageableRequest;
 import lombok.Builder;
 
 @Builder
 public record CategorySearchWordRequest(
-        int page,
-        int size,
+        PageableRequest pageableRequest,
         String keyword
 ) {
 }

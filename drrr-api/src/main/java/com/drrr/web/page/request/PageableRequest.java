@@ -11,7 +11,7 @@ public record PageableRequest(
         @NotNull
         int size
 ) {
-    public static PageRequest fromPageRequest(final PageableRequest pageableRequest) {
-        return PageRequest.of(pageableRequest.page, pageableRequest.size);
+    public PageRequest fromPageRequest() {
+        return PageRequest.of(this.page, this.size);
     }
 }

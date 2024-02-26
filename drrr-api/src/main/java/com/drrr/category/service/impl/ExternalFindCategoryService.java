@@ -25,7 +25,7 @@ public class ExternalFindCategoryService {
     }
 
     public Slice<CategoriesKeyDto> execute(final PageableRequest pageRequest) {
-        return categoryRepository.findEtcCategoriesPage(PageableRequest.fromPageRequest(pageRequest));
+        return categoryRepository.findEtcCategoriesPage(pageRequest.fromPageRequest());
     }
 
     public CategoryRangeDto execute(final int size) {
@@ -41,7 +41,8 @@ public class ExternalFindCategoryService {
     }
 
     public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request) {
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
+        final PageRequest pageRequest = request.pageableRequest().fromPageRequest();
+
         return categoryRepository.findCategoryByNameLike(request.language()
                 , request.index()
                 , pageRequest);
