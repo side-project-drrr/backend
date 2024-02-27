@@ -41,10 +41,10 @@ public class ExternalFindCategoryService {
     }
 
     public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request) {
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
+        final PageRequest pageRequest = request.getPageable().fromPageRequest();
 
-        return categoryRepository.findCategoryByNameLike(request.language()
-                , request.index()
+        return categoryRepository.findCategoryByNameLike(request.getLanguage()
+                , request.getIndex()
                 , pageRequest);
     }
 }
