@@ -10,7 +10,6 @@ import com.drrr.domain.category.service.CategoryService;
 import com.drrr.web.page.request.PageableRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +39,10 @@ public class ExternalFindCategoryService {
                 request.size());
     }
 
-    public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request) {
-        final PageRequest pageRequest = request.getPageable().fromPageRequest();
+    public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request, final PageableRequest pageableRequest) {
 
-        return categoryRepository.findCategoryByNameLike(request.getLanguage()
-                , request.getIndex()
-                , pageRequest);
+        return categoryRepository.findCategoryByNameLike(request.language()
+                , request.index()
+                , pageableRequest.fromPageRequest());
     }
 }

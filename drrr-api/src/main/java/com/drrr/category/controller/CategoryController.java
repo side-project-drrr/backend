@@ -61,8 +61,9 @@ public class CategoryController {
     })
     //기타 안 들어가 있음
     @GetMapping("/categories/index-search")
-    public Slice<CategoryDto> findIndexCategory(@ModelAttribute @Valid CategoryIndexSliceRequest request) {
-        return externalFindCategoryService.execute(request);
+    public Slice<CategoryDto> findIndexCategory(@ModelAttribute @Valid CategoryIndexSliceRequest request,
+                                                @ModelAttribute @Valid PageableRequest pageableRequest) {
+        return externalFindCategoryService.execute(request, pageableRequest);
     }
 
     @Operation(summary = "Index에 따른 카테고리 정보 가져오는 API", description = """
@@ -121,8 +122,9 @@ public class CategoryController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = CategoryDto.class))))
     })
     @GetMapping("/categories/keyword-search")
-    public Slice<CategoryDto> searchCategory(@ModelAttribute @Valid final CategorySearchWordRequest request) {
-        return externalSearchCategoryService.execute(request);
+    public Slice<CategoryDto> searchCategory(@Valid @ModelAttribute final CategorySearchWordRequest request,
+                                             @Valid @ModelAttribute final PageableRequest pageableRequest) {
+        return externalSearchCategoryService.execute(request, pageableRequest);
     }
 
     @Operation(summary = "특정 기술 블로그의 카테고리 정보 반환 API - 올림차순 반환", description = "호출 성공 시 특정 기술 블로그의 카테고리 정보 반환")
