@@ -4,7 +4,6 @@ import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
-import com.drrr.techblogpost.dto.TechBlogPostIndexSliceRequest;
 import com.drrr.techblogpost.service.ExternalTechBlogPostLikeService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostSearchService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -46,8 +46,8 @@ public class TechBlogPostController {
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     })
     @GetMapping("/posts/all")
-    public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final PageableRequest request) {
-        return externalTechBlogPostService.execute(request);
+    public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final PageableRequest pageableRequest) {
+        return externalTechBlogPostService.execute(pageableRequest);
     }
 
     @Operation(summary = "Keyword가 제목에 들어간 블로그 정보 가져오는 API", description = """
@@ -60,8 +60,9 @@ public class TechBlogPostController {
     })
     @GetMapping("/posts/title/keyword-search")
     public Slice<TechBlogPostCategoryDto> searchPosts(
-            @Valid @ModelAttribute final TechBlogPostIndexSliceRequest request) {
-        return externalTechBlogPostSearchService.execute(request);
+            @Valid @RequestParam("keyword") final String keyword,
+            @Valid @ModelAttribute final PageableRequest pageableRequest) {
+        return externalTechBlogPostSearchService.execute(keyword, pageableRequest);
     }
 
     @Operation(summary = "특정 카테고리에 해당하는 기술블로그의 기본정보를 가져오는 API", description = """
@@ -74,8 +75,8 @@ public class TechBlogPostController {
     })
     @GetMapping("/posts/categories/{categoryId}")
     public Slice<TechBlogPostCategoryDto> findPostsByCategory(@PathVariable("categoryId") final Long id,
-                                                              @Valid @ModelAttribute final PageableRequest request) {
-        return externalTechBlogPostService.execute(id, request);
+                                                              @Valid @ModelAttribute final PageableRequest pageableRequest) {
+        return externalTechBlogPostService.execute(id, pageableRequest);
     }
 
     @Operation(summary = "특정 게시물에 대한 상세보기 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 특정 게시물에 대한 상세 정보 반환")
