@@ -5,12 +5,12 @@ import com.drrr.category.request.CategoryRangeRequest;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.repository.CategoryRepository;
+import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.domain.category.service.CategoryService;
+import com.drrr.web.page.request.PageableRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +21,10 @@ public class ExternalFindCategoryService {
 
     public List<CategoryDto> execute(final Long postId) {
         return categoryService.findCategoriesByPostId(postId);
+    }
+
+    public Slice<CategoriesKeyDto> execute(final PageableRequest pageRequest) {
+        return categoryRepository.findEtcCategoriesPage(pageRequest.fromPageRequest());
     }
 
     public CategoryRangeDto execute(final int size) {
@@ -35,11 +39,10 @@ public class ExternalFindCategoryService {
                 request.size());
     }
 
-    public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request) {
-        final Sort sort = Sort.by(Sort.Direction.fromString(request.direction()), request.sort());
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size(), sort);
+    public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request, final PageableRequest pageableRequest) {
+
         return categoryRepository.findCategoryByNameLike(request.language()
                 , request.index()
-                , pageRequest);
+                , pageableRequest.fromPageRequest());
     }
 }
