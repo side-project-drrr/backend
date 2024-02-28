@@ -18,6 +18,7 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
+import com.drrr.web.page.request.PageableRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -246,16 +247,21 @@ public class CategoryE2ETest {
     @Test
     public void 카테고리_키워드_검색이_잘_작동합니다() throws JsonProcessingException {
         //when
-        Map<String, String> params = new HashMap<>();
-        params.put("page", "0");
-        params.put("size", "10");
-        params.put("keyword", "J");
+        Map<String, PageableRequest> params = new HashMap<>();
+        PageableRequest pageableRequest = PageableRequest.builder()
+                .page(0)
+                .size(10)
+                .build();
+        params.put("pageable", pageableRequest);
+        String keyword = "J";
 
         Response response = given()
                 .log().all()
                 .when()
+                .queryParam("keyword", keyword)
+                .queryParam("page", 0)
+                .queryParam("size", 10)
                 .contentType(ContentType.APPLICATION_JSON.toString())
-                .queryParams(params)
                 .get("/api/v1/categories/keyword-search")
                 .then()
                 .statusCode(HttpStatus.OK.value())
