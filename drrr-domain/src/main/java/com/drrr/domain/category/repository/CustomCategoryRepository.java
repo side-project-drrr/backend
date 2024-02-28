@@ -32,4 +32,6 @@ public interface CustomCategoryRepository {
                                                 final LanguageConstants language, final int size);
 
     List<CategoriesKeyDto> findRangedEtcCategories(final int size);
+
+    Slice<CategoriesKeyDto> findEtcCategoriesPage(final Pageable pageable);
 }

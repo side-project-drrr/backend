@@ -1,13 +1,11 @@
 package com.drrr.category.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record CategorySearchWordRequest(
-        int page,
-        int size,
-        String sort,
-        String direction,
+        @NotNull
         String keyword
 ) {
 }

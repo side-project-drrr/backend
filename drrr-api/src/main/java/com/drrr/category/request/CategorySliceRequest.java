@@ -1,12 +1,13 @@
 package com.drrr.category.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record CategorySliceRequest(
+        @NotNull
         int page,
-        int size,
-        String sort,
-        String direction
+        @NotNull
+        int size
 ) {
 }
