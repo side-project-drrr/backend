@@ -4,7 +4,6 @@ import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
-import com.drrr.techblogpost.service.ExternalTechBlogPostLikeService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostSearchService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
 import com.drrr.web.page.request.PageableRequest;
@@ -34,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class TechBlogPostController {
     private final ExternalTechBlogPostService externalTechBlogPostService;
-    private final ExternalTechBlogPostLikeService externalTechBlogPostLikeService;
     private final ExternalTechBlogPostSearchService externalTechBlogPostSearchService;
 
     @Operation(summary = "모든 기술 블로그 정보를 가져오는 API", description = """
@@ -95,9 +93,9 @@ public class TechBlogPostController {
             @ApiResponse(responseCode = "200", description = "조회수가 가장 높은 기술 블로그를 반환",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostBasicInfoDto.class))))
     })
-    @GetMapping("/posts/top/{count}/{type}")
+    @GetMapping("/posts/top/{type}/{count}")
     public List<TechBlogPostCategoryDto> findTopNPosts(@NotNull @PathVariable("count") final int count,
                                                        @NotNull @PathVariable("type") final TopTechBlogType type) {
-        return externalTechBlogPostLikeService.execute(count, type);
+        return externalTechBlogPostService.execute(count, type);
     }
 }
