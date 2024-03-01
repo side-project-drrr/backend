@@ -6,6 +6,7 @@ import java.util.List;
 
 
 public interface CustomTechBlogPostCategoryRepository {
-    List<ExtractedPostCategoryDto> getFilteredPost(List<CategoryWeightDto> categoryWeightDtos, Long memberId);
+    List<ExtractedPostCategoryDto> getFilteredPost(final List<CategoryWeightDto> categoryWeightDtos,
+                                                   final Long memberId, final int count);
 
 }
