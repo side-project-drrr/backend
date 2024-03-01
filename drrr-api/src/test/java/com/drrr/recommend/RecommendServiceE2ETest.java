@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.drrr.core.code.techblog.TechBlogCode;
+import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
@@ -325,7 +326,8 @@ public class RecommendServiceE2ETest {
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .get("/api/v1/members/me/post-recommendation");
+                    .get("/api/v1/members/me/post-recommendation/{count}",
+                            PostConstants.RECOMMEND_POSTS_COUNT.getValue());
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();

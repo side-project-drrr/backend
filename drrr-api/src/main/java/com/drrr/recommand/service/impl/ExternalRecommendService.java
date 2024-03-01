@@ -25,12 +25,12 @@ public class ExternalRecommendService {
     private final LogUpdateService logUpdateService;
 
     @Transactional
-    public List<TechBlogPostCategoryDto> execute(final Long memberId) {
+    public List<TechBlogPostCategoryDto> execute(final Long memberId, final int count) {
         //사용자 가중치 검증
         weightValidationService.validateWeight(memberId);
 
         //추천 게시물 ids 반환받음
-        final List<Long> postIds = recommendPostService.recommendPosts(memberId);
+        final List<Long> postIds = recommendPostService.recommendPosts(memberId, count);
 
         //redis에서 조회
         final List<TechBlogPost> postsInRedis = redisTechBlogPostService.findPostsByIdsInRedis(postIds);

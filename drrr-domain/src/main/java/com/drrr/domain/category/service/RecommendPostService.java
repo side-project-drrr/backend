@@ -1,10 +1,10 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.exception.DomainExceptionCode;
+import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import com.drrr.domain.techblogpost.repository.impl.CustomTechBlogPostRepositoryImpl;
 import java.util.List;
@@ -26,12 +26,19 @@ public class RecommendPostService {
     private final CategoryWeightRepository categoryWeightRepository;
     private final CustomTechBlogPostRepositoryImpl customTechBlogPostRepository;
     private final CustomTechBlogPostCategoryRepositoryImpl customTechBlogPostCategoryRepository;
+    private final MemberPostLogRepository memberPostLogRepository;
     private final PostCategoryUtilityService postDistributionService;
 
     @Transactional
-    public List<Long> recommendPosts(final Long memberId) {
-        //추천해 줄 기술블로그가 없는 경우 추가적으로 추천해줘야 하는 게시물 수, 초기값 0
-        int remainingPostCount = 0;
+    public List<Long> recommendPosts(final Long memberId, int count) {
+        //오늘 추천은 받았으나 안 읽었던 추천 게시물 다시 가져와서 반환
+        List<Long> todayUnreadRecommendPostIds = memberPostLogRepository.findTodayUnreadRecommendPostIds(memberId);
+
+        if (count == todayUnreadRecommendPostIds.size()) {
+            return todayUnreadRecommendPostIds;
+        }
+        //오늘 추천은 받았으나 안 읽었던 추천 게시물은 유지하고 추가적으로 추천해줘야 하는 게시물 수를 계산
+        count -= todayUnreadRecommendPostIds.size();
 
         //카테고리_가중치 Mapping Table를 특정 MemberId로 조회
         final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
@@ -53,7 +60,7 @@ public class RecommendPostService {
 
         //사용자에게 추천해줄 수 있는 모든 기술블로그 가져오기
         final List<ExtractedPostCategoryDto> techBlogPosts = customTechBlogPostCategoryRepository.getFilteredPost(
-                categoryWeightDtos, memberId);
+                categoryWeightDtos, memberId, count);
 
         //기술블로그에 대해 카테고리별로 정리
         final Map<Long, Set<Long>> classifiedPostsDto = postDistributionService.classifyPostWithCategoriesByMap(
@@ -61,19 +68,11 @@ public class RecommendPostService {
         //추천할 게시물 ids를 카테고리별로 담아서 반환
         //postsPerCategoryMap -> key : categoryId, value : 할당해야 하는 기술블로그 개수
         final Map<Long, Integer> postsPerCategoryMap = postDistributionService.calculatePostDistribution(
-                categoryWeightDtos);
+                categoryWeightDtos, count);
 
         //카테고리별로 할당된 개수만큼 게시물 추천해서 id 값 담아놓은 리스트
         //postIds - 할당된 기술블로그 id 리스트
-        final List<Long> postIds = extractRecommendPostIds(classifiedPostsDto, postsPerCategoryMap);
-
-        remainingPostCount = PostConstants.RECOMMEND_POSTS_COUNT.getValue() - postIds.size();
-
-        //추천해줄 기술블로그가 더이상 없는 경우
-        if (remainingPostCount > 0) {
-            //사용자가 읽은 적이 없는 가장 최근에 작성된 기술블로그들을 추천
-            postIds.addAll(customTechBlogPostRepository.recommendRemain(memberId, remainingPostCount));
-        }
+        final List<Long> postIds = extractRecommendPostIds(classifiedPostsDto, postsPerCategoryMap, count);
 
         return postIds;
     }
@@ -84,7 +83,7 @@ public class RecommendPostService {
      * : 카테고리별 추천해야 할 post 개수 : 할당해야 하는 게시물 개수 postCategoriesMapDto -> key : postId, value : post에 속한 categoryIds
      */
     private List<Long> extractRecommendPostIds(final Map<Long, Set<Long>> postCategoriesMapDto,
-                                               final Map<Long, Integer> categoryPostsMap) {
+                                               final Map<Long, Integer> categoryPostsMap, final int limitCount) {
         return postCategoriesMapDto.keySet()
                 .stream()
                 .filter(key -> {
@@ -107,7 +106,7 @@ public class RecommendPostService {
                     return categoryCountEntry.isPresent();
                 })
                 //RECOMMEND_POSTS_COUNT에 정의된 값만큼의 기술블로그를 추천함
-                .limit(PostConstants.RECOMMEND_POSTS_COUNT.getValue())
+                .limit(limitCount)
                 .collect(Collectors.toList());
     }
 
