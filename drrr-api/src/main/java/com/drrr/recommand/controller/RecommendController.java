@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -30,8 +30,8 @@ public class RecommendController {
     @ApiResponse(responseCode = "200", description = "추천해줄 게시물 리스트 반환, 추천 게시물 중 최근에 작성된 순으로 정렬",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     @Secured("USER")
-    @GetMapping("/members/me/post-recommendation")
-    public List<TechBlogPostCategoryDto> recommendPost(@NotNull @RequestParam("count") final int count,
+    @GetMapping("/members/me/post-recommendation/{count}")
+    public List<TechBlogPostCategoryDto> recommendPost(@NotNull @PathVariable("count") final int count,
                                                        @MemberId final Long memberId) {
         return recommendService.execute(memberId, count);
     }
