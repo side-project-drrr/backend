@@ -1,5 +1,6 @@
 package com.drrr.infra.notifications.kafka.email;
 
+import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.member.entity.Member;
@@ -51,7 +52,8 @@ public class EmailProducer {
 
         //limit은 테스트용 실제로는 제거해야 함
         members.stream().limit(1).forEach(member -> {
-            final List<Long> recommendPostIds = recommendPostService.recommendPosts(member.getId());
+            final List<Long> recommendPostIds = recommendPostService.recommendPosts(member.getId()
+                    , PostConstants.RECOMMEND_POSTS_COUNT.getValue());
             final List<TechBlogPost> posts = techBlogPostService.findTechBlogPostsByIds(recommendPostIds);
 
             context.setVariable("posts", posts);
