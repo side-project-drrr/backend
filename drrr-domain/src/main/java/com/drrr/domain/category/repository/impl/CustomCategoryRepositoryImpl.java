@@ -97,7 +97,8 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Override
-    public List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postId) {
+    public List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postIds) {
+        //order by 의미 없음 -> 다 Map 형태로 변환됨
         return queryFactory.select(Projections.constructor(CategoryPostDto.class
                         , category.id
                         , techBlogPostCategory.post.id
@@ -105,7 +106,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .from(category)
                 .innerJoin(techBlogPostCategory)
                 .on(category.id.eq(techBlogPostCategory.category.id))
-                .where(techBlogPostCategory.post.id.in(postId))
+                .where(techBlogPostCategory.post.id.in(postIds))
                 .fetch();
     }
 
