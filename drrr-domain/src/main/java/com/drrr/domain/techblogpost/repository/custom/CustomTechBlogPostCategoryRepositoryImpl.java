@@ -1,6 +1,5 @@
 package com.drrr.domain.techblogpost.repository.custom;
 
-import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,14 +21,14 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
 
     @Override
     public List<ExtractedPostCategoryDto> getFilteredPost(final List<CategoryWeightDto> categoryWeightDtos,
-                                                          final Long memberId) {
+                                                          final Long memberId, final int count) {
         //query에 in(...) 절을 위한 categoryId 리스트
         final List<Long> categoryIds = categoryWeightDtos.stream()
                 .map((categoryWeightDto) -> {
                     return categoryWeightDto.category().getId();
                 }).toList();
 
-        final int LIMIT_POST_FACTOR = PostConstants.RECOMMEND_POSTS_COUNT.getValue() * categoryIds.size();
+        final int LIMIT_POST_FACTOR = count * categoryIds.size();
 
         //pid 기술블로그 id, cid 카테고리 id, created_date 작성일자
         //로그에는 존재하지 않는 기술 블로그를 추천해줌(읽은 적도 없고, 추천 받은 적이 없는 기술블로그)
@@ -77,5 +76,5 @@ public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogP
                         .build())
                 .toList();
     }
-    
+
 }
