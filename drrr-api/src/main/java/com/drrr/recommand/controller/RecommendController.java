@@ -8,12 +8,14 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -29,7 +31,8 @@ public class RecommendController {
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     @Secured("USER")
     @GetMapping("/members/me/post-recommendation")
-    public List<TechBlogPostCategoryDto> recommendPost(@MemberId final Long memberId) {
-        return recommendService.execute(memberId);
+    public List<TechBlogPostCategoryDto> recommendPost(@NotNull @RequestParam("count") final int count,
+                                                       @MemberId final Long memberId) {
+        return recommendService.execute(memberId, count);
     }
 }
