@@ -10,11 +10,9 @@ import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryPostDto;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CustomCategoryRepository;
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import java.util.List;
@@ -99,8 +97,8 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Override
-    public List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postId,
-                                                                 @Nullable OrderSpecifier<Integer> orderCondition) {
+    public List<CategoryPostDto> findEachPostCategoriesByPostIds(List<Long> postIds) {
+        //order by 의미 없음 -> 다 Map 형태로 변환됨
         return queryFactory.select(Projections.constructor(CategoryPostDto.class
                         , category.id
                         , techBlogPostCategory.post.id
@@ -108,8 +106,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .from(category)
                 .innerJoin(techBlogPostCategory)
                 .on(category.id.eq(techBlogPostCategory.category.id))
-                .where(techBlogPostCategory.post.id.in(postId))
-                .orderBy(techBlogPostCategory.post.writtenAt.desc(), orderCondition)
+                .where(techBlogPostCategory.post.id.in(postIds))
                 .fetch();
     }
 
