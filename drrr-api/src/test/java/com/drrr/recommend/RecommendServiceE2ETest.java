@@ -3,6 +3,7 @@ package com.drrr.recommend;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
