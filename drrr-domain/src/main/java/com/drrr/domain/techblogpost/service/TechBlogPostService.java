@@ -33,7 +33,9 @@ public class TechBlogPostService {
             log.error("기술블로그를 찾을 수 없습니다.");
             throw DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
         }
-        return techBlogPostRepository.categorizePosts(topPostsIds);
+        return techBlogPostRepository.categorizePosts(topPostsIds).stream()
+                .sorted(TechBlogPostCategoryDto.orderByTopBlogTypeCondition(type))
+                .toList();
     }
 
     public List<TechBlogPostCategoryDto> categorize(final List<Long> postIds) {
