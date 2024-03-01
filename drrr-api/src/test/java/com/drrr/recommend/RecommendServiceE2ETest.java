@@ -324,10 +324,10 @@ public class RecommendServiceE2ETest {
             Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
-                    .queryParam("count", PostConstants.RECOMMEND_POSTS_COUNT.getValue())
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .get("/api/v1/members/me/post-recommendation");
+                    .get("/api/v1/members/me/post-recommendation/{count}",
+                            PostConstants.RECOMMEND_POSTS_COUNT.getValue());
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
