@@ -1,6 +1,5 @@
 package com.drrr.domain.techblogpost.repository.impl;
 
-import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
@@ -31,24 +30,9 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     private final CategoryRepository categoryRepository;
     private final JPAQueryFactory queryFactory;
 
-    public List<Long> recommendRemain(final Long memberId, final int remainedPostCount) {
-        //로그 테이블에서 사용자가 읽은 적이 없는 최신 기술블로그를 추천
-        return queryFactory.select(techBlogPost.id)
-                .from(techBlogPost)
-                .leftJoin(memberPostLog)
-                .on(
-                        memberPostLog.postId.eq(techBlogPost.id),
-                        memberPostLog.memberId.eq(memberId)
-                )
-                .where(memberPostLog.id.isNull())
-                .orderBy(techBlogPost.writtenAt.desc())
-                .limit(remainedPostCount)
-                .fetch();
-    }
-
     @Override
     public Slice<TechBlogPostCategoryDto> findPostsByCategory(Long categoryId, Pageable pageable) {
-        List<TechBlogPostBasicInfoDto> content = queryFactory.select(
+        final List<TechBlogPostBasicInfoDto> content = queryFactory.select(
                         Projections.constructor(TechBlogPostBasicInfoDto.class
                                 , techBlogPost.id
                                 , techBlogPost.title
@@ -68,7 +52,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long total = queryFactory.select(techBlogPost.count())
+        final Long total = queryFactory.select(techBlogPost.count())
                 .from(techBlogPostCategory)
                 .leftJoin(techBlogPostCategory.post, techBlogPost)
                 .where(techBlogPostCategory.category.id.eq(categoryId)).fetchOne();
@@ -115,7 +99,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
 
     @Override
     public Slice<TechBlogPostCategoryDto> findAllPosts(Pageable pageable) {
-        List<TechBlogPostBasicInfoDto> content = queryFactory.select(
+        final List<TechBlogPostBasicInfoDto> content = queryFactory.select(
                         Projections.constructor(TechBlogPostBasicInfoDto.class
                                 , techBlogPost.id
                                 , techBlogPost.title
@@ -134,7 +118,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long total = queryFactory.select(techBlogPost.count())
+        final Long total = queryFactory.select(techBlogPost.count())
                 .from(techBlogPost)
                 .fetchOne();
 
@@ -143,7 +127,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
 
     @Override
     public Slice<TechBlogPostCategoryDto> searchPostsTitleByKeyword(final String keyword, final Pageable pageable) {
-        List<TechBlogPostBasicInfoDto> content = queryFactory.select(
+        final List<TechBlogPostBasicInfoDto> content = queryFactory.select(
                         Projections.constructor(TechBlogPostBasicInfoDto.class
                                 , techBlogPost.id
                                 , techBlogPost.title
@@ -157,23 +141,24 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
                         )
                 )
                 .from(techBlogPost)
-                .where(techBlogPost.title.like("%" + keyword + "%"))
+                .where(techBlogPost.title.toUpperCase().like("%" + keyword.toUpperCase() + "%"))
                 .orderBy(techBlogPost.writtenAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        Long total = queryFactory.select(techBlogPost.count())
+        final Long total = queryFactory.select(techBlogPost.count())
                 .from(techBlogPost)
                 .fetchOne();
 
         return getTechBlogPostCategoryDtos(pageable, content, total);
     }
 
+    //게시물의 순서는 파라미터의 postIds의 순서가 유지됨
     public List<TechBlogPostCategoryDto> categorizePosts(final List<Long> postIds) {
         List<CategoryPostDto> eachPostCategoriesByPostIds = categoryRepository.findEachPostCategoriesByPostIds(postIds);
 
-        Map<Long, List<CategoryDto>> postCategories = eachPostCategoriesByPostIds.stream()
+        final Map<Long, List<CategoryDto>> postCategories = eachPostCategoriesByPostIds.stream()
                 .collect(Collectors.groupingBy(
                         CategoryPostDto::postId,
                         LinkedHashMap::new,
@@ -196,9 +181,9 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     private Slice<TechBlogPostCategoryDto> getTechBlogPostCategoryDtos(final Pageable pageable,
                                                                        final List<TechBlogPostBasicInfoDto> content,
                                                                        final Long total) {
-        boolean hasNext = (pageable.getOffset() + content.size()) < total;
+        final boolean hasNext = (pageable.getOffset() + content.size()) < total;
 
-        List<TechBlogPostCategoryDto> postCategoryDtos = categorizePosts(
+        final List<TechBlogPostCategoryDto> postCategoryDtos = categorizePosts(
                 content.stream().map(TechBlogPostBasicInfoDto::id).toList());
 
         return new SliceImpl<>(postCategoryDtos, pageable, hasNext);

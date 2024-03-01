@@ -64,7 +64,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     private BooleanExpression languageCondition(final LanguageConstants language,
                                                 IndexConstants indexConstants) {
         if (language.equals(LanguageConstants.ENGLISH)) {
-            return category.name.like(
+            return category.name.toUpperCase().like(
                     indexConstants.getCharacter() + "%");
         }
         return category.name.goe(String.valueOf(indexConstants.getCharacter())).
@@ -97,7 +97,8 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Override
-    public List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postId) {
+    public List<CategoryPostDto> findEachPostCategoriesByPostIds(final List<Long> postIds) {
+        //order by 의미 없음 -> 다 Map 형태로 변환됨
         return queryFactory.select(Projections.constructor(CategoryPostDto.class
                         , category.id
                         , techBlogPostCategory.post.id
@@ -105,7 +106,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .from(category)
                 .innerJoin(techBlogPostCategory)
                 .on(category.id.eq(techBlogPostCategory.category.id))
-                .where(techBlogPostCategory.post.id.in(postId))
+                .where(techBlogPostCategory.post.id.in(postIds))
                 .fetch();
     }
 
@@ -204,6 +205,49 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                         .build())
                 .toList();
 
+    }
+
+    @Override
+    public Slice<CategoriesKeyDto> findEtcCategoriesPage(Pageable pageable) {
+
+        String query = String.format("""
+                (
+                   SELECT A.id id
+                        , A.name name
+                        , '기타' keyIndex
+                     FROM DRRR_CATEGORY A
+                    WHERE A.name NOT REGEXP '^[A-Za-z가-힣]'
+                    LIMIT %d
+                    OFFSET %d 
+                 )
+                """, pageable.getPageSize(), pageable.getOffset());
+
+        @SuppressWarnings("unchecked") final List<Object[]> list = generateNativeQueryResultList(query);
+
+        //가장 최근에 만들어진 게시물 순으로 정렬됨
+        //사용자가 관심 있는 카테고리에 대해 게시물 추출
+        List<CategoriesKeyDto> categoriesKeyDtos = list.stream()
+                .map(elem -> CategoriesKeyDto.builder()
+                        .id((Long) elem[0])
+                        .name((String) elem[1])
+                        .keyIndex(((String) elem[2]))
+                        .build())
+                .toList();
+
+        String count = """
+                   SELECT count(*)
+                     FROM DRRR_CATEGORY A
+                    WHERE A.name NOT REGEXP '^[A-Za-z가-힣]'
+                """;
+
+        Query nativeQuery = em.createNativeQuery(count);
+        Object singleResult = nativeQuery.getSingleResult();
+
+        Long total = (Long) singleResult;
+
+        boolean hasNext = (pageable.getOffset() + categoriesKeyDtos.size()) < total;
+
+        return new SliceImpl<>(categoriesKeyDtos, pageable, hasNext);
     }
 
     @Override

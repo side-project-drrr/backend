@@ -8,8 +8,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 public interface CustomTechBlogPostRepository {
-    List<Long> recommendRemain(Long memberId, int remainedPostCount);
-
     Slice<TechBlogPostCategoryDto> findPostsByCategory(Long categoryId, Pageable pageable);
 
     List<TechBlogPostBasicInfoDto> findPostsByPostIds(List<Long> postIds);

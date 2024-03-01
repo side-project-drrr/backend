@@ -1,6 +1,5 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.dto.CategoryWeightDto;
 import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
 import java.util.Comparator;
@@ -36,8 +35,9 @@ public class PostCategoryUtilityService {
      * 카테고리 별로 몇개의 게시물을 추천해줄 건지 계산 return : key - 카테고리_아이디, value - 카테고리별 추천 게시물 수 categoryWeightDtos - 가장 최근 게시물 순으로
      * 정렬되어 있는 상태
      */
-    public Map<Long, Integer> calculatePostDistribution(final List<CategoryWeightDto> categoryWeightDtos) {
-        final int totalPosts = PostConstants.RECOMMEND_POSTS_COUNT.getValue();
+    public Map<Long, Integer> calculatePostDistribution(final List<CategoryWeightDto> categoryWeightDtos,
+                                                        final int count) {
+        final int totalPosts = count;
 
         // Calculate the total weight
         final double totalWeight = categoryWeightDtos.stream().mapToDouble(CategoryWeightDto::value).sum();

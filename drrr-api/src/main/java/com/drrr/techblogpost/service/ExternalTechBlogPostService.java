@@ -6,10 +6,9 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
-import com.drrr.techblogpost.request.TechBlogPostSliceRequest;
+import com.drrr.web.page.request.PageableRequest;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
@@ -20,25 +19,13 @@ public class ExternalTechBlogPostService {
     private final RedisTechBlogPostService redisTechBlogPostService;
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public Slice<TechBlogPostCategoryDto> execute(final TechBlogPostSliceRequest request) {
-        Slice<TechBlogPostCategoryDto> allPostsInRedis = redisTechBlogPostService.findAllPostsInRedis(request.page(),
-                request.size());
 
-        if (allPostsInRedis != null) {
-            return allPostsInRedis;
-        }
-
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
-        Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(pageRequest);
-        redisTechBlogPostService.saveAllPostsInRedis(request.page(), request.size(), allPosts.hasNext(),
-                allPosts.getContent());
-        return allPosts;
+    public Slice<TechBlogPostCategoryDto> execute(final PageableRequest pageableRequest) {
+        return techBlogPostRepository.findAllPosts(pageableRequest.fromPageRequest());
     }
 
-    public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final TechBlogPostSliceRequest request) {
-        final PageRequest pageRequest = PageRequest.of(request.page(), request.size());
-
-        return techBlogPostRepository.findPostsByCategory(categoryId, pageRequest);
+    public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final PageableRequest pageableRequest) {
+        return techBlogPostRepository.findPostsByCategory(categoryId, pageableRequest.fromPageRequest());
     }
 
     public TechBlogPostDetailedInfoDto executeFindPostDetail(final Long postId) {

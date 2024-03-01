@@ -6,7 +6,6 @@ networks:
     ipam:
       config:
         - subnet: 192.19.199.1/24
-
 services:
   prometheus:
     image: prom/prometheus:latest
