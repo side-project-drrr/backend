@@ -106,6 +106,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .innerJoin(techBlogPostCategory)
                 .on(category.id.eq(techBlogPostCategory.category.id))
                 .where(techBlogPostCategory.post.id.in(postId))
+                .orderBy(techBlogPostCategory.post.writtenAt.desc())
                 .fetch();
     }
 
