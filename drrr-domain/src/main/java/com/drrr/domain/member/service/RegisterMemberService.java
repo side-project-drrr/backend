@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RegisterMemberService {
     private final MemberRepository memberRepository;
 
-
     public Long execute(final RegisterMemberDto registerMemberDto) {
         memberRepository.findByEmail(registerMemberDto.email)
                 .ifPresent((member) -> {
@@ -25,14 +24,15 @@ public class RegisterMemberService {
                     if (registerMemberDto.email.equals(member.getEmail())) {
                         //이메일이 중복으로 등록되어 있음
                         throw DomainExceptionCode.DUPLICATE_EMAIL.newInstance();
-                    } else if (registerMemberDto.nickname.equals(member.getNickname())) {
+                    }
+                    if (registerMemberDto.nickname.equals(member.getNickname())) {
                         //닉네임이 중복으로 등록되어 있음
                         throw DomainExceptionCode.DUPLICATE_NICKNAME.newInstance();
                     }
                     throw DomainExceptionCode.UNKNOWN_ERROR.newInstance();
                 });
 
-        return memberRepository.save(Member.createMember(registerMemberDto)).getId();
+        return memberRepository.save(registerMemberDto.toEntity()).getId();
     }
 
     @Builder
@@ -44,5 +44,15 @@ public class RegisterMemberService {
             String providerId,
             String profileImageUrl
     ) {
+        public Member toEntity() {
+            return Member.builder()
+                    .email(email())
+                    .nickname(nickname())
+                    .provider(provider())
+                    .providerId(providerId())
+                    .profileImageUrl(profileImageUrl())
+                    .isActive(true)
+                    .build();
+        }
     }
 }
