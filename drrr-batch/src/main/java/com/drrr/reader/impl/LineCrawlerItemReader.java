@@ -61,7 +61,7 @@ public class LineCrawlerItemReader extends AbstractCrawlerPageItemReader {
     @Override
     protected String getPageUrlByParameter(int page) {
         final var url = TARGET_URL + "?page=" + page;
-        log.info("crawler naver url: {}", url);
+        log.info("crawler line url: {}", url);
         return url;
     }
 
