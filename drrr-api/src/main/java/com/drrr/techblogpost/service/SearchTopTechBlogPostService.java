@@ -9,11 +9,10 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class ExternalTechBlogPostLikeService {
+public class SearchTopTechBlogPostService {
     private final TechBlogPostService techBlogPostService;
 
     public List<TechBlogPostCategoryDto> execute(final int count, final TopTechBlogType type) {
-
-        return techBlogPostService.findTopPost(count, type);
+        return techBlogPostService.findTopPostByType(count, type);
     }
 }

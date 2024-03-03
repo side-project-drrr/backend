@@ -19,7 +19,6 @@ public class ExternalTechBlogPostService {
     private final RedisTechBlogPostService redisTechBlogPostService;
     private final TechBlogPostRepository techBlogPostRepository;
 
-
     public Slice<TechBlogPostCategoryDto> execute(final PageableRequest pageableRequest) {
         return techBlogPostRepository.findAllPosts(pageableRequest.fromPageRequest());
     }
