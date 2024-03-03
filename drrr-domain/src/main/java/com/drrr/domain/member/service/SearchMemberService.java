@@ -24,8 +24,5 @@ public class SearchMemberService {
                             "initializeCategoryWeight(final Long memberId, final List<Long> categories) Method NoSuchElementException Error");
                     return DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
                 });
-
     }
-
-
 }
