@@ -56,7 +56,7 @@ public class RedisTechBlogPostService {
             return null;
         }
 
-        redisTemplate.expire(key, RedisTTL.ONE_HOUR.getSeconds(), TimeUnit.SECONDS);
+        redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
 
         final List<TechBlogPostCategoryDto> techBlogPostCategoryDto = value.redisTechBlogPostCategories().stream()
                 .map((redisEntity) -> TechBlogPostCategoryDto.builder()

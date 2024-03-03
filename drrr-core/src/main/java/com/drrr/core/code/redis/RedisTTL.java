@@ -4,8 +4,9 @@ import lombok.Getter;
 
 @Getter
 public enum RedisTTL {
-    ONE_HOUR(3600),
-    ONE_DAY(86400);
+    EXPIRE_CACHE(300),
+    EXPIRE_ACCESS_TOKEN(604800),
+    EXPIRE_REFRESH_TOKEN(1209600);
 
     private final long seconds;
 
