@@ -1,5 +1,6 @@
 package com.drrr.domain.techblogpost.service;
 
+import com.drrr.core.code.redis.RedisTTL;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.RedisCategory;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
@@ -22,7 +23,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,13 @@ public class RedisTechBlogPostService {
     private final RedisTemplate<String, RedisTechBlogPost> redisTechBlogPostTemplate;
     private final RedisTemplate<Object, Object> redisTemplate;
 
+    public Boolean hasSliceKey(final int page, final int size) {
+        final CompoundPostCategoriesSliceId id = CompoundPostCategoriesSliceId.builder()
+                .redisPageRequest(RedisPageRequest.from(page, size))
+                .build();
+        return redisTemplate.hasKey(id);
+    }
+
     public Slice<TechBlogPostCategoryDto> findAllPostsInRedis(final int page, final int size) {
         final CompoundPostCategoriesSliceId key = CompoundPostCategoriesSliceId.builder()
                 .redisPageRequest(RedisPageRequest.from(page, size))
@@ -45,6 +55,8 @@ public class RedisTechBlogPostService {
         if (Objects.isNull(value)) {
             return null;
         }
+
+        redisTemplate.expire(key, RedisTTL.ONE_HOUR.getSeconds(), TimeUnit.SECONDS);
 
         final List<TechBlogPostCategoryDto> techBlogPostCategoryDto = value.redisTechBlogPostCategories().stream()
                 .map((redisEntity) -> TechBlogPostCategoryDto.builder()
@@ -151,5 +163,22 @@ public class RedisTechBlogPostService {
                 .build();
 
         redisCategoryTechBlogPostRepository.save(redisPosts);
+    }
+
+    //redisTemplate.delete()를 사용해서 redis에 저장된 데이터를 삭제할 수 있음
+    //jitter를 사용해서 redis에 저장된 데이터를 삭제하는 메서드를 만들어보자
+    public void deleteKeysWithJitter() throws InterruptedException {
+        try (Cursor<byte[]> cursor = redisTemplate.getConnectionFactory().getConnection().scan(ScanOptions.NONE)) {
+            while (cursor.hasNext()) {
+                String key = new String(cursor.next());
+                long seconds = applyJitterSeconds();
+                redisTemplate.expire(key, seconds, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    private long applyJitterSeconds() throws InterruptedException {
+        // 지터 시간은 예를 들어 100ms에서 1000ms 사이의 랜덤한 시간으로 설정
+        return (long) (Math.random() * 900 + 100);
     }
 }
