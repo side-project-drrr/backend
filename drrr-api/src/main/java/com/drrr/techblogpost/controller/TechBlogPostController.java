@@ -6,6 +6,7 @@ import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.techblogpost.service.ExternalTechBlogPostSearchService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
+import com.drrr.techblogpost.service.ExternalTopTechBlogPostService;
 import com.drrr.web.page.request.PageableRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TechBlogPostController {
     private final ExternalTechBlogPostService externalTechBlogPostService;
     private final ExternalTechBlogPostSearchService externalTechBlogPostSearchService;
+    private final ExternalTopTechBlogPostService externalTopTechBlogPostService;
 
     @Operation(summary = "모든 기술 블로그 정보를 가져오는 API", description = """
             호출 성공 시 모든 기술 블로그 정보 반환 [page 값은 0부터 시작 
@@ -96,6 +98,6 @@ public class TechBlogPostController {
     @GetMapping("/posts/top/{type}/{count}")
     public List<TechBlogPostCategoryDto> findTopNPosts(@NotNull @PathVariable("count") final int count,
                                                        @NotNull @PathVariable("type") final TopTechBlogType type) {
-        return externalTechBlogPostService.execute(count, type);
+        return externalTopTechBlogPostService.execute(count, type);
     }
 }

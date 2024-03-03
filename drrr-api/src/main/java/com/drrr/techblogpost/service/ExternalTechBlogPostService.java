@@ -1,6 +1,5 @@
 package com.drrr.techblogpost.service;
 
-import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -8,7 +7,6 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.web.page.request.PageableRequest;
-import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
@@ -20,12 +18,6 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostService techBlogPostService;
     private final RedisTechBlogPostService redisTechBlogPostService;
     private final TechBlogPostRepository techBlogPostRepository;
-
-    public List<TechBlogPostCategoryDto> execute(final int count, final TopTechBlogType type) {
-
-        return techBlogPostService.findTopPost(count, type);
-    }
-
 
     public Slice<TechBlogPostCategoryDto> execute(final PageableRequest pageableRequest) {
         return techBlogPostRepository.findAllPosts(pageableRequest.fromPageRequest());
