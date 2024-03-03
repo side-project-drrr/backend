@@ -71,7 +71,8 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         PATTERN1("yyyy.MM.dd"),
         PATTERN2("yyyy.MM.dd."),
         PATTERN3("MMM.d.yyyy", Locale.ENGLISH),
-        PATTERN4("yy.MM.dd");
+        PATTERN4("yy.MM.dd"),
+        PATTERN5("yyyy-MM-dd");
 
         private final DateTimeFormatter dateTimeFormatter;
 
