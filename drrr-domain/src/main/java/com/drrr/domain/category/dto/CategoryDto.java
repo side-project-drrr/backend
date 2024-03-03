@@ -2,6 +2,7 @@ package com.drrr.domain.category.dto;
 
 import com.drrr.domain.category.entity.Category;
 import com.querydsl.core.annotations.QueryProjection;
+import java.io.Serializable;
 import java.util.List;
 import lombok.Builder;
 
@@ -9,7 +10,7 @@ import lombok.Builder;
 public record CategoryDto(
         Long id,
         String name
-) {
+) implements Serializable {
     @QueryProjection
     public CategoryDto(Long id, String name) {
         this.id = id;

@@ -5,6 +5,6 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 
 public interface RedisCategoryTechBlogPostRepository extends CrudRepository<RedisCategoryTechBlogPost, Long> {
-    Optional<RedisCategoryTechBlogPost> findById(Long categoryId);
+    Optional<RedisCategoryTechBlogPost> findById(final Long categoryId);
 
 }

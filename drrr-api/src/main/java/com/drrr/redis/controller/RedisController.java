@@ -20,7 +20,7 @@ public class RedisController {
 
     @Operation(summary = "게시물과 카테고리 등이 새로 입력되는 배치의 실행 후 호출되는 API")
     @DeleteMapping("/redis/cache")
-    public ResponseEntity<String> deleteAllRedisCaches() {
+    public ResponseEntity<String> deleteAllRedisCaches() throws InterruptedException {
         externalRedisService.execute();
         return ResponseEntity.ok().build();
     }

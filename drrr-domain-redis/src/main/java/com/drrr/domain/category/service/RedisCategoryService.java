@@ -34,7 +34,7 @@ public class RedisCategoryService {
         return Optional.ofNullable(redisCategoryTemplate.opsForValue().multiGet(keys))
                 .map(categories -> categories.stream()
                         .filter(Objects::nonNull)
-                        .map(RedisCategory::getName)
+                        .map(RedisCategory::name)
                         .map(Category::new)
                         .sorted(Comparator.comparing(Category::getName)).toList())
                 .orElse(List.of());
@@ -56,8 +56,8 @@ public class RedisCategoryService {
     public void saveCategories(final List<RedisCategory> categories) {
         List<RedisCategory> redisCategories = categories.stream()
                 .map(category -> RedisCategory.builder()
-                        .id(category.getId())
-                        .name(category.getName())
+                        .id(category.id())
+                        .name(category.name())
                         .build())
                 .toList();
 
