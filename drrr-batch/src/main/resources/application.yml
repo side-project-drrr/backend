@@ -13,7 +13,7 @@ spring:
         - main
       batch:
         - batch
-    default: local1
+    default: batch
   batch:
     job:
       name: ${job.name:NONE}

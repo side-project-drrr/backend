@@ -27,7 +27,7 @@ public class TechBlogPostService {
     private final CategoryRepository categoryRepository;
     private final TechBlogPostRepository techBlogPostRepository;
 
-    public List<TechBlogPostCategoryDto> findTopPost(final int count, final TopTechBlogType type) {
+    public List<TechBlogPostCategoryDto> findTopPostByType(final int count, final TopTechBlogType type) {
         final List<Long> topPostsIds = techBlogPostRepository.findTopPost(count, type);
         if (topPostsIds.isEmpty()) {
             log.error("기술블로그를 찾을 수 없습니다.");
