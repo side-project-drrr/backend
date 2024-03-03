@@ -1,9 +1,6 @@
 package com.drrr.redis.service;
 
-import com.drrr.domain.auth.repository.RedisAuthenticationTokenRepository;
-import com.drrr.domain.category.repository.RedisCategoryRepository;
-import com.drrr.domain.techblogpost.repository.RedisCategoryTechBlogPostRepository;
-import com.drrr.domain.techblogpost.repository.RedisTechBlogPostRepository;
+import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,16 +12,9 @@ import org.springframework.stereotype.Service;
 @Transactional
 @RequiredArgsConstructor
 public class ExternalRedisService {
-    private final RedisTechBlogPostRepository redisTechBlogPostRepository;
-    private final RedisCategoryTechBlogPostRepository redisCategoryTechBlogPostRepository;
-    private final RedisCategoryRepository redisCategoryRepository;
-    private final RedisAuthenticationTokenRepository redisAuthenticationTokenRepository;
+    private final RedisTechBlogPostService redisTechBlogPostService;
 
-    public void execute() {
-        redisCategoryRepository.deleteAll();
-        redisCategoryTechBlogPostRepository.deleteAll();
-        redisTechBlogPostRepository.deleteAll();
-        redisAuthenticationTokenRepository.deleteAll();
-        ;
+    public void execute() throws InterruptedException {
+        redisTechBlogPostService.deleteKeysWithJitter();
     }
 }
