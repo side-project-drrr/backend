@@ -19,7 +19,8 @@ public enum TechBlogCode {
     DEVOCEAN(BASE.id + 5, "데보션"),
     TECHOBLE(BASE.id + 6, "우테코 기술블로그"),
     NHN_CLOUD(BASE.id + 7, "NHN 클라우드"),
-    LINE(BASE.id + 8, "네이버 라인");
+    LINE(BASE.id + 8, "네이버 라인"),
+    DEV_SISTERS(BASE.id + 9, "데브시스터즈");
 
     // enum 성능 최적화
     private static final Map<Long, TechBlogCode> cache = Arrays.stream(values())
