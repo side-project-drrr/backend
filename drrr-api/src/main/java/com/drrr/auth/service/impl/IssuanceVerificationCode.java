@@ -17,12 +17,14 @@ public class IssuanceVerificationCode {
     private final MemberRepository memberRepository;
 
     public void execute(final EmailRequest emailRequest) {
+        final String email = emailRequest.email();
+
         EMAIL_VERIFICATION_CODE_EXPIRED.invokeByCondition(
-                memberRepository.existsByEmail(emailRequest.email())
+                memberRepository.existsByEmail(email)
         );
 
         emailProducer.sendVerificationMessage(
-                emailRequest.email(),
+                email,
                 verificationService.createVerificationCode(emailRequest.providerId(), emailRequest.email())
         );
     }
