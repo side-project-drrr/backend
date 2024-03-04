@@ -17,11 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class SearchMemberService {
     private final MemberRepository memberRepository;
 
-    public Member execute(Long id) {
-        return memberRepository.findById(id)
+    public Member execute(Long memberId) {
+        return memberRepository.findById(memberId)
                 .orElseThrow(() -> {
-                    log.error(
-                            "initializeCategoryWeight(final Long memberId, final List<Long> categories) Method NoSuchElementException Error");
+                    log.error("사용자를 찾을 수 없습니다. memberId -> {}", memberId);
                     return DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
                 });
     }
