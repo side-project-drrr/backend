@@ -24,13 +24,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
 @EnableMysqlProfile
 @SpringBootTest
+@Disabled
 class DummyDataFactory {
     private final int CATEGORY_COUNT = 20;
     private final int POST_COUNT = 500;
@@ -49,7 +50,8 @@ class DummyDataFactory {
     @Autowired
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
 
-    @Test
+
+    //@Test
     public void 가짜_데이터_삽입() {
         insertMemberDummyData();
         insertPostDummyData();

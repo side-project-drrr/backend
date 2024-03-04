@@ -35,9 +35,7 @@ public class AuthenticationTokenService {
 
     public void logout(final Long memberId, final String accessToken, final Long ttlMillis) {
         authenticationTokenRepository.findById(memberId)
-                .ifPresent((authenticationToken) -> {
-                    authenticationTokenRepository.delete(authenticationToken);
-                });
+                .ifPresent(authenticationTokenRepository::delete);
         //key : access token, value : "Logout", ttl : access token의 유효시간만큼
         redisTemplate.opsForValue().set(accessToken, "Logout", ttlMillis, TimeUnit.MILLISECONDS);
     }

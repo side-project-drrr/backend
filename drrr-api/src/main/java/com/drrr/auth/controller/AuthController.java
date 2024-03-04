@@ -17,13 +17,11 @@ import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,9 +49,7 @@ public class AuthController {
                     @Parameter(name = "code", description = "OAuth2 인증코드", in = ParameterIn.QUERY, schema = @Schema(type = "string")),
                     @Parameter(name = "state", description = "OAuth2 주체", in = ParameterIn.QUERY, schema = @Schema(type = "string"))
             })
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "신규 회원 여부 및 provider id 반환", content = @Content(schema = @Schema(implementation = OAuth2Response.class)))
-    })
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "신규 회원 여부 및 provider id 반환"))
     @GetMapping("/oauth2/profile")
     public OAuth2Response exchangeOAuth2AccessToken(@NotNull @RequestParam("code") final String code,
                                                     @NotNull @RequestParam("state") final String provider) {
@@ -61,46 +57,35 @@ public class AuthController {
     }
 
     @Operation(summary = "소셜 로그인 회원가입 API", description = "호출 성공 시 JWT Access, Refresh 토큰 반환")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "JWT Access, Refresh 토큰 반환", content = @Content(schema = @Schema(implementation = SignUpResponse.class)))
-    })
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "JWT Access, Refresh 토큰 반환"))
     @PostMapping("/signup")
     public SignUpResponse signUp(@Validated @RequestBody final SignUpRequest signUpRequest) {
         return signUpService.execute(signUpRequest);
     }
 
     @Operation(summary = "소셜 로그인 API", description = "호출 성공 시 JWT Access, Refresh 토큰 반환")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "JWT Access, Refresh 토큰 반환", content = @Content(schema = @Schema(implementation = SignInResponse.class)))
-    })
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "JWT Access, Refresh 토큰 반환"))
     @PostMapping("/signin")
     public SignInResponse signIn(@Validated @RequestBody final SignInRequest signInRequest) {
         return signInService.execute(signInRequest);
     }
 
     @Operation(summary = "로그아웃 API", description = "호출 성공 시 기존 토큰을 레디스에서 제거")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공적으로 로그아웃", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
-    })
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "성공적으로 로그아웃"))
     @PostMapping("/signout")
     public void signOut(@Validated @RequestBody final SignOutRequest signOutRequest) {
         issuanceTokenService.negateToken(signOutRequest);
     }
 
     @Operation(summary = "토큰 재발급", description = "호출 성공 시 JWT Access 토큰 반환")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "access token 재발급", content = @Content(schema = @Schema(implementation = AccessTokenResponse.class)))
-    })
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "access token 재발급"))
     @PostMapping("/access-token")
-    public AccessTokenResponse regenerateAccessToken(
-            @Validated @RequestBody final AccessTokenRequest request) {
+    public AccessTokenResponse regenerateAccessToken(@Validated @RequestBody final AccessTokenRequest request) {
         return issuanceTokenService.regenerateAccessToken(request);
     }
 
     @Operation(summary = "회원탈퇴 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 실제 회원 정보를 삭제하는 게 아닌 탈퇴 상태로만 변경")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원탈퇴 상태로 변경", content = @Content(schema = @Schema(implementation = HttpStatus.class)))
-    })
+    @ApiResponses(@ApiResponse(responseCode = "200", description = "회원탈퇴 상태로 변경"))
     @Secured("USER")
     @DeleteMapping("/members/me/deletion")
     public void memberUnregister(@MemberId final Long memberId) {

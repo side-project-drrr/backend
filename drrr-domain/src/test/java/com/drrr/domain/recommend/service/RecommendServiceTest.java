@@ -8,7 +8,6 @@ import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.category.service.RecommendPostService;
-import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.jpa.entity.BaseEntity;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
@@ -19,6 +18,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.util.DatabaseCleaner;
+import com.drrr.domain.util.ServiceIntegrationTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,14 +30,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.stereotype.Service;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QueryDSLConfiguration.class, DatabaseCleaner.class})
-class RecommendServiceTest {
+class RecommendServiceTest extends ServiceIntegrationTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -58,6 +52,7 @@ class RecommendServiceTest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
+
 
     @AfterEach
     void teardown() {
@@ -90,6 +85,8 @@ class RecommendServiceTest {
      */
     @BeforeEach
     void setup() {
+        databaseCleaner.clear();
+
         Member member = Member.builder()
                 .email("example@drrr.com")
                 .nickname("user1")

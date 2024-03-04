@@ -1,8 +1,9 @@
 package com.drrr.auth.service.impl;
 
+import static com.drrr.domain.exception.DomainExceptionCode.EMAIL_VERIFICATION_CODE_EXPIRED;
+
 import com.drrr.auth.payload.request.EmailRequest;
 import com.drrr.domain.email.service.VerificationService;
-import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.infra.notifications.kafka.email.EmailProducer;
 import lombok.RequiredArgsConstructor;
@@ -16,15 +17,16 @@ public class IssuanceVerificationCode {
     private final MemberRepository memberRepository;
 
     public void execute(final EmailRequest emailRequest) {
-        String email = emailRequest.email();
-        boolean isDuplicate = memberRepository.existsByEmail(email);
+        final String email = emailRequest.email();
 
-        if (isDuplicate) {
-            throw DomainExceptionCode.EMAIL_DUPLICATE_EXCEPTION.newInstance();
-        }
+        EMAIL_VERIFICATION_CODE_EXPIRED.invokeByCondition(
+                memberRepository.existsByEmail(email)
+        );
 
-        String code = verificationService.createVerificationCode(emailRequest.providerId(), emailRequest.email());
-        emailProducer.sendVerificationMessage(emailRequest.email(), code);
+        emailProducer.sendVerificationMessage(
+                email,
+                verificationService.createVerificationCode(emailRequest.providerId(), emailRequest.email())
+        );
     }
 
 }

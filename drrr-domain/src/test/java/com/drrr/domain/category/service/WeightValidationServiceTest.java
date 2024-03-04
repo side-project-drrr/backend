@@ -9,8 +9,6 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import com.drrr.domain.jpa.config.JpaConfiguration;
-import com.drrr.domain.jpa.config.QueryDSLConfiguration;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -18,6 +16,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.util.DatabaseCleaner;
+import com.drrr.domain.util.ServiceIntegrationTest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,10 +27,6 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -66,9 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QueryDSLConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class})
-class WeightValidationServiceTest {
+class WeightValidationServiceTest extends ServiceIntegrationTest {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
