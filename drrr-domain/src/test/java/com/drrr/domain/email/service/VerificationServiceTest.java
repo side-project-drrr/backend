@@ -4,29 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
 
-import com.drrr.domain.email.generator.EmailCodeGenerator;
 import com.drrr.domain.email.repository.EmailRepository;
-import com.drrr.domain.jpa.config.JpaConfiguration;
-import com.drrr.domain.jpa.config.QueryDSLConfiguration;
-import com.drrr.domain.util.DatabaseCleaner;
+import com.drrr.domain.util.ServiceIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.stereotype.Service;
 
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QueryDSLConfiguration.class, DatabaseCleaner.class, JpaConfiguration.class})
-class VerificationServiceTest {
+class VerificationServiceTest extends ServiceIntegrationTest {
 
     @Autowired
     private VerificationService verificationService;
 
-    @MockBean
-    private EmailCodeGenerator emailCodeGenerator;
     @Autowired
     private EmailRepository emailRepository;
 
@@ -55,6 +43,24 @@ class VerificationServiceTest {
                 () -> assertThat(previousCode).isNotEqualTo(actual),
                 () -> assertThat(newCode).isEqualTo(actual)
         );
+    }
+
+    @Test
+    void 이메일_인증_코드가_일치합니다() {
+        given(emailCodeGenerator.generate()).willReturn("random");
+
+        final String code = verificationService.createVerificationCode("provider", "email");
+
+        assertThat(verificationService.verifyCode("provider", code).isVerified()).isTrue();
+    }
+
+    @Test
+    void 이메일_인증_코드가_일치하지_않습니다() {
+        given(emailCodeGenerator.generate()).willReturn("random");
+
+        final String code = verificationService.createVerificationCode("provider", "email");
+
+        assertThat(verificationService.verifyCode("provider", "other").isVerified()).isFalse();
     }
 
 
