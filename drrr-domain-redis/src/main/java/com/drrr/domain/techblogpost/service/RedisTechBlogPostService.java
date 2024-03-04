@@ -1,9 +1,7 @@
 package com.drrr.domain.techblogpost.service;
 
 import com.drrr.core.code.redis.RedisTTL;
-import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.RedisCategory;
-import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice;
 import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice.CompoundPostCategoriesSliceId;
@@ -15,6 +13,7 @@ import com.drrr.domain.techblogpost.entity.RedisTechBlogPostCategory;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.RedisCategoryTechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.RedisTechBlogPostRepository;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,7 +44,22 @@ public class RedisTechBlogPostService {
         return redisTemplate.hasKey(id);
     }
 
-    public Slice<TechBlogPostCategoryDto> findAllPostsInRedis(final int page, final int size) {
+    public Optional<Slice<TechBlogPostCategoryDto>> findOptionalSlicePostsInRedis(final int page, final int size) {
+        final Slice<TechBlogPostCategoryDto> allPostsInRedis = findAllPostsInRedis(page, size);
+
+        // Redis에 저장되어 있으면 바로 반환
+        if (allPostsInRedis.getContent().isEmpty()) {
+            return Optional.of(allPostsInRedis);
+        }
+
+        // Redis에 저장되어 있는 게 null이면 빈 Optional 반환
+        if (hasSliceKey(page, size)) {
+            return Optional.of(new SliceImpl<>(Collections.emptyList(), PageRequest.of(page, size), false));
+        }
+        return Optional.empty();
+    }
+
+    private Slice<TechBlogPostCategoryDto> findAllPostsInRedis(final int page, final int size) {
         final CompoundPostCategoriesSliceId key = CompoundPostCategoriesSliceId.builder()
                 .redisPageRequest(RedisPageRequest.from(page, size))
                 .build();
@@ -53,32 +67,12 @@ public class RedisTechBlogPostService {
         final RedisAllPostCategoriesSlice value = (RedisAllPostCategoriesSlice) redisTemplate.opsForValue().get(key);
 
         if (Objects.isNull(value)) {
-            return null;
+            return new SliceImpl<>(Collections.emptyList(), PageRequest.of(page, size), false);
         }
 
         redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
 
-        final List<TechBlogPostCategoryDto> techBlogPostCategoryDto = value.redisTechBlogPostCategories().stream()
-                .map((redisEntity) -> TechBlogPostCategoryDto.builder()
-                        .techBlogPostBasicInfoDto(TechBlogPostBasicInfoDto.builder()
-                                .id(redisEntity.redisTechBlogPostBasicInfo().id())
-                                .postLike(redisEntity.redisTechBlogPostBasicInfo().postLike())
-                                .summary(redisEntity.redisTechBlogPostBasicInfo().summary())
-                                .thumbnailUrl(redisEntity.redisTechBlogPostBasicInfo().thumbnailUrl())
-                                .title(redisEntity.redisTechBlogPostBasicInfo().title())
-                                .url(redisEntity.redisTechBlogPostBasicInfo().url())
-                                .viewCount(redisEntity.redisTechBlogPostBasicInfo().viewCount())
-                                .techBlogCode(redisEntity.redisTechBlogPostBasicInfo().techBlogCode())
-                                .writtenAt(redisEntity.redisTechBlogPostBasicInfo().writtenAt())
-                                .build())
-                        .categoryDto(redisEntity.redisCategories().stream()
-                                .map(redisCategory -> CategoryDto.builder()
-                                        .id(redisCategory.id())
-                                        .name(redisCategory.name())
-                                        .build())
-                                .toList()).build()).toList();
-
-        return new SliceImpl<>(techBlogPostCategoryDto, PageRequest.of(page, size), value.hasNext());
+        return new SliceImpl<>(RedisAllPostCategoriesSlice.from(value), PageRequest.of(page, size), value.hasNext());
     }
 
     //Redis에 저장할 건데 key는 String value는 RedisAllPostCategoriesSlice를 byte[]로 변환한 다음에 문자열로 value로 저장할거야

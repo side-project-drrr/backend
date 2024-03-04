@@ -8,9 +8,9 @@ import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.web.page.request.PageableRequest;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -21,27 +21,29 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
     public Slice<TechBlogPostCategoryDto> execute(final PageableRequest pageableRequest) {
-        Slice<TechBlogPostCategoryDto> allPostsInRedis = redisTechBlogPostService.findAllPostsInRedis(
-                pageableRequest.page(), pageableRequest.size());
 
-        //redis에 저장되어 있으면 바로 반환
-        if (Objects.nonNull(allPostsInRedis)) {
-            return allPostsInRedis;
+        Optional<Slice<TechBlogPostCategoryDto>> byRedis = redisTechBlogPostService.findOptionalSlicePostsInRedis(
+                pageableRequest.page(),
+                pageableRequest.size()
+        );
+
+        if (byRedis.isPresent()) {
+            return byRedis.get();
         }
 
-        //redis에 저장되어 있는 게 null이면 null 반환
-        if (redisTechBlogPostService.hasSliceKey(pageableRequest.page(), pageableRequest.size())) {
-            return new SliceImpl<>(null, pageableRequest.fromPageRequest(), false);
-        }
-
-        //redis에 저장되어 있는 게 없으면 db에서 가져와서 redis에 저장
-        Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(
+        //redis에 저장되어 있는 게 없으면 db에서 탐색
+        final Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(
                 pageableRequest.fromPageRequest());
 
-        redisTechBlogPostService.saveAllPostsInRedis(pageableRequest.page(), pageableRequest.size(), allPosts.hasNext(),
-                allPosts.getContent());
+        //redis에 저장
+        redisTechBlogPostService.saveAllPostsInRedis(
+                pageableRequest.page(),
+                pageableRequest.size(),
+                allPosts.hasNext(),
+                allPosts.getContent()
+        );
 
-        return techBlogPostRepository.findAllPosts(pageableRequest.fromPageRequest());
+        return allPosts;
     }
 
     public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final PageableRequest pageableRequest) {
