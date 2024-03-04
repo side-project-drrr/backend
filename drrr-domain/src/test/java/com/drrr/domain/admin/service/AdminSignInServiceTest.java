@@ -8,17 +8,11 @@ import com.drrr.core.exception.admin.AdminExceptionCode;
 import com.drrr.domain.admin.entity.Admin;
 import com.drrr.domain.admin.repository.AdminRepository;
 import com.drrr.domain.admin.service.AdminSignInService.AdminSignInDto;
-import com.drrr.domain.jpa.config.QueryDSLConfiguration;
+import com.drrr.domain.util.ServiceIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.stereotype.Service;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
-@Import({QueryDSLConfiguration.class})
-class AdminSignInServiceTest {
+class AdminSignInServiceTest extends ServiceIntegrationTest {
     @Autowired
     private AdminSignInService adminSignInService;
 
