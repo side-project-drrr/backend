@@ -59,11 +59,16 @@ public class CategoryWeight extends BaseEntity {
      * 초기값으로 변환하기 위함
      */
     public boolean isExpiredCategoryWeight() {
-        return MIN_WEIGHT.isGreaterThan(this.weightValue) || isUnreadPastDays(this.lastReadAt);
+        //선호하지 않는 카테고리에 대해서는 최소 가중치 보다 낮으면 삭제, 선호하는 카테고리는 시간이 지나도 만료되지 않음
+        return (MIN_WEIGHT.isGreaterThan(this.weightValue) && !preferred) || isUnreadPastDays(this.lastReadAt);
     }
 
-
     private boolean isUnreadPastDays(final LocalDateTime unreadDays) {
+        //선호하는 카테고리는 시간이 지나도 만료되지 않음
+        if (this.preferred) {
+            return false;
+        }
+
         final LocalDateTime now = LocalDateTime.now();
         final Duration duration = Duration.between(unreadDays, now);
         final long diffHours = duration.toDays();
