@@ -48,7 +48,7 @@ public class RedisTechBlogPostService {
         final Slice<TechBlogPostCategoryDto> allPostsInRedis = findAllPostsInRedis(page, size);
 
         // Redis에 저장되어 있으면 바로 반환
-        if (allPostsInRedis.getContent().isEmpty()) {
+        if (!allPostsInRedis.getContent().isEmpty()) {
             return Optional.of(allPostsInRedis);
         }
 
