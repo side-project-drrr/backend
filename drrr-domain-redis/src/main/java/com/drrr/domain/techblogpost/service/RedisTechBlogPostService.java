@@ -1,9 +1,7 @@
 package com.drrr.domain.techblogpost.service;
 
 import com.drrr.core.code.redis.RedisTTL;
-import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.RedisCategory;
-import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice;
 import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice.CompoundPostCategoriesSliceId;
@@ -20,9 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
@@ -38,47 +33,20 @@ public class RedisTechBlogPostService {
     private final RedisTemplate<String, RedisTechBlogPost> redisTechBlogPostTemplate;
     private final RedisTemplate<Object, Object> redisTemplate;
 
-    public Boolean hasSliceKey(final int page, final int size) {
-        final CompoundPostCategoriesSliceId id = CompoundPostCategoriesSliceId.builder()
-                .redisPageRequest(RedisPageRequest.from(page, size))
-                .build();
+    public <T> Boolean hasSliceKey(final T id) {
         return redisTemplate.hasKey(id);
     }
 
-    public Slice<TechBlogPostCategoryDto> findAllPostsInRedis(final int page, final int size) {
+    public RedisAllPostCategoriesSlice findPostsInRedis(final int page, final int size) {
         final CompoundPostCategoriesSliceId key = CompoundPostCategoriesSliceId.builder()
                 .redisPageRequest(RedisPageRequest.from(page, size))
                 .build();
 
         final RedisAllPostCategoriesSlice value = (RedisAllPostCategoriesSlice) redisTemplate.opsForValue().get(key);
 
-        if (Objects.isNull(value)) {
-            return null;
-        }
-
         redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
 
-        final List<TechBlogPostCategoryDto> techBlogPostCategoryDto = value.redisTechBlogPostCategories().stream()
-                .map((redisEntity) -> TechBlogPostCategoryDto.builder()
-                        .techBlogPostBasicInfoDto(TechBlogPostBasicInfoDto.builder()
-                                .id(redisEntity.redisTechBlogPostBasicInfo().id())
-                                .postLike(redisEntity.redisTechBlogPostBasicInfo().postLike())
-                                .summary(redisEntity.redisTechBlogPostBasicInfo().summary())
-                                .thumbnailUrl(redisEntity.redisTechBlogPostBasicInfo().thumbnailUrl())
-                                .title(redisEntity.redisTechBlogPostBasicInfo().title())
-                                .url(redisEntity.redisTechBlogPostBasicInfo().url())
-                                .viewCount(redisEntity.redisTechBlogPostBasicInfo().viewCount())
-                                .techBlogCode(redisEntity.redisTechBlogPostBasicInfo().techBlogCode())
-                                .writtenAt(redisEntity.redisTechBlogPostBasicInfo().writtenAt())
-                                .build())
-                        .categoryDto(redisEntity.redisCategories().stream()
-                                .map(redisCategory -> CategoryDto.builder()
-                                        .id(redisCategory.id())
-                                        .name(redisCategory.name())
-                                        .build())
-                                .toList()).build()).toList();
-
-        return new SliceImpl<>(techBlogPostCategoryDto, PageRequest.of(page, size), value.hasNext());
+        return value;
     }
 
     //Redis에 저장할 건데 key는 String value는 RedisAllPostCategoriesSlice를 byte[]로 변환한 다음에 문자열로 value로 저장할거야
