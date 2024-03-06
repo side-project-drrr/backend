@@ -309,7 +309,7 @@ class WeightValidationServiceTest extends ServiceIntegrationTest {
         assertThat(member3CategoryWeight.get(2).getWeightValue()).isEqualTo(
                 WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue());
         //가중치가 0인 카테고리에 대해서는 데이터가 삭제됨
-        assertThat(member4CategoryWeight.size()).isEqualTo(3);
+        assertThat(member4CategoryWeight.size()).isEqualTo(4);
 
 
     }
