@@ -2,15 +2,18 @@ package com.drrr.techblogpost.service;
 
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
+import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice;
+import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice.CompoundPostCategoriesSliceId;
+import com.drrr.domain.techblogpost.entity.RedisPageRequest;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.web.page.request.PageableRequest;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -21,14 +24,20 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
     public Slice<TechBlogPostCategoryDto> execute(final PageableRequest pageableRequest) {
-
-        Optional<Slice<TechBlogPostCategoryDto>> byRedis = redisTechBlogPostService.findOptionalSlicePostsInRedis(
+        RedisAllPostCategoriesSlice redisAllPostCategoriesSlice = redisTechBlogPostService.findPostsInRedis(
                 pageableRequest.page(),
                 pageableRequest.size()
         );
 
-        if (byRedis.isPresent()) {
-            return byRedis.get();
+        //redis key 값
+        final CompoundPostCategoriesSliceId key = CompoundPostCategoriesSliceId.builder()
+                .redisPageRequest(RedisPageRequest.from(pageableRequest.page(), pageableRequest.size()))
+                .build();
+
+        if (redisTechBlogPostService.hasSliceKey(key)) {
+            return new SliceImpl<>(
+                    RedisAllPostCategoriesSlice.from(redisAllPostCategoriesSlice), pageableRequest.fromPageRequest(),
+                    redisAllPostCategoriesSlice.hasNext());
         }
 
         //redis에 저장되어 있는 게 없으면 db에서 탐색

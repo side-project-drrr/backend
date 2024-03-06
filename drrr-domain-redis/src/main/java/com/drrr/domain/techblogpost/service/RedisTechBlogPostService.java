@@ -13,15 +13,11 @@ import com.drrr.domain.techblogpost.entity.RedisTechBlogPostCategory;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.RedisCategoryTechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.RedisTechBlogPostRepository;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
@@ -37,42 +33,20 @@ public class RedisTechBlogPostService {
     private final RedisTemplate<String, RedisTechBlogPost> redisTechBlogPostTemplate;
     private final RedisTemplate<Object, Object> redisTemplate;
 
-    public Boolean hasSliceKey(final int page, final int size) {
-        final CompoundPostCategoriesSliceId id = CompoundPostCategoriesSliceId.builder()
-                .redisPageRequest(RedisPageRequest.from(page, size))
-                .build();
+    public <T> Boolean hasSliceKey(final T id) {
         return redisTemplate.hasKey(id);
     }
 
-    public Optional<Slice<TechBlogPostCategoryDto>> findOptionalSlicePostsInRedis(final int page, final int size) {
-        final Slice<TechBlogPostCategoryDto> allPostsInRedis = findAllPostsInRedis(page, size);
-
-        // Redis에 저장되어 있으면 바로 반환
-        if (!allPostsInRedis.getContent().isEmpty()) {
-            return Optional.of(allPostsInRedis);
-        }
-
-        // Redis에 저장되어 있는 게 null이면 빈 Optional 반환
-        if (hasSliceKey(page, size)) {
-            return Optional.of(new SliceImpl<>(Collections.emptyList(), PageRequest.of(page, size), false));
-        }
-        return Optional.empty();
-    }
-
-    private Slice<TechBlogPostCategoryDto> findAllPostsInRedis(final int page, final int size) {
+    public RedisAllPostCategoriesSlice findPostsInRedis(final int page, final int size) {
         final CompoundPostCategoriesSliceId key = CompoundPostCategoriesSliceId.builder()
                 .redisPageRequest(RedisPageRequest.from(page, size))
                 .build();
 
         final RedisAllPostCategoriesSlice value = (RedisAllPostCategoriesSlice) redisTemplate.opsForValue().get(key);
 
-        if (Objects.isNull(value)) {
-            return new SliceImpl<>(Collections.emptyList(), PageRequest.of(page, size), false);
-        }
-
         redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
 
-        return new SliceImpl<>(RedisAllPostCategoriesSlice.from(value), PageRequest.of(page, size), value.hasNext());
+        return value;
     }
 
     //Redis에 저장할 건데 key는 String value는 RedisAllPostCategoriesSlice를 byte[]로 변환한 다음에 문자열로 value로 저장할거야

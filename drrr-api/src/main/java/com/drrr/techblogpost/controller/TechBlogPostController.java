@@ -37,9 +37,9 @@ public class TechBlogPostController {
             호출 성공 시 모든 기술 블로그 정보 반환 [page 값은 0부터 시작 
             size는 한 page에 담길 게시물의 개수 - 작성일자 기준 내림차순 반환]
             """)
-    @ApiResponses(value = {
+    @ApiResponses(
             @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 모든 블로그 정보 반환")
-    })
+    )
     @GetMapping("/posts/all")
     public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final PageableRequest pageableRequest) {
         return externalTechBlogPostService.execute(pageableRequest);
@@ -49,9 +49,9 @@ public class TechBlogPostController {
             호출 성공 시 keyword가 제목에 들어간 기술 블로그 정보 반환 [page 값은 0부터 시작 
             size는 한 page에 담길 게시물의 개수 - 작성일자 기준 내림차순 반환]
             """)
-    @ApiResponses(value = {
+    @ApiResponses(
             @ApiResponse(responseCode = "200", description = "keyword가 제목에 들어간 블로그 정보 반환")
-    })
+    )
     @GetMapping("/posts/title/keyword-search")
     public Slice<TechBlogPostCategoryDto> searchPosts(
             @Valid @RequestParam("keyword") final String keyword,
@@ -63,9 +63,9 @@ public class TechBlogPostController {
             호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환 [page 값은 0부터 시작 
             size는 한 page에 담길 게시물의 개수 - 작성일자 기준 내림차순 반환]
             """)
-    @ApiResponses(value = {
+    @ApiResponses(
             @ApiResponse(responseCode = "200", description = "호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환")
-    })
+    )
     @GetMapping("/posts/categories/{categoryId}")
     public Slice<TechBlogPostCategoryDto> findPostsByCategory(@PathVariable("categoryId") final Long id,
                                                               @Valid @ModelAttribute final PageableRequest pageableRequest) {
@@ -73,9 +73,9 @@ public class TechBlogPostController {
     }
 
     @Operation(summary = "특정 게시물에 대한 상세보기 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 특정 게시물에 대한 상세 정보 반환")
-    @ApiResponses(value = {
+    @ApiResponses(
             @ApiResponse(responseCode = "200", description = "특정 게시물에 대한 상세 정보 반환")
-    })
+    )
     @Secured("USER")
     @GetMapping("/posts/{postId}")
     public TechBlogPostDetailedInfoDto findPostDetail(@NotNull @PathVariable("postId") final Long id) {
@@ -84,9 +84,9 @@ public class TechBlogPostController {
 
     @Operation(summary = "Request로 보낸 Type(VIEWS or LIKES)이 가장 높은 탑 기술 블로그를 반환 API",
             description = " 호출 성공 시 count만큼 Type(VIEWS or LIKES)이 가장 높은 기술 블로그 반환(작성일 내림차순)")
-    @ApiResponses(value = {
+    @ApiResponses(
             @ApiResponse(responseCode = "200", description = "조회수가 가장 높은 기술 블로그를 반환")
-    })
+    )
     @GetMapping("/posts/top/{type}/{count}")
     public List<TechBlogPostCategoryDto> findTopNPosts(@NotNull @PathVariable("count") final int count,
                                                        @NotNull @PathVariable("type") final TopTechBlogType type) {
