@@ -17,11 +17,12 @@ public class KakaoOAuth2Request {
     private final OAuth2Client oAuth2Client;
 
     public OAuth2KakaoResponse findProviderId(final String code) {
-        OAuth2KakaoAccessTokenRequest kakaoRequest =
-                OAuth2KakaoAccessTokenRequest.buildOAuth2KakaoAccessTokenRequest(reader.getKakaoClientId(),
-                        code,
-                        OAuth2Provider.KAKAO_REQUEST_ACCESS_TOKEN_URI.getRequestUrl()
-                );
+        OAuth2KakaoAccessTokenRequest kakaoRequest = OAuth2KakaoAccessTokenRequest.builder()
+                .clientId(reader.getKakaoClientId())
+                .code(code)
+                .uri(OAuth2Provider.REDIRECT_URL.getRequestUrl())
+                .build();
+
         final String accessToken = oAuth2Client.exchangeKakaoOAuth2AccessToken(kakaoRequest);
         JsonNode jsonNode = oAuth2Client.getUserProfile(accessToken, OAuth2Provider.KAKAO_PROFILE_URI.getRequestUrl());
         return OAuth2KakaoResponse.from(jsonNode);
@@ -32,6 +33,13 @@ public class KakaoOAuth2Request {
             String profileImageUrl,
             String providerId
     ) implements OAuth2Request {
+        public static OAuth2KakaoResponse from(JsonNode jsonNode) {
+            return OAuth2KakaoResponse.builder()
+                    .providerId(jsonNode.get("id").asText())
+                    .profileImageUrl(jsonNode.get("properties").get("profile_image").asText())
+                    .build();
+        }
+
         @Override
         public String getProviderId() {
             return this.providerId;
@@ -40,13 +48,6 @@ public class KakaoOAuth2Request {
         @Override
         public String getProfileImageUrl() {
             return this.profileImageUrl;
-        }
-
-        public static OAuth2KakaoResponse from(JsonNode jsonNode) {
-            return OAuth2KakaoResponse.builder()
-                    .providerId(jsonNode.get("id").asText())
-                    .profileImageUrl(jsonNode.get("properties").get("profile_image").asText())
-                    .build();
         }
     }
 

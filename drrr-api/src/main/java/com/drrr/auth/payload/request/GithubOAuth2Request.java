@@ -17,12 +17,13 @@ public class GithubOAuth2Request {
     private final OAuth2Client oAuth2Client;
 
     public OAuth2GithubResponse findProviderId(final String code) {
-        OAuth2GithubAccessTokenRequest githubRequest =
-                OAuth2GithubAccessTokenRequest.buildOAuth2GithubAccessTokenRequest(reader.getGithubClientId(),
-                        code,
-                        reader.getGithubClientSecret(),
-                        OAuth2Provider.GITHUB_REQEUST_ACCESS_TOKEN_URI.getRequestUrl()
-                );
+        OAuth2GithubAccessTokenRequest githubRequest = OAuth2GithubAccessTokenRequest.builder()
+                .code(reader.getGithubClientId())
+                .code(code)
+                .clientSecret(reader.getGithubClientSecret())
+                .uri(OAuth2Provider.GITHUB_REQUEST_ACCESS_TOKEN_URI.getRequestUrl())
+                .build();
+
         final String accessToken = oAuth2Client.exchangeGitHubOAuth2AccessToken(githubRequest);
         final JsonNode jsonNode = oAuth2Client.getUserProfile(accessToken,
                 OAuth2Provider.GITHUB_PROFILE_URI.getRequestUrl());
@@ -35,6 +36,12 @@ public class GithubOAuth2Request {
             String providerId
     ) implements OAuth2Request {
 
+        public static OAuth2GithubResponse from(JsonNode jsonNode) {
+            return OAuth2GithubResponse.builder()
+                    .providerId(jsonNode.get("id").asText())
+                    .profileImageUrl(jsonNode.get("avatar_url").asText())
+                    .build();
+        }
 
         @Override
         public String getProviderId() {
@@ -44,12 +51,6 @@ public class GithubOAuth2Request {
         @Override
         public String getProfileImageUrl() {
             return this.profileImageUrl;
-        }
-        public static OAuth2GithubResponse from(JsonNode jsonNode) {
-            return OAuth2GithubResponse.builder()
-                    .providerId(jsonNode.get("id").asText())
-                    .profileImageUrl(jsonNode.get("avatar_url").asText())
-                    .build();
         }
 
     }
