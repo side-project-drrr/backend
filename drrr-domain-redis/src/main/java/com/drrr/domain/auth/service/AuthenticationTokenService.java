@@ -19,12 +19,9 @@ public class AuthenticationTokenService {
     private final RedisTemplate<String, String> redisTemplate;
 
     public void register(final RegisterAuthenticationTokenDto registerAuthenticationTokenDto) {
-        authenticationTokenRepository.save(AuthenticationToken.builder()
-                .memberId(registerAuthenticationTokenDto.memberId)
-                .refreshToken(registerAuthenticationTokenDto.refreshToken)
-                .build());
-
+        authenticationTokenRepository.save(registerAuthenticationTokenDto.toEntity());
     }
+
 
     public void remove(final RemoveAuthenticationTokenDto removeAuthenticationTokenDto) {
         final AuthenticationToken authenticationToken = authenticationTokenRepository.findById(
@@ -48,7 +45,12 @@ public class AuthenticationTokenService {
      */
     @Builder
     public record RegisterAuthenticationTokenDto(Long memberId, String refreshToken) {
-
+        public AuthenticationToken toEntity() {
+            return AuthenticationToken.builder()
+                    .memberId(memberId)
+                    .refreshToken(refreshToken)
+                    .build();
+        }
     }
 
     public record RemoveAuthenticationTokenDto(Long memberId) {
