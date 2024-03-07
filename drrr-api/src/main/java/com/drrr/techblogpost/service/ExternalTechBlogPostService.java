@@ -2,6 +2,9 @@ package com.drrr.techblogpost.service;
 
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
+import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice;
+import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice.CompoundPostCategoriesSliceId;
+import com.drrr.domain.techblogpost.entity.RedisPageRequest;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
@@ -21,27 +24,35 @@ public class ExternalTechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
 
     public Slice<TechBlogPostCategoryDto> execute(final PageableRequest pageableRequest) {
-        Slice<TechBlogPostCategoryDto> allPostsInRedis = redisTechBlogPostService.findAllPostsInRedis(
-                pageableRequest.page(), pageableRequest.size());
+        RedisAllPostCategoriesSlice redisAllPostCategoriesSlice = redisTechBlogPostService.findPostsInRedis(
+                pageableRequest.page(),
+                pageableRequest.size()
+        );
 
-        //redis에 저장되어 있으면 바로 반환
-        if (Objects.nonNull(allPostsInRedis)) {
-            return allPostsInRedis;
+        //redis key 값
+        final CompoundPostCategoriesSliceId key = CompoundPostCategoriesSliceId.builder()
+                .redisPageRequest(RedisPageRequest.from(pageableRequest.page(), pageableRequest.size()))
+                .build();
+
+        if (redisTechBlogPostService.hasSliceKey(key)) {
+            return new SliceImpl<>(
+                    RedisAllPostCategoriesSlice.from(redisAllPostCategoriesSlice), pageableRequest.fromPageRequest(),
+                    redisAllPostCategoriesSlice.hasNext());
         }
 
-        //redis에 저장되어 있는 게 null이면 null 반환
-        if (redisTechBlogPostService.hasSliceKey(pageableRequest.page(), pageableRequest.size())) {
-            return new SliceImpl<>(null, pageableRequest.fromPageRequest(), false);
-        }
-
-        //redis에 저장되어 있는 게 없으면 db에서 가져와서 redis에 저장
-        Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(
+        //redis에 저장되어 있는 게 없으면 db에서 탐색
+        final Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(
                 pageableRequest.fromPageRequest());
 
-        redisTechBlogPostService.saveAllPostsInRedis(pageableRequest.page(), pageableRequest.size(), allPosts.hasNext(),
-                allPosts.getContent());
+        //redis에 저장
+        redisTechBlogPostService.saveAllPostsInRedis(
+                pageableRequest.page(),
+                pageableRequest.size(),
+                allPosts.hasNext(),
+                allPosts.getContent()
+        );
 
-        return techBlogPostRepository.findAllPosts(pageableRequest.fromPageRequest());
+        return allPosts;
     }
 
     public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final PageableRequest pageableRequest) {
