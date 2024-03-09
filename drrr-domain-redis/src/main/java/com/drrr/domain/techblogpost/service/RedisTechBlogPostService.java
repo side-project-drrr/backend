@@ -1,21 +1,23 @@
 package com.drrr.domain.techblogpost.service;
 
 import com.drrr.core.code.redis.RedisTTL;
+import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.RedisCategory;
+import com.drrr.domain.techblogpost.cache.RedisKeywordPostRequest;
+import com.drrr.domain.techblogpost.cache.RedisTechBlogPost;
+import com.drrr.domain.techblogpost.cache.RedisTechBlogPostBasicInfo;
+import com.drrr.domain.techblogpost.cache.RedisTechBlogPostCategory;
+import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts;
+import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts.CompoundCategoriesPostId;
+import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
+import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories.CompoundPostCategoriesId;
+import com.drrr.domain.techblogpost.cache.request.RedisPageRequest;
+import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
-import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice;
-import com.drrr.domain.techblogpost.entity.RedisAllPostCategoriesSlice.CompoundPostCategoriesSliceId;
-import com.drrr.domain.techblogpost.entity.RedisCategoryTechBlogPost;
-import com.drrr.domain.techblogpost.entity.RedisPageRequest;
-import com.drrr.domain.techblogpost.entity.RedisTechBlogPost;
-import com.drrr.domain.techblogpost.entity.RedisTechBlogPostBasicInfo;
-import com.drrr.domain.techblogpost.entity.RedisTechBlogPostCategory;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
-import com.drrr.domain.techblogpost.repository.RedisCategoryTechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.RedisTechBlogPostRepository;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.Cursor;
@@ -29,31 +31,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RedisTechBlogPostService {
     private final RedisTechBlogPostRepository redisTechBlogPostRepository;
-    private final RedisCategoryTechBlogPostRepository redisCategoryTechBlogPostRepository;
     private final RedisTemplate<String, RedisTechBlogPost> redisTechBlogPostTemplate;
     private final RedisTemplate<Object, Object> redisTemplate;
 
-    public <T> Boolean hasSliceKey(final T id) {
+    public <T> Boolean hasCachedKey(final T id) {
         return redisTemplate.hasKey(id);
     }
 
-    public RedisAllPostCategoriesSlice findPostsInRedis(final int page, final int size) {
-        final CompoundPostCategoriesSliceId key = CompoundPostCategoriesSliceId.builder()
+    public RedisPostCategories findCachePostsInRedis(final int page, final int size) {
+        final CompoundPostCategoriesId key = CompoundPostCategoriesId.builder()
                 .redisPageRequest(RedisPageRequest.from(page, size))
                 .build();
 
-        final RedisAllPostCategoriesSlice value = (RedisAllPostCategoriesSlice) redisTemplate.opsForValue().get(key);
+        final RedisPostCategories value = (RedisPostCategories) redisTemplate.opsForValue().get(key);
 
         redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
 
         return value;
     }
 
-    //Redis에 저장할 건데 key는 String value는 RedisAllPostCategoriesSlice를 byte[]로 변환한 다음에 문자열로 value로 저장할거야
-    //일단 Slice<TechBlogPostCategoryDto>를 byte로 만들고 String으로 저장해줘
-    public void saveAllPostsInRedis(final int page, final int size, final boolean hasNext,
-                                    final List<TechBlogPostCategoryDto> posts) {
-        final CompoundPostCategoriesSliceId key = CompoundPostCategoriesSliceId.builder()
+    public void savePostCategoriesInRedis(final int page, final int size, final boolean hasNext,
+                                          final List<TechBlogPostCategoryDto> posts) {
+        final CompoundPostCategoriesId key = CompoundPostCategoriesId.builder()
                 .redisPageRequest(RedisPageRequest.from(page, size)).build();
         final List<RedisTechBlogPostCategory> value = posts.stream()
                 .map((entity) -> {
@@ -67,18 +66,54 @@ public class RedisTechBlogPostService {
                             .build();
                 })
                 .toList();
-        final RedisAllPostCategoriesSlice redisAllPostCategoriesSlice = RedisAllPostCategoriesSlice.builder()
+        final RedisPostCategories redisPostCategories = RedisPostCategories.builder()
                 .id(key)
                 .redisTechBlogPostCategories(value)
                 .hasNext(hasNext)
                 .build();
 
-        try {
-            redisTemplate.opsForValue().set(key, redisAllPostCategoriesSlice, 3600, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        redisTemplate.opsForValue().set(key, redisPostCategories, 3600, TimeUnit.SECONDS);
+    }
 
+    public RedisCategoryPosts findPostsInRedisByCategory(final int page, final int size, final Long categoryId) {
+        final CompoundCategoriesPostId key = CompoundCategoriesPostId.builder()
+                .redisPageRequest(RedisPageRequest.from(page, size))
+                .categoryId(categoryId)
+                .build();
+
+        final RedisCategoryPosts value = (RedisCategoryPosts) redisTemplate.opsForValue().get(key);
+
+        redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
+
+        return value;
+    }
+
+    public void savePostsByCategory(final RedisKeywordPostRequest redisKeywordPostRequest) {
+        final CompoundCategoriesPostId key = CompoundCategoriesPostId.builder()
+                .redisPageRequest(redisKeywordPostRequest.fromPageRequest())
+                .categoryId(redisKeywordPostRequest.categoryId())
+                .build();
+
+        final List<RedisTechBlogPostCategory> value = redisKeywordPostRequest.posts().stream()
+                .map((entity) -> {
+                    RedisTechBlogPostBasicInfo redisTechBlogPostBasicInfo = RedisTechBlogPostBasicInfo.from(
+                            entity.techBlogPostBasicInfoDto());
+                    List<RedisCategory> redisCategories = RedisCategory.from(entity.categoryDto());
+
+                    return RedisTechBlogPostCategory.builder()
+                            .redisTechBlogPostBasicInfo(redisTechBlogPostBasicInfo)
+                            .redisCategories(redisCategories)
+                            .build();
+                })
+                .toList();
+
+        final RedisCategoryPosts redisCategoryPosts = RedisCategoryPosts.builder()
+                .id(key)
+                .redisTechBlogPostCategories(value)
+                .hasNext(redisKeywordPostRequest.hasNext())
+                .build();
+
+        redisTemplate.opsForValue().set(key, redisCategoryPosts, 3600, TimeUnit.SECONDS);
     }
 
 
@@ -102,16 +137,6 @@ public class RedisTechBlogPostService {
                 .orElse(null);
     }
 
-    public List<TechBlogPost> findPostsByCategoryIdInRedis(final Long categoryId) {
-        final Optional<RedisCategoryTechBlogPost> redisCategoryTechBlogPosts = redisCategoryTechBlogPostRepository.findById(
-                categoryId);
-
-        return redisCategoryTechBlogPosts.map(
-                redisCategoryTechBlogPost -> redisCategoryTechBlogPost.techBlogPost().stream()
-                        .filter(Objects::nonNull)
-                        .toList()).orElse(null);
-
-    }
 
     public void savePostsInRedis(final List<TechBlogPost> posts) {
         final List<RedisTechBlogPost> redisTechBlogPosts = posts.stream()
@@ -124,14 +149,6 @@ public class RedisTechBlogPostService {
         redisTechBlogPostRepository.saveAll(redisTechBlogPosts);
     }
 
-    public void saveCategoryPostsInRedis(final Long categoryId, final List<TechBlogPost> posts) {
-        final RedisCategoryTechBlogPost redisPosts = RedisCategoryTechBlogPost.builder()
-                .id(categoryId)
-                .techBlogPost(posts)
-                .build();
-
-        redisCategoryTechBlogPostRepository.save(redisPosts);
-    }
 
     //redisTemplate.delete()를 사용해서 redis에 저장된 데이터를 삭제할 수 있음
     //jitter를 사용해서 redis에 저장된 데이터를 삭제하는 메서드를 만들어보자
@@ -148,5 +165,28 @@ public class RedisTechBlogPostService {
     private long applyJitterSeconds() throws InterruptedException {
         // 지터 시간은 예를 들어 100ms에서 1000ms 사이의 랜덤한 시간으로 설정
         return (long) (Math.random() * 900 + 100);
+    }
+
+    public List<TechBlogPostCategoryDto> redisPostCategoriesEntityToDto(
+            final List<RedisTechBlogPostCategory> redisTechBlogPostCategories) {
+        return redisTechBlogPostCategories.stream()
+                .map((redisEntity) -> TechBlogPostCategoryDto.builder()
+                        .techBlogPostBasicInfoDto(TechBlogPostBasicInfoDto.builder()
+                                .id(redisEntity.redisTechBlogPostBasicInfo().id())
+                                .postLike(redisEntity.redisTechBlogPostBasicInfo().postLike())
+                                .summary(redisEntity.redisTechBlogPostBasicInfo().summary())
+                                .thumbnailUrl(redisEntity.redisTechBlogPostBasicInfo().thumbnailUrl())
+                                .title(redisEntity.redisTechBlogPostBasicInfo().title())
+                                .url(redisEntity.redisTechBlogPostBasicInfo().url())
+                                .viewCount(redisEntity.redisTechBlogPostBasicInfo().viewCount())
+                                .techBlogCode(redisEntity.redisTechBlogPostBasicInfo().techBlogCode())
+                                .writtenAt(redisEntity.redisTechBlogPostBasicInfo().writtenAt())
+                                .build())
+                        .categoryDto(redisEntity.redisCategories().stream()
+                                .map(redisCategory -> CategoryDto.builder()
+                                        .id(redisCategory.id())
+                                        .name(redisCategory.name())
+                                        .build())
+                                .toList()).build()).toList();
     }
 }
