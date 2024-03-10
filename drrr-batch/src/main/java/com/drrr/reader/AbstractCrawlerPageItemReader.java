@@ -1,6 +1,8 @@
 package com.drrr.reader;
 
 import com.drrr.domain.ExternalBlogPosts;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -8,8 +10,10 @@ import java.util.Locale;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.batch.item.ItemReader;
 
@@ -67,13 +71,19 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
     }
 
 
+    protected void driverWait(By by) {
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(by));
+    }
+
+
     @RequiredArgsConstructor
     protected enum CrawlingLocalDatePatterns {
         PATTERN1("yyyy.MM.dd"),
         PATTERN2("yyyy.MM.dd."),
         PATTERN3("MMM.d.yyyy", Locale.ENGLISH),
         PATTERN4("yy.MM.dd"),
-        PATTERN5("yyyy-MM-dd");
+        PATTERN5("yyyy-MM-dd"),
+        PATTERN6("MMM d, yyyy", Locale.ENGLISH);
 
         private final DateTimeFormatter dateTimeFormatter;
 
@@ -107,6 +117,25 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
             } catch (NoSuchElementException noSuchElementException) {
                 return false;
             }
+        }
+
+        // img 제거
+        public static String removeImgBracket(String input) {
+            return input.replace("url(", "")
+                    .replace(")", "")
+                    .replace("\"", "");
+        }
+
+        public static String urlDecode(String url) {
+            try {
+                return URLDecoder.decode(url, StandardCharsets.UTF_8);
+            } catch (Exception e) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        public static String removeParameterWithUrl(String url) {
+            return url.substring(0, url.indexOf("?"));
 
         }
 
