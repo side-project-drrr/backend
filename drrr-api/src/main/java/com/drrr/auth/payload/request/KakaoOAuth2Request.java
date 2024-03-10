@@ -20,7 +20,7 @@ public class KakaoOAuth2Request {
         OAuth2KakaoAccessTokenRequest kakaoRequest = OAuth2KakaoAccessTokenRequest.builder()
                 .clientId(reader.getKakaoClientId())
                 .code(code)
-                .uri(OAuth2Provider.REDIRECT_URL.getRequestUrl())
+                .uri(OAuth2Provider.KAKAO_REQUEST_ACCESS_TOKEN_URI.getRequestUrl())
                 .build();
 
         final String accessToken = oAuth2Client.exchangeKakaoOAuth2AccessToken(kakaoRequest);
