@@ -8,6 +8,7 @@ import java.util.Locale;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.batch.item.ItemReader;
@@ -87,6 +88,28 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         public LocalDate parse(String text) {
             return LocalDate.parse(text, this.dateTimeFormatter);
         }
+    }
+
+    protected static class CrawlingUtils {
+        public static boolean isNumber(String text) {
+            try {
+                Integer.parseInt(text);
+                return true;
+            } catch (NumberFormatException exception) {
+                return false;
+            }
+        }
+
+        public static boolean existsByElement(Runnable runnable) {
+            try {
+                runnable.run();
+                return true;
+            } catch (NoSuchElementException noSuchElementException) {
+                return false;
+            }
+
+        }
+
     }
 
 }
