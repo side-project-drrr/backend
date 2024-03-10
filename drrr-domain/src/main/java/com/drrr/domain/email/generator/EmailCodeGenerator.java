@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EmailCodeGenerator implements RandomCodeGenerator {
+
+    private static final int START_INDEX = 0;
     private static final int END_INDEX = 6;
 
     @Override
@@ -13,6 +15,6 @@ public class EmailCodeGenerator implements RandomCodeGenerator {
         return UUID.randomUUID()
                 .toString()
                 .replace("-", "")
-                .substring(END_INDEX);
+                .substring(START_INDEX, END_INDEX);
     }
 }

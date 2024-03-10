@@ -1,6 +1,8 @@
 package com.drrr.auth.payload.dto;
 
+import com.nimbusds.oauth2.sdk.GrantType;
 import lombok.Builder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Builder
 public record OAuth2KakaoAccessTokenRequest(
@@ -8,18 +10,14 @@ public record OAuth2KakaoAccessTokenRequest(
         String redirectUrl,
         String clientId,
         String uri
-)
-{
-    public static OAuth2KakaoAccessTokenRequest buildOAuth2KakaoAccessTokenRequest(final String clientId, final String code, final String uri) {
+) {
 
+    public String toUrl() {
+        final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uri())
+                .queryParam("grant_type", GrantType.AUTHORIZATION_CODE.getValue())
+                .queryParam("client_id", clientId)
+                .queryParam("code", code);
 
-        return OAuth2KakaoAccessTokenRequest.builder()
-                .code(code)
-                .clientId(clientId)
-                .uri(uri)
-                .build();
+        return uriBuilder.build().encode().toUriString();
     }
-
-
-
 }

@@ -1,6 +1,6 @@
 package com.drrr.auth.service.impl;
 
-import static com.drrr.domain.exception.DomainExceptionCode.EMAIL_VERIFICATION_CODE_EXPIRED;
+import static com.drrr.domain.exception.DomainExceptionCode.EMAIL_DUPLICATE_EXCEPTION;
 
 import com.drrr.auth.payload.request.EmailRequest;
 import com.drrr.domain.email.service.VerificationService;
@@ -19,9 +19,7 @@ public class IssuanceVerificationCode {
     public void execute(final EmailRequest emailRequest) {
         final String email = emailRequest.email();
 
-        EMAIL_VERIFICATION_CODE_EXPIRED.invokeByCondition(
-                memberRepository.existsByEmail(email)
-        );
+        EMAIL_DUPLICATE_EXCEPTION.invokeByCondition(memberRepository.existsByEmail(email));
 
         emailProducer.sendVerificationMessage(
                 email,

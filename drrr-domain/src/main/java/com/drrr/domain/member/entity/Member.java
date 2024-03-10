@@ -1,7 +1,6 @@
 package com.drrr.domain.member.entity;
 
 import com.drrr.domain.jpa.entity.BaseEntity;
-import com.drrr.domain.member.service.RegisterMemberService.RegisterMemberDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -40,7 +39,8 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private boolean isActive;
 
-    public static Member createMember(final String email, final String nickname, final String provider, final String providerId,
+    public static Member createMember(final String email, final String nickname, final String provider,
+                                      final String providerId,
                                       final String profileImageUrl) {
         return Member.builder()
                 .email(email)
@@ -48,17 +48,6 @@ public class Member extends BaseEntity {
                 .provider(provider)
                 .providerId(providerId)
                 .profileImageUrl(profileImageUrl)
-                .isActive(true)
-                .build();
-    }
-
-    public static Member createMember(final RegisterMemberDto registerMemberDto) {
-        return Member.builder()
-                .email(registerMemberDto.email())
-                .nickname(registerMemberDto.nickname())
-                .provider(registerMemberDto.provider())
-                .providerId(registerMemberDto.providerId())
-                .profileImageUrl(registerMemberDto.profileImageUrl())
                 .isActive(true)
                 .build();
     }
