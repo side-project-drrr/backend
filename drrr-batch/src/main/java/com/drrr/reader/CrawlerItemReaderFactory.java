@@ -3,6 +3,7 @@ package com.drrr.reader;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.reader.impl.BespinGlobalCrawlerItemReader;
+import com.drrr.reader.impl.DaangnCrawlerItemReader;
 import com.drrr.reader.impl.DevOceanCrawlerItemReader;
 import com.drrr.reader.impl.DevSistersCrawlerItemReader;
 import com.drrr.reader.impl.KakaoCrawlerItemReader;
@@ -42,6 +43,7 @@ public class CrawlerItemReaderFactory {
             case LINE -> LineCrawlerItemReader::new;
             case DEV_SISTERS -> DevSistersCrawlerItemReader::new;
             case BESPIN_GLOBAL -> BespinGlobalCrawlerItemReader::new;
+            case DAANGN -> DaangnCrawlerItemReader::new;
         };
     }
 }
