@@ -1,6 +1,7 @@
 package com.drrr.domain.techblogpost.service;
 
 import com.drrr.core.code.redis.RedisTTL;
+import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.RedisCategory;
 import com.drrr.domain.techblogpost.cache.RedisKeywordPostRequest;
@@ -11,6 +12,8 @@ import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts;
 import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts.CompoundCategoriesPostId;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories.CompoundPostCategoriesId;
+import com.drrr.domain.techblogpost.cache.entity.RedisTopPostCategories;
+import com.drrr.domain.techblogpost.cache.entity.RedisTopPostCategories.CompoundTopPostCategoriesId;
 import com.drrr.domain.techblogpost.cache.request.RedisPageRequest;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
@@ -116,6 +119,46 @@ public class RedisTechBlogPostService {
         redisTemplate.opsForValue().set(key, redisCategoryPosts, 3600, TimeUnit.SECONDS);
     }
 
+    public RedisTopPostCategories findCacheTopPostsInRedis(final int count, final TopTechBlogType type) {
+        final CompoundTopPostCategoriesId key = CompoundTopPostCategoriesId.builder()
+                .topTechBlogType(type)
+                .count(count)
+                .build();
+
+        final RedisTopPostCategories value = (RedisTopPostCategories) redisTemplate.opsForValue().get(key);
+
+        redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
+
+        return value;
+    }
+
+    public void saveTopPostCategoriesInRedis(final TopTechBlogType type, final List<TechBlogPostCategoryDto> posts,
+                                             int count) {
+        final CompoundTopPostCategoriesId key = CompoundTopPostCategoriesId.builder()
+                .topTechBlogType(type)
+                .count(count)
+                .build();
+
+        final List<RedisTechBlogPostCategory> value = posts.stream()
+                .map((entity) -> {
+                    RedisTechBlogPostBasicInfo redisTechBlogPostBasicInfo = RedisTechBlogPostBasicInfo.from(
+                            entity.techBlogPostBasicInfoDto());
+                    List<RedisCategory> redisCategories = RedisCategory.from(entity.categoryDto());
+
+                    return RedisTechBlogPostCategory.builder()
+                            .redisTechBlogPostBasicInfo(redisTechBlogPostBasicInfo)
+                            .redisCategories(redisCategories)
+                            .build();
+                })
+                .toList();
+        final RedisTopPostCategories redisTopPostCategories = RedisTopPostCategories.builder()
+                .id(key)
+                .redisTechBlogPostCategories(value)
+                .build();
+
+        redisTemplate.opsForValue().set(key, redisTopPostCategories, 3600, TimeUnit.SECONDS);
+    }
+
 
     public List<TechBlogPost> findPostsByIdsInRedis(final List<Long> postIds) {
         //redis repository에서는 찾고자하는 데이터가 없으면 빈 리스트 대신 null를 반환함
@@ -130,13 +173,6 @@ public class RedisTechBlogPostService {
                 .map(RedisTechBlogPost::techBlogPost)
                 .toList();
     }
-
-    public TechBlogPost findPostByIdInRedis(final Long postId) {
-        //redis repository에서는 찾고자하는 데이터가 없으면 빈 리스트 대신 null를 반환함
-        return redisTechBlogPostRepository.findById(postId).map(RedisTechBlogPost::techBlogPost)
-                .orElse(null);
-    }
-
 
     public void savePostsInRedis(final List<TechBlogPost> posts) {
         final List<RedisTechBlogPost> redisTechBlogPosts = posts.stream()

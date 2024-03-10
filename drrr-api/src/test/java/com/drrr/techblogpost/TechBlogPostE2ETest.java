@@ -15,11 +15,17 @@ import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts;
+import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts.CompoundCategoriesPostId;
+import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
+import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories.CompoundPostCategoriesId;
+import com.drrr.domain.techblogpost.cache.request.RedisPageRequest;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.drrr.domain.techblogpost.service.TechBlogPostService;
+import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
@@ -91,16 +97,17 @@ public class TechBlogPostE2ETest {
     @Autowired
     private TechBlogPostLikeRepository techBlogPostLikeRepository;
     @Autowired
-    private TechBlogPostService techBlogPostService;
-    @Autowired
     private DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    private RedisTechBlogPostService redisTechBlogPostService;
 
     @BeforeEach
     void setup() {
         RestAssured.port = port;
         databaseCleaner.clear();
         //M1~M500 생성
-        List<Member> members = IntStream.rangeClosed(1, 500).mapToObj(i -> {
+        List<Member> members = IntStream.rangeClosed(1, 100).mapToObj(i -> {
             String email = "user" + i + "@example.com";
             String nickname = "user" + i;
             String provider = "provider" + i;
@@ -154,7 +161,7 @@ public class TechBlogPostE2ETest {
         techBlogPostRepository.saveAll(techBlogPosts);
 
         //PL1 생성
-        List<TechBlogPostLike> techBlogPostLikes = IntStream.range(0, 500).mapToObj(i -> {
+        List<TechBlogPostLike> techBlogPostLikes = IntStream.range(0, 100).mapToObj(i -> {
             List<Member> memberList = memberRepository.findAll();
 
             if (memberList.isEmpty()) {
@@ -183,7 +190,7 @@ public class TechBlogPostE2ETest {
         List<Category> categoryWeights = categoryRepository.findIds(Arrays.asList(2L, 3L, 5L, 7L, 8L));
         List<Double> weights = Arrays.asList(8.0, 3.0, 4.0, 2.0, 2.0);
         List<CategoryWeight> categoryWeightList = new ArrayList<>();
-        IntStream.range(0, 500).forEach(j -> {
+        IntStream.range(0, 100).forEach(j -> {
             IntStream.range(0, categoryWeights.size()).forEach(i -> {
                 Category category = categoryWeights.get(i);
                 double value = weights.get(i);
@@ -207,7 +214,7 @@ public class TechBlogPostE2ETest {
 
         //M1~M500의 Log 생성
         List<MemberPostLog> logs = new ArrayList<>();
-        IntStream.range(0, 500).forEach(i -> {
+        IntStream.range(0, 100).forEach(i -> {
             logs.add(MemberPostLog.builder()
                     .postId(1L)
                     .memberId(memberList.get(i).getId())
@@ -335,7 +342,7 @@ public class TechBlogPostE2ETest {
                     .build());
         });
 
-        IntStream.rangeClosed(10, 49).forEach(i -> {
+        IntStream.range(10, techBlogPosts.size()).forEach(i -> {
             TechBlogPost post = posts.get(i);
             Category category = categoryList.get(7);
             techBlogPostCategories.add(TechBlogPostCategory.builder()
@@ -346,6 +353,83 @@ public class TechBlogPostE2ETest {
         });
 
         techBlogPostCategoryRepository.saveAll(techBlogPostCategories);
+    }
+
+    @Test
+    void 캐싱된_게시물을_정상적으로_가져옵니다() throws InterruptedException {
+        //when
+        int page = 0;
+        int size = 10;
+        Response response = given().log()
+                .all()
+                .when()
+                .contentType(ContentType.APPLICATION_JSON.toString())
+                .queryParams("page", page, "size", size)
+                .get("/api/v1/posts/all");
+        response.then()
+                .statusCode(HttpStatus.OK.value())
+                .log().all();
+
+        List<TechBlogPostCategoryDto> content = response.jsonPath().getList("content", TechBlogPostCategoryDto.class);
+
+        final CompoundPostCategoriesId key = CompoundPostCategoriesId.builder()
+                .redisPageRequest(RedisPageRequest.from(page, size))
+                .build();
+
+        RedisPostCategories cachePostsInRedis = redisTechBlogPostService.findCachePostsInRedis(page, size);
+
+        //then
+        List<Long> cachedPostIds = cachePostsInRedis.redisTechBlogPostCategories().stream()
+                .map((redisEntity) -> redisEntity.redisTechBlogPostBasicInfo()
+                        .id()) // getId 메서드는 RedisTechBlogPostCategory의 ID를 반환하는 메서드라고 가정
+                .toList();
+        assertThat(content.size()).isEqualTo(10);
+        assertThat(redisTechBlogPostService.hasCachedKey(key)).isTrue();
+        assertThat(cachePostsInRedis.redisTechBlogPostCategories().size()).isEqualTo(10);
+        assertThat(cachedPostIds).containsExactlyInAnyOrderElementsOf(content.stream()
+                .map(post -> post.techBlogPostBasicInfoDto().id())
+                .collect(Collectors.toList()));
+
+    }
+
+    @Test
+    void 카테고리에_해당하는_캐싱된_게시물을_정상적으로_가져옵니다() throws InterruptedException {
+        //when
+        int page = 0;
+        int size = 10;
+        Long categoryId = 8L;
+        Response response = given().log()
+                .all()
+                .when()
+                .contentType(ContentType.APPLICATION_JSON.toString())
+                .queryParams("page", page, "size", size)
+                .get("/api/v1/posts/categories/{categoryId}", categoryId);
+        response.then()
+                .statusCode(HttpStatus.OK.value())
+                .log().all();
+
+        List<TechBlogPostCategoryDto> content = response.jsonPath().getList("content", TechBlogPostCategoryDto.class);
+
+        final CompoundCategoriesPostId key = CompoundCategoriesPostId.builder()
+                .redisPageRequest(RedisPageRequest.from(page, size))
+                .categoryId(categoryId)
+                .build();
+
+        RedisCategoryPosts postsInRedisByCategory = redisTechBlogPostService.findPostsInRedisByCategory(page, size,
+                categoryId);
+
+        //then
+        List<Long> cachedPostIds = postsInRedisByCategory.redisTechBlogPostCategories().stream()
+                .map((redisEntity) -> redisEntity.redisTechBlogPostBasicInfo()
+                        .id()) // getId 메서드는 RedisTechBlogPostCategory의 ID를 반환하는 메서드라고 가정
+                .toList();
+        assertThat(content.size()).isEqualTo(10);
+        assertThat(redisTechBlogPostService.hasCachedKey(key)).isTrue();
+        assertThat(postsInRedisByCategory.redisTechBlogPostCategories().size()).isEqualTo(10);
+        assertThat(cachedPostIds).containsExactlyInAnyOrderElementsOf(content.stream()
+                .map(post -> post.techBlogPostBasicInfoDto().id())
+                .collect(Collectors.toList()));
+
     }
 
     @Test
