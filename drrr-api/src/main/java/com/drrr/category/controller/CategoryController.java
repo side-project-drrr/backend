@@ -100,7 +100,7 @@ public class CategoryController {
     }
 
     @Operation(summary = "기타 카테고리 정보 가져오는 API", description = """
-               호출 성공 시 Range에 따른 카테고리 정보 반환 
+               호출 성공 시 size에 따른 기타 카테고리 정보 반환 
                사용 예시) api/v1/categories/range/etc?size=10
                size는 가져올 기타 카테고리의 사이즈를 명시
             """)

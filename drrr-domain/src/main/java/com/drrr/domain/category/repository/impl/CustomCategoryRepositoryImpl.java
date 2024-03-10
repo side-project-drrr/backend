@@ -183,15 +183,16 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 
     @Override
     public List<CategoriesKeyDto> findRangedEtcCategories(int size) {
-        String query = """
+        String query = String.format("""
                 (
                    SELECT A.id id
                         , A.name name
                         , '기타' keyIndex
                      FROM DRRR_CATEGORY A
                     WHERE A.name NOT REGEXP '^[A-Za-z가-힣]'
+                     LIMIT %d
                  )
-                """;
+                """, size);
 
         @SuppressWarnings("unchecked") final List<Object[]> list = generateNativeQueryResultList(query);
 
