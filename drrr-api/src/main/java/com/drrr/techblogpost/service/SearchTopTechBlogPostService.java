@@ -6,9 +6,11 @@ import com.drrr.domain.techblogpost.cache.entity.RedisTopPostCategories.Compound
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
+import com.drrr.web.redis.RedisUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -16,6 +18,7 @@ public class SearchTopTechBlogPostService {
     private final TechBlogPostService techBlogPostService;
     private final RedisTechBlogPostService redisTechBlogPostService;
 
+    @Transactional(readOnly = true)
     public List<TechBlogPostCategoryDto> execute(final int count, final TopTechBlogType type) {
         RedisTopPostCategories redisTopPostCategories = redisTechBlogPostService.findCacheTopPostsInRedis(count, type);
 
@@ -26,7 +29,7 @@ public class SearchTopTechBlogPostService {
                 .build();
 
         if (redisTechBlogPostService.hasCachedKey(key)) {
-            return redisTechBlogPostService.redisPostCategoriesEntityToDto(
+            return RedisUtil.redisPostCategoriesEntityToDto(
                     redisTopPostCategories.redisTechBlogPostCategories());
         }
 
