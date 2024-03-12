@@ -2,13 +2,19 @@ package com.drrr.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.core.recommandation.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.category.service.MemberViewWeightService;
+import com.drrr.domain.category.service.WeightValidationService;
+import com.drrr.domain.exception.DomainExceptionCode;
+import com.drrr.domain.fixture.category.CategoryFixture;
+import com.drrr.domain.fixture.category.weight.CategoryWeightFixture;
+import com.drrr.domain.fixture.member.MemberFixture;
+import com.drrr.domain.fixture.post.TechBlogPostCategoryFixture;
+import com.drrr.domain.fixture.post.TechBlogPostFixture;
 import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;
@@ -17,25 +23,20 @@ import com.drrr.domain.log.service.LogUpdateService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
-import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.drrr.domain.util.DatabaseCleaner;
 import com.drrr.domain.util.ServiceIntegrationTest;
+import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class MemberViewWeightServiceTest extends ServiceIntegrationTest {
     @Autowired
     private MemberRepository memberRepository;
+
     @Autowired
     private TechBlogPostRepository techBlogPostRepository;
 
@@ -57,167 +58,145 @@ class MemberViewWeightServiceTest extends ServiceIntegrationTest {
     @Autowired
     private MemberPostHistoryRepository memberPostHistoryRepository;
     @Autowired
-    private LogUpdateService logUpdateService;
-
+    private WeightValidationService weightValidationService;
     @Autowired
-    private DatabaseCleaner databaseCleaner;
+    private LogUpdateService logUpdateService;
+    @Autowired
+    private EntityManager em;
+    private final int VIEW_COUNT = 0;
 
-    @AfterEach
-    void teardown() {
-        databaseCleaner.clear();
-    }
+    private final double WEIGHT_VALUE = 0;
 
-
-    /**
-     * <h3>Given</h3>
-     * <br>Member Id M1(Id 1)~M500 생성</br>
-     * <br>Post Id P1 생성</br>
-     * <br>Category Id C1~C10 생성</br>
-     * <br>P1-C1, C3, C5에 속함
-     *
-     * <h2>M1~M50이 P1를 읽음</h2>
-     * <br>log와 history가 쌓이고 isRead 상태가 true로 변환되고 읽은 날짜 검증</br>
-     */
-    @BeforeEach
-    void setup() {
-        databaseCleaner.clear();
-        IntStream.rangeClosed(0, 500).forEach(i -> {
-            Member member = Member.builder()
-                    .email("example" + i + "+@drrr.com")
-                    .nickname("user" + i)
-                    .provider("kakao")
-                    .providerId("12345" + i)
-                    .build();
-            memberRepository.save(member);
-        });
-
-        LocalDate createdDate = LocalDate.of(2023, 9, 30);
-
-        String author = "Author1";
-        String thumbnailUrl = "http://example.com/thumbnail1.jpg";
-        String title = "Title";
-        String summary = "Summary";
-        String urlSuffix = "/suffix/";
-        String url = "http://example.com/suffix/";
-        TechBlogCode techBlogCode = TechBlogCode.values()[0]; // 순환적으로 TechBlogCode 값 할당
-        TechBlogPost post = TechBlogPost.builder()
-                .writtenAt(createdDate)
-                .author(author)
-                .thumbnailUrl(thumbnailUrl)
-                .title(title)
-                .summary(summary)
-                .aiSummary(summary)
-                .urlSuffix(urlSuffix)
-                .url(url)
-                .crawlerGroup(TechBlogCode.KAKAO)
-                .build();
-        techBlogPostRepository.save(post);
-
-        List<Category> categories = IntStream.rangeClosed(1, 10).mapToObj(i -> {
-
-            String categoryDisplayName = "Display Category" + i;
-            return Category.builder()
-                    .name(categoryDisplayName)
-                    .build();
-        }).collect(Collectors.toList());
-        categoryRepository.saveAll(categories);
-        List<TechBlogPost> posts = techBlogPostRepository.findAll();
-        List<Category> categoryList = categoryRepository.findAll();
-        List<TechBlogPostCategory> techBlogPostCategories = new ArrayList<>();
-
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(0))
-                .category(categoryList.get(2))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(0))
-                .category(categoryList.get(4))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(0))
-                .category(categoryList.get(6))
-                .build());
-
-        techBlogPostCategoryRepository.saveAll(techBlogPostCategories);
-
-    }
 
     @Test
-    void 사용자가_본_게시물의_카테고리에_대한_가중치_증가가_정상적으로_작동합니다() {
+    void 사용자의_선호카테고리_가중치가_최소_선호카테고리_가중치보다_적은_경우_게시물의_카테고리에_대한_가중치_정상적으로_계산됩니다() {
+        //given
+        Member member = MemberFixture.createMember();
+        memberRepository.save(member);
+
+        TechBlogPost post = TechBlogPostFixture.createTechBlogPost();
+        techBlogPostRepository.save(post);
+
+        Category category = CategoryFixture.createCategory();
+        categoryRepository.save(category);
+
+        CategoryWeight categoryWeight = CategoryWeightFixture.createCategoryWeight(
+                member,
+                category,
+                WEIGHT_VALUE,
+                true
+        );
+        categoryWeightRepository.save(categoryWeight);
+
+        techBlogPostCategoryRepository.save(TechBlogPostCategoryFixture.createTechBlogPostCategory(post, category));
+
+        em.clear();
+        em.flush();
+
         //when
-        List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
-        Long memberId = memberRepository.findAll().get(0).getId();
-        Long postId = techBlogPostRepository.findAll().get(0).getId();
-        memberViewWeightService.increaseMemberViewPost(memberId, postId, categoryIds);
+        weightValidationService.validateWeight(member.getId());
+        CategoryWeight weight = categoryWeightRepository.findById(categoryWeight.getId()).orElseThrow(
+                DomainExceptionCode.CATEGORY_WEIGHT_NOT_FOUND::newInstance);
 
         //then
-        List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(1L);
-        assertThat(categoryWeights).isNotEmpty();
-
-        categoryWeights.forEach(categoryWeight -> assertThat(categoryWeight.getWeightValue())
-                .isEqualTo(WeightConstants.INCREASE_WEIGHT.getValue()));
-
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(WeightConstants.MIN_CONDITIONAL_WEIGHT.getValue(),
+                        weight.getWeightValue()),
+                () -> assertThat(weight).isNotNull()
+        );
     }
 
     @Test
     void 사용자가_본_게시물에_대한_로그와_히스토리가_정상적으로_쌓입니다() {
+        //given
+        Member member = MemberFixture.createMember();
+        memberRepository.save(member);
+
+        TechBlogPost post = TechBlogPostFixture.createTechBlogPost();
+        techBlogPostRepository.save(post);
+
+        Category category = CategoryFixture.createCategory();
+        categoryRepository.save(category);
+
+        CategoryWeight categoryWeight = CategoryWeightFixture.createCategoryWeight(
+                member,
+                category,
+                WEIGHT_VALUE,
+                true
+        );
+        categoryWeightRepository.save(categoryWeight);
+
+        techBlogPostCategoryRepository.save(TechBlogPostCategoryFixture.createTechBlogPostCategory(post, category));
+
+        em.clear();
+        em.flush();
+
         //when
-
-        Long memberId = memberRepository.findAll().get(0).getId();
-        Long postId = techBlogPostRepository.findAll().get(0).getId();
-
-        logUpdateService.insertMemberLogAndHistory(memberId, postId);
+        logUpdateService.insertMemberLogAndHistory(member.getId(), post.getId());
 
         //then
-        List<MemberPostLog> memberLogs = memberPostLogRepository.findByMemberId(memberId);
+        List<MemberPostLog> memberLogs = memberPostLogRepository.findByMemberId(member.getId());
         if (memberLogs.isEmpty()) {
             throw new IllegalArgumentException("memberLog elements is null");
         }
-        List<MemberPostHistory> memberHistories = memberPostHistoryRepository.findByMemberId(memberId);
+        List<MemberPostHistory> memberHistories = memberPostHistoryRepository.findByMemberId(member.getId());
         if (memberHistories.isEmpty()) {
             throw new IllegalArgumentException("memberHistory elements is null");
         }
-        assertThat(memberLogs).isNotEmpty();
-        assertThat(memberHistories).isNotEmpty();
 
-        memberLogs.forEach(log -> {
-            assertThat(log.getMemberId()).isEqualTo(memberId);
-            assertThat(log.getPostId()).isEqualTo(postId);
-            LocalDate updatedAt = log.getUpdatedAt().toLocalDate();
-            assertThat(updatedAt).isEqualTo(LocalDate.now());
-            assertThat(log.isRead()).isTrue();
-        });
-        memberHistories.forEach(history -> {
-            assertThat(history.getMemberId()).isEqualTo(memberId);
-            assertThat(history.getPostId()).isEqualTo(postId);
-            LocalDate updatedAt = history.getUpdatedAt().toLocalDate();
-            assertThat(updatedAt).isEqualTo(LocalDate.now());
-        });
+        Assertions.assertAll(
+                () -> assertThat(memberLogs).isNotEmpty(),
+                () -> assertThat(memberHistories).isNotEmpty(),
+                () -> memberLogs.forEach(log -> {
+                    Assertions.assertAll(
+                            () -> assertThat(log.getMemberId()).isEqualTo(member.getId()),
+                            () -> assertThat(log.getPostId()).isEqualTo(post.getId()),
+                            () -> assertThat(log.getUpdatedAt().toLocalDate()).isEqualTo(LocalDate.now()),
+                            () -> assertThat(log.isRead()).isTrue()
+                    );
+                }),
+                () -> memberHistories.forEach(history -> {
+                    Assertions.assertAll(
+                            () -> assertThat(history.getMemberId()).isEqualTo(member.getId()),
+                            () -> assertThat(history.getPostId()).isEqualTo(post.getId()),
+                            () -> assertThat(history.getUpdatedAt().toLocalDate()).isEqualTo(LocalDate.now())
+                    );
+                })
+        );
     }
 
     @Test
     void 사용자가_한_게시물을_접근했을_때_조회수가_정상적으로_증가합니다() {
-        //when
-        List<Member> members = memberRepository.findAll();
-        if (members.isEmpty()) {
-            throw new IllegalArgumentException("member elements is null");
-        }
-        List<TechBlogPost> originalPost = techBlogPostRepository.findAll();
-        if (originalPost.isEmpty()) {
-            throw new IllegalArgumentException("TechBlogPost elements is null");
-        }
-        List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
+        //given
+        Member member = MemberFixture.createMember();
+        memberRepository.save(member);
 
-        memberViewWeightService.increaseMemberViewPost(members.get(0).getId(), originalPost.get(0).getId(),
-                categoryIds);
+        TechBlogPost post = TechBlogPostFixture.createTechBlogPost(VIEW_COUNT);
+        techBlogPostRepository.save(post);
+
+        Category category = CategoryFixture.createCategory();
+        categoryRepository.save(category);
+
+        CategoryWeight categoryWeight = CategoryWeightFixture.createCategoryWeight(
+                member,
+                category,
+                WEIGHT_VALUE,
+                true
+        );
+        categoryWeightRepository.save(categoryWeight);
+
+        techBlogPostCategoryRepository.save(TechBlogPostCategoryFixture.createTechBlogPostCategory(post, category));
+
+        em.clear();
+        em.flush();
+        //when
+        memberViewWeightService.increaseMemberViewPost(member.getId(), post.getId(), List.of(category.getId()));
 
         //then
-        List<TechBlogPost> updatedPost = techBlogPostRepository.findAll();
-        if (updatedPost.isEmpty()) {
-            throw new IllegalArgumentException("TechBlogPost elements is null");
-        }
-        int viewCount = updatedPost.get(0).getViewCount();
-        assertThat(viewCount).isEqualTo(1);
+        TechBlogPost updatedPost = techBlogPostRepository.findById(post.getId()).orElseThrow(
+                DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+
+        assertThat(updatedPost.getViewCount()).isEqualTo(1);
     }
 
 }
