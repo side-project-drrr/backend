@@ -5,7 +5,6 @@ import com.drrr.domain.techblogpost.cache.RedisTechBlogPostCategory;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
@@ -17,11 +16,12 @@ public record RedisTopPostCategories(
         List<RedisTechBlogPostCategory> redisTechBlogPostCategories
 ) implements Serializable {
 
-    @EqualsAndHashCode
     @Builder
-    public static class CompoundTopPostCategoriesId implements Serializable {
-        TopTechBlogType topTechBlogType;
-        int count;
+    public record CompoundTopPostCategoriesId(
+            TopTechBlogType topTechBlogType,
+            int count
+    ) implements Serializable {
+
     }
 
 }
