@@ -2,7 +2,6 @@ package com.drrr.domain.techblogpost.service;
 
 import com.drrr.core.code.redis.RedisTTL;
 import com.drrr.core.code.techblog.TopTechBlogType;
-import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.entity.RedisCategory;
 import com.drrr.domain.techblogpost.cache.RedisKeywordPostRequest;
 import com.drrr.domain.techblogpost.cache.RedisTechBlogPost;
@@ -15,7 +14,6 @@ import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories.CompoundPos
 import com.drrr.domain.techblogpost.cache.entity.RedisTopPostCategories;
 import com.drrr.domain.techblogpost.cache.entity.RedisTopPostCategories.CompoundTopPostCategoriesId;
 import com.drrr.domain.techblogpost.cache.request.RedisPageRequest;
-import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.RedisTechBlogPostRepository;
@@ -203,26 +201,4 @@ public class RedisTechBlogPostService {
         return (long) (Math.random() * 900 + 100);
     }
 
-    public List<TechBlogPostCategoryDto> redisPostCategoriesEntityToDto(
-            final List<RedisTechBlogPostCategory> redisTechBlogPostCategories) {
-        return redisTechBlogPostCategories.stream()
-                .map((redisEntity) -> TechBlogPostCategoryDto.builder()
-                        .techBlogPostBasicInfoDto(TechBlogPostBasicInfoDto.builder()
-                                .id(redisEntity.redisTechBlogPostBasicInfo().id())
-                                .postLike(redisEntity.redisTechBlogPostBasicInfo().postLike())
-                                .summary(redisEntity.redisTechBlogPostBasicInfo().summary())
-                                .thumbnailUrl(redisEntity.redisTechBlogPostBasicInfo().thumbnailUrl())
-                                .title(redisEntity.redisTechBlogPostBasicInfo().title())
-                                .url(redisEntity.redisTechBlogPostBasicInfo().url())
-                                .viewCount(redisEntity.redisTechBlogPostBasicInfo().viewCount())
-                                .techBlogCode(redisEntity.redisTechBlogPostBasicInfo().techBlogCode())
-                                .writtenAt(redisEntity.redisTechBlogPostBasicInfo().writtenAt())
-                                .build())
-                        .categoryDto(redisEntity.redisCategories().stream()
-                                .map(redisCategory -> CategoryDto.builder()
-                                        .id(redisCategory.id())
-                                        .name(redisCategory.name())
-                                        .build())
-                                .toList()).build()).toList();
-    }
 }
