@@ -47,3 +47,9 @@ dependencies {
 bootJar {
     enabled = true
 }
+
+
+// api 모듈에서 domain 모듈의 test 폴더 내에 fixture 클래스를 사용하기 위함
+dependencies {
+    testImplementation project(path: ':drrr-domain', configuration: 'archives')
+}
