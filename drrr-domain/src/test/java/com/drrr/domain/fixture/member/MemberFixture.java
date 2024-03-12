@@ -1,13 +1,11 @@
-package com.drrr.domain.member;
+package com.drrr.domain.fixture.member;
 
 import com.drrr.domain.member.entity.Member;
-import com.drrr.domain.util.ServiceIntegrationTest;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class MemberFixture extends ServiceIntegrationTest {
-    private final static int MEMBER_COUNT = 20;
+public class MemberFixture {
 
     public static List<Member> createMembers(final int count) {
         return IntStream.range(0, count).mapToObj(i -> Member.builder()

@@ -4,15 +4,19 @@ import com.drrr.domain.category.entity.Category;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.springframework.boot.test.context.TestComponent;
 
-@TestComponent
 public class CategoryFixture {
-    private final static int count = 20;
 
-    public static List<Category> createCategories() {
+    public static List<Category> createCategories(final int count) {
         return IntStream.range(0, count).mapToObj(i -> Category.builder()
                 .name("name" + i)
                 .build()).collect(Collectors.toList());
     }
+
+    public static Category createCategory() {
+        return Category.builder()
+                .name("name")
+                .build();
+    }
+
 }
