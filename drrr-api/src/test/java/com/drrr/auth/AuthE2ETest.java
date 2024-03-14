@@ -12,7 +12,7 @@ import com.drrr.domain.email.entity.Email;
 import com.drrr.domain.email.repository.EmailRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
-import com.drrr.util.DatabaseCleaner;
+import com.drrr.domain.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

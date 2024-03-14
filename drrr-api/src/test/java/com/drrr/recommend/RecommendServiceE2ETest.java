@@ -19,7 +19,7 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.drrr.util.DatabaseCleaner;
+import com.drrr.domain.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -65,8 +65,8 @@ public class RecommendServiceE2ETest {
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
-    /**
-     * <h3>Given</h3>
+
+    /* * <h3>Given</h3>
      * <h2>Member Id M1~M500 생성</h2>
      * <br>Member Id M1~M500이 선호하는 카테고리 C3, C5, C7</br>
      * <br>Member Id M1~M500이 추가적으로 읽은 카테고리 C2, C8</br>
@@ -87,8 +87,9 @@ public class RecommendServiceE2ETest {
      * <br>그 외 나머지 Post는 P(2,4,6,8,10)-C2,C3,C5,C7,C8를 가지고 있고 P(11)~P(50) C-8로 통일</br>
      *
      * <h2>추천 받아야 하는 Post Id 기댓값</h2>
-     * <br>P2, P4, P6, P8, P10</br>
-     */
+     * <br>P2, P4, P6, P8, P10</br>*/
+
+
     @BeforeEach
     void setup() {
         RestAssured.port = port;

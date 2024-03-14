@@ -15,11 +15,11 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.util.DatabaseCleaner;
 import com.drrr.infra.push.entity.PushStatus;
 import com.drrr.infra.push.entity.Subscription;
 import com.drrr.infra.push.repository.PushStatusRepository;
 import com.drrr.infra.push.repository.SubscriptionRepository;
-import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -149,6 +149,9 @@ public class PushE2ETest {
         pushStatusRepository.save(PushStatus.builder()
                 .memberId(1L)
                 .pushDate(LocalDate.now())
+                .pushStatus(false)
+                .openStatus(false)
+                .readStatus(false)
                 .postIds(techBlogPosts.stream().map(TechBlogPost::getId).collect(Collectors.toList()))
                 .build());
     }
@@ -167,8 +170,7 @@ public class PushE2ETest {
                 objectMapper.readValue(
                         given()
                                 .log().all()
-                                .param("memberId", 1L)
-                                .param("pushDate", LocalDate.now().toString())
+                                .queryParam("pushDate", LocalDate.now().toString())
                                 .when()
                                 .contentType(ContentType.APPLICATION_JSON.toString())
                                 .header("Authorization", "Bearer " + accessToken)
