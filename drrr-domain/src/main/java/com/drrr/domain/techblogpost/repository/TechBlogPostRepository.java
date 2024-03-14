@@ -21,4 +21,6 @@ public interface TechBlogPostRepository extends JpaRepository<TechBlogPost, Long
 
     List<TechBlogPost> findByIdInOrderByWrittenAt(final List<Long> postIds);
 
+    List<TechBlogPost> findByIdIn(final List<Long> postIds);
+
 }
