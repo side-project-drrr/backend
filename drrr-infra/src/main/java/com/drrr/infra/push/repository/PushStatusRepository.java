@@ -12,12 +12,27 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PushStatusRepository extends JpaRepository<PushStatus, Long>, CustomPushStatusRepository {
     @Modifying
-    @Query("update PushStatus ps set ps.status = true where ps.memberId = :memberId and ps.pushDate = :pushDate")
+    @Query("update PushStatus ps set ps.openStatus = true where ps.memberId = :memberId and ps.pushDate between :from and :to")
+    int updatePushOpenStatus(@Param("memberId") final Long memberId,
+                             @Param("from") final LocalDate from,
+                             @Param("to") final LocalDate to);
+
+    @Modifying
+    @Query("update PushStatus ps set ps.pushStatus = true where ps.memberId = :memberId and ps.pushDate = :pushDate")
     int updatePushStatus(@Param("memberId") final Long memberId, @Param("pushDate") final LocalDate pushDate);
+
+    @Modifying
+    @Query("update PushStatus ps set ps.readStatus = true where ps.memberId = :memberId and ps.pushDate = :pushDate")
+    int updatePushReadStatus(@Param("memberId") final Long memberId, @Param("pushDate") final LocalDate pushDate);
 
     @Query("select ps.postIds from PushStatus ps where ps.memberId = :memberId and ps.pushDate = :pushDate")
     List<Long> findPostIdsByMemberIdAndPushDate(@Param("memberId") final Long memberId,
                                                 @Param("pushDate") final LocalDate pushDate);
+
+    @Query("select ps.postIds from PushStatus ps where ps.memberId = :memberId and ps.pushDate between :from and :to")
+    List<Long> findPostIdsByMemberIdAndPushDateRange(@Param("memberId") final Long memberId,
+                                                     @Param("from") final LocalDate from,
+                                                     @Param("to") final LocalDate to);
 
     boolean existsPushStatusByMemberIdAndPushDate(final Long memberId, final LocalDate pushDate);
 }
