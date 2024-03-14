@@ -171,7 +171,7 @@ class MemberViewWeightServiceTest extends ServiceIntegrationTest {
         Member member = MemberFixture.createMember();
         memberRepository.save(member);
 
-        TechBlogPost post = TechBlogPostFixture.createTechBlogPostLike(VIEW_COUNT);
+        TechBlogPost post = TechBlogPostFixture.createTechBlogPostView(VIEW_COUNT);
         techBlogPostRepository.save(post);
 
         Category category = CategoryFixture.createCategory();
