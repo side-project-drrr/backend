@@ -75,7 +75,9 @@ public class WebPushConsumer {
             PushStatus pushStatus = PushStatus.builder()
                     .memberId(memberId)
                     .pushDate(LocalDate.now())
-                    .status(false)
+                    .pushStatus(false)
+                    .readStatus(false)
+                    .openStatus(false)
                     .postIds(postIds)
                     .build();
 
