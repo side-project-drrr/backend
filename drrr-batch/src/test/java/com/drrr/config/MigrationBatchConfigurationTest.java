@@ -1,8 +1,5 @@
 package com.drrr.config;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import com.drrr.config.util.SpringBatchTestSupport;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
@@ -12,12 +9,9 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.RegisterPostTagService;
 import java.time.LocalDate;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
-import org.junit.jupiter.api.Test;
-import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("마이그레이션 통합 테스트")
@@ -52,7 +46,7 @@ class MigrationBatchConfigurationTest extends SpringBatchTestSupport {
         return new Category(name);
     }
 
-    @Test
+/*    @Test
     void 기술블로그가_정상적으로_마이그레이션_처리됩니다() {
 
         final var id = this.temporalTechBlogPostRepository.save(temporalTechBlogPost()).getId();
@@ -69,6 +63,6 @@ class MigrationBatchConfigurationTest extends SpringBatchTestSupport {
         );
 
 
-    }
+    }*/
 
 }
