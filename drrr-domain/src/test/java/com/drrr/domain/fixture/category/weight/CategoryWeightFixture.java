@@ -49,6 +49,19 @@ public class CategoryWeightFixture {
 
     }
 
+    public static List<CategoryWeight> createCategoryWeights(final List<Member> members, final Category category) {
+
+        return members.stream()
+                .map(member -> CategoryWeight.builder()
+                        .member(member)
+                        .category(category)
+                        .weightValue(DEFAULT_WEIGHT_VALUE)
+                        .lastReadAt(LocalDateTime.now())
+                        .preferred(false)
+                        .build()).toList();
+
+    }
+
     public static CategoryWeight createCategoryWeight(final Member member, final Category category,
                                                       final double weightValue, final boolean preferred) {
 

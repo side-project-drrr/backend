@@ -27,7 +27,23 @@ public class TechBlogPostFixture {
                 .build();
     }
 
-    public static TechBlogPost createTechBlogPost(final int viewCount) {
+    public static TechBlogPost createTechBlogPostLike(final int like) {
+        return TechBlogPost.builder()
+                .title("title")
+                .author("author")
+                .like(like)
+                .summary("summary")
+                .url("url")
+                .writtenAt(LocalDate.now())
+                .urlSuffix("urlSuffix")
+                .thumbnailUrl("thumbnailUrl")
+                .aiSummary("aiSummary")
+                .viewCount(DEFAULT_VIEW)
+                .crawlerGroup(TechBlogCode.KAKAO)
+                .build();
+    }
+
+    public static TechBlogPost createTechBlogPostView(final int viewCount) {
         return TechBlogPost.builder()
                 .title("title")
                 .author("author")

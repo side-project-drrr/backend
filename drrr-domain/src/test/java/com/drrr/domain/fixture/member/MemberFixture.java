@@ -11,7 +11,7 @@ public class MemberFixture {
         return IntStream.range(0, count).mapToObj(i -> Member.builder()
                 .providerId("providerId" + i)
                 .nickname("nickname" + i)
-                .profileImageUrl("profileImageUrl")
+                .profileImageUrl("profileImageUrl" + i)
                 .email("email" + i)
                 .provider("provider")
                 .isActive(true)
