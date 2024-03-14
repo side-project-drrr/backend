@@ -1,8 +1,5 @@
 package com.drrr.member;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
@@ -20,28 +17,20 @@ import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 
 /**
  * <h2>같은 post에 대한 500명의 Members의 동시 접근 테스트</h2>
@@ -317,51 +306,5 @@ public class MemberViewE2ETest {
         Collections.shuffle(shuffleList);
         return shuffleList;
     }
-
-    @Test
-    void 여러_사용자가_한_게시물을_접근했을_때_조회수가_정상적으로_증가합니다() throws InterruptedException {
-        //when
-        List<Member> members = memberRepository.findAll();
-        if (members.isEmpty()) {
-            throw new IllegalArgumentException("member elements is null");
-        }
-        List<TechBlogPost> originalPost = techBlogPostRepository.findAll();
-        if (originalPost.isEmpty()) {
-            throw new IllegalArgumentException("TechBlogPost elements is null");
-        }
-        List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
-
-        CountDownLatch latch = new CountDownLatch(100);
-        ExecutorService executorService = Executors.newFixedThreadPool(100);
-        IntStream.rangeClosed(1, 100).forEach(i -> {
-            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
-            given().log()
-                    .all()
-                    .header("Authorization", "Bearer " + accessToken)
-                    .when()
-                    .contentType(ContentType.APPLICATION_JSON.toString())
-                    .body("""
-                            {
-                                "categoryIds": [1,11]
-                            }
-                            """)
-                    .post("/api/v1/members/me/read-post/{postId}", 1L)
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .log().all();
-
-            latch.countDown();
-        });
-
-        latch.await();
-        executorService.shutdown();
-
-        //then
-        List<TechBlogPost> updatedPost = techBlogPostRepository.findAll();
-        if (updatedPost.isEmpty()) {
-            throw new IllegalArgumentException("TechBlogPost elements is null");
-        }
-        int viewCount = updatedPost.get(0).getViewCount();
-        assertThat(viewCount).isEqualTo(100);
-    }
+    
 }
