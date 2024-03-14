@@ -1,6 +1,8 @@
 package com.drrr.domain.member.service;
 
-import com.drrr.domain.exception.DomainExceptionCode;
+import static com.drrr.domain.exception.DomainExceptionCode.DUPLICATE_EMAIL;
+import static com.drrr.domain.exception.DomainExceptionCode.DUPLICATE_NICKNAME;
+
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import lombok.Builder;
@@ -17,20 +19,8 @@ public class RegisterMemberService {
     private final MemberRepository memberRepository;
 
     public Long execute(final RegisterMemberDto registerMemberDto) {
-        memberRepository.findByEmail(registerMemberDto.email)
-                .ifPresent((member) -> {
-                    log.error(
-                            "RegisterMemberService Class execute(final String socialId, final RegisterMemberDto registerMemberDto) Method IllegalArgumentException Error");
-                    if (registerMemberDto.email.equals(member.getEmail())) {
-                        //이메일이 중복으로 등록되어 있음
-                        throw DomainExceptionCode.DUPLICATE_EMAIL.newInstance();
-                    }
-                    if (registerMemberDto.nickname.equals(member.getNickname())) {
-                        //닉네임이 중복으로 등록되어 있음
-                        throw DomainExceptionCode.DUPLICATE_NICKNAME.newInstance();
-                    }
-                    throw DomainExceptionCode.UNKNOWN_ERROR.newInstance();
-                });
+        DUPLICATE_EMAIL.invokeByCondition(memberRepository.existsByEmail(registerMemberDto.email));
+        DUPLICATE_NICKNAME.invokeByCondition(memberRepository.existsByNickname(registerMemberDto.nickname));
 
         return memberRepository.save(registerMemberDto.toEntity()).getId();
     }

@@ -18,8 +18,7 @@ public class SignInService {
 
     @Transactional(readOnly = true)
     public SignInResponse execute(final SignInRequest signInRequest) {
-        final String socialId = signInRequest.providerId();
-        final Long memberId = memberIdRetrievalService.findByProviderId(socialId);
+        final Long memberId = memberIdRetrievalService.findByProviderId(signInRequest.providerId());
         final IssuanceTokenDto tokenDto = issuanceTokenService.execute(memberId);
 
         return SignInResponse.from(tokenDto);
