@@ -45,7 +45,7 @@ public class TechBlogPostController {
         return externalTechBlogPostService.execute(pageableRequest);
     }
 
-    @Operation(summary = "Keyword가 제목에 들어간 블로그 정보 가져오는 API", description = """
+    @Operation(summary = "keyword가 제목에 들어간 블로그 정보 가져오는 API", description = """
             호출 성공 시 keyword가 제목에 들어간 기술 블로그 정보 반환 [page 값은 0부터 시작 
             size는 한 page에 담길 게시물의 개수 - 작성일자 기준 내림차순 반환]
             """)
