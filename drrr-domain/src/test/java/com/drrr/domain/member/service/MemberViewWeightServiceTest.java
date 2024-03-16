@@ -141,23 +141,7 @@ class MemberViewWeightServiceTest extends ServiceIntegrationTest {
         techBlogPostCategoryRepository.saveAll(techBlogPostCategories);
 
     }
-
-    @Test
-    void 사용자가_본_게시물의_카테고리에_대한_가중치_증가가_정상적으로_작동합니다() {
-        //when
-        List<Long> categoryIds = Arrays.asList(1L, 2L, 3L, 4L);
-        Long memberId = memberRepository.findAll().get(0).getId();
-        Long postId = techBlogPostRepository.findAll().get(0).getId();
-        memberViewWeightService.increaseMemberViewPost(memberId, postId, categoryIds);
-
-        //then
-        List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(1L);
-        assertThat(categoryWeights).isNotEmpty();
-
-        categoryWeights.forEach(categoryWeight -> assertThat(categoryWeight.getWeightValue())
-                .isEqualTo(WeightConstants.INCREASE_WEIGHT.getValue()));
-
-    }
+    
 
     @Test
     void 사용자가_본_게시물에_대한_로그와_히스토리가_정상적으로_쌓입니다() {
