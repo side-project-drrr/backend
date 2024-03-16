@@ -17,24 +17,24 @@ services:
     volumes:
       - ./conf:/usr/local/etc/redis/
     restart: always
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    ports:
-      - 3306:3306 # HOST:CONTAINER
-    networks:
-      monitor:
-        ipv4_address: 192.19.199.30
-    restart: always
-    environment:
-      MYSQL_DATABASE: TEST_DOMAIN
-      MYSQL_USER: test
-      MYSQL_PASSWORD: 1234
-      MYSQL_ROOT_HOST: '%'
-      MYSQL_ROOT_PASSWORD: 1234
-      TZ: Asia/Seoul
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-    volumes:
-      - ./mysql/data/:/var/lib/mysql
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: mysql
+  #   ports:
+  #     - 3306:3306 # HOST:CONTAINER
+  #   networks:
+  #     monitor:
+  #       ipv4_address: 192.19.199.30
+  #   restart: always
+  #   environment:
+  #     MYSQL_DATABASE: TEST_DOMAIN
+  #     MYSQL_USER: test
+  #     MYSQL_PASSWORD: 1234
+  #     MYSQL_ROOT_HOST: '%'
+  #     MYSQL_ROOT_PASSWORD: 1234
+  #     TZ: Asia/Seoul
+  #   command:
+  #     - --character-set-server=utf8mb4
+  #     - --collation-server=utf8mb4_unicode_ci
+  #   volumes:
+  #     - ./mysql/data/:/var/lib/mysql
