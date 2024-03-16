@@ -25,10 +25,10 @@ jobs:
           token: ${{ secrets.TOKEN }}
 
       ## docker compose up (docker-compose 기반)
-      - name: Build and run Docker Compose
-        run: |
-          docker-compose up -d
-          docker image prune -f
+#      - name: Build and run Docker Compose
+#        run: |
+#          docker-compose up -d
+#          docker image prune -f
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -44,9 +44,9 @@ jobs:
             drrr-api/build/libs/*.jar
 
       #Docker의 Buildx는 Docker의 CLI 플러그인으로, Docker 이미지를 빌드하는데 사용
-#      - name: Setup docker buildx
-#        id: buildx
-#        uses: docker/setup-buildx-action@v3
+      - name: Setup docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
 
       # Docker 레이어를 캐시하는 작업
       - name: Cache docker layers
