@@ -10,6 +10,8 @@ public enum WeightConstants {
     MAX_WEIGHT(10.0),
     // 선호하는 카테고리에 대한 최소 가중치 값
     MIN_CONDITIONAL_WEIGHT(1.0),
+    // 선호하지 않는 카테고리에 대한 최초 가중치 값
+    INITIAL_WEIGHT(1.0),
     // 감소하는 최소 가중치 값
     DECREASE_WEIGHT(1.0),
 
@@ -23,7 +25,7 @@ public enum WeightConstants {
 
 
     public boolean isGreaterThan(final double value) {
-        return value < this.value;
+        return value <= this.value;
     }
 
 

@@ -76,8 +76,14 @@ public class CategoryWeight extends BaseEntity {
         return diffHours >= DaysConstants.UNREAD_DAYS.getValue();
     }
 
+    //읽은 게시물에 해당하는 카테고리 가중치 증가
     public void accumulateWeight() {
         this.weightValue = INCREASE_WEIGHT.sum(this.weightValue);
+    }
+
+    //읽은 게시물에 대한 최근 읽은 기록 갱신
+    public void updateLastReadAt() {
+        this.lastReadAt = LocalDateTime.now();
     }
 
     /**
