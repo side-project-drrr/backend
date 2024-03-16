@@ -1,9 +1,10 @@
 dependencies {
     implementation project(path: ':drrr-core')
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    
+
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
@@ -17,4 +18,14 @@ dependencies {
 
     // 성능 테스트 & 학습 테스트 용도의 mysql connect-j
     testRuntimeOnly 'com.mysql:mysql-connector-j'
+}
+
+// api 모듈에서 domain 모듈의 test 폴더 내에 fixture 클래스를 사용하기 위함
+task testJar(type: Jar) {
+    archiveClassifier.set('tests')
+    from sourceSets.test.output
+}
+
+artifacts {
+    archives testJar
 }
