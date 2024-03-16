@@ -1,5 +1,6 @@
-package com.drrr.domain.techblogpost.entity;
+package com.drrr.domain.techblogpost.cache;
 
+import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import lombok.Builder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;

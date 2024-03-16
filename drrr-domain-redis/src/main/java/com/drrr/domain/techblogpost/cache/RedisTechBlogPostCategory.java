@@ -1,4 +1,4 @@
-package com.drrr.domain.techblogpost.entity;
+package com.drrr.domain.techblogpost.cache;
 
 import com.drrr.domain.category.entity.RedisCategory;
 import java.io.Serializable;

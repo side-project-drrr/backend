@@ -1,6 +1,6 @@
 package com.drrr.domain.techblogpost.repository;
 
-import com.drrr.domain.techblogpost.entity.RedisTechBlogPost;
+import com.drrr.domain.techblogpost.cache.RedisTechBlogPost;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;

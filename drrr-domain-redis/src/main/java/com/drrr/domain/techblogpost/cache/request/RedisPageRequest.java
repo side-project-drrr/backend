@@ -1,4 +1,4 @@
-package com.drrr.domain.techblogpost.entity;
+package com.drrr.domain.techblogpost.cache.request;
 
 import java.io.Serializable;
 import lombok.Builder;
