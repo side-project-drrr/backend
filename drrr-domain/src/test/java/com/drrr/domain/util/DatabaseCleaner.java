@@ -8,7 +8,7 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("domainDatabaseCleaner")
 public class DatabaseCleaner {
 
     @PersistenceContext
