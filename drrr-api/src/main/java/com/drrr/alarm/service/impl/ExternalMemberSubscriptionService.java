@@ -17,17 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ExternalMemberSubscriptionService {
     private final SubscriptionService subscriptionService;
-    private final TechBlogPostService techBlogPostService;
 
-    private final PushStatusRepository pushStatusRepository;
-
-    public List<TechBlogPostCategoryDto> execute(final Long memberId, final LocalDate pushDate) {
-        //푸시 상태 변경
-        pushStatusRepository.updatePushStatus(memberId, pushDate);
-
-        final List<Long> postIds = pushStatusRepository.findPostIdsByMemberIdAndPushDate(memberId, pushDate);
-        return techBlogPostService.findPushPosts(postIds);
-    }
 
     public void execute(final SubscriptionRequest request, final Long memberId) {
         final Subscription memberSubscriptionData = Subscription.builder()
