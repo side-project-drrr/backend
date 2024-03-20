@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ExternalSearchPushPostsService {
     private final PushService pushService;
     private final TechBlogPostService techBlogPostService;
-
-    @Transactional(readOnly = true)
+    
     public List<TechBlogPostCategoryDto> execute(final Long memberId, final PushDateRequest request) {
         List<Long> postIds = pushService.findMemberPushDateRange(memberId, request.from(), request.to());
 
