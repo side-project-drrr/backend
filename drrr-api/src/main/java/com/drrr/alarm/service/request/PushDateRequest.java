@@ -4,8 +4,7 @@ import java.time.LocalDate;
 import lombok.Builder;
 
 @Builder
-public record
-PushDateRequest(
+public record PushDateRequest(
         LocalDate from,
         LocalDate to
 ) {

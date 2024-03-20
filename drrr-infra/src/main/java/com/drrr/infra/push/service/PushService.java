@@ -14,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PushService {
     private final PushStatusRepository pushStatusRepository;
 
-    public
-    List<PushDateDto> findPushesByCount(final Long memberId, final int count) {
+    public List<PushDateDto> findPushesByCount(final Long memberId, final int count) {
         return pushStatusRepository.findPushDateCountAndStatusByMemberIdAndPushDate(memberId, count);
     }
     public List<Long> findMemberPushDateRange(final Long memberId, final LocalDate from, final LocalDate to) {
