@@ -28,7 +28,7 @@ public class WeightValidationService {
         if (categoryWeights.isEmpty()) {
             log.error("사용자 가중치를 찾을 수 없습니다.");
             log.error("memberId -> {}", memberId);
-            throw DomainExceptionCode.INVALID_AUTHORIZE_CODE.newInstance();
+            throw DomainExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
 
         categoryWeights.stream()
