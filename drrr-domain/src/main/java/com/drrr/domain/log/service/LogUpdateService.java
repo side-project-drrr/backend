@@ -63,6 +63,7 @@ public class LogUpdateService {
                             .memberId(memberId)
                             .isRead(false)
                             .isRecommended(true)
+                            .lastReadAt(LocalDateTime.now())
                             .build();
                 }).toList();
 
