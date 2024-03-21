@@ -78,7 +78,9 @@ public class PushMessageBatchConfig {
                                 .map(pushPostDto -> PushStatus.builder()
                                         .memberId(pushPostDto.memberId())
                                         .pushDate(LocalDate.now())
-                                        .status(false)
+                                        .pushStatus(false)
+                                        .readStatus(false)
+                                        .openStatus(false)
                                         .postIds(pushPostDto.postIds())
                                         .build())
                                 .toList();

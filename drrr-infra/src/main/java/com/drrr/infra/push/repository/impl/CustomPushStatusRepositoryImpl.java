@@ -1,13 +1,17 @@
 package com.drrr.infra.push.repository.impl;
 
+import static com.drrr.infra.push.entity.QPushStatus.pushStatus1;
 import static com.drrr.domain.category.entity.QCategoryWeight.categoryWeight;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
 import com.drrr.domain.category.dto.MemberPostsDto;
 import com.drrr.domain.category.dto.PushPostDto;
+import com.drrr.infra.push.dto.PushDateDto;
 import com.drrr.infra.push.repository.CustomPushStatusRepository;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
@@ -56,5 +60,31 @@ public class CustomPushStatusRepositoryImpl implements CustomPushStatusRepositor
                             .postIds(memberPostsMap.get(key))
                             .build();
                 }).toList();
+    }
+
+    @Override
+    public List<PushDateDto> findPushDateCountAndStatusByMemberIdAndPushDate(final Long memberId, final int count) {
+
+        return queryFactory.select(
+                        Projections.constructor(PushDateDto.class
+                                , new CaseBuilder()
+                                                .when(pushStatus1.openStatus.eq(Boolean.TRUE))
+                                                .then(1)
+                                                .otherwise(0)
+                                                .max().eq(1).as("openStatus")
+                                , new CaseBuilder()
+                                                .when(pushStatus1.readStatus.eq(Boolean.TRUE))
+                                                .then(1)
+                                                .otherwise(0)
+                                                .max().eq(1).as("readStatus")
+                                , pushStatus1.pushDate.count()
+                                , pushStatus1.pushDate)
+                )
+                .from(pushStatus1)
+                .where(pushStatus1.memberId.eq(memberId), pushStatus1.pushStatus.eq(Boolean.TRUE))
+                .groupBy(pushStatus1.pushDate)
+                .limit(count)
+                .orderBy(pushStatus1.pushDate.desc())
+                .fetch();
     }
 }
