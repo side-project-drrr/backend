@@ -18,7 +18,7 @@ public class GithubOAuth2Request {
 
     public OAuth2GithubResponse findProviderId(final String code) {
         OAuth2GithubAccessTokenRequest githubRequest = OAuth2GithubAccessTokenRequest.builder()
-                .code(reader.getGithubClientId())
+                .clientId(reader.getGithubClientId())
                 .code(code)
                 .clientSecret(reader.getGithubClientSecret())
                 .uri(OAuth2Provider.GITHUB_REQUEST_ACCESS_TOKEN_URI.getRequestUrl())
