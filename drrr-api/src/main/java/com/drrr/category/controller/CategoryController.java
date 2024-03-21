@@ -173,7 +173,15 @@ public class CategoryController {
     })
     @Secured("USER")
     @GetMapping("/members/me/category-preference")
-    public List<CategoryDto> findMemberCategory(@NotNull @MemberId final Long memberId) {
+    public List<CategoryDto> findMemberCategory(
+            @Parameter(
+                    in = ParameterIn.HEADER, name = "Authorization",
+                    required = true,
+                    description = "JWT Token",
+                    schema = @Schema(type = "string")
+            )
+            @MemberId final Long memberId
+    ) {
         return categoryRepository.findCategoriesByMemberId(memberId)
                 .stream().map(category -> CategoryDto.builder()
                         .id(category.id())
@@ -192,7 +200,15 @@ public class CategoryController {
                     , content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
     @PutMapping("/members/me/modify/category-preference")
-    public void modifyCategory(@MemberId final Long memberId, @RequestBody @NotNull final CategoryRequest request) {
+    public void modifyCategory(
+            @Parameter(
+                    in = ParameterIn.HEADER, name = "Authorization",
+                    required = true,
+                    description = "JWT Token",
+                    schema = @Schema(type = "string"))
+            @MemberId final Long memberId,
+            @RequestBody @NotNull final CategoryRequest request
+    ) {
         modificationService.execute(memberId, request.categoryIds());
     }
 

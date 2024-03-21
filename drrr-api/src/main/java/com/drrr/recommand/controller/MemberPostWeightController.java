@@ -37,8 +37,16 @@ public class MemberPostWeightController {
     })
     @Secured("USER")
     @PostMapping("/members/me/read-post/{postId}")
-    public void MemberPostReadController(@MemberId final Long memberId,
-                                         @NotNull @PathVariable(name = "postId") final Long postId) {
+    public void MemberPostReadController(
+            @Parameter(
+                    in = ParameterIn.HEADER, name = "Authorization",
+                    required = true,
+                    description = "JWT Token",
+                    schema = @Schema(type = "string")
+            )
+            @MemberId final Long memberId,
+            @NotNull @PathVariable(name = "postId") final Long postId
+    ) {
         memberPostReadService.execute(memberId, postId);
     }
 

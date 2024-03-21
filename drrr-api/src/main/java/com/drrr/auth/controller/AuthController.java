@@ -16,6 +16,9 @@ import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.auth.service.impl.UnregisterService;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +88,15 @@ public class AuthController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "회원탈퇴 상태로 변경"))
     @Secured("USER")
     @DeleteMapping("/members/me/deletion")
-    public void memberUnregister(@MemberId final Long memberId) {
+    public void memberUnregister(
+            @Parameter(
+                    in = ParameterIn.HEADER, name = "Authorization",
+                    required = true,
+                    description = "JWT Token",
+                    schema = @Schema(type = "string")
+            )
+            @MemberId final Long memberId
+    ) {
         unregisterService.execute(memberId);
     }
 

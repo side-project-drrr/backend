@@ -6,6 +6,9 @@ import com.drrr.member.service.ExternalMemberPostReadCheckService;
 import com.drrr.member.service.ExternalMemberService;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +27,31 @@ public class MemberController {
     @Operation(summary = "사용자 정보 반환 API", description = "호출 성공 시 사용자 정보 반환")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "사용자 정보 반환"))
     @GetMapping("/members/me")
-    public MemberDto findMemberInfo(@MemberId final Long memberId) {
+    public MemberDto findMemberInfo(
+            @Parameter(
+                    in = ParameterIn.HEADER, name = "Authorization",
+                    required = true,
+                    description = "JWT Token",
+                    schema = @Schema(type = "string")
+            )
+            @MemberId final Long memberId
+    ) {
         return externalMemberService.execute(memberId);
     }
 
     @Operation(summary = "사용자가 과거에 request에 담긴 postId에 해당하는 게시글을 읽었는지 여부 반환 API", description = "호출 성공 시 사용자가 postId에 해당하는 게시글을 읽었는지 여부 반환")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "사용자가 postId에 해당하는 게시글을 읽었는지 여부 반환"))
     @GetMapping("/members/me/past/read-post/{postId}")
-    public PostReadCheckDto checkPostRead(@PathVariable("postId") final Long postId, @MemberId final Long memberId) {
+    public PostReadCheckDto checkPostRead(
+            @PathVariable("postId") final Long postId,
+            @Parameter(
+                    in = ParameterIn.HEADER, name = "Authorization",
+                    required = true,
+                    description = "JWT Token",
+                    schema = @Schema(type = "string")
+            )
+            @MemberId final Long memberId
+    ) {
         return externalMemberPostReadCheckService.execute(memberId, postId);
     }
 }

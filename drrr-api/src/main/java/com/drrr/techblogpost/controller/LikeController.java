@@ -4,6 +4,8 @@ import com.drrr.techblogpost.service.ExternalPostDislikeService;
 import com.drrr.techblogpost.service.ExternalPostLikeService;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,8 +36,16 @@ public class LikeController {
     })
     @Secured("USER")
     @PostMapping("/post/{postId}/like")
-    public void addPostLike(@NotNull @MemberId final Long memberId,
-                            @NotNull @PathVariable("postId") final Long postId) {
+    public void addPostLike(
+            @Parameter(
+                    in = ParameterIn.HEADER, name = "Authorization",
+                    required = true,
+                    description = "JWT Token",
+                    schema = @Schema(type = "string")
+            )
+            @MemberId final Long memberId,
+            @NotNull @PathVariable("postId") final Long postId
+    ) {
         externalPostLikeService.execute(memberId, postId);
     }
 
@@ -46,8 +56,16 @@ public class LikeController {
     })
     @Secured("USER")
     @DeleteMapping("/post/{postId}/like")
-    public void deletePostLike(@NotNull @MemberId final Long memberId,
-                               @NotNull @PathVariable("postId") final Long postId) {
+    public void deletePostLike(
+            @Parameter(
+                    in = ParameterIn.HEADER, name = "Authorization",
+                    required = true,
+                    description = "JWT Token",
+                    schema = @Schema(type = "string")
+            )
+            @MemberId final Long memberId,
+            @NotNull @PathVariable("postId") final Long postId
+    ) {
         externalPostDislikeService.execute(memberId, postId);
     }
 }
