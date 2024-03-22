@@ -197,11 +197,7 @@ public class CategoryController {
     })
     @PutMapping("/members/me/modify/category-preference")
     public void modifyCategory(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string"))
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId,
             @RequestBody @NotNull final CategoryRequest request
     ) {
