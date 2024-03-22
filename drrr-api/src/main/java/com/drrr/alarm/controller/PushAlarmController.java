@@ -10,10 +10,8 @@ import com.drrr.infra.push.entity.Subscription;
 import com.drrr.infra.push.repository.PushStatusRepository;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import com.drrr.web.annotation.MemberId;
+import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -48,12 +46,7 @@ public class PushAlarmController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "날짜 범위 pushDate(format : YYYYMMDD)에 해당하는 웹 푸시 상태 정보 반환"))
     @GetMapping("/members/me/web-push/posts/count/{count}")
     public List<PushDateDto> findMemberPushPostsCountByDate(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId,
             @PathVariable("count") final int count
     ) {
@@ -65,12 +58,7 @@ public class PushAlarmController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "날짜 범위 pushDate(format : YYYYMMDD)에 해당하는 웹 푸시 게시물 정보 반환"))
     @GetMapping("/members/me/web-push/posts/date")
     public List<TechBlogPostCategoryDto> findMemberPushPostsByDate(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId,
             @Valid @ModelAttribute final PushDateRequest request
     ) {
@@ -82,12 +70,7 @@ public class PushAlarmController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "지정된 pushDate(format : YYYYMMDD)에 웹 푸시의 상태를 읽음으로 변경"))
     @PostMapping("/members/me/web-push/posts/read")
     public void updateMemberPushReadStatus(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId,
             @RequestParam("pushDate") final LocalDate pushDate
     ) {
@@ -99,12 +82,7 @@ public class PushAlarmController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "넘겨준 pushDates에 해당하는 push 데이터의 오픈 상태 변경"))
     @PostMapping("/members/me/web-push/posts/open")
     public void updateMemberPushOpenStatus(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId,
             @RequestBody final List<LocalDate> pushDates
     ) {
@@ -116,12 +94,7 @@ public class PushAlarmController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "사용자 웹 푸시 구독 정보 저장 완료"))
     @PostMapping("/members/me/web-push/subscription")
     public void addSubscription(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId,
             @RequestBody final SubscriptionRequest request
     ) {
@@ -141,12 +114,7 @@ public class PushAlarmController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "사용자의 웹푸시 구독 정보 삭제 완료"))
     @DeleteMapping("/members/me/web-push/subscription")
     public void cancelSubscription(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId
     ) {
         subscriptionRepository.deleteByMemberId(memberId);

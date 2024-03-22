@@ -13,6 +13,7 @@ import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
 import com.drrr.web.annotation.MemberId;
+import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import com.drrr.web.page.request.PageableRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -174,12 +175,7 @@ public class CategoryController {
     @Secured("USER")
     @GetMapping("/members/me/category-preference")
     public List<CategoryDto> findMemberCategory(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId
     ) {
         return categoryRepository.findCategoriesByMemberId(memberId)

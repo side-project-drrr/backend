@@ -15,10 +15,8 @@ import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.auth.service.impl.UnregisterService;
 import com.drrr.web.annotation.MemberId;
+import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
@@ -89,12 +87,7 @@ public class AuthController {
     @Secured("USER")
     @DeleteMapping("/members/me/deletion")
     public void memberUnregister(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId
     ) {
         unregisterService.execute(memberId);

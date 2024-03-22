@@ -5,6 +5,7 @@ import com.drrr.member.dto.PostReadCheckDto;
 import com.drrr.member.service.ExternalMemberPostReadCheckService;
 import com.drrr.member.service.ExternalMemberService;
 import com.drrr.web.annotation.MemberId;
+import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -28,12 +29,7 @@ public class MemberController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "사용자 정보 반환"))
     @GetMapping("/members/me")
     public MemberDto findMemberInfo(
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId
     ) {
         return externalMemberService.execute(memberId);
@@ -44,12 +40,7 @@ public class MemberController {
     @GetMapping("/members/me/past/read-post/{postId}")
     public PostReadCheckDto checkPostRead(
             @PathVariable("postId") final Long postId,
-            @Parameter(
-                    in = ParameterIn.HEADER, name = "Authorization",
-                    required = true,
-                    description = "JWT Token",
-                    schema = @Schema(type = "string")
-            )
+            @SwaggerDocHeaderParam
             @MemberId final Long memberId
     ) {
         return externalMemberPostReadCheckService.execute(memberId, postId);
