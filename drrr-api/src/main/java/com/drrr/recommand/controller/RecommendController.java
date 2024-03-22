@@ -31,11 +31,7 @@ public class RecommendController {
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     @Secured("USER")
     @GetMapping("/members/me/post-recommendation/{count}")
-    public List<TechBlogPostCategoryDto> recommendPost(
-            @NotNull @PathVariable("count") final int count,
-            
-            @MemberId final Long memberId
-    ) {
+    public List<TechBlogPostCategoryDto> recommendPost(@NotNull @PathVariable("count") final int count, @MemberId final Long memberId) {
         return recommendService.execute(memberId, count);
     }
 }
