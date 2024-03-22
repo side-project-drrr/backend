@@ -192,10 +192,7 @@ public class CategoryController {
                     , content = @Content(schema = @Schema(implementation = HttpStatus.class)))
     })
     @PutMapping("/members/me/modify/category-preference")
-    public void modifyCategory(
-            @MemberId final Long memberId,
-            @RequestBody @NotNull final CategoryRequest request
-    ) {
+    public void modifyCategory(@MemberId final Long memberId, @RequestBody @NotNull final CategoryRequest request) {
         modificationService.execute(memberId, request.categoryIds());
     }
 
