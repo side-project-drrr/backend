@@ -22,7 +22,7 @@ public class LogUpdateService {
     private final MemberPostLogRepository memberPostLogRepository;
 
     public void insertMemberLogAndHistory(final Long memberId, final Long postId) {
-        memberPostLogRepository.findByPostIdAndMemberId(memberId, postId)
+        MemberPostLog memberPostLog = memberPostLogRepository.findByPostIdAndMemberId(memberId, postId)
                 .orElseGet(() -> memberPostLogRepository.save(MemberPostLog.builder()
                         .memberId(memberId)
                         .postId(postId)
@@ -30,6 +30,8 @@ public class LogUpdateService {
                         .isRead(true)
                         .isRecommended(false)
                         .build()));
+        
+        memberPostLog.updateReadStatus();
 
         MemberPostHistory history = MemberPostHistory.builder()
                 .postId(postId)
