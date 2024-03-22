@@ -10,7 +10,6 @@ import com.drrr.infra.push.entity.Subscription;
 import com.drrr.infra.push.repository.PushStatusRepository;
 import com.drrr.infra.push.repository.SubscriptionRepository;
 import com.drrr.web.annotation.MemberId;
-import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -45,11 +44,7 @@ public class PushAlarmController {
             description = "호출 성공 시  pushDate(format : YYYYMMDD) from ~ to에 해당하는 날짜별로 푸시 게시물 개수 및 열럼정보 반환")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "날짜 범위 pushDate(format : YYYYMMDD)에 해당하는 웹 푸시 상태 정보 반환"))
     @GetMapping("/members/me/web-push/posts/count/{count}")
-    public List<PushDateDto> findMemberPushPostsCountByDate(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId,
-            @PathVariable("count") final int count
-    ) {
+    public List<PushDateDto> findMemberPushPostsCountByDate(@MemberId final Long memberId, @PathVariable("count") final int count) {
         return externalSearchPushPostsCountService.execute(memberId, count);
     }
 
@@ -57,11 +52,7 @@ public class PushAlarmController {
             description = "호출 성공 시  pushDate(format : YYYYMMDD) from ~ to에 해당하는 날짜의 푸시 게시물 반환")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "날짜 범위 pushDate(format : YYYYMMDD)에 해당하는 웹 푸시 게시물 정보 반환"))
     @GetMapping("/members/me/web-push/posts/date")
-    public List<TechBlogPostCategoryDto> findMemberPushPostsByDate(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId,
-            @Valid @ModelAttribute final PushDateRequest request
-    ) {
+    public List<TechBlogPostCategoryDto> findMemberPushPostsByDate(@MemberId final Long memberId, @Valid @ModelAttribute final PushDateRequest request) {
         return externalSearchPushPostsService.execute(memberId, request);
     }
 
@@ -69,11 +60,7 @@ public class PushAlarmController {
             description = "호출 성공 시 지정된 pushDate(format : YYYYMMDD)에 푸시한 푸시 상태 읽음으로 변경")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "지정된 pushDate(format : YYYYMMDD)에 웹 푸시의 상태를 읽음으로 변경"))
     @PostMapping("/members/me/web-push/posts/read")
-    public void updateMemberPushReadStatus(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId,
-            @RequestParam("pushDate") final LocalDate pushDate
-    ) {
+    public void updateMemberPushReadStatus(@MemberId final Long memberId, @RequestParam("pushDate") final LocalDate pushDate) {
         pushStatusRepository.updatePushReadStatus(memberId, pushDate);
     }
 
@@ -81,11 +68,7 @@ public class PushAlarmController {
             description = "호출 성공 시 넘겨준 pushDates에 해당하는 push 데이터의 오픈 상태 변경")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "넘겨준 pushDates에 해당하는 push 데이터의 오픈 상태 변경"))
     @PostMapping("/members/me/web-push/posts/open")
-    public void updateMemberPushOpenStatus(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId,
-            @RequestBody final List<LocalDate> pushDates
-    ) {
+    public void updateMemberPushOpenStatus(@MemberId final Long memberId, @RequestBody final List<LocalDate> pushDates) {
         pushStatusRepository.updatePushOpenStatus(memberId, pushDates);
     }
 
@@ -93,11 +76,7 @@ public class PushAlarmController {
             description = "호출 성공 시 사용자의 구독 정보 저장")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "사용자 웹 푸시 구독 정보 저장 완료"))
     @PostMapping("/members/me/web-push/subscription")
-    public void addSubscription(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId,
-            @RequestBody final SubscriptionRequest request
-    ) {
+    public void addSubscription(@MemberId final Long memberId, @RequestBody final SubscriptionRequest request) {
         subscriptionRepository.save(
                 Subscription.builder()
                         .endpoint(request.endpoint())
@@ -113,10 +92,7 @@ public class PushAlarmController {
             description = "호출 성공 시 사용자의 구독 정보 삭제")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "사용자의 웹푸시 구독 정보 삭제 완료"))
     @DeleteMapping("/members/me/web-push/subscription")
-    public void cancelSubscription(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId
-    ) {
+    public void cancelSubscription(@MemberId final Long memberId) {
         subscriptionRepository.deleteByMemberId(memberId);
     }
 

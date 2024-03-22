@@ -2,7 +2,6 @@ package com.drrr.recommand.controller;
 
 import com.drrr.recommand.service.impl.ExternalMemberPostReadService;
 import com.drrr.web.annotation.MemberId;
-import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -38,11 +37,7 @@ public class MemberPostWeightController {
     })
     @Secured("USER")
     @PostMapping("/members/me/read-post/{postId}")
-    public void MemberPostReadController(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId,
-            @NotNull @PathVariable(name = "postId") final Long postId
-    ) {
+    public void MemberPostReadController( @MemberId final Long memberId, @NotNull @PathVariable(name = "postId") final Long postId) {
         memberPostReadService.execute(memberId, postId);
     }
 

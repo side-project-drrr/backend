@@ -13,7 +13,6 @@ import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
 import com.drrr.web.annotation.MemberId;
-import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import com.drrr.web.page.request.PageableRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -174,10 +173,7 @@ public class CategoryController {
     })
     @Secured("USER")
     @GetMapping("/members/me/category-preference")
-    public List<CategoryDto> findMemberCategory(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId
-    ) {
+    public List<CategoryDto> findMemberCategory(@MemberId final Long memberId) {
         return categoryRepository.findCategoriesByMemberId(memberId)
                 .stream().map(category -> CategoryDto.builder()
                         .id(category.id())
@@ -197,7 +193,6 @@ public class CategoryController {
     })
     @PutMapping("/members/me/modify/category-preference")
     public void modifyCategory(
-            @SwaggerDocHeaderParam
             @MemberId final Long memberId,
             @RequestBody @NotNull final CategoryRequest request
     ) {

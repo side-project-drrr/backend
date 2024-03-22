@@ -3,7 +3,6 @@ package com.drrr.techblogpost.controller;
 import com.drrr.techblogpost.service.ExternalPostDislikeService;
 import com.drrr.techblogpost.service.ExternalPostLikeService;
 import com.drrr.web.annotation.MemberId;
-import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -35,11 +34,7 @@ public class LikeController {
     })
     @Secured("USER")
     @PostMapping("/post/{postId}/like")
-    public void addPostLike(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId,
-            @NotNull @PathVariable("postId") final Long postId
-    ) {
+    public void addPostLike(@MemberId final Long memberId, @NotNull @PathVariable("postId") final Long postId) {
         externalPostLikeService.execute(memberId, postId);
     }
 
@@ -50,11 +45,7 @@ public class LikeController {
     })
     @Secured("USER")
     @DeleteMapping("/post/{postId}/like")
-    public void deletePostLike(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId,
-            @NotNull @PathVariable("postId") final Long postId
-    ) {
+    public void deletePostLike(@MemberId final Long memberId, @NotNull @PathVariable("postId") final Long postId) {
         externalPostDislikeService.execute(memberId, postId);
     }
 }

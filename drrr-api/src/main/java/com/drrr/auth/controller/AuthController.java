@@ -15,7 +15,6 @@ import com.drrr.auth.service.impl.SignInService;
 import com.drrr.auth.service.impl.SignUpService;
 import com.drrr.auth.service.impl.UnregisterService;
 import com.drrr.web.annotation.MemberId;
-import com.drrr.web.annotation.swagger.SwaggerDocHeaderParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -86,10 +85,7 @@ public class AuthController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "회원탈퇴 상태로 변경"))
     @Secured("USER")
     @DeleteMapping("/members/me/deletion")
-    public void memberUnregister(
-            @SwaggerDocHeaderParam
-            @MemberId final Long memberId
-    ) {
+    public void memberUnregister(@MemberId final Long memberId) {
         unregisterService.execute(memberId);
     }
 
