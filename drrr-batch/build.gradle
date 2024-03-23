@@ -16,3 +16,10 @@ dependencies {
 bootJar {
     enabled = true
 }
+
+
+task copyGitSubmodule(type: Copy) {
+    from './config'
+    include '*.yml'
+    into './src/main/resources'
+}
