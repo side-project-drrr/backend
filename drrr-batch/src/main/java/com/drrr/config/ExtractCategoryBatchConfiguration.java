@@ -1,19 +1,22 @@
 package com.drrr.config;
 
 
+import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.processor.RegisterCategoryItemProcessor;
 import jakarta.persistence.EntityManagerFactory;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.batch.item.database.builder.JpaItemWriterBuilder;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -35,13 +38,19 @@ public class ExtractCategoryBatchConfiguration {
     @Bean
     Job job() {
         return new JobBuilder(JOB_NAME, jobRepository)
-                .start(step())
+                .start(step(null))
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
     @Bean
-    Step step() {
+    @JobScope
+    Step step(
+            @Value("#{jobParameters[techBlogCode]}") Long code
+    ) {
+
+        var techBlogCode = TechBlogCode.valueOf(code);
+
         log.info("start step");
         return new StepBuilder(STEP_NAME, jobRepository)
                 .allowStartIfComplete(true)
@@ -49,13 +58,11 @@ public class ExtractCategoryBatchConfiguration {
                 .reader(new JpaPagingItemReaderBuilder<TemporalTechBlogPost>()
                         .name("TemporalTechBlogPostItemReader")
                         .queryString(
-                                "select T from TemporalTechBlogPost T where T.registrationCompleted = false and T.techBlogCode=TECHOBLE")
+                                "select T from TemporalTechBlogPost T where T.registrationCompleted = false and T.techBlogCode=:code")
+                        .parameterValues(Map.of("code", techBlogCode))
                         .entityManagerFactory(entityManagerFactory)
                         .build())
-                .processor(registerCategoryItemProcessor)
-                .writer(new JpaItemWriterBuilder<>()
-                        .entityManagerFactory(entityManagerFactory)
-                        .build())
+                .writer(registerCategoryItemProcessor)
                 .build();
     }
 
