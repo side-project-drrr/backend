@@ -104,6 +104,9 @@ public class RecommendPostService {
                         return true;
                     }
 
+                    if (!categoryIdToPostCounts.containsKey(dto.categoryId)) {
+                        return true;
+                    }
                     int postCount = categoryIdToPostCounts.get(dto.categoryId);
 
                     if (!postIds.contains(dto.postId) && categoryIdSet.contains(dto.categoryId) && postCount > 0) {
