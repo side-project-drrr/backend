@@ -113,11 +113,6 @@ public class TemporalTechBlogPost extends BaseEntity {
     public void updateAiSummarizedText(String aiSummarizedText) {
         this.aiSummary = aiSummarizedText;
     }
-
-    public void transistorComplete() {
-        this.registrationCompleted = true;
-
-    }
 }
 
 

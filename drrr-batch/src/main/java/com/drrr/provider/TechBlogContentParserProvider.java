@@ -2,9 +2,11 @@ package com.drrr.provider;
 
 
 import com.drrr.core.code.techblog.TechBlogCode;
+import com.drrr.parser.Parser;
 import com.drrr.parser.TechobleParser;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
@@ -15,10 +17,19 @@ public class TechBlogContentParserProvider {
 
     private static final int MAX_PARAGRAPH_LENGTH = 1024;
     private final TechobleParser techobleParser;
+    private final Map<TechBlogCode, Parser> techBlogCodeParsers;
 
 
     public List<String> execute(TechBlogCode code, String url) {
-        return this.divideTextIntoParagraphs(techobleParser.execute(url).replaceAll("\\\\n", "\n"));
+        var postContent = techBlogCodeParsers.get(code)
+                .execute(url)
+                .replaceAll("\\\\n", "\n");
+
+        return this.divideTextIntoParagraphs(postContent)
+                .stream()
+                .filter(text -> !text.isBlank())
+                .map(text -> text.replaceAll("\0", ""))
+                .toList();
     }
 
     private List<String> divideTextIntoParagraphs(String text) {

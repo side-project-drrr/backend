@@ -8,15 +8,17 @@ import com.drrr.provider.TechBlogContentParserProvider;
 import com.drrr.provider.TextLineSplitCategoryProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
 
 @Slf4j
-
 @Component
 @RequiredArgsConstructor
-public class RegisterCategoryItemProcessor implements ItemProcessor<TemporalTechBlogPost, TemporalTechBlogPost> {
+public class RegisterCategoryItemProcessor implements ItemProcessor<TemporalTechBlogPost, TemporalTechBlogPost>,
+        ItemWriter<TemporalTechBlogPost> {
 
 
     private final TechBlogContentParserProvider techBlogContentParserProvider;
@@ -36,11 +38,17 @@ public class RegisterCategoryItemProcessor implements ItemProcessor<TemporalTech
         final var extractedCategoryTexts = extractCategoryProvider.request(summarizedBlogContent).getFirstResult();
         final var categoryNames = textLineSplitCategoryProvider.execute(extractedCategoryTexts);
 
-        registerPostTagService.execute(temporalTechBlogPost.getId(), categoryNames, summarizedBlogContent);
-
-        // Todo: 트랜잭션 변경 상태 수정
-        temporalTechBlogPost.transistorComplete();
+        registerPostTagService.execute(
+                temporalTechBlogPost.getId(),
+                categoryNames,
+                summarizedBlogContent
+        );
 
         return temporalTechBlogPost;
+    }
+
+    @Override
+    public void write(Chunk<? extends TemporalTechBlogPost> chunk) {
+        chunk.forEach(this::process);
     }
 }

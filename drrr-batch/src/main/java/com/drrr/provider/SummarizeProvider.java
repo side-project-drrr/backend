@@ -24,8 +24,6 @@ public class SummarizeProvider {
         var executor = Executors.newFixedThreadPool(textSummarizerProperty.calculateRunnerCount(texts.size()));
 
         var completableFutures = texts.stream()
-                .filter(text -> !text.isBlank())
-                .map(text -> text.replaceAll("\0", ""))
                 .map((text) -> supplyAsync(() -> this.executePythonScript(text), executor))
                 .toList();
 
