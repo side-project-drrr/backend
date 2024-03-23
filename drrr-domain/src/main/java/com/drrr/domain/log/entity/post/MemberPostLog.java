@@ -29,6 +29,10 @@ public class MemberPostLog extends BaseEntity {
         this.isRecommended = true;
     }
 
+    public void updateReadStatus() {
+        this.isRead = true;
+    }
+
     public void updateLastReadAt(LocalDateTime lastReadAt) {
         this.lastReadAt = lastReadAt;
     }
