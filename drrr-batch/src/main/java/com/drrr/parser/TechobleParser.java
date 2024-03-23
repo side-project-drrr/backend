@@ -1,22 +1,17 @@
 package com.drrr.parser;
 
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import com.drrr.core.code.techblog.TechBlogCode;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 
 @Slf4j
 @Component
-public class TechobleParser {
+public class TechobleParser implements Parser {
 
 
-    public String execute(String url) {
+    public String execute(final String url) {
         final var document = this.getDocument(url);
         document.select("a").remove();
 
@@ -27,16 +22,10 @@ public class TechobleParser {
         return document.select(".post-full-content").html();
     }
 
-    Document getDocument(String url) {
-        url = URLDecoder.decode(url, StandardCharsets.UTF_8);
-
-        System.out.println(url);
-
-        try {
-            return Jsoup.connect(String.valueOf(new URL(url).toExternalForm())).get();
-        } catch (IOException e) {
-            log.error("{}", e.getMessage());
-            throw new RuntimeException(e);
-        }
+    @Override
+    public TechBlogCode getTechBlogCode() {
+        return TechBlogCode.TECHOBLE;
     }
+
+
 }
