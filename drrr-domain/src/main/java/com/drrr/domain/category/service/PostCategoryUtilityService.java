@@ -68,6 +68,9 @@ public class PostCategoryUtilityService {
                 .limit(remainingPosts)
                 .forEach(entry -> resultMap.put(entry.getKey(), resultMap.get(entry.getKey()) + 1));
 
-        return resultMap;
+        return resultMap.entrySet()
+                .stream()
+                .filter(entry -> entry.getValue() > 0)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

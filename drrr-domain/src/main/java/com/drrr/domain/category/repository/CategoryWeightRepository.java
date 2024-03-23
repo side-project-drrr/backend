@@ -24,4 +24,7 @@ public interface CategoryWeightRepository extends JpaRepository<CategoryWeight, 
     @Modifying
     void deleteByMemberId(final Long memberId);
 
+    @Query("select cw from CategoryWeight cw where cw.category.id not in :categoryIds and cw.member.id = :memberId")
+    List<CategoryWeight> findCategoryWeightNotInCategoryIds(@Param("memberId") final Long memberId,
+                                                            @Param("categoryIds") final List<Long> categoryIds);
 }
