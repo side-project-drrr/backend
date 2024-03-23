@@ -7,10 +7,10 @@ import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import com.drrr.domain.techblogpost.repository.impl.CustomTechBlogPostRepositoryImpl;
+import com.querydsl.core.annotations.QueryProjection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -34,11 +34,15 @@ public class RecommendPostService {
         //오늘 추천은 받았으나 안 읽었던 추천 게시물 다시 가져와서 반환
         List<Long> todayUnreadRecommendPostIds = memberPostLogRepository.findTodayUnreadRecommendPostIds(memberId);
 
+        int requireCount = count;
+
         if (count == todayUnreadRecommendPostIds.size()) {
             return todayUnreadRecommendPostIds;
         }
         //오늘 추천은 받았으나 안 읽었던 추천 게시물은 유지하고 추가적으로 추천해줘야 하는 게시물 수를 계산
-        count -= todayUnreadRecommendPostIds.size();
+        if (requireCount > todayUnreadRecommendPostIds.size()) {
+            requireCount -= todayUnreadRecommendPostIds.size();
+        }
 
         //카테고리_가중치 Mapping Table를 특정 MemberId로 조회
         final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);
@@ -48,9 +52,20 @@ public class RecommendPostService {
             log.error("memberId -> {}", memberId);
             throw DomainExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
+        List<Long> categoryIds = categoryWeights.stream().map(cw -> cw.getCategory().getId()).toList();
 
-        //entity -> dto 변환
+        //사용자에게 추천해줄 수 있는 모든 기술블로그 가져오기
+        final List<ExtractedPostCategoryDto> extractedPostsCategories = customTechBlogPostCategoryRepository.findPostsByCategoryIdsNotInLog(
+                categoryIds, memberId);
+
+        //가져온 모든 기술블로그에 해당하는 카테고리들을 set으로 중복 제거
+        Set<Long> containedCategoryIds = extractedPostsCategories.stream()
+                .map(ExtractedPostCategoryDto::categoryId)
+                .collect(Collectors.toSet());
+
+        //중복제거된 카테고리 set의 entity를 필터링해서 dto 변환
         final List<CategoryWeightDto> categoryWeightDtos = categoryWeights.stream()
+                .filter(categoryWeight -> containedCategoryIds.contains(categoryWeight.getCategory().getId()))
                 .map(categoryWeight -> CategoryWeightDto.builder()
                         .member(categoryWeight.getMember())
                         .category(categoryWeight.getCategory())
@@ -58,56 +73,117 @@ public class RecommendPostService {
                         .preferred(categoryWeight.isPreferred())
                         .build()).toList();
 
-        //사용자에게 추천해줄 수 있는 모든 기술블로그 가져오기
-        final List<ExtractedPostCategoryDto> techBlogPosts = customTechBlogPostCategoryRepository.getFilteredPost(
-                categoryWeightDtos, memberId, count);
-
-        //기술블로그에 대해 카테고리별로 정리
-        final Map<Long, Set<Long>> classifiedPostsDto = postDistributionService.classifyPostWithCategoriesByMap(
-                techBlogPosts);
         //추천할 게시물 ids를 카테고리별로 담아서 반환
-        //postsPerCategoryMap -> key : categoryId, value : 할당해야 하는 기술블로그 개수
-        final Map<Long, Integer> postsPerCategoryMap = postDistributionService.calculatePostDistribution(
+        //categoryIdToPostCounts -> key : categoryId, value : 할당해야 하는 기술블로그 개수
+        final Map<Long, Integer> distributionMap = postDistributionService.calculatePostDistribution(
                 categoryWeightDtos, count);
 
-        //카테고리별로 할당된 개수만큼 게시물 추천해서 id 값 담아놓은 리스트
-        //postIds - 할당된 기술블로그 id 리스트
-        final List<Long> postIds = extractRecommendPostIds(classifiedPostsDto, postsPerCategoryMap, count);
-
+        List<Long> postIds = extractRecommendPostIds(extractedPostsCategories, distributionMap, requireCount,
+                new ArrayList<>(), memberId);
+        postIds.addAll(todayUnreadRecommendPostIds);
         return postIds;
     }
 
 
     /**
-     * 카테고리별로 추천해줄 게시물들을 추출 postCategoriesMapDto - 가장 최근 게시물 순으로 정렬되어 있는 상태 categoriesPostMap -> key : categoryId, value
-     * : 카테고리별 추천해야 할 post 개수 : 할당해야 하는 게시물 개수 postCategoriesMapDto -> key : postId, value : post에 속한 categoryIds
+     *
      */
-    private List<Long> extractRecommendPostIds(final Map<Long, Set<Long>> postCategoriesMapDto,
-                                               final Map<Long, Integer> categoryPostsMap, final int limitCount) {
-        return postCategoriesMapDto.keySet()
-                .stream()
-                .filter(key -> {
-                    //특정 post의 카테고리 Set
-                    final Set<Long> categorySet = postCategoriesMapDto.get(key);
-                    //추천해줘야할 카테고리 중 하나씩 하나씩 filtering
-                    final Optional<Entry<Long, Integer>> categoryCountEntry = categoryPostsMap.entrySet()
-                            .stream()
-                            .filter(longIntegerEntry -> {
-                                //특정 카테고리에 할당해야 할 post 개수
-                                final Integer count = longIntegerEntry.getValue();
-                                //post에 해당하는 카테고리 중 추천해야줘야할 카테고리가 존재하는 경우 true
-                                return count != null && count > 0 && categorySet.contains(longIntegerEntry.getKey());
-                            }).findFirst();
+    private List<Long> extractRecommendPostIds(
+            final List<ExtractedPostCategoryDto> extractedPostsCategories,
+            final Map<Long, Integer> categoryIdToPostCounts, final int requireCount,
+            final List<Long> postIds, final Long memberId
+    ) {
+        //이 set에 담긴 카테고리 아이디에 해당하는 게시물을 찾을 거임
+        Set<Long> categoryIdSet = extractedPostsCategories.stream()
+                .map(ExtractedPostCategoryDto::categoryId)
+                .collect(Collectors.toSet());
 
-                    categoryCountEntry.ifPresent(longIntegerEntry -> {
-                        //추천할 기술블로그 하나 추출한 후 해당 key 값에 해당하는 카테고리에 대해 value 값(추천해줘야 하는 개수) 1씩 감소
-                        categoryPostsMap.put(longIntegerEntry.getKey(), longIntegerEntry.getValue() - 1);
-                    });
-                    return categoryCountEntry.isPresent();
+        List<ExtractedPostCategoryDto> unCheckedPosts = extractedPostsCategories.stream()
+                .filter(dto -> {
+                    if (requireCount - postIds.size() == 0) {
+                        return true;
+                    }
+
+                    int postCount = categoryIdToPostCounts.get(dto.categoryId);
+
+                    if (!postIds.contains(dto.postId) && categoryIdSet.contains(dto.categoryId) && postCount > 0) {
+                        categoryIdToPostCounts.put(dto.categoryId, postCount - 1);
+                        postIds.add(dto.postId);
+                        return false;
+                    }
+                    return true;
                 })
-                //RECOMMEND_POSTS_COUNT에 정의된 값만큼의 기술블로그를 추천함
-                .limit(limitCount)
-                .collect(Collectors.toList());
+                .toList();
+
+        if (requireCount - postIds.size() == 0) {
+            return postIds;
+        }
+
+        if (requireCount < unCheckedPosts.size()) {
+            postIds.addAll(
+                    unCheckedPosts.subList(0, requireCount).stream().map(ExtractedPostCategoryDto::postId).toList());
+            return postIds;
+        }
+
+        postIds.addAll(unCheckedPosts.stream().map(ExtractedPostCategoryDto::postId).toList());
+        return postIds;
+
+
+
+
+/*        //지금 가령 5개 가져와야 할 때 categoryId가 1,2,3,4,5 일때 1에 해당하는 포스트가 아예없으면
+        //4개만 가져오는 문제가 발생, 즉 categoryId 1에 대해서 post가 1개 할당해야 할 때 더이상 할당할 수 있는 post가 없는 경우임
+        //이런 경우에는 다른 카테고리에서 가져와야 함
+
+        //아직 더 할당해야 하는 수
+        int sum = categoryIdToPostCounts.values().stream().mapToInt(Integer::intValue).sum();
+        //할당이 안되는 카테고리
+        List<Long> remainedCategoryIds = categoryIdToPostCounts.entrySet().stream()
+                .filter(entry -> entry.getValue() > 0)
+                .map(Map.Entry::getKey)
+                .toList();
+        findAnotherCategoryWeight(remainedCategoryIds, postIds, memberId, extractedPostsCategories, sum);
+
+        return postIds;*/
+    }
+
+    //재귀함수
+    public void findAnotherCategoryWeight(final List<Long> remainedCategoryIds, final List<Long> postIds,
+                                          final Long memberId,
+                                          final List<ExtractedPostCategoryDto> extractedPostsCategories,
+                                          final int sum) {
+        //할당이 안되는 카테고리가 아닌 다른 카테고리 가중치 가져오기
+        List<CategoryWeight> categoryWeights = categoryWeightRepository.findCategoryWeightNotInCategoryIds(memberId,
+                remainedCategoryIds);
+
+        if (categoryWeights.isEmpty()) {
+            return;
+        }
+
+        List<CategoryWeightDto> categoryWeightDtos = categoryWeights.stream()
+                .map(categoryWeight -> CategoryWeightDto.builder()
+                        .member(categoryWeight.getMember())
+                        .category(categoryWeight.getCategory())
+                        .value(categoryWeight.getWeightValue())
+                        .preferred(categoryWeight.isPreferred())
+                        .build()).toList();
+        Map<Long, Integer> categoryIdToPostCounts = postDistributionService.calculatePostDistribution(
+                categoryWeightDtos,
+                sum);
+        List<Long> postIdsResult = extractRecommendPostIds(extractedPostsCategories, categoryIdToPostCounts, sum,
+                postIds, memberId);
+
+        if (postIdsResult.size() != sum) {
+            List<Long> remained = categoryIdToPostCounts.entrySet().stream()
+                    .filter(entry -> entry.getValue() > 0)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+            remained.addAll(remainedCategoryIds);
+
+            findAnotherCategoryWeight(remained, postIds, memberId, extractedPostsCategories, sum);
+        }
+
+
     }
 
 
@@ -116,5 +192,10 @@ public class RecommendPostService {
             Long postId,
             Long categoryId
     ) {
+        @QueryProjection
+        public ExtractedPostCategoryDto(Long postId, Long categoryId) {
+            this.postId = postId;
+            this.categoryId = categoryId;
+        }
     }
 }
