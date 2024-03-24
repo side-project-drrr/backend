@@ -28,6 +28,17 @@ public class RegisterCategoryItemProcessor implements ItemProcessor<TemporalTech
     private final RegisterPostTagService registerPostTagService;
 
 
+    /**
+     * @formatter:off
+     * <p>
+     * 1. 게시글의 본문을 가져옵니다.
+     * 2. 게시글의 본문 내용을 요약합니다.
+     * 3. 본문 내용을 바탕으로 카테고리를 추출합니다.
+     * 4. 추출된 문자열을 카테고리 이름으로 변환합니다.
+     * 5. 변환된 카테고리를 게시글에 등록합니다.
+     * </p>
+     * @formatter:on
+     */
     @Override
     public TemporalTechBlogPost process(final TemporalTechBlogPost temporalTechBlogPost) {
         final var blogContent = techBlogContentParserProvider.execute(

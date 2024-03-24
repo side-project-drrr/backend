@@ -51,14 +51,14 @@ public class ExtractCategoryBatchConfiguration {
 
         var techBlogCode = TechBlogCode.valueOf(code);
 
-        log.info("start step");
+        log.info("create step");
         return new StepBuilder(STEP_NAME, jobRepository)
                 .allowStartIfComplete(true)
+                // 청크 사이즈가 1인 이유는 임시 기술블로그에서 카테고리 추출하는 시간이 비교적 길기 떄문입니다.
                 .<TemporalTechBlogPost, TemporalTechBlogPost>chunk(1, transactionManager)
                 .reader(new JpaPagingItemReaderBuilder<TemporalTechBlogPost>()
                         .name("TemporalTechBlogPostItemReader")
-                        .queryString(
-                                "select T from TemporalTechBlogPost T where T.registrationCompleted = false and T.techBlogCode=:code")
+                        .queryString("select T from TemporalTechBlogPost T where T.techBlogCode=:code")
                         .parameterValues(Map.of("code", techBlogCode))
                         .entityManagerFactory(entityManagerFactory)
                         .build())

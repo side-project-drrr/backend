@@ -6,6 +6,7 @@ import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.parser.Parser;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,7 +19,7 @@ public class TechBlogParserMapperConfiguration {
         return parsers.stream()
                 .collect(toMap(
                         Parser::getTechBlogCode,
-                        parser -> parser,
+                        Function.identity(),
                         (prev, next) -> {
                             throw new IllegalStateException("중복된 기술블로그 본문 파서가 등록됐습니다.");
                         })

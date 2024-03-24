@@ -32,6 +32,7 @@ public class TechBlogContentParserProvider {
                 .toList();
     }
 
+    // 본문을 문단별로 분리합니다.
     private List<String> divideTextIntoParagraphs(String text) {
         List<String> paragraphs = new ArrayList<>();
 

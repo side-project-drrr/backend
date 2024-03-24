@@ -21,6 +21,8 @@ public class SummarizeProvider {
 
 
     public String execute(List<String> texts) {
+
+        // 실행할 스레드 개수를 결정합니다 min(문장 수, 실행할 스레드 수)
         var executor = Executors.newFixedThreadPool(textSummarizerProperty.calculateRunnerCount(texts.size()));
 
         var completableFutures = texts.stream()
@@ -31,6 +33,7 @@ public class SummarizeProvider {
                 .map(CompletableFuture::join)
                 .collect(Collectors.joining());
     }
+
 
     private String executePythonScript(String args) {
         log.info("{}", textSummarizerProperty);
