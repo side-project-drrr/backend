@@ -35,14 +35,12 @@ public class RecommendPostService {
         int requirePostCount = count;
 
         //오늘 추천은 받았으나 안 읽었던 추천 게시물 다시 가져와서 반환
-        if (requirePostCount == todayUnreadRecommendPostIds.size()) {
+        if (requirePostCount == todayUnreadRecommendPostIds.size())
             return todayUnreadRecommendPostIds;
-        }
 
         //추천해줘야 하는 게시물 수가 오늘 추천은 받았으나 안 읽었던 추천 게시물 수보다 작을 때 안 읽었던 추천 게시물에서 그대로 반환
-        if (requirePostCount < todayUnreadRecommendPostIds.size()) {
+        if (requirePostCount < todayUnreadRecommendPostIds.size())
             return todayUnreadRecommendPostIds.subList(0, requirePostCount);
-        }
 
         //오늘 추천은 받았으나 안 읽었던 추천 게시물은 유지하고 추가적으로 추천해줘야 하는 게시물 수를 계산
         requirePostCount -= todayUnreadRecommendPostIds.size();
@@ -86,7 +84,7 @@ public class RecommendPostService {
         return postIds.stream().toList();
     }
 
-    
+
     private Set<Long> extractRecommendPostIds(
             final List<ExtractedPostCategoryDto> extractedPostsCategories,
             final Map<Long, Integer> categoryIdToPostCounts,
@@ -99,9 +97,9 @@ public class RecommendPostService {
         //filter에서 postIds에 담기지 못한 게시물은 requireCount(남은 추천해야하는 게시물 수)만큼 forEach에서 담아줌
         extractedPostsCategories.stream()
                 .filter(dto -> {
-                    if (requireCount == postIds.size()) {
+                    if (requireCount == postIds.size())
                         return true;
-                    }
+
                     //특정 카테고리에 대해 할당해야 하는 게시물 수
                     int postCount = categoryIdToPostCounts.getOrDefault(dto.categoryId, 0);
 
@@ -114,9 +112,9 @@ public class RecommendPostService {
                     return true;
                 })
                 .forEach(dto -> {
-                    if (requireCount == postIds.size()) {
+                    if (requireCount == postIds.size())
                         return;
-                    }
+
                     postIds.add(dto.postId);
                 });
 
