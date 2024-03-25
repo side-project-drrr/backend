@@ -1,4 +1,5 @@
 dependencies {
+    implementation project(path: ':drrr-fluent-crawler')
     implementation project(path: ':drrr-domain')
     implementation project(path: ':drrr-core')
 
