@@ -15,6 +15,7 @@ public class Pages<T> implements Page<T> {
     private final ContentsLoader contentsLoader;
     private final ContentsReader<T> contentsReader;
     private final PaginationReader paginationReader;
+    private final PagesStopper pagesStopper;
     private final WebDriver webDriver;
     private final WebDriverWait webDriverWait;
 
@@ -28,6 +29,7 @@ public class Pages<T> implements Page<T> {
             ContentsReader<T> contentsReader,
             PaginationReader paginationReader,
             ContentsLoader contentsLoader,
+            PagesStopper pagesStopper,
             WebDriver webDriver
 
     ) {
@@ -41,6 +43,7 @@ public class Pages<T> implements Page<T> {
         this.contentsReader = contentsReader;
         this.paginationReader = paginationReader;
         this.contentsLoader = contentsLoader;
+        this.pagesStopper = pagesStopper;
         this.webDriver = webDriver;
         this.webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
     }
@@ -56,6 +59,10 @@ public class Pages<T> implements Page<T> {
             return null;
         }
         webDriver.get(pagesInitializer.getUrl(currentPage));
+
+        if (Objects.nonNull(pagesStopper) && pagesStopper.isSatisfy(webDriver, webDriverWait)) {
+            return null;
+        }
 
         contentsLoader.waitUntilLoad(webDriverWait);
 
