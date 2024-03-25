@@ -18,6 +18,7 @@ public class Pages<T> implements Page<T> {
     private final PagesStopper pagesStopper;
     private final WebDriver webDriver;
     private final WebDriverWait webDriverWait;
+    private final After<T> after;
 
 
     private int currentPage = 1;
@@ -30,6 +31,7 @@ public class Pages<T> implements Page<T> {
             PaginationReader paginationReader,
             ContentsLoader contentsLoader,
             PagesStopper pagesStopper,
+            After<T> after,
             WebDriver webDriver
 
     ) {
@@ -45,6 +47,7 @@ public class Pages<T> implements Page<T> {
         this.contentsLoader = contentsLoader;
         this.pagesStopper = pagesStopper;
         this.webDriver = webDriver;
+        this.after = after;
         this.webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
     }
 
@@ -70,7 +73,13 @@ public class Pages<T> implements Page<T> {
 
         currentPage++;
 
-        return contentsReader.read(webDriver);
+        final var result = contentsReader.read(webDriver);
+
+        if (Objects.nonNull(after)) {
+            after.action(result);
+        }
+
+        return result;
     }
 
 }
