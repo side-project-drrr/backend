@@ -4,7 +4,6 @@ package com.drrr.domain.techblogpost.service;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.common.AdminExceptionCode;
-import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.entity.TemporalTechPostTag;
 import com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository;
 import com.drrr.domain.techblogpost.repository.TemporalTechPostTagRepository;
@@ -26,7 +25,7 @@ public class RegisterPostTagService {
     public void execute(final Long postId, final List<String> tagNames, String aiSummarizedText) {
         AdminExceptionCode.DID_NOT_EXISTS_TAG_NAMES.invokeByCondition(tagNames.isEmpty());
 
-        final TemporalTechBlogPost temporalTechBlogPost = temporalTechBlogPostRepository.findById(postId)
+        final var temporalTechBlogPost = temporalTechBlogPostRepository.findById(postId)
                 .orElseThrow(AdminExceptionCode.DID_NOT_EXISTS_TEMPORAL_POST::create);
 
         AdminExceptionCode.REGISTER_COMPLETE_TAG.invokeByCondition(temporalTechBlogPost.isRegistrationCompleted());
@@ -39,7 +38,8 @@ public class RegisterPostTagService {
                 .map(category -> new TemporalTechPostTag(category, temporalTechBlogPost))
                 .toList();
 
-        List<TemporalTechPostTag> temporalTechPostTags = temporalTechPostTagRepository.saveAll(categories);
+        var temporalTechPostTags = temporalTechPostTagRepository.saveAll(categories);
+
         temporalTechBlogPost.registerCategory(temporalTechPostTags);
         temporalTechBlogPost.updateAiSummarizedText(aiSummarizedText);
     }

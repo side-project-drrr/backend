@@ -2,14 +2,24 @@ dependencies {
     implementation project(path: ':drrr-domain')
     implementation project(path: ':drrr-core')
 
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     testImplementation 'org.springframework.batch:spring-batch-test'
     implementation 'org.seleniumhq.selenium:selenium-java:4.11.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.jsoup:jsoup:1.15.4'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
 }
 
 bootJar {
     enabled = true
+}
+
+
+task copyGitSubmodule(type: Copy) {
+    from './config'
+    include '*.yml'
+    into './src/main/resources'
 }

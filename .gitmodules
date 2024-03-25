@@ -4,3 +4,6 @@
 [submodule "drrr-infra/src/main/resources/security-storage-infra"]
 	path = drrr-infra/src/main/resources/security-storage-infra
 	url = https://github.com/side-proejct/security-storage-infra.git
+[submodule "drrr-batch/config"]
+	path = drrr-batch/config
+	url = https://github.com/side-project-drrr/security-storage-batch
