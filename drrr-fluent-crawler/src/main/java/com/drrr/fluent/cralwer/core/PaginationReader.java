@@ -26,6 +26,19 @@ public interface PaginationReader {
         }
 
         /**
+         * @formatter:off
+         * <p>
+         * 페이지네이션 크롤링 중 페이지 정보를 가져올 수 없는 경우 적용
+         * 예를 들어 마지막 페이지의 경우 다음으로 이동할 수 없는 페이지의 번호를 가져올 때 사용함
+         * </p>
+         * @formatter:on
+         * @return
+         */
+        public static PaginationInformation stopInformation() {
+            return new PaginationInformation(Integer.MIN_VALUE);
+        }
+
+        /**
          * 크롤링 완료 조건 마지막 페이지가 현재 크롤링 중인 페이지보다 작거나 같은 경우
          *
          * @param currentPage 현재 페이지 번호
