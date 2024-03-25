@@ -1,0 +1,7 @@
+bootJar { enabled = false }
+jar { enabled = true }
+
+dependencies {
+
+    implementation 'org.seleniumhq.selenium:selenium-java:4.11.0'
+}
