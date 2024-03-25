@@ -43,7 +43,7 @@ public class SaraminCrawler {
                 .paginationReader(paginationReader())
                 .contentsReader(contentsReader())
                 .webDriver(webDriver)
-                .afterAction(externalBlogs -> log.info("read {}", externalBlogs.posts()))
+                .after(externalBlogs -> log.info("read {}", externalBlogs.posts()))
                 .build();
         return new PageItemReader(page, CODE);
 
