@@ -24,7 +24,7 @@ public class Pages<T> implements Page<T> {
     private PaginationInformation paginationInformation = null;
 
     @Builder
-    protected Pages(
+    public Pages(
             PagesInitializer pagesInitializer,
             ContentsReader<T> contentsReader,
             PaginationReader paginationReader,
