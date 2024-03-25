@@ -1,6 +1,8 @@
 package com.drrr.fluent.cralwer.core;
 
 
+import org.openqa.selenium.WebDriver;
+
 /**
  * 크롤링 하는 최소 단위
  *
@@ -16,4 +18,9 @@ package com.drrr.fluent.cralwer.core;
  */
 public interface Page<T> {
     T execute();
+
+    default T cleanup(WebDriver webDriver){
+        webDriver.close();
+        return null;
+    }
 }
