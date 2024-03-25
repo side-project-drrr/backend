@@ -100,7 +100,7 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         }
     }
 
-    protected static class CrawlingUtils {
+    public static class CrawlingUtils {
         public static boolean isNumber(String text) {
             try {
                 Integer.parseInt(text);
