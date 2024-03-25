@@ -18,6 +18,9 @@ class PagesTest {
 
         var pages = Pages.<String>builder()
                 .contentsReader(webDriver -> "")
+                .contentsLoader(webDriverWait -> {
+                })
+                .pagesInitializer(pageNumber -> "")
                 .paginationReader(webDriver -> new PaginationInformation(5))
                 .webDriver(new FakeWebDriver())
                 .build();
