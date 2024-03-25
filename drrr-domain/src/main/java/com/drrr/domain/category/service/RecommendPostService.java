@@ -10,7 +10,10 @@ import com.querydsl.core.annotations.QueryProjection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +28,7 @@ public class RecommendPostService {
     private final CustomTechBlogPostRepositoryImpl customTechBlogPostRepository;
     private final CustomTechBlogPostCategoryRepositoryImpl customTechBlogPostCategoryRepository;
     private final MemberPostLogRepository memberPostLogRepository;
-    private final PostCategoryUtilityService postDistributionService;
+    private final PostCategoryUtilityService postCategoryUtilityService;
 
     @Transactional
     public List<Long> recommendPosts(final Long memberId, int count) {
@@ -35,12 +38,14 @@ public class RecommendPostService {
         int requirePostCount = count;
 
         //오늘 추천은 받았으나 안 읽었던 추천 게시물 다시 가져와서 반환
-        if (requirePostCount == todayUnreadRecommendPostIds.size())
+        if (requirePostCount == todayUnreadRecommendPostIds.size()){
             return todayUnreadRecommendPostIds;
+        }
 
         //추천해줘야 하는 게시물 수가 오늘 추천은 받았으나 안 읽었던 추천 게시물 수보다 작을 때 안 읽었던 추천 게시물에서 그대로 반환
-        if (requirePostCount < todayUnreadRecommendPostIds.size())
+        if (requirePostCount < todayUnreadRecommendPostIds.size()){
             return todayUnreadRecommendPostIds.subList(0, requirePostCount);
+        }
 
         //오늘 추천은 받았으나 안 읽었던 추천 게시물은 유지하고 추가적으로 추천해줘야 하는 게시물 수를 계산
         requirePostCount -= todayUnreadRecommendPostIds.size();
@@ -62,13 +67,10 @@ public class RecommendPostService {
                 memberId
         );
 
-        //entity -> dto 변환
-        final List<CategoryIdValue> categoryIdValues = CategoryIdValue.from(categoryWeights);
-
         //카테고리별로 할당해야 하는 게시물 Map
         //distributionMap -> key : categoryId, value : 할당해야 하는 기술블로그 개수
-        final Map<Long, Integer> distributionMap = postDistributionService.calculatePostDistribution(
-                categoryIdValues,
+        final Map<Long, AtomicInteger> distributionMap = postCategoryUtilityService.calculatePostDistribution(
+                categoryWeights,
                 requirePostCount
         );
 
@@ -87,36 +89,40 @@ public class RecommendPostService {
 
     private Set<Long> extractRecommendPostIds(
             final List<ExtractedPostCategoryDto> extractedPostsCategories,
-            final Map<Long, Integer> categoryIdToPostCounts,
+            Map<Long, AtomicInteger> categoryIdToPostCounts,
             final int requireCount
     ) {
-        //이 set에 담긴 카테고리 아이디에 해당하는 게시물을 찾을 거임
-
-        Set<Long> postIds = new HashSet<>();
-
         //filter에서 postIds에 담기지 못한 게시물은 requireCount(남은 추천해야하는 게시물 수)만큼 forEach에서 담아줌
-        extractedPostsCategories.stream()
+        Set<Long> postIds = extractedPostsCategories.stream()
                 .filter(dto -> {
-                    if (requireCount == postIds.size())
-                        return true;
-
                     //특정 카테고리에 대해 할당해야 하는 게시물 수
-                    int postCount = categoryIdToPostCounts.getOrDefault(dto.categoryId, 0);
+                    AtomicInteger count = categoryIdToPostCounts.getOrDefault(dto.categoryId, new AtomicInteger(0));
 
                     //카테고리에 대해 할당해줘야하는 게시물이 존재한다면
-                    if (!postIds.contains(dto.postId) && postCount > 0) {
-                        categoryIdToPostCounts.put(dto.categoryId, postCount - 1);
-                        postIds.add(dto.postId);
+                    if (count.get() > 0) {
+                        categoryIdToPostCounts.put(dto.categoryId, new AtomicInteger(count.get() - 1));
                         return false;
                     }
                     return true;
                 })
-                .forEach(dto -> {
-                    if (requireCount == postIds.size())
-                        return;
+                .limit(requireCount)
+                .map(ExtractedPostCategoryDto::postId)
+                .collect(Collectors.toSet());
 
-                    postIds.add(dto.postId);
-                });
+        if(postIds.size() == requireCount){
+            return postIds;
+        }
+
+        Set<Long> extraPostIds = extractedPostsCategories.stream()
+                .filter(dto -> !postIds.contains(dto.postId))
+                .map(ExtractedPostCategoryDto::postId)
+                .collect(Collectors.toSet())
+                .stream()
+                .limit(requireCount - postIds.size())
+                .collect(Collectors.toSet());
+
+        postIds.addAll(extraPostIds);
+
 
         return postIds;
     }
@@ -130,21 +136,6 @@ public class RecommendPostService {
         public ExtractedPostCategoryDto(Long postId, Long categoryId) {
             this.postId = postId;
             this.categoryId = categoryId;
-        }
-    }
-
-    @Builder
-    public record CategoryIdValue(
-            Long categoryId,
-            double value
-    ) {
-        public static List<CategoryIdValue> from(final List<CategoryWeight> categoryWeights) {
-            return categoryWeights.stream()
-                    .map(categoryWeight -> CategoryIdValue.builder()
-                            .categoryId(categoryWeight.getCategory().getId())
-                            .value(categoryWeight.getWeightValue())
-                            .build())
-                    .toList();
         }
     }
 }
