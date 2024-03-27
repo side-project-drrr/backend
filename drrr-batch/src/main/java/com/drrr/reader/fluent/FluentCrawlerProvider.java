@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class FluentCrawlerProvider {
-    private final Map<TechBlogCode, PageItemReader> map;
+    private final Map<TechBlogCode, TechBlogReader> map;
 
 
-    public PageItemReader getItemReader(TechBlogCode code) {
+    public TechBlogReader getItemReader(TechBlogCode code) {
         return map.get(code);
     }
 }

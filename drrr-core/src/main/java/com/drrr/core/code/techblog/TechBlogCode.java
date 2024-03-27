@@ -23,7 +23,8 @@ public enum TechBlogCode {
     DEV_SISTERS(BASE.id + 9, "데브시스터즈"),
     BESPIN_GLOBAL(BASE.id + 10, "베스핀글로벌"),
     DAANGN(BASE.id + 11, "당근마켓"),
-    SARAMIN(BASE.id + 12, "사람인");
+    SARAMIN(BASE.id + 12, "사람인"),
+    SQUARE_LAB(BASE.id + 13, "스퀘어 랩");
 
 
     // enum 성능 최적화

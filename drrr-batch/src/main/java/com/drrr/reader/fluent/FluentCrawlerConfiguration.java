@@ -15,10 +15,10 @@ public class FluentCrawlerConfiguration {
 
 
     @Bean
-    Map<TechBlogCode, PageItemReader> fluentPageItemReaders(List<PageItemReader> pageItemReaders) {
+    Map<TechBlogCode, TechBlogReader> fluentPageItemReaders(List<TechBlogReader> pageItemReaders) {
         return pageItemReaders.stream()
                 .collect(toMap(
-                        PageItemReader::getTechBlogCode,
+                        TechBlogReader::getTechBlogCode,
                         identity()
                 ));
 

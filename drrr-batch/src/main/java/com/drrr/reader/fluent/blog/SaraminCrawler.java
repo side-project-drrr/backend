@@ -1,4 +1,4 @@
-package com.drrr.reader.fluent;
+package com.drrr.reader.fluent.blog;
 
 
 import static java.util.stream.Collectors.collectingAndThen;
@@ -16,6 +16,7 @@ import com.drrr.fluent.cralwer.core.PaginationReader.PaginationInformation;
 import com.drrr.fluent.cralwer.core.SimpleContentsLoader;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingUtils;
+import com.drrr.reader.fluent.PageItemReader;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
