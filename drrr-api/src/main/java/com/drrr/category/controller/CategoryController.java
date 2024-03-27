@@ -173,7 +173,7 @@ public class CategoryController {
     })
     @Secured("USER")
     @GetMapping("/members/me/category-preference")
-    public List<CategoryDto> findMemberCategory(@NotNull @MemberId final Long memberId) {
+    public List<CategoryDto> findMemberCategory(@MemberId final Long memberId) {
         return categoryRepository.findCategoriesByMemberId(memberId)
                 .stream().map(category -> CategoryDto.builder()
                         .id(category.id())

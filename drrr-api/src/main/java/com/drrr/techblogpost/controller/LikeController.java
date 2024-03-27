@@ -34,8 +34,7 @@ public class LikeController {
     })
     @Secured("USER")
     @PostMapping("/post/{postId}/like")
-    public void addPostLike(@NotNull @MemberId final Long memberId,
-                            @NotNull @PathVariable("postId") final Long postId) {
+    public void addPostLike(@MemberId final Long memberId, @NotNull @PathVariable("postId") final Long postId) {
         externalPostLikeService.execute(memberId, postId);
     }
 
@@ -46,8 +45,7 @@ public class LikeController {
     })
     @Secured("USER")
     @DeleteMapping("/post/{postId}/like")
-    public void deletePostLike(@NotNull @MemberId final Long memberId,
-                               @NotNull @PathVariable("postId") final Long postId) {
+    public void deletePostLike(@MemberId final Long memberId, @NotNull @PathVariable("postId") final Long postId) {
         externalPostDislikeService.execute(memberId, postId);
     }
 }

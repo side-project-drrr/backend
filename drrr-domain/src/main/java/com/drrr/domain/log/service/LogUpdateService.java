@@ -23,13 +23,14 @@ public class LogUpdateService {
 
     public void insertMemberLogAndHistory(final Long memberId, final Long postId) {
         memberPostLogRepository.findByPostIdAndMemberId(memberId, postId)
-                .orElseGet(() -> memberPostLogRepository.save(MemberPostLog.builder()
-                        .memberId(memberId)
-                        .postId(postId)
-                        .lastReadAt(LocalDateTime.now())
-                        .isRead(true)
-                        .isRecommended(false)
-                        .build()));
+                .ifPresentOrElse(MemberPostLog::updateReadStatus,
+                        () -> memberPostLogRepository.save(MemberPostLog.builder()
+                                .memberId(memberId)
+                                .postId(postId)
+                                .lastReadAt(LocalDateTime.now())
+                                .isRead(true)
+                                .isRecommended(false)
+                                .build()));
 
         MemberPostHistory history = MemberPostHistory.builder()
                 .postId(postId)
@@ -63,6 +64,7 @@ public class LogUpdateService {
                             .memberId(memberId)
                             .isRead(false)
                             .isRecommended(true)
+                            .lastReadAt(LocalDateTime.now())
                             .build();
                 }).toList();
 
