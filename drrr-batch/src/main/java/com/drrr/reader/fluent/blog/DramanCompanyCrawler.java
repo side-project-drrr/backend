@@ -1,6 +1,11 @@
 package com.drrr.reader.fluent.blog;
 
 
+import static com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingUtils.findByElement;
+import static org.openqa.selenium.By.className;
+import static org.openqa.selenium.By.cssSelector;
+import static org.openqa.selenium.By.tagName;
+
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
@@ -17,7 +22,6 @@ import com.drrr.reader.fluent.ParallelPageItemReader;
 import com.drrr.reader.fluent.TechBlogReader;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.context.annotation.Bean;
@@ -50,8 +54,8 @@ public class DramanCompanyCrawler {
     }
 
     private PaginationReader paginationReader() {
-        return webDriver -> PaginationInformation.lastPage(webDriver.findElement(By.className("jeg_navigation"))
-                .findElements(By.className("page_number"))
+        return webDriver -> PaginationInformation.lastPage(webDriver.findElement(className("jeg_navigation"))
+                .findElements(className("page_number"))
                 .stream()
                 .map(WebElement::getText)
                 .filter(CrawlingUtils::isNumber)
@@ -60,26 +64,24 @@ public class DramanCompanyCrawler {
     }
 
     private ContentsLoader contentsLoader() {
-        return new SimpleContentsLoader(By.tagName("body"));
+        return new SimpleContentsLoader(tagName("body"));
     }
 
     private ContentsReader<ExternalBlogPosts> contentsReader() {
-        return webDriver -> webDriver.findElement(By.className("jeg_posts"))
-                .findElements(By.className("jeg_post"))
+        return webDriver -> webDriver.findElement(className("jeg_posts"))
+                .findElements(className("jeg_post"))
                 .stream().map(this::parse)
                 .peek(externalBlogPost -> log.info("check {}", externalBlogPost))
                 .collect(Collectors.collectingAndThen(Collectors.toList(), ExternalBlogPosts::new));
     }
 
     private ExternalBlogPost parse(WebElement webElement) {
-        var thumbnailElement = CrawlingUtils.findByElement(
-                () -> webElement.findElement(By.cssSelector(".jeg_thumb a img")));
-        var titleElement = webElement.findElement(By.cssSelector(".jeg_postblock_content .jeg_post_title a"));
-        var dateTimeElement = webElement.findElement(By.cssSelector(".jeg_post_meta .jeg_meta_date"));
-        var summaryElement = webElement.findElement(By.cssSelector(".jeg_post_excerpt p"));
+        var thumbnailElement = findByElement(() -> webElement.findElement(cssSelector(".jeg_thumb a img")));
+        var titleElement = webElement.findElement(cssSelector(".jeg_postblock_content .jeg_post_title a"));
+        var dateTimeElement = webElement.findElement(cssSelector(".jeg_post_meta .jeg_meta_date"));
+        var summaryElement = webElement.findElement(cssSelector(".jeg_post_excerpt p"));
 
         var link = titleElement.getAttribute("href");
-
         var url = CrawlingUtils.urlDecode(link);
 
         return ExternalBlogPost.builder()
