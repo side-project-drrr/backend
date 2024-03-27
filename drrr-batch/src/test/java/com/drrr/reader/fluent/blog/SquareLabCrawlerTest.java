@@ -22,7 +22,7 @@ class SquareLabCrawlerTest {
 
     @Test
     @Disabled
-    void 크롤링_테스트() {
-        new SquareLabCrawler().pageItemReader(new FirefoxDriver()).read();
+    void 크롤링_테스트() throws Exception {
+        new SquareLabCrawler().squareLabPageReader(new FirefoxDriver()).read();
     }
 }

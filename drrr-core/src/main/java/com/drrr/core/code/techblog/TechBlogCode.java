@@ -24,7 +24,8 @@ public enum TechBlogCode {
     BESPIN_GLOBAL(BASE.id + 10, "베스핀글로벌"),
     DAANGN(BASE.id + 11, "당근마켓"),
     SARAMIN(BASE.id + 12, "사람인"),
-    SQUARE_LAB(BASE.id + 13, "스퀘어 랩");
+    SQUARE_LAB(BASE.id + 13, "스퀘어 랩"),
+    DRAMANCOMPANY(BASE.id + 14, "드라마 앤 컴퍼니(리멤버)");
 
 
     // enum 성능 최적화

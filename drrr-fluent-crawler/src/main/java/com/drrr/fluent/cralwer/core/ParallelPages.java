@@ -3,6 +3,7 @@ package com.drrr.fluent.cralwer.core;
 import com.drrr.fluent.cralwer.core.PaginationReader.PaginationInformation;
 import com.drrr.fluent.cralwer.core.SinglePage.Mode;
 import com.drrr.fluent.cralwer.core.SinglePage.SinglePageBuilder;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,7 @@ import java.util.stream.IntStream;
 import lombok.Builder;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 
@@ -40,15 +42,14 @@ public class ParallelPages<T> implements MultiPage<T> {
             ContentsReader<T> contentsReader,
             ContentsLoader contentsLoader,
             PaginationReader paginationReader,
-            WebDriver webDriver,
-            WebDriverWait webDriverWait
+            WebDriver webDriver
     ) {
         this.pageInitializer = pageInitializer;
         this.contentsReader = contentsReader;
         this.contentsLoader = contentsLoader;
         this.paginationReader = paginationReader;
         this.webDriver = webDriver;
-        this.webDriverWait = webDriverWait;
+        this.webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
     }
 
     @Override
@@ -107,7 +108,7 @@ public class ParallelPages<T> implements MultiPage<T> {
                 .singlePageInitializer(() -> url)
                 .contentsReader(contentsReader)
                 .contentsLoader(contentsLoader)
-                .webDriver(new FirefoxDriver())
+                .webDriver(new FirefoxDriver(new FirefoxOptions().addArguments("--headless")))
                 .build();
     }
 

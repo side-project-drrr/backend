@@ -17,6 +17,7 @@ import com.drrr.fluent.cralwer.core.SimpleContentsLoader;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingUtils;
 import com.drrr.reader.fluent.PageItemReader;
+import com.drrr.reader.fluent.TechBlogReader;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class SaraminCrawler {
     private static final TechBlogCode CODE = TechBlogCode.SARAMIN;
 
     @Bean
-    public PageItemReader saraminPages(WebDriver webDriver) {
+    public TechBlogReader saraminPages(WebDriver webDriver) {
         var page = Pages.<ExternalBlogPosts>builder()
                 .pagesInitializer(pagesInitializer())
                 .contentsLoader(contentsLoader())

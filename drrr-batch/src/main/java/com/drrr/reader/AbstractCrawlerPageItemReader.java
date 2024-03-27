@@ -7,12 +7,15 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.batch.item.ItemReader;
@@ -110,6 +113,14 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
                 return true;
             } catch (NumberFormatException exception) {
                 return false;
+            }
+        }
+
+        public static Optional<WebElement> findByElement(Supplier<WebElement> webElementSupplier) {
+            try {
+                return Optional.ofNullable(webElementSupplier.get());
+            } catch (NoSuchElementException noSuchElementException) {
+                return Optional.empty();
             }
         }
 
