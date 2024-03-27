@@ -55,6 +55,7 @@ public class CrawlerItemReaderFactory {
             case DAANGN -> DaangnCrawlerItemReader::new;
             case SARAMIN -> null;
             case SQUARE_LAB -> null;
+            case DRAMANCOMPANY -> null;
         };
     }
 

@@ -16,6 +16,7 @@ import com.drrr.fluent.cralwer.core.ParallelPages;
 import com.drrr.fluent.cralwer.core.SimpleContentsLoader;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
 import com.drrr.reader.fluent.ParallelPageItemReader;
+import com.drrr.reader.fluent.TechBlogReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -32,7 +33,7 @@ public class SquareLabCrawler {
     private static final String BASE_URL = "https://squarelab.co/blog/";
 
     @Bean
-    public ParallelPageItemReader pageItemReader(WebDriver webDriver) {
+    public TechBlogReader squareLabPageReader(WebDriver webDriver) {
         var pages = ParallelPages.<ExternalBlogPosts>builder()
                 .contentsReader(contentsReader())
                 .pageInitializer(() -> new BasePageUrls(
