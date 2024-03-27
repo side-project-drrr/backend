@@ -55,6 +55,7 @@ public class SinglePage<T> implements Page<T> {
     public T execute() {
         // ONCE 모드의 경우 한 번 호출 된 이후 재호출을 금지합니다.
         if (mode == Mode.ONCE && isCompleted()) {
+            cleanup(webDriver);
             return null;
         }
 
@@ -68,8 +69,9 @@ public class SinglePage<T> implements Page<T> {
         }
 
         done();
-        cleanup(webDriver);
-
+        if (mode == Mode.NON_LIMIT) {
+            cleanup(webDriver);
+        }
         return contents;
     }
 

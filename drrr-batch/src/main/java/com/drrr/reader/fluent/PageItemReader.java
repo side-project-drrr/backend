@@ -9,8 +9,9 @@ import org.springframework.batch.item.ItemReader;
 
 
 @RequiredArgsConstructor
-public class PageItemReader implements ItemReader<ExternalBlogPosts> {
+public class PageItemReader implements ItemReader<ExternalBlogPosts>, TechBlogReader {
     private final Page<ExternalBlogPosts> pages;
+
     @Getter
     private final TechBlogCode techBlogCode;
 

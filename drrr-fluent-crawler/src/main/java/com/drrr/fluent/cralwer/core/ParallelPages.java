@@ -3,6 +3,7 @@ package com.drrr.fluent.cralwer.core;
 import com.drrr.fluent.cralwer.core.PaginationReader.PaginationInformation;
 import com.drrr.fluent.cralwer.core.SinglePage.Mode;
 import com.drrr.fluent.cralwer.core.SinglePage.SinglePageBuilder;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -53,13 +54,17 @@ public class ParallelPages<T> implements MultiPage<T> {
     @Override
     public List<T> execute() {
         var initializerUrl = pageInitializer.getUrl();
-        preLoaded(initializerUrl.home());
 
+        if (Objects.nonNull(paginationInformation) && paginationInformation.complete(currentPage)) {
+            CompletableFuture.runAsync(webDriver::close);
+            return Collections.emptyList();
+        }
+
+        preLoaded(initializerUrl.home());
         var runnerCount = Math.min(
                 paginationInformation.remainPage(currentPage),
                 PARALLEL_COUNT
         );
-        webDriver.close();
 
         var urlGenerator = initializerUrl.searchUrlGenerator();
         var executors = Executors.newFixedThreadPool(runnerCount);
@@ -69,8 +74,10 @@ public class ParallelPages<T> implements MultiPage<T> {
                 .map(url -> CompletableFuture.supplyAsync(() -> createSinglePage(url), executors))
                 .map(createPageAction -> createPageAction.thenApply(Page::execute))
                 .toList();
+
         var results = completableFutures.stream()
                 .map(CompletableFuture::join)
+                .filter(Objects::nonNull)
                 .toList();
         currentPage += runnerCount;
         executors.shutdown();
