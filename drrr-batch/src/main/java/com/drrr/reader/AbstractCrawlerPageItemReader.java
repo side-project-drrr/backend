@@ -77,13 +77,14 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
 
 
     @RequiredArgsConstructor
-    protected enum CrawlingLocalDatePatterns {
+    public enum CrawlingLocalDatePatterns {
         PATTERN1("yyyy.MM.dd"),
         PATTERN2("yyyy.MM.dd."),
         PATTERN3("MMM.d.yyyy", Locale.ENGLISH),
         PATTERN4("yy.MM.dd"),
         PATTERN5("yyyy-MM-dd"),
-        PATTERN6("MMM d, yyyy", Locale.ENGLISH);
+        PATTERN6("MMM d, yyyy", Locale.ENGLISH),
+        PATTERN7("MMMM d, yyyy", Locale.ENGLISH);
 
         private final DateTimeFormatter dateTimeFormatter;
 
@@ -100,7 +101,7 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         }
     }
 
-    protected static class CrawlingUtils {
+    public static class CrawlingUtils {
         public static boolean isNumber(String text) {
             try {
                 Integer.parseInt(text);
