@@ -25,6 +25,10 @@ public interface PaginationReader {
             this(maxPage, Optional.empty());
         }
 
+        public static PaginationInformation lastPage(int lastPage) {
+            return new PaginationInformation(0, Optional.of(lastPage));
+        }
+
         /**
          * @formatter:off
          * <p>
@@ -46,6 +50,17 @@ public interface PaginationReader {
          */
         public boolean complete(int currentPage) {
             return lastPage.orElse(maxPage) < currentPage;
+        }
+
+        public boolean hasLastPage() {
+            return lastPage.isPresent();
+
+        }
+
+        public int remainPage(final int currentPage) {
+            return lastPage.map(lastPage -> lastPage - currentPage)
+                    .orElseThrow();
+
         }
     }
 }
