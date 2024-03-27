@@ -54,6 +54,7 @@ public class CrawlerItemReaderFactory {
             case BESPIN_GLOBAL -> BespinGlobalCrawlerItemReader::new;
             case DAANGN -> DaangnCrawlerItemReader::new;
             case SARAMIN -> null;
+            case SQUARE_LAB -> null;
         };
     }
 

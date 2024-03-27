@@ -58,7 +58,7 @@ public interface PaginationReader {
         }
 
         public int remainPage(final int currentPage) {
-            return lastPage.map(lastPage -> lastPage - currentPage)
+            return lastPage.map(lastPage -> (lastPage - currentPage) + 1)
                     .orElseThrow();
 
         }

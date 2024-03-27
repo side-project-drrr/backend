@@ -16,7 +16,7 @@ public class DriverConfiguration {
     @Bean
     public WebDriver webDriver() {
         return new FirefoxDriver(new FirefoxOptions()
-                //   .addArguments("--headless")
+                .addArguments("--headless")
         );
     }
 }
