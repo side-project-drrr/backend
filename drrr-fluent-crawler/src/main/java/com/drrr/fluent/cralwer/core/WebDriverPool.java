@@ -13,9 +13,21 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
 public class WebDriverPool extends GenericObjectPool<WebDriver> {
+    private static final int MAX_TOTAL = 10;
+
     public WebDriverPool(PooledObjectFactory<WebDriver> factory) {
         super(factory);
-        this.setMaxTotal(10);
+        this.setMaxTotal(MAX_TOTAL);
+    }
+
+    public WebDriverPool(PooledObjectFactory<WebDriver> factory, int max) {
+        super(factory);
+        this.setMaxTotal(max);
+    }
+
+    public WebDriverPool maxTotal(int maxTotal) {
+        this.setMaxTotal(maxTotal);
+        return this;
     }
 
 

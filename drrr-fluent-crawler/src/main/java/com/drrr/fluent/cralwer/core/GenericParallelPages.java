@@ -13,25 +13,35 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 public class GenericParallelPages<T> implements MultiPage<T> {
-    private static final int PARALLEL_COUNT = 2;
     private final WebDriverPool webDriverPool;
     private final ParallelPageInitializer pageInitializer;
     private final ContentsReader<T> contentsReader;
     private final PaginationReader paginationReader;
     private final ContentsLoader contentsLoader;
+    private final After<T> after;
 
-    private int currentPage;
+    @Builder.Default
+    private int parallelCount = 2;
+    private int currentPage = 1;
     private PaginationInformation paginationInformation;
 
     @Builder
-    public GenericParallelPages(WebDriverPool webDriverPool, ParallelPageInitializer pageInitializer,
-                                ContentsReader<T> contentsReader, PaginationReader paginationReader,
-                                ContentsLoader contentsLoader) {
+    public GenericParallelPages(
+            WebDriverPool webDriverPool,
+            ParallelPageInitializer pageInitializer,
+            ContentsReader<T> contentsReader,
+            PaginationReader paginationReader,
+            ContentsLoader contentsLoader,
+            After<T> after,
+            int parallelCount
+    ) {
         this.webDriverPool = webDriverPool;
         this.pageInitializer = pageInitializer;
         this.contentsReader = contentsReader;
         this.paginationReader = paginationReader;
         this.contentsLoader = contentsLoader;
+        this.parallelCount = parallelCount;
+        this.after = after;
     }
 
     @Override
@@ -47,7 +57,7 @@ public class GenericParallelPages<T> implements MultiPage<T> {
 
         var runnerCount = Math.min(
                 paginationInformation.remainPage(currentPage),
-                PARALLEL_COUNT
+                parallelCount
         );
         var urlGenerator = initializeUrl.searchUrlGenerator();
 
@@ -62,23 +72,30 @@ public class GenericParallelPages<T> implements MultiPage<T> {
         return results;
     }
 
+    private void after(T data) {
+        if (Objects.nonNull(after)) {
+            after.action(data);
+        }
+    }
+
     // 메인 크롤러에서 컨텐츠 로드, 페이지네이션 로드
     private void preLoaded(String home) {
-        if (Objects.isNull(paginationInformation)) {
-            this.paginationInformation = webDriverPool.delegate(webDriver -> {
-                webDriver.get(home);
-                contentsLoader.waitUntilLoad(new WebDriverWait(
-                        webDriver,
-                        Duration.ofSeconds(3))
-                );
-
-                var paginationInformation = paginationReader.read(webDriver);
-                if (!paginationInformation.hasLastPage()) {
-                    throw new IllegalStateException("last page가 없는 경우 해당 기능을 지원하지 않습니다.");
-                }
-                return paginationInformation;
-            });
+        if (Objects.nonNull(paginationInformation)) {
+            return;
         }
+        this.paginationInformation = webDriverPool.delegate(webDriver -> {
+            webDriver.get(home);
+            contentsLoader.waitUntilLoad(new WebDriverWait(
+                    webDriver,
+                    Duration.ofSeconds(3))
+            );
+
+            var paginationInformation = paginationReader.read(webDriver);
+            if (!paginationInformation.hasLastPage()) {
+                throw new IllegalStateException("last page가 없는 경우 해당 기능을 지원하지 않습니다.");
+            }
+            return paginationInformation;
+        });
     }
 
 
@@ -90,6 +107,7 @@ public class GenericParallelPages<T> implements MultiPage<T> {
                 .contentsLoader(contentsLoader)
                 .webDriverCleaner(webDriverPool::returnObject)
                 .webDriver(webDriverPool.borrow())
+                .after(this::after)
                 .build();
     }
 }
