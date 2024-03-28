@@ -9,8 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 public class DrRRBatchApplication {
 
     public static void main(String[] args) {
-
         System.exit(SpringApplication.exit(SpringApplication.run(DrRRBatchApplication.class, args)));
     }
-
 }
