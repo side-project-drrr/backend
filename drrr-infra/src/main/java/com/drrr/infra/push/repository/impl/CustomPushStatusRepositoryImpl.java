@@ -11,6 +11,7 @@ import com.drrr.infra.push.dto.PushDateDto;
 import com.drrr.infra.push.repository.CustomPushStatusRepository;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
@@ -64,7 +65,6 @@ public class CustomPushStatusRepositoryImpl implements CustomPushStatusRepositor
 
     @Override
     public List<PushDateDto> findPushDateCountAndStatusByMemberIdAndPushDate(final Long memberId, final int count) {
-
         return queryFactory.select(
                         Projections.constructor(PushDateDto.class
                                 , new CaseBuilder()
@@ -77,14 +77,17 @@ public class CustomPushStatusRepositoryImpl implements CustomPushStatusRepositor
                                                 .then(1)
                                                 .otherwise(0)
                                                 .max().eq(1).as("readStatus")
-                                , pushStatus1.pushDate.count()
-                                , pushStatus1.pushDate)
+                                , pushStatus1.id.count()
+                                , pushStatus1.pushDate
+                        )
                 )
                 .from(pushStatus1)
-                .where(pushStatus1.memberId.eq(memberId), pushStatus1.pushStatus.eq(Boolean.TRUE))
-                .groupBy(pushStatus1.pushDate)
+                .innerJoin(pushStatus1.postIds)
+                .where(pushStatus1.memberId.eq(memberId))
+                .groupBy(pushStatus1.id)
                 .limit(count)
                 .orderBy(pushStatus1.pushDate.desc())
                 .fetch();
     }
+
 }

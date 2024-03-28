@@ -10,13 +10,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
-    Optional<Subscription> findByMemberId(final Long memberId);
 
     @Modifying
     void deleteByMemberId(final Long memberId);
-
-    @Modifying
-    void deleteById(final Long id);
 
     List<Subscription> findByMemberIdIn(final List<Long> memberIds);
 
