@@ -25,7 +25,8 @@ public enum TechBlogCode {
     DAANGN(BASE.id + 11, "당근마켓"),
     SARAMIN(BASE.id + 12, "사람인"),
     SQUARE_LAB(BASE.id + 13, "스퀘어 랩"),
-    DRAMANCOMPANY(BASE.id + 14, "드라마 앤 컴퍼니(리멤버)");
+    DRAMANCOMPANY(BASE.id + 14, "드라마 앤 컴퍼니(리멤버)"),
+    KAKAO_PAY(BASE.id + 15, "카카오 페이");
 
 
     // enum 성능 최적화

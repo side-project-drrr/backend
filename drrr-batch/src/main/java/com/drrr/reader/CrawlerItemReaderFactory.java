@@ -56,6 +56,7 @@ public class CrawlerItemReaderFactory {
             case SARAMIN -> null;
             case SQUARE_LAB -> null;
             case DRAMANCOMPANY -> null;
+            case KAKAO_PAY -> null;
         };
     }
 

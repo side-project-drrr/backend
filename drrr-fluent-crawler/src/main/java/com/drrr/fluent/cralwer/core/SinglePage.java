@@ -74,7 +74,9 @@ public class SinglePage<T> implements Page<T> {
         }
 
         if (mode == Mode.POLLING) {
-            after.action(contents);
+            if (Objects.nonNull(after)) {
+                after.action(contents);
+            }
             cleanup();
         }
 
