@@ -1,6 +1,7 @@
 package com.drrr.fluent.cralwer.core;
 
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.DestroyMode;
@@ -56,6 +57,14 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
         super.close();
     }
 
+    public void preLoadDriver(int parallelCount) {
+        IntStream.rangeClosed(1, parallelCount)
+                .parallel()
+                .forEach(i -> this.returnObject(this.borrow()));
+
+
+    }
+
     @RequiredArgsConstructor
     public static class WebDriverPoolFactory extends BasePooledObjectFactory<WebDriver> {
         private final FirefoxOptions firefoxOptions;
@@ -71,7 +80,7 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
         }
 
         @Override
-        public void destroyObject(PooledObject<WebDriver> p, DestroyMode destroyMode) throws Exception {
+        public void destroyObject(PooledObject<WebDriver> p, DestroyMode destroyMode) {
             p.getObject().close();
         }
     }
