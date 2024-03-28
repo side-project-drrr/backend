@@ -19,8 +19,12 @@ public interface MemberRepository extends JpaRepository<Member, Long>, CustomMem
     Optional<Member> findByProviderId(final String providerId);
 
     boolean existsByEmail(final String email);
+    @Query("select count(m.id) > 0 from Member m where m.id !=:memberId and m.email =:email")
+    boolean existsByEmailFromOthers(@Param("memberId") final Long memberId, @Param("email") final String email);
 
     boolean existsByNickname(final String nickname);
+    @Query("select count(m.id) > 0 from Member m where m.id !=:memberId and m.nickname =:nickname")
+    boolean existsByNicknameFromOthers(@Param("memberId") final Long memberId, @Param("nickname") final String nickname);
 
 
     boolean existsByProviderId(final String providerId);
@@ -31,5 +35,13 @@ public interface MemberRepository extends JpaRepository<Member, Long>, CustomMem
     @Modifying
     @Query("update Member m set m.isActive = false where m.id =:memberId ")
     void updateUnregisterMember(@Param("memberId") final Long memberId);
+
+    @Modifying
+    @Query("update Member m set m.nickname =:nickname, m.email =:email where m.id =:memberId")
+    void updateMemberProfile(
+            @Param("memberId") final Long memberId,
+            @Param("nickname") final String nickname,
+            @Param("email") final String email
+    );
 
 }

@@ -30,9 +30,6 @@ public class Member extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-/*    @Enumerated(EnumType.STRING)
-    private MemberRole role;*/
-
     @Column(unique = true)
     private String profileImageUrl;
 
