@@ -5,7 +5,7 @@ import static java.util.stream.Collectors.toList;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPosts;
-import com.drrr.fluent.cralwer.core.ParallelPages;
+import com.drrr.fluent.cralwer.core.MultiPage;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ParallelPageItemReader implements TechBlogReader {
 
-    private final ParallelPages<ExternalBlogPosts> pages;
+    private final MultiPage<ExternalBlogPosts> pages;
     @Getter
     private final TechBlogCode techBlogCode;
 
