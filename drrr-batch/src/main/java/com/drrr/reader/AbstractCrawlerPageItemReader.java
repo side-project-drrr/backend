@@ -89,7 +89,8 @@ public abstract class AbstractCrawlerPageItemReader implements ItemReader<Extern
         PATTERN6("MMM d, yyyy", Locale.ENGLISH),
         PATTERN7("MMMM d, yyyy", Locale.ENGLISH),
         PATTERN8("yyyy년 M월 d일", Locale.KOREAN),
-        PATTERN9("yyyy.M.d");
+        PATTERN9("yyyy.M.d"),
+        PATTERN10(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
 
         private final DateTimeFormatter dateTimeFormatter;
