@@ -7,7 +7,7 @@ import com.drrr.auth.payload.request.SignInRequest;
 import com.drrr.auth.payload.request.SignOutRequest;
 import com.drrr.auth.payload.request.SignUpRequest;
 import com.drrr.auth.payload.response.AccessTokenResponse;
-import com.drrr.auth.payload.response.CheckResponse;
+import com.drrr.auth.payload.response.NickStatus;
 import com.drrr.auth.payload.response.SignInResponse;
 import com.drrr.auth.payload.response.SignUpResponse;
 import com.drrr.auth.service.impl.ExchangeOAuth2AccessTokenService;
@@ -61,8 +61,8 @@ public class AuthController {
                     """)
     @ApiResponses(@ApiResponse(responseCode = "200", description = "닉네임 중복 여부 반환"))
     @GetMapping("/check-nickname")
-    public CheckResponse checkNickNameDuplication(@RequestParam String nickname) {
-        return signUpService.execute(nickname);
+    public NickStatus checkNickNameDuplication(@RequestParam String nickname) {
+        return signUpService.checkMemberNicknameDuplication(nickname);
     }
 
     @Operation(summary = "소셜 로그인 회원가입 API", description = "호출 성공 시 JWT Access, Refresh 토큰 반환")

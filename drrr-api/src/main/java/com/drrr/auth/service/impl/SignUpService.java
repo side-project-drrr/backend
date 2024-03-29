@@ -2,7 +2,7 @@ package com.drrr.auth.service.impl;
 
 
 import com.drrr.auth.payload.request.SignUpRequest;
-import com.drrr.auth.payload.response.CheckResponse;
+import com.drrr.auth.payload.response.NickStatus;
 import com.drrr.auth.payload.response.SignUpResponse;
 import com.drrr.auth.service.impl.IssuanceTokenService.IssuanceTokenDto;
 import com.drrr.domain.category.service.InitializeWeightService;
@@ -30,8 +30,8 @@ public class SignUpService {
     }
 
     @Transactional(readOnly = true)
-    public CheckResponse execute(final String nickname){
-        return CheckResponse.builder()
+    public NickStatus checkMemberNicknameDuplication(final String nickname){
+        return NickStatus.builder()
                 .isDuplicate(memberRepository.existsByNickname(nickname))
                 .build();
     }
