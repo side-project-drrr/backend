@@ -1,7 +1,10 @@
 package com.drrr.reader.fluent.blog;
 
+import com.drrr.fluent.cralwer.core.WebDriverPool;
+import com.drrr.fluent.cralwer.core.WebDriverPool.WebDriverPoolFactory;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.firefox.FirefoxOptions;
 
 class KakaoPayCrawlerTest {
 
@@ -11,7 +14,7 @@ class KakaoPayCrawlerTest {
     void 크롤링_테스트() throws Exception {
         var kakaoPayCrawler = new KakaoPayCrawler();
 
-        try (var pool = kakaoPayCrawler.webDriverPool()) {
+        try (var pool = new WebDriverPool(new WebDriverPoolFactory(new FirefoxOptions()))) {
 
             var reader = kakaoPayCrawler.kakaoPayReader(pool);
 
