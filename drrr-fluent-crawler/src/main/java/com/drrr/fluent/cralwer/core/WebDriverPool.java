@@ -52,11 +52,6 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
         }
     }
 
-    @Override
-    public void close() {
-        super.close();
-    }
-
     public void preLoadDriver(int parallelCount) {
         IntStream.rangeClosed(1, parallelCount)
                 .parallel()

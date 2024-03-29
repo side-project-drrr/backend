@@ -69,15 +69,13 @@ public class SinglePage<T> implements Page<T> {
         final var contents = contentsReader.read(webDriver);
 
         done();
-        if (mode == Mode.NON_LIMIT) {
+
+        if (mode == Mode.NON_LIMIT || mode == Mode.POLLING) {
             cleanup();
         }
 
-        if (mode == Mode.POLLING) {
-            if (Objects.nonNull(after)) {
-                after.action(contents);
-            }
-            cleanup();
+        if (Objects.nonNull(after)) {
+            after.action(contents);
         }
 
         return contents;
