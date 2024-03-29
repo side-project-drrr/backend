@@ -99,7 +99,7 @@ public class SquareLabCrawler {
         return webDriver -> PaginationInformation.lastPage(webDriver.findElement(By.id("pagination"))
                 .findElements(By.tagName("a"))
                 .stream()
-                .map(a -> a.getText())
+                .map(WebElement::getText)
                 .map(Integer::parseInt)
                 .reduce(Integer.MIN_VALUE, Math::max));
     }
