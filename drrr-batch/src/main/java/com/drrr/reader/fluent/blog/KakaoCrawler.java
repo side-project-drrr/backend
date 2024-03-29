@@ -25,9 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 
 @Slf4j
+@Configuration
 public class KakaoCrawler {
 
     private static final String BASE_URL = "https://tech.kakao.com/blog/";

@@ -26,7 +26,8 @@ public enum TechBlogCode {
     SARAMIN(BASE.id + 12, "사람인"),
     SQUARE_LAB(BASE.id + 13, "스퀘어 랩"),
     DRAMANCOMPANY(BASE.id + 14, "드라마 앤 컴퍼니(리멤버)"),
-    KAKAO_PAY(BASE.id + 15, "카카오 페이");
+    KAKAO_PAY(BASE.id + 15, "카카오 페이"),
+    SMAIL_GATE_AI(BASE.id + 16, "스마일 게이트 ai");
 
 
     // enum 성능 최적화

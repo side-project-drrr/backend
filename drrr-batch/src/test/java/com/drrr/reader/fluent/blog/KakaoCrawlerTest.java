@@ -12,14 +12,13 @@ class KakaoCrawlerTest {
     @Test
     @Disabled
     void 크롤링_테스트() throws Exception {
-        var webDriverPoolFactory = new WebDriverPoolFactory(new FirefoxOptions());
+        var webDriverPoolFactory = new WebDriverPoolFactory(new FirefoxOptions().addArguments("--headless"));
         try (var pool = new WebDriverPool(webDriverPoolFactory)) {
 
             var reader = new KakaoCrawler().kakaoReader(pool);
 
-            reader.read();
-            //while (reader.read() != null) {
-            //}
+            while (reader.read() != null) {
+            }
         }
         //44
 

@@ -91,9 +91,5 @@ public class KakaoPayCrawler {
                 .reduce(Integer.MIN_VALUE, Math::max));
     }
 
-    @Bean(destroyMethod = "close")
-    WebDriverPool webDriverPool() {
-        var webDriverPoolFactory = new WebDriverPoolFactory(new FirefoxOptions());
-        return new WebDriverPool(webDriverPoolFactory);
-    }
+
 }
