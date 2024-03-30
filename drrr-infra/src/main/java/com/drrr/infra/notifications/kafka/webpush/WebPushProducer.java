@@ -21,7 +21,7 @@ public class WebPushProducer {
     public void sendNotifications() {
         final List<Subscription> subscriptions = subscriptionRepository.findAll();
 
-        subscriptions.stream().forEach(subscription -> {
+        subscriptions.forEach(subscription -> {
             NotificationDto notification = NotificationDto.builder()
                     .id(subscription.getId())
                     .endpoint(subscription.getEndpoint())
