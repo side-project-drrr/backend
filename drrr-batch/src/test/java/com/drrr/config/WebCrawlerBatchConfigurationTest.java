@@ -22,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.WebDriver;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,9 @@ class WebCrawlerBatchConfigurationTest extends SpringBatchTestSupport {
     private TemporalTechBlogPostRepository temporalTechBlogPostRepository;
     @Autowired
     private TechBlogPostRepository techBlogPostRepository;
+
+    @MockBean
+    private WebDriver webDriver;
 
     private List<ExternalBlogPosts> generateMockData() {
         this.mockExternalBlogPosts = IntStream.iterate(1, i -> i + 1)

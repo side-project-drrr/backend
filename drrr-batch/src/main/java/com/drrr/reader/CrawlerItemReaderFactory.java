@@ -2,6 +2,7 @@ package com.drrr.reader;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPosts;
+import com.drrr.reader.fluent.FluentCrawlerProvider;
 import com.drrr.reader.impl.BespinGlobalCrawlerItemReader;
 import com.drrr.reader.impl.DaangnCrawlerItemReader;
 import com.drrr.reader.impl.DevOceanCrawlerItemReader;
@@ -14,6 +15,7 @@ import com.drrr.reader.impl.NaverCrawlerItemReader;
 import com.drrr.reader.impl.TechobleCrawlerItemReader;
 import com.drrr.reader.impl.TestCrawlerPageItemReader;
 import com.drrr.reader.impl.WoowahanCrawlerItemReader;
+import java.util.Objects;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.openqa.selenium.WebDriver;
@@ -25,9 +27,16 @@ import org.springframework.stereotype.Component;
 public class CrawlerItemReaderFactory {
 
     private final WebDriver webDriver;
+    private final FluentCrawlerProvider fluentCrawlerProvider;
 
     public ItemReader<ExternalBlogPosts> createItemReader(TechBlogCode code) {
-        return this.findItemReaderBy(code).apply(webDriver);
+        var itemReader = fluentCrawlerProvider.getItemReader(code);
+
+        if (Objects.isNull(itemReader)) {
+            return this.findItemReaderBy(code).apply(webDriver);
+        }
+
+        return itemReader;
     }
 
     public Function<WebDriver, AbstractCrawlerPageItemReader> findItemReaderBy(TechBlogCode code) {
@@ -44,6 +53,13 @@ public class CrawlerItemReaderFactory {
             case DEV_SISTERS -> DevSistersCrawlerItemReader::new;
             case BESPIN_GLOBAL -> BespinGlobalCrawlerItemReader::new;
             case DAANGN -> DaangnCrawlerItemReader::new;
+            case SARAMIN -> null;
+            case SQUARE_LAB -> null;
+            case DRAMANCOMPANY -> null;
+            case KAKAO_PAY -> null;
+            case SMAIL_GATE_AI -> null;
         };
     }
+
+
 }
