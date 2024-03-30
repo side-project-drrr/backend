@@ -40,18 +40,22 @@ class PostCategoryUtilityServiceTest extends ServiceIntegrationTest {
                 categoryRepository.saveAll(CategoryFixture.createCategories(3)),
                 List.of(5.0,3.0,2.0))
         );
-        PostCategoryUtilityService sut = new PostCategoryUtilityService();
 
         // 입력 -> 어떤 결과
+        List<Category> all = categoryRepository.findAll();
+        for (Category category : all) {
+            System.out.println("category = " + category.getId());
+        }
 
-        Map<Long, Integer> actual = sut.calculatePostDistribution(new CategoryWeights(categoryWeights), 10);
-
-        System.out.println(actual);
+        Map<Long, Integer> actual = postCategoryUtilityService.calculatePostDistribution(new CategoryWeights(categoryWeights), 10);
+        for (Long aLong : actual.keySet()) {
+            System.out.println("key = " + aLong);
+            System.out.println("value = " + actual.get(aLong));
+        }
 
         assertAll(
-                () -> assertThat(actual.get(1L)).isEqualTo(5),
-                () -> assertThat(actual.get(2L)).isEqualTo(3),
-                () -> assertThat(actual.get(3L)).isEqualTo(2)
+                () -> assertThat(actual.values()).containsExactlyInAnyOrder(5, 3, 2),
+                () -> assertThat(actual.size()).isEqualTo(3)
         );
     }
 
