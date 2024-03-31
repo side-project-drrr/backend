@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class RecommendPostExtractService {
@@ -35,10 +37,7 @@ public class RecommendPostExtractService {
                 memberId
         );
 
-        final CategoryPostDistribution distribution = CategoryPostDistribution.builder()
-                .categoryIdToPostCounts(categoryWeights.calculatePostDistribution(requirePostCount))
-                .postIds(new HashSet<>())
-                .build();
+        final CategoryPostDistribution distribution = new CategoryPostDistribution(categoryWeights.calculatePostDistribution(requirePostCount));
 
         //추천할 게시물 ids 추출
         Set<Long> postIds = distribution.extractRecommendPostIds(extractedPostsCategories, requirePostCount);
