@@ -43,15 +43,8 @@ class PostCategoryUtilityServiceTest extends ServiceIntegrationTest {
 
         // 입력 -> 어떤 결과
         List<Category> all = categoryRepository.findAll();
-        for (Category category : all) {
-            System.out.println("category = " + category.getId());
-        }
 
         Map<Long, Integer> actual = postCategoryUtilityService.calculatePostDistribution(new CategoryWeights(categoryWeights), 10);
-        for (Long aLong : actual.keySet()) {
-            System.out.println("key = " + aLong);
-            System.out.println("value = " + actual.get(aLong));
-        }
 
         assertAll(
                 () -> assertThat(actual.values()).containsExactlyInAnyOrder(5, 3, 2),
