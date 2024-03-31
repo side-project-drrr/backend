@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @RequiredArgsConstructor
 @Repository
 public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogPostCategoryRepository {
