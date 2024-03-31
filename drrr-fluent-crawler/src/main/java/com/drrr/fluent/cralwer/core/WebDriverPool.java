@@ -1,7 +1,6 @@
 package com.drrr.fluent.cralwer.core;
 
 import java.util.function.Function;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.DestroyMode;
@@ -14,7 +13,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
 public class WebDriverPool extends GenericObjectPool<WebDriver> {
-    private static final int MAX_TOTAL = 10;
+    private static final int MAX_TOTAL = 5;
 
     public WebDriverPool(PooledObjectFactory<WebDriver> factory) {
         super(factory);
@@ -53,12 +52,12 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
     }
 
     public void preLoadDriver(int parallelCount) {
-        IntStream.rangeClosed(1, parallelCount)
-                .parallel()
-                .forEach(i -> this.returnObject(this.borrow()));
-
+//        IntStream.rangeClosed(1, parallelCount)
+//                .parallel()
+//                .forEach(i -> this.returnObject(this.borrow()));
 
     }
+
 
     @RequiredArgsConstructor
     public static class WebDriverPoolFactory extends BasePooledObjectFactory<WebDriver> {

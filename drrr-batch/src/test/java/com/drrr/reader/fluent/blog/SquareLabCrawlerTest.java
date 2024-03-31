@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 class SquareLabCrawlerTest {
 
@@ -23,6 +22,6 @@ class SquareLabCrawlerTest {
     @Test
     @Disabled
     void 크롤링_테스트() throws Exception {
-        new SquareLabCrawler().squareLabPageReader(new FirefoxDriver()).read();
+        //new SquareLabCrawler().squareLabPageReader().read();
     }
 }

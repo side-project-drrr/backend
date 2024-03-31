@@ -3,6 +3,7 @@ package com.drrr.reader.fluent.blog;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import com.drrr.core.ProxyTechBlogReader;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
@@ -35,17 +36,19 @@ public class SmailGateAiCrawler {
 
     @Bean
     TechBlogReader smailGateAiReader(WebDriverPool webDriverPool) {
-        var page = SinglePage.<ExternalBlogPosts>builder()
-                .mode(Mode.ONCE)
-                .webDriver(webDriverPool.borrow())
-                .webDriverCleaner(webDriverPool::returnObject)
-                .singlePageInitializer(() -> BASE_URL)
-                .contentsLoader(contentsLoader())
-                .contentsReader(contentsReader())
-                .after(data -> log.info("{}", data))
-                .build();
+        return new ProxyTechBlogReader(() -> {
+            var page = SinglePage.<ExternalBlogPosts>builder()
+                    .mode(Mode.ONCE)
+                    .webDriver(webDriverPool.borrow())
+                    .webDriverCleaner(webDriverPool::returnObject)
+                    .singlePageInitializer(() -> BASE_URL)
+                    .contentsLoader(contentsLoader())
+                    .contentsReader(contentsReader())
+                    .after(data -> log.info("{}", data))
+                    .build();
 
-        return new PageItemReader(page, CODE);
+            return new PageItemReader(page, CODE);
+        }, CODE);
     }
 
     private ContentsReader<ExternalBlogPosts> contentsReader() {

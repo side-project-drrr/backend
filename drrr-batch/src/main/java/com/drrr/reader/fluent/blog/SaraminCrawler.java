@@ -4,6 +4,7 @@ package com.drrr.reader.fluent.blog;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import com.drrr.core.ProxyTechBlogReader;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
@@ -14,6 +15,7 @@ import com.drrr.fluent.cralwer.core.PagesInitializer;
 import com.drrr.fluent.cralwer.core.PaginationReader;
 import com.drrr.fluent.cralwer.core.PaginationReader.PaginationInformation;
 import com.drrr.fluent.cralwer.core.SimpleContentsLoader;
+import com.drrr.fluent.cralwer.core.WebDriverPool;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingUtils;
 import com.drrr.reader.fluent.PageItemReader;
@@ -22,7 +24,6 @@ import java.time.LocalDate;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,16 +39,22 @@ public class SaraminCrawler {
     private static final TechBlogCode CODE = TechBlogCode.SARAMIN;
 
     @Bean
-    public TechBlogReader saraminPages(WebDriver webDriver) {
-        var page = Pages.<ExternalBlogPosts>builder()
-                .pagesInitializer(pagesInitializer())
-                .contentsLoader(contentsLoader())
-                .paginationReader(paginationReader())
-                .contentsReader(contentsReader())
-                .webDriver(webDriver)
-                .after(externalBlogs -> log.info("read {}", externalBlogs.posts()))
-                .build();
-        return new PageItemReader(page, CODE);
+    public TechBlogReader saraminPages(WebDriverPool webDriverPool) {
+        return new ProxyTechBlogReader(() -> {
+            var webDriver = webDriverPool.borrow();
+            var page = Pages.<ExternalBlogPosts>builder()
+                    .pagesInitializer(pagesInitializer())
+                    .contentsLoader(contentsLoader())
+                    .paginationReader(paginationReader())
+                    .contentsReader(contentsReader())
+                    .webDriver(webDriver)
+                    .after(externalBlogs -> {
+                        webDriverPool.returnObject(webDriver);
+                        log.info("read {}", externalBlogs.posts());
+                    })
+                    .build();
+            return new PageItemReader(page, CODE);
+        }, CODE);
 
     }
 
