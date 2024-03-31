@@ -18,7 +18,7 @@ public class RecommendPostService {
     private final MemberPostLogRepository memberPostLogRepository;
     private final RecommendPostExtractService recommendPostExtractService;
 
-    @Transactional(readOnly = true) // readonly ..?
+    @Transactional(readOnly = true)
     public List<Long> recommendPosts(final Long memberId, int count) {
 
         //오늘 추천은 받았으나 안 읽었던 추천 게시물 다시 가져와서 반환
@@ -41,7 +41,6 @@ public class RecommendPostService {
         requirePostCount -= todayUnreadRecommendPostIds.size();
 
         //카테고리_가중치 Mapping Table를 특정 MemberId로 조회
-
         return recommendPostExtractService.extractRecommendPostIds(requirePostCount, memberId, todayUnreadRecommendPostIds);
     }
 
