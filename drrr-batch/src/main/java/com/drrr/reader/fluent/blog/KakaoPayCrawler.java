@@ -11,7 +11,6 @@ import com.drrr.fluent.cralwer.core.PaginationReader.PaginationInformation;
 import com.drrr.fluent.cralwer.core.ParallelPageInitializer.BasePageUrls;
 import com.drrr.fluent.cralwer.core.SimpleContentsLoader;
 import com.drrr.fluent.cralwer.core.WebDriverPool;
-import com.drrr.fluent.cralwer.core.WebDriverPool.WebDriverPoolFactory;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingUtils;
 import com.drrr.reader.fluent.ParallelPageItemReader;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -46,7 +44,7 @@ public class KakaoPayCrawler {
                 ))
                 .contentsReader(contentsReader())
                 .paginationReader(paginationReader())
-                .parallelCount(5)
+                .parallelCount(2)
                 .webDriverPool(webDriverPool)
                 .contentsLoader(new SimpleContentsLoader(By.className("pagination")))
                 .after(data -> log.info("{}", data))

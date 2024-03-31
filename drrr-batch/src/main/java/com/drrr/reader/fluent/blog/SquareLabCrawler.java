@@ -4,6 +4,7 @@ package com.drrr.reader.fluent.blog;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+import com.drrr.core.ProxyTechBlogReader;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
@@ -14,13 +15,13 @@ import com.drrr.fluent.cralwer.core.PaginationReader.PaginationInformation;
 import com.drrr.fluent.cralwer.core.ParallelPageInitializer.BasePageUrls;
 import com.drrr.fluent.cralwer.core.ParallelPages;
 import com.drrr.fluent.cralwer.core.SimpleContentsLoader;
+import com.drrr.fluent.cralwer.core.WebDriverPool;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
 import com.drrr.reader.fluent.ParallelPageItemReader;
 import com.drrr.reader.fluent.TechBlogReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,24 +34,26 @@ public class SquareLabCrawler {
     private static final String BASE_URL = "https://squarelab.co/blog/";
 
     @Bean
-    public TechBlogReader squareLabPageReader(WebDriver webDriver) {
-        var pages = ParallelPages.<ExternalBlogPosts>builder()
-                .contentsReader(contentsReader())
-                .pageInitializer(() -> new BasePageUrls(
-                        BASE_URL,
-                        (page) -> BASE_URL + "?page=" + page
-                ))
-                .webDriver(webDriver)
-                .contentsLoader(contentsLoader())
-                .paginationReader(paginationReader())
-                .build();
+    public TechBlogReader squareLabPageReader(WebDriverPool webDriverPool) {
+        return new ProxyTechBlogReader(() -> {
+            var webDriver = webDriverPool.borrow();
+            var pages = ParallelPages.<ExternalBlogPosts>builder()
+                    .contentsReader(contentsReader())
+                    .pageInitializer(() -> new BasePageUrls(
+                            BASE_URL,
+                            (page) -> BASE_URL + "?page=" + page
+                    ))
+                    .webDriver(webDriver)
+                    .contentsLoader(contentsLoader())
+                    .paginationReader(paginationReader())
+                    .build();
+            return new ParallelPageItemReader(pages, CODE);
+        }, CODE);
 
-        return new ParallelPageItemReader(pages, CODE);
     }
 
     ContentsReader<ExternalBlogPosts> contentsReader() {
         return webDriver -> {
-
             log.info("{}", webDriver.findElements(By.className("post-wrap")).size());
             var r = webDriver.findElements(By.className("post-wrap"))
                     .stream()

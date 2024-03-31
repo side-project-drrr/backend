@@ -6,10 +6,15 @@ import static java.util.stream.Collectors.toMap;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.fluent.cralwer.core.WebDriverPool;
-import com.drrr.fluent.cralwer.core.WebDriverPool.WebDriverPoolFactory;
+import com.drrr.poperty.DriverProperty;
 import java.util.List;
 import java.util.Map;
-import org.openqa.selenium.firefox.FirefoxOptions;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.DestroyMode;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
+import org.openqa.selenium.WebDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,8 +33,32 @@ public class FluentCrawlerConfiguration {
     }
 
     @Bean(destroyMethod = "close")
-    WebDriverPool webDriverPool() {
-        var webDriverPoolFactory = new WebDriverPoolFactory(new FirefoxOptions());
-        return new WebDriverPool(webDriverPoolFactory);
+    WebDriverPool webDriverPool(DriverProperty driverProperty) {
+        return new WebDriverPool(webDriverPoolFactory(driverProperty), 5);
+    }
+
+    @Bean
+    BasePooledObjectFactory<WebDriver> webDriverPoolFactory(DriverProperty property) {
+        return new FluentWebDriverPoolFactory(property);
+    }
+
+    @RequiredArgsConstructor
+    static class FluentWebDriverPoolFactory extends BasePooledObjectFactory<WebDriver> {
+        private final DriverProperty driverProperty;
+
+        @Override
+        public WebDriver create() throws Exception {
+            return driverProperty.createWebDriver();
+        }
+
+        @Override
+        public PooledObject<WebDriver> wrap(WebDriver driver) {
+            return new DefaultPooledObject<>(driver);
+        }
+
+        @Override
+        public void destroyObject(PooledObject<WebDriver> p, DestroyMode destroyMode) throws Exception {
+            p.getObject().quit();
+        }
     }
 }

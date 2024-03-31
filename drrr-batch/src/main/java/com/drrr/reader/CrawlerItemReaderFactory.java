@@ -2,6 +2,7 @@ package com.drrr.reader;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPosts;
+import com.drrr.fluent.cralwer.core.WebDriverPool;
 import com.drrr.reader.fluent.FluentCrawlerProvider;
 import com.drrr.reader.impl.BespinGlobalCrawlerItemReader;
 import com.drrr.reader.impl.DaangnCrawlerItemReader;
@@ -26,14 +27,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CrawlerItemReaderFactory {
 
-    private final WebDriver webDriver;
+    private final WebDriverPool webDriverPool;
     private final FluentCrawlerProvider fluentCrawlerProvider;
 
     public ItemReader<ExternalBlogPosts> createItemReader(TechBlogCode code) {
         var itemReader = fluentCrawlerProvider.getItemReader(code);
 
         if (Objects.isNull(itemReader)) {
-            return this.findItemReaderBy(code).apply(webDriver);
+            return webDriverPool.delegate(webDriver -> this.findItemReaderBy(code).apply(webDriver));
         }
 
         return itemReader;

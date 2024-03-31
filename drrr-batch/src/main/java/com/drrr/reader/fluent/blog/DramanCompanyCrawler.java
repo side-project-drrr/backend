@@ -6,6 +6,7 @@ import static org.openqa.selenium.By.className;
 import static org.openqa.selenium.By.cssSelector;
 import static org.openqa.selenium.By.tagName;
 
+import com.drrr.core.ProxyTechBlogReader;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
@@ -16,13 +17,13 @@ import com.drrr.fluent.cralwer.core.PaginationReader.PaginationInformation;
 import com.drrr.fluent.cralwer.core.ParallelPageInitializer.BasePageUrls;
 import com.drrr.fluent.cralwer.core.ParallelPages;
 import com.drrr.fluent.cralwer.core.SimpleContentsLoader;
+import com.drrr.fluent.cralwer.core.WebDriverPool;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingUtils;
 import com.drrr.reader.fluent.ParallelPageItemReader;
 import com.drrr.reader.fluent.TechBlogReader;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,19 +39,21 @@ public class DramanCompanyCrawler {
 
 
     @Bean
-    TechBlogReader DramanCompanyPageItemReader(WebDriver webDriver) {
-        var pages = ParallelPages.<ExternalBlogPosts>builder()
-                .contentsReader(contentsReader())
-                .pageInitializer(() -> new BasePageUrls(
-                        BASE_URL,
-                        pageNumber -> pageNumber == 1 ? BASE_URL : PAGE_URL + pageNumber
-                ))
-                .webDriver(webDriver)
-                .contentsLoader(contentsLoader())
-                .paginationReader(paginationReader())
-                .build();
+    TechBlogReader DramanCompanyPageItemReader(WebDriverPool webDriverPool) {
+        return new ProxyTechBlogReader(() -> {
+            var pages = ParallelPages.<ExternalBlogPosts>builder()
+                    .contentsReader(contentsReader())
+                    .pageInitializer(() -> new BasePageUrls(
+                            BASE_URL,
+                            pageNumber -> pageNumber == 1 ? BASE_URL : PAGE_URL + pageNumber
+                    ))
+                    .webDriver(webDriverPool.borrow())
+                    .contentsLoader(contentsLoader())
+                    .paginationReader(paginationReader())
+                    .build();
 
-        return new ParallelPageItemReader(pages, CODE);
+            return new ParallelPageItemReader(pages, CODE);
+        }, CODE);
     }
 
     private PaginationReader paginationReader() {
