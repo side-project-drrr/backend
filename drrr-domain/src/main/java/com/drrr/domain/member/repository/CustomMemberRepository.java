@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CustomMemberRepository {
-    MemberDto findMemberProfile(final Long memberId);
+    void updateMemberProfile(final Long memberId, final String nickname, final String email);
 }
