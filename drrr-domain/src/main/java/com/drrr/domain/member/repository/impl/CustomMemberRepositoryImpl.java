@@ -23,10 +23,10 @@ public class CustomMemberRepositoryImpl implements CustomMemberRepository {
     public void updateMemberProfile(Long memberId, String nickname, String email) {
         JPAUpdateClause updateClause = new JPAUpdateClause(em, member);
 
-        if (nickname != null) {
+        if (Objects.nonNull(nickname)) {
             updateClause.set(member.nickname, nickname);
         }
-        if (email != null) {
+        if (Objects.nonNull(email)) {
             updateClause.set(member.email, email);
         }
 
