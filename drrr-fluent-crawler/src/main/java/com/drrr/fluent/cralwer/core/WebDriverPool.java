@@ -17,7 +17,6 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
 
     public WebDriverPool(PooledObjectFactory<WebDriver> factory) {
         super(factory);
-        this.setMaxTotal(MAX_TOTAL);
     }
 
     public WebDriverPool(PooledObjectFactory<WebDriver> factory, int max) {
@@ -32,14 +31,13 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
 
 
     public <T> T delegate(Function<WebDriver, T> function) {
+        var webdriver = this.borrow();
         try {
-            var webdriver = this.borrowObject();
-            var result = function.apply(webdriver);
-            this.returnObject(webdriver);
-
-            return result;
+            return function.apply(webdriver);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            this.returnObject(webdriver);
         }
     }
 
@@ -49,13 +47,6 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void preLoadDriver(int parallelCount) {
-//        IntStream.rangeClosed(1, parallelCount)
-//                .parallel()
-//                .forEach(i -> this.returnObject(this.borrow()));
-
     }
 
 

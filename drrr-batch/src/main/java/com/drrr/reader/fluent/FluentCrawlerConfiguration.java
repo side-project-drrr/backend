@@ -34,7 +34,7 @@ public class FluentCrawlerConfiguration {
 
     @Bean(destroyMethod = "close")
     WebDriverPool webDriverPool(DriverProperty driverProperty) {
-        return new WebDriverPool(webDriverPoolFactory(driverProperty), 5);
+        return new WebDriverPool(webDriverPoolFactory(driverProperty), 6);
     }
 
     @Bean

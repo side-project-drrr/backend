@@ -6,16 +6,15 @@ import static org.openqa.selenium.By.className;
 import static org.openqa.selenium.By.cssSelector;
 import static org.openqa.selenium.By.tagName;
 
-import com.drrr.core.ProxyTechBlogReader;
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.fluent.cralwer.core.ContentsLoader;
 import com.drrr.fluent.cralwer.core.ContentsReader;
+import com.drrr.fluent.cralwer.core.GenericParallelPages;
 import com.drrr.fluent.cralwer.core.PaginationReader;
 import com.drrr.fluent.cralwer.core.PaginationReader.PaginationInformation;
 import com.drrr.fluent.cralwer.core.ParallelPageInitializer.BasePageUrls;
-import com.drrr.fluent.cralwer.core.ParallelPages;
 import com.drrr.fluent.cralwer.core.SimpleContentsLoader;
 import com.drrr.fluent.cralwer.core.WebDriverPool;
 import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingLocalDatePatterns;
@@ -40,20 +39,19 @@ public class DramanCompanyCrawler {
 
     @Bean
     TechBlogReader DramanCompanyPageItemReader(WebDriverPool webDriverPool) {
-        return new ProxyTechBlogReader(() -> {
-            var pages = ParallelPages.<ExternalBlogPosts>builder()
-                    .contentsReader(contentsReader())
-                    .pageInitializer(() -> new BasePageUrls(
-                            BASE_URL,
-                            pageNumber -> pageNumber == 1 ? BASE_URL : PAGE_URL + pageNumber
-                    ))
-                    .webDriver(webDriverPool.borrow())
-                    .contentsLoader(contentsLoader())
-                    .paginationReader(paginationReader())
-                    .build();
-
-            return new ParallelPageItemReader(pages, CODE);
-        }, CODE);
+        var pages = GenericParallelPages.<ExternalBlogPosts>builder()
+                .parallelCount(3)
+                .webDriverPool(webDriverPool)
+                .pageInitializer(() -> new BasePageUrls(
+                        BASE_URL,
+                        pageNumber -> pageNumber == 1 ? BASE_URL : PAGE_URL + pageNumber
+                ))
+                .paginationReader(paginationReader())
+                .contentsLoader(contentsLoader())
+                .contentsReader(contentsReader())
+                .after(data -> log.info("{}", data))
+                .build();
+        return new ParallelPageItemReader(pages, CODE);
     }
 
     private PaginationReader paginationReader() {

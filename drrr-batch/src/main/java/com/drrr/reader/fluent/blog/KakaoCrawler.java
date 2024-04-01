@@ -21,6 +21,7 @@ import com.drrr.reader.AbstractCrawlerPageItemReader.CrawlingUtils;
 import com.drrr.reader.fluent.ParallelPageItemReader;
 import com.drrr.reader.fluent.TechBlogReader;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -30,12 +31,14 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class KakaoCrawler {
 
     private static final String BASE_URL = "https://tech.kakao.com/blog/";
     private static final String PAGE_URL = "https://tech.kakao.com/blog/page/";
     private static final String PREFIX = "https://tech.kakao.com/";
     private static final TechBlogCode CODE = TechBlogCode.KAKAO;
+
 
     @Bean
     TechBlogReader kakaoReader(WebDriverPool webDriverPool) {
@@ -44,7 +47,7 @@ public class KakaoCrawler {
                 .pageInitializer(pageInitializer())
                 .contentsLoader(contentsLoader())
                 .paginationReader(paginationReader())
-                .parallelCount(5)
+                .parallelCount(3)
                 .contentsReader(contentsReader())
                 .after(data -> log.info("{}", data))
                 .build();

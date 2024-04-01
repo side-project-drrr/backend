@@ -44,7 +44,7 @@ public class KakaoPayCrawler {
                 ))
                 .contentsReader(contentsReader())
                 .paginationReader(paginationReader())
-                .parallelCount(2)
+                .parallelCount(3)
                 .webDriverPool(webDriverPool)
                 .contentsLoader(new SimpleContentsLoader(By.className("pagination")))
                 .after(data -> log.info("{}", data))
