@@ -34,7 +34,7 @@ public class CrawlerItemReaderFactory {
         var itemReader = fluentCrawlerProvider.getItemReader(code);
 
         if (Objects.isNull(itemReader)) {
-            return webDriverPool.delegate(webDriver -> this.findItemReaderBy(code).apply(webDriver));
+            return this.findItemReaderBy(code).apply(webDriverPool.borrow());
         }
 
         return itemReader;

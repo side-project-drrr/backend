@@ -57,7 +57,8 @@ public class FluentCrawlerConfiguration {
         }
 
         @Override
-        public void destroyObject(PooledObject<WebDriver> p, DestroyMode destroyMode) throws Exception {
+        public void destroyObject(PooledObject<WebDriver> p, DestroyMode destroyMode) {
+
             p.getObject().quit();
         }
     }

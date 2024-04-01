@@ -1,5 +1,7 @@
 package com.drrr.fluent.cralwer.core;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -14,6 +16,8 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 
 public class WebDriverPool extends GenericObjectPool<WebDriver> {
     private static final int MAX_TOTAL = 5;
+
+    private final Set<WebDriver> remainObject = new HashSet<>();
 
     public WebDriverPool(PooledObjectFactory<WebDriver> factory) {
         super(factory);
@@ -43,12 +47,19 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
 
     public WebDriver borrow() {
         try {
-            return this.borrowObject();
+            var webdriver = this.borrowObject();
+            remainObject.add(webdriver);
+            return webdriver;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
+    public void close() {
+        remainObject.forEach(super::returnObject);
+        super.close();
+    }
 
     @RequiredArgsConstructor
     public static class WebDriverPoolFactory extends BasePooledObjectFactory<WebDriver> {
@@ -66,7 +77,9 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
 
         @Override
         public void destroyObject(PooledObject<WebDriver> p, DestroyMode destroyMode) {
-            p.getObject().close();
+            p.getObject().quit();
         }
+
+
     }
 }
