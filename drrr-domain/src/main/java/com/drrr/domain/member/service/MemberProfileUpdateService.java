@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -15,8 +17,12 @@ public class MemberProfileUpdateService {
     private final MemberRepository memberRepository;
 
     public void updateMemberProfile(final Long memberId, final String nickname, final String email){
-        EMAIL_DUPLICATE_EXCEPTION.invokeByCondition(memberRepository.existsByEmailFromOthers(memberId, email));
-        DUPLICATE_NICKNAME.invokeByCondition(memberRepository.existsByNicknameFromOthers(memberId, nickname));
+        if(Objects.nonNull(email)){
+            EMAIL_DUPLICATE_EXCEPTION.invokeByCondition(memberRepository.existsByEmailFromOthers(memberId, email));
+        }
+        if(Objects.nonNull(nickname)){
+            DUPLICATE_NICKNAME.invokeByCondition(memberRepository.existsByNicknameFromOthers(memberId, nickname));
+        }
 
         memberRepository.updateMemberProfile(memberId, nickname, email);
     }
