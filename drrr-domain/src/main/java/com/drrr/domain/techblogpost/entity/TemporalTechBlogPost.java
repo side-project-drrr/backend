@@ -38,7 +38,7 @@ public class TemporalTechBlogPost extends BaseEntity {
     // 설명이 없는 기술블로그가 있음
     @Column(length = 1000)
     private String summary;
-    
+
     @Column(columnDefinition = "TEXT")
     private String aiSummary;
 
