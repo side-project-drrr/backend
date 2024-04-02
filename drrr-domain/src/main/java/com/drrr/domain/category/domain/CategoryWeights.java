@@ -2,14 +2,13 @@ package com.drrr.domain.category.domain;
 
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.exception.DomainExceptionCode;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public record CategoryWeights(List<CategoryWeight> weights){
+public record CategoryWeights(List<CategoryWeight> weights) {
 
     public CategoryWeights {
         if (weights.isEmpty()) {
@@ -17,7 +16,8 @@ public record CategoryWeights(List<CategoryWeight> weights){
             throw DomainExceptionCode.CATEGORY_WEIGHT_NOT_FOUND.newInstance();
         }
     }
-    public double calculateTotalWeight(){
+
+    public double calculateTotalWeight() {
         return weights.stream()
                 .mapToDouble(CategoryWeight::getWeightValue)
                 .sum();
@@ -25,7 +25,7 @@ public record CategoryWeights(List<CategoryWeight> weights){
 
     //별도의 파일로 분리하기
 
-    public Map<Long, Integer> calculatePostDistribution(int count){
+    public Map<Long, Integer> calculatePostDistribution(int count) {
         final double totalWeight = this.calculateTotalWeight();
         List<WeightRatio> weightRatios = weights.stream()
                 .map(weight -> WeightRatio.from(weight, totalWeight, count))
@@ -34,13 +34,7 @@ public record CategoryWeights(List<CategoryWeight> weights){
         int remainPosts = count - weightRatios.stream().mapToInt(WeightRatio::count).sum();
 
         weightRatios.stream()
-                .sorted((w1, w2) -> {
-                    if(w2.fractional() == w1.fractional()) {
-                        return 0;
-                    }
-
-                    return w2.fractional() > w1.fractional() ? 1 : -1;
-                })
+                .sorted((w1, w2) -> Double.compare(w2.fractional(), w1.fractional()))
                 .limit(remainPosts)
                 .forEach(WeightRatio::increase);
 
@@ -49,7 +43,7 @@ public record CategoryWeights(List<CategoryWeight> weights){
                 .collect(Collectors.toMap(WeightRatio::id, WeightRatio::count));
     }
 
-    public List<Long> extractCategoryIds(){
+    public List<Long> extractCategoryIds() {
         return weights.stream().map(cw -> cw.getCategory().getId()).toList();
     }
 }
