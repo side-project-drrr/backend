@@ -29,9 +29,6 @@ class CategoryWeightsTest extends ServiceIntegrationTest {
 
         //when
         Map<Long, Integer> distribution = weights.calculatePostDistribution(10);
-        for (Long aLong : distribution.keySet()) {
-            System.out.println("key = " + aLong + " value = " + distribution.get(aLong));
-        }
 
         //then
         assertAll(
