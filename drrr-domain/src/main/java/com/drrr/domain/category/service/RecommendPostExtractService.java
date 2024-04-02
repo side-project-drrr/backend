@@ -2,11 +2,10 @@ package com.drrr.domain.category.service;
 
 import com.drrr.domain.category.domain.CategoryPostDistribution;
 import com.drrr.domain.category.domain.CategoryWeights;
+import com.drrr.domain.category.dto.ExtractedPostCategoryDto;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
 import com.drrr.domain.techblogpost.repository.custom.CustomTechBlogPostCategoryRepositoryImpl;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +36,8 @@ public class RecommendPostExtractService {
                 memberId
         );
 
-        final CategoryPostDistribution distribution = new CategoryPostDistribution(categoryWeights.calculatePostDistribution(requirePostCount));
+        final CategoryPostDistribution distribution = new CategoryPostDistribution(
+                categoryWeights.calculatePostDistribution(requirePostCount));
 
         //추천할 게시물 ids 추출
         Set<Long> postIds = distribution.extractRecommendPostIds(extractedPostsCategories, requirePostCount);
