@@ -1,20 +1,22 @@
 package com.drrr.domain.category.domain;
 
 import com.drrr.domain.category.entity.CategoryWeight;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class WeightRatio {
-    private Long categoryId;
-    private double fractional;
+    private final Long categoryId;
+
+    private final double fractional;
     private int count;
+
+    public WeightRatio(final Long categoryId, final double fractional, int count) {
+        this.categoryId = categoryId;
+        this.fractional = fractional;
+        this.count = count;
+    }
 
     public void increaseDistributionCount() {
         this.count++;
@@ -25,10 +27,6 @@ public class WeightRatio {
         int postCount = (int) rawPostCount;
         double fractionalPart = rawPostCount - postCount;
 
-        return WeightRatio.builder()
-                .categoryId(weight.getCategory().getId())
-                .fractional(fractionalPart)
-                .count(postCount)
-                .build();
+        return new WeightRatio(weight.getCategory().getId(), fractionalPart, postCount);
     }
 }
