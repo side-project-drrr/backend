@@ -4,19 +4,16 @@ import static com.drrr.domain.log.entity.post.QMemberPostLog.memberPostLog;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPost.techBlogPost;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
-import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
+import com.drrr.domain.category.dto.ExtractedPostCategoryDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Repository
 public class CustomTechBlogPostCategoryRepositoryImpl implements CustomTechBlogPostCategoryRepository {
-    private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
 

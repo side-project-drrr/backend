@@ -1,6 +1,6 @@
 package com.drrr.domain.techblogpost.repository.custom;
 
-import com.drrr.domain.category.service.RecommendPostService.ExtractedPostCategoryDto;
+import com.drrr.domain.category.dto.ExtractedPostCategoryDto;
 import java.util.List;
 
 
