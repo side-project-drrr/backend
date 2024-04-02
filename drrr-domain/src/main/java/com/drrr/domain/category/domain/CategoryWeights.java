@@ -23,24 +23,22 @@ public record CategoryWeights(List<CategoryWeight> weights) {
                 .sum();
     }
 
-    //별도의 파일로 분리하기
-
     public Map<Long, Integer> calculatePostDistribution(int count) {
         final double totalWeight = this.calculateTotalWeight();
         List<WeightRatio> weightRatios = weights.stream()
                 .map(weight -> WeightRatio.from(weight, totalWeight, count))
                 .toList();
 
-        int remainPosts = count - weightRatios.stream().mapToInt(WeightRatio::count).sum();
+        int remainPosts = count - weightRatios.stream().mapToInt(w -> w.getCount()).sum();
 
         weightRatios.stream()
-                .sorted((w1, w2) -> Double.compare(w2.fractional(), w1.fractional()))
+                .sorted((w1, w2) -> Double.compare(w2.getFractional(), w1.getFractional()))
                 .limit(remainPosts)
-                .forEach(WeightRatio::increase);
+                .forEach(WeightRatio::increaseDistributionCount);
 
         return weightRatios.stream()
-                .filter(w -> w.count() > 0)
-                .collect(Collectors.toMap(WeightRatio::id, WeightRatio::count));
+                .filter(w -> w.getCount() > 0)
+                .collect(Collectors.toMap(WeightRatio::getCategoryId, WeightRatio::getCount));
     }
 
     public List<Long> extractCategoryIds() {
