@@ -26,13 +26,11 @@ public class TechobleCrawlerItemReader extends AbstractCrawlerPageItemReader {
     protected ExternalBlogPosts executeCrawlerPage() {
         this.webDriver.get(TARGET_URL);
 
-        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("css-o49h16")));
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("article")));
 
-        var result = this.webDriver.findElement(By.className("css-o49h16"))
-                .findElements(By.tagName("article"))
-                .stream()
+        var result = webDriver.findElements(By.tagName("article"))
+                .parallelStream()
                 .map(card -> {
-                    log.info("check");
 
                     var imageSrc = EmptyFinder.get(() -> card.findElement(By.className("post-card-image"))
                             .findElement(By.tagName("picture"))
@@ -59,6 +57,7 @@ public class TechobleCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .postDate(LocalDate.parse(time))
                             .build();
                 })
+                .peek(data -> log.info("{}", data))
                 .toList();
         return new ExternalBlogPosts(result);
     }
