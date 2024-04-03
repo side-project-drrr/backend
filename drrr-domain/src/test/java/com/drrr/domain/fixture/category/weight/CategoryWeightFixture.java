@@ -5,6 +5,7 @@ import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.member.entity.Member;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class CategoryWeightFixture {
     private final static double DEFAULT_WEIGHT_VALUE = 3.0;
@@ -25,7 +26,7 @@ public class CategoryWeightFixture {
     public static List<CategoryWeight> createCategoryWeights(final Member member, final List<Category> categories,
                                                              final double weightValue) {
 
-        final List<CategoryWeight> categoryWeightList = categories.stream()
+        return categories.stream()
                 .map(category -> CategoryWeight.builder()
                         .member(member)
                         .category(category)
@@ -33,10 +34,21 @@ public class CategoryWeightFixture {
                         .lastReadAt(LocalDateTime.now())
                         .preferred(false)
                         .build()).toList();
-
-        return categoryWeightList;
     }
 
+    public static List<CategoryWeight> createCategoryWeights(final Member member, final List<Category> categories,
+                                                             final List<Double> weightValue) {
+
+
+        return  IntStream.range(0, categories.size())
+                .mapToObj(i -> CategoryWeight.builder()
+                        .member(member)
+                        .category(categories.get(i))
+                        .weightValue(weightValue.get(i))
+                        .lastReadAt(LocalDateTime.now())
+                        .preferred(false)
+                        .build()).toList();
+    }
     public static CategoryWeight createCategoryWeight(final Member member, final Category category) {
 
         return CategoryWeight.builder()
@@ -74,4 +86,6 @@ public class CategoryWeightFixture {
                 .build();
 
     }
+
+
 }

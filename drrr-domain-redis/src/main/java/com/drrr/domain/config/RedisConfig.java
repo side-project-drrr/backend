@@ -1,4 +1,4 @@
-package com.drrr.domain.redis.config;
+package com.drrr.domain.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
