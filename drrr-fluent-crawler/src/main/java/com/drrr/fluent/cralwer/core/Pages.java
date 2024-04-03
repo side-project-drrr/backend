@@ -18,6 +18,7 @@ public class Pages<T> implements Page<T> {
     private final PagesStopper pagesStopper;
     private final WebDriver webDriver;
     private final WebDriverWait webDriverWait;
+    private final WebDriverCleaner webDriverCleaner;
     private final After<T> after;
 
 
@@ -31,6 +32,7 @@ public class Pages<T> implements Page<T> {
             PaginationReader paginationReader,
             ContentsLoader contentsLoader,
             PagesStopper pagesStopper,
+            WebDriverCleaner webDriverCleaner,
             After<T> after,
             WebDriver webDriver
 
@@ -40,6 +42,7 @@ public class Pages<T> implements Page<T> {
         Objects.requireNonNull(paginationReader);
         Objects.requireNonNull(webDriver);
         Objects.requireNonNull(contentsLoader);
+        Objects.requireNonNull(webDriverCleaner);
 
         this.pagesInitializer = pagesInitializer;
         this.contentsReader = contentsReader;
@@ -48,6 +51,7 @@ public class Pages<T> implements Page<T> {
         this.pagesStopper = pagesStopper;
         this.webDriver = webDriver;
         this.after = after;
+        this.webDriverCleaner = webDriverCleaner;
         this.webDriverWait = new WebDriverWait(webDriver, Duration.ofSeconds(10));
     }
 
@@ -59,11 +63,13 @@ public class Pages<T> implements Page<T> {
 
     private T subExecute() {
         if (Objects.nonNull(paginationInformation) && paginationInformation.complete(currentPage)) {
+            webDriverCleaner.cleanup(webDriver);
             return null;
         }
         webDriver.get(pagesInitializer.getUrl(currentPage));
 
         if (Objects.nonNull(pagesStopper) && pagesStopper.isSatisfy(webDriver, webDriverWait)) {
+            webDriverCleaner.cleanup(webDriver);
             return null;
         }
 

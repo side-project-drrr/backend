@@ -1,5 +1,7 @@
 package com.drrr.fluent.cralwer.core;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.pool2.BasePooledObjectFactory;
@@ -15,9 +17,10 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 public class WebDriverPool extends GenericObjectPool<WebDriver> {
     private static final int MAX_TOTAL = 5;
 
+    private final Set<WebDriver> remainObject = new HashSet<>();
+
     public WebDriverPool(PooledObjectFactory<WebDriver> factory) {
         super(factory);
-        this.setMaxTotal(MAX_TOTAL);
     }
 
     public WebDriverPool(PooledObjectFactory<WebDriver> factory, int max) {
@@ -32,32 +35,31 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
 
 
     public <T> T delegate(Function<WebDriver, T> function) {
+        var webdriver = this.borrow();
         try {
-            var webdriver = this.borrowObject();
-            var result = function.apply(webdriver);
-            this.returnObject(webdriver);
-
-            return result;
+            return function.apply(webdriver);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        } finally {
+            this.returnObject(webdriver);
         }
     }
 
     public WebDriver borrow() {
         try {
-            return this.borrowObject();
+            var webdriver = this.borrowObject();
+            remainObject.add(webdriver);
+            return webdriver;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void preLoadDriver(int parallelCount) {
-//        IntStream.rangeClosed(1, parallelCount)
-//                .parallel()
-//                .forEach(i -> this.returnObject(this.borrow()));
-
+    @Override
+    public void close() {
+        remainObject.forEach(super::returnObject);
+        super.close();
     }
-
 
     @RequiredArgsConstructor
     public static class WebDriverPoolFactory extends BasePooledObjectFactory<WebDriver> {
@@ -75,7 +77,9 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
 
         @Override
         public void destroyObject(PooledObject<WebDriver> p, DestroyMode destroyMode) {
-            p.getObject().close();
+            p.getObject().quit();
         }
+
+
     }
 }

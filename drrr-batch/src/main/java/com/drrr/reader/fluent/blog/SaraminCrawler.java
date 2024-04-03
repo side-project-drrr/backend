@@ -41,15 +41,14 @@ public class SaraminCrawler {
     @Bean
     public TechBlogReader saraminPages(WebDriverPool webDriverPool) {
         return new ProxyTechBlogReader(() -> {
-            var webDriver = webDriverPool.borrow();
             var page = Pages.<ExternalBlogPosts>builder()
                     .pagesInitializer(pagesInitializer())
                     .contentsLoader(contentsLoader())
                     .paginationReader(paginationReader())
                     .contentsReader(contentsReader())
-                    .webDriver(webDriver)
+                    .webDriver(webDriverPool.borrow())
+                    .webDriverCleaner(webDriverPool::returnObject)
                     .after(externalBlogs -> {
-                        webDriverPool.returnObject(webDriver);
                         log.info("read {}", externalBlogs.posts());
                     })
                     .build();

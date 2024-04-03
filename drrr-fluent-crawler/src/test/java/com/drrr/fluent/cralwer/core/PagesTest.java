@@ -29,6 +29,8 @@ class PagesTest {
                 .pagesInitializer(pageNumber -> "")
                 .paginationReader(webDriver -> new PaginationInformation(5))
                 .webDriver(new FakeWebDriver())
+                .webDriverCleaner(webDriver -> {
+                })
                 .build();
 
         assertAll(
@@ -62,6 +64,8 @@ class PagesTest {
                         step.poll();
                         return false;
                     }
+                })
+                .webDriverCleaner(webDriver -> {
                 })
                 .build();
 
