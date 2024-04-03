@@ -56,6 +56,12 @@ public class WebDriverPool extends GenericObjectPool<WebDriver> {
     }
 
     @Override
+    public void returnObject(WebDriver obj) {
+        remainObject.remove(obj);
+        super.returnObject(obj);
+    }
+
+    @Override
     public void close() {
         remainObject.forEach(super::returnObject);
         super.close();
