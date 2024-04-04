@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Objects;
 import org.apache.logging.log4j.util.Strings;
+import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -63,6 +64,7 @@ public record DriverProperty(
 
     public FirefoxOptions getOptions() {
         return new FirefoxOptions()
+                .setPageLoadStrategy(PageLoadStrategy.EAGER)
                 .addArguments(Arrays.asList(options));
     }
 

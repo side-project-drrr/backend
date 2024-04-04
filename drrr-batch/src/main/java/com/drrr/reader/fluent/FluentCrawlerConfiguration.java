@@ -47,7 +47,7 @@ public class FluentCrawlerConfiguration {
         private final DriverProperty driverProperty;
 
         @Override
-        public WebDriver create() throws Exception {
+        public WebDriver create() {
             return driverProperty.createWebDriver();
         }
 
@@ -58,7 +58,6 @@ public class FluentCrawlerConfiguration {
 
         @Override
         public void destroyObject(PooledObject<WebDriver> p, DestroyMode destroyMode) {
-
             p.getObject().quit();
         }
     }
