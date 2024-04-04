@@ -56,9 +56,7 @@ public class AuthController {
     }
 
     @Operation(summary = "사용자 회원가입시 닉네임 중복 체크 API",
-            description = """
-                            호출 성공 시 닉네임 중복 여부 반환
-                    """)
+            description = "호출 성공 시 닉네임 중복 여부 반환")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "닉네임 중복 여부 반환"))
     @GetMapping("/check-nickname")
     public NickStatusResponse checkNickNameDuplication(@RequestParam String nickname) {
