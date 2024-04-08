@@ -156,30 +156,40 @@ class RecommendServiceTest extends ServiceIntegrationTest {
                 .memberId(1L)
                 .isRecommended(false)
                 .isRead(true)
+                .lastReadAt(LocalDateTime.now())
+                .recommendedAt(LocalDate.now())
                 .build());
         logs.add(MemberPostLog.builder()
                 .postId(3L)
                 .memberId(1L)
                 .isRecommended(false)
                 .isRead(true)
+                .lastReadAt(LocalDateTime.now())
+                .recommendedAt(LocalDate.now())
                 .build());
         logs.add(MemberPostLog.builder()
                 .postId(5L)
                 .memberId(1L)
                 .isRecommended(false)
                 .isRead(true)
+                .lastReadAt(LocalDateTime.now())
+                .recommendedAt(LocalDate.now())
                 .build());
         logs.add(MemberPostLog.builder()
                 .postId(7L)
                 .memberId(1L)
                 .isRecommended(false)
                 .isRead(true)
+                .lastReadAt(LocalDateTime.now())
+                .recommendedAt(LocalDate.now())
                 .build());
         logs.add(MemberPostLog.builder()
                 .postId(9L)
                 .memberId(1L)
                 .isRecommended(false)
                 .isRead(true)
+                .lastReadAt(LocalDateTime.now())
+                .recommendedAt(LocalDate.now())
                 .build());
         memberTechBlogPostRepository.saveAll(logs);
 

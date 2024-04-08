@@ -4,6 +4,7 @@ import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
 import com.drrr.domain.log.repository.MemberPostHistoryRepository;
 import com.drrr.domain.log.repository.MemberPostLogRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ public class LogUpdateService {
                                 .lastReadAt(LocalDateTime.now())
                                 .isRead(true)
                                 .isRecommended(false)
+                                .recommendedAt(LocalDate.now())
                                 .build()));
 
         MemberPostHistory history = MemberPostHistory.builder()
@@ -65,6 +67,7 @@ public class LogUpdateService {
                             .isRead(false)
                             .isRecommended(true)
                             .lastReadAt(LocalDateTime.now())
+                            .recommendedAt(LocalDate.now())
                             .build();
                 }).toList();
 
