@@ -226,6 +226,8 @@ class DummyDataFactory {
                         .postId(randomPostId)
                         .isRead(isRead)
                         .isRecommended(isRecommended)
+                        .recommendedAt(LocalDate.now())
+                        .lastReadAt(LocalDateTime.now())
                         .build());
             });
         });

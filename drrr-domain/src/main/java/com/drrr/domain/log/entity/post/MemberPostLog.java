@@ -4,6 +4,7 @@ import com.drrr.domain.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,9 @@ public class MemberPostLog extends BaseEntity {
     private Long postId;
     private boolean isRead;
     private boolean isRecommended;
+    //가중치 계산을 위한 필드
     private LocalDateTime lastReadAt;
+    private LocalDate recommendedAt;
 
     public void updateRecommendStatus() {
         this.isRecommended = true;

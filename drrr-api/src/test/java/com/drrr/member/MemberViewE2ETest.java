@@ -251,6 +251,7 @@ public class MemberViewE2ETest {
                         .isRead(isRead)
                         .lastReadAt(LocalDateTime.now())
                         .isRecommended(isRecommended)
+                        .recommendedAt(LocalDate.now())
                         .build());
             });
         });

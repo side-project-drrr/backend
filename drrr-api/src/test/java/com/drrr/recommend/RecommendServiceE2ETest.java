@@ -177,30 +177,40 @@ public class RecommendServiceE2ETest {
                     .memberId(memberList.get(i).getId())
                     .isRecommended(false)
                     .isRead(true)
+                    .lastReadAt(LocalDateTime.now())
+                    .recommendedAt(LocalDate.now())
                     .build());
             logs.add(MemberPostLog.builder()
                     .postId(3L)
                     .memberId(memberList.get(i).getId())
                     .isRecommended(false)
                     .isRead(true)
+                    .lastReadAt(LocalDateTime.now())
+                    .recommendedAt(LocalDate.now())
                     .build());
             logs.add(MemberPostLog.builder()
                     .postId(5L)
                     .memberId(memberList.get(i).getId())
                     .isRecommended(false)
                     .isRead(true)
+                    .lastReadAt(LocalDateTime.now())
+                    .recommendedAt(LocalDate.now())
                     .build());
             logs.add(MemberPostLog.builder()
                     .postId(7L)
                     .memberId(memberList.get(i).getId())
                     .isRecommended(false)
                     .isRead(true)
+                    .lastReadAt(LocalDateTime.now())
+                    .recommendedAt(LocalDate.now())
                     .build());
             logs.add(MemberPostLog.builder()
                     .postId(9L)
                     .memberId(memberList.get(i).getId())
                     .isRecommended(false)
                     .isRead(true)
+                    .lastReadAt(LocalDateTime.now())
+                    .recommendedAt(LocalDate.now())
                     .build());
         });
 
