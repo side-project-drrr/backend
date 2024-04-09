@@ -1,6 +1,7 @@
 package com.drrr.domain.like.repository;
 
 import com.drrr.domain.like.entity.TechBlogPostLike;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,5 +17,8 @@ public interface TechBlogPostLikeRepository extends JpaRepository<TechBlogPostLi
     @Modifying
     @Query("delete from TechBlogPostLike pl where pl.member.id =:memberId and pl.post.id =:postId ")
     void deleteByMemberIdAndPostId(@Param("memberId") final Long memberId, @Param("postId") final Long postId);
+
+    @Query("select tbpl.post.id from TechBlogPostLike tbpl where tbpl.member.id =:memberId")
+    List<Long> findPostIdsByMemberId(@Param("memberId") final Long memberId);
 
 }

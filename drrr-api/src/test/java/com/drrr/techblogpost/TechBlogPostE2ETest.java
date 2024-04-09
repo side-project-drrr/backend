@@ -371,7 +371,7 @@ public class TechBlogPostE2ETest {
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .post("/api/v1/post/{postId}/like", 1);
+                    .post("/api/v1/posts/{postId}/like", 1);
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
@@ -404,7 +404,7 @@ public class TechBlogPostE2ETest {
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .delete("/api/v1/post/{postId}/like", 100);
+                    .delete("/api/v1/posts/{postId}/like", 100);
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
