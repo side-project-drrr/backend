@@ -32,10 +32,7 @@ public class LikeController {
     private final TechBlogPostLikeRepository techBlogPostLikeRepository;
 
     @Operation(summary = "사용자 기술 블로그 좋아요 여부 반환 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 게시물 좋아요 여부 반환")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "게시물 좋아요 여부 반환"
-                    , content = @Content(schema = @Schema(implementation = HttpStatus.class)))
-    })
+    @ApiResponse(responseCode = "200", description = "게시물 좋아요 여부 반환")
     @Secured("USER")
     @GetMapping("/members/me/posts/liked")
     public MemberLikedPostsResponse findAllMemberLikedPosts(@MemberId final Long memberId) {
