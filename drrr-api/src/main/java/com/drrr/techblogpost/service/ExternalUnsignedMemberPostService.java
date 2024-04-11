@@ -18,8 +18,7 @@ public class ExternalUnsignedMemberPostService {
     public void increaseViewCount(final Long postId) {
         final TechBlogPost post = techBlogPostRepository.findByIdWithPessimisticLock(postId)
                 .orElseThrow(() -> {
-                    log.error("기술블로그를 찾을 수 없습니다.");
-                    log.error("postId -> {}", +postId);
+                    log.error("기술블로그를 찾을 수 없습니다 -> postId: {}", postId);
                     return DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
 
