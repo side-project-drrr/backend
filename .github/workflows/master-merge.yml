@@ -33,16 +33,17 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # 운영 환경 application.yml 적용
+      - name: Move files
+        run: |
+          mv drrr-api/src/main/resources/security-storage-api/config/* drrr-api/src/main/resources/
+
       - name: Build with Gradle
         run: ./gradlew clean build
 
       - name: Run gradlew command
         run: ./gradlew drrr-batch:copyGitSubmodule
 
-      # 운영 환경 application.yml 적용
-      - name: Move files
-        run: |
-          mv drrr-api/src/main/resources/security-storage-api/config/* drrr-api/src/main/resources/
 
 
       #Docker의 Buildx는 Docker의 CLI 플러그인으로, Docker 이미지를 빌드하는데 사용
