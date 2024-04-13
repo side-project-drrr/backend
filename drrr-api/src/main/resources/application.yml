@@ -7,8 +7,8 @@ spring:
         - local
       dev:
         - develop
-      main:
-        - main
-    default: develop
+      master:
+        - master
+    default: master
 
 

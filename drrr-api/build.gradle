@@ -55,3 +55,8 @@ bootJar {
 dependencies {
     testImplementation project(path: ':drrr-domain', configuration: 'archives')
 }
+task copyGitSubmodule(type: Copy) {
+    from './src/main/resources/security-storage-api/config'
+    include 'application-master.yml'
+    into './src/main/resources'
+}
