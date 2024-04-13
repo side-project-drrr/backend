@@ -1,9 +1,6 @@
 package com.drrr.domain.category.service;
 
-import com.drrr.domain.category.repository.CategoryRepository;
-import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.exception.DomainExceptionCode;
-import com.drrr.domain.log.service.MemberPostLogService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -19,12 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class MemberViewWeightService {
-    private final CategoryWeightRepository categoryWeightRepository;
     private final TechBlogPostRepository techBlogPostRepository;
     private final MemberRepository memberRepository;
-    private final CategoryRepository categoryRepository;
-    private final MemberPostLogService memberPostLogService;
-    private final CategoryWeightService categoryWeightService;
 
     /**
      * 사용자가 특정 게시물을 읽었을 때 그 게시물에 대한 가중치 증가

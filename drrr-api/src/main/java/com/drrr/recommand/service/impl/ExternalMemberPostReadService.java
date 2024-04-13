@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ExternalMemberPostReadService {
     private final WeightValidationService weightValidationService;
-    private final MemberViewWeightService memberViewWeightService;
+    private final MemberViewWeightService memberViewService;
     private final TechBlogPostCategoryRepository techBlogPostCategoryRepository;
     private final LogUpdateService logUpdateService;
     private final CategoryWeightService categoryWeightService;
@@ -27,7 +27,7 @@ public class ExternalMemberPostReadService {
         //카테고리 조회
         List<Long> categoryIds = techBlogPostCategoryRepository.findCategoriesByPostId(postId);
         //조회수 증가
-        Member member = memberViewWeightService.increaseMemberViewPost(memberId, postId, categoryIds);
+        Member member = memberViewService.increaseMemberViewPost(memberId, postId, categoryIds);
         //읽은 블로그에 대한 카테고리 가중치 증가, 카테고리의 최근 읽은 시간 업데이트
         categoryWeightService.updateCategoryWeights(categoryIds, member, postId);
         //로깅 및 히스토리 데이터 insert
