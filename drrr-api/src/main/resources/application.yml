@@ -9,6 +9,6 @@ spring:
         - develop
       master:
         - master
-    default: master
+    default: develop
 
 
