@@ -36,7 +36,7 @@ jobs:
       # 운영 환경 application.yml 적용
       - name: Move files
         run: |
-          mv drrr-api/src/main/resources/security-storage-api/config/* drrr-api/src/main/resources/
+          cp drrr-api/src/main/resources/security-storage-api/config/* drrr-api/src/main/resources/
 
       - name: Build with Gradle
         run: ./gradlew clean build
