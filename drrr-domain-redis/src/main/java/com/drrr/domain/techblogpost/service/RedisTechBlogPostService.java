@@ -59,6 +59,7 @@ public class RedisTechBlogPostService {
 
         final boolean hasNext = staticData.size() < size;
 
+        //정적 정보 TTL 초기화
         redisTemplate.expire(key, 3600, TimeUnit.SECONDS);
 
         final List<Long> keys = staticData.stream()
@@ -79,12 +80,11 @@ public class RedisTechBlogPostService {
                         .build())
                 .toList();
 
-        postDynamicDataMap.forEach((keyValue, value) -> redisTemplate.opsForValue().set(
-                "redisPostDynamicData:" + keyValue,
-                value,
-                3600,
-                TimeUnit.SECONDS
-        ));
+        //동적 정보 TTL 초기화
+        postDynamicDataMap.forEach((keyValue, value) -> {
+            redisPostDynamicDataRepository.deleteById(keyValue);
+            redisPostDynamicDataRepository.save(value);
+        });
 
         return RedisPostCategories.builder()
                 .hasNext(hasNext)
@@ -117,12 +117,14 @@ public class RedisTechBlogPostService {
                         false)
                 .toList();
 
+        //정적 정보 TTL 초기화
         staticData.forEach((post) -> {
-            redisTemplate.expire("redisTechBlogPost:" + post.id(), 3600, TimeUnit.SECONDS);
+            redisPostCategoryStaticDataRepository.deleteById(post.postId());
+            redisPostCategoryStaticDataRepository.save(post);
         });
 
         final List<Long> keys = staticData.stream()
-                .map(RedisTechBlogPostsCategoriesStaticData::id)
+                .map(RedisTechBlogPostsCategoriesStaticData::postId)
                 .toList();
 
         final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(keys);
@@ -131,12 +133,11 @@ public class RedisTechBlogPostService {
                         false)
                 .collect(Collectors.toMap(RedisPostDynamicData::postId, Function.identity()));
 
-        postDynamicDataMap.forEach((keyValue, value) -> redisTemplate.opsForValue().set(
-                "redisPostDynamicData:" + keyValue,
-                value,
-                3600,
-                TimeUnit.SECONDS
-        ));
+        //동적 정보 TTL 초기화
+        postDynamicDataMap.forEach((keyValue, value) -> {
+            redisPostDynamicDataRepository.deleteById(keyValue);
+            redisPostDynamicDataRepository.save(value);
+        });
 
         return staticData.stream()
                 .map(data -> RedisPostsContents.builder()
