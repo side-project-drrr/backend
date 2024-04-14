@@ -344,7 +344,8 @@ public class RecommendServiceE2ETest {
 
             List<TechBlogPostCategoryDto> responseBody = response.jsonPath().getList("", TechBlogPostCategoryDto.class);
             membersRecommendedPosts.add(
-                    responseBody.stream().map(post -> post.techBlogPostBasicInfoDto().id()).toList());
+                    responseBody.stream().map(post -> post.techBlogPostStaticDataDto().id()).toList()
+            );
             latch.countDown();
 
         });
