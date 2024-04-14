@@ -1,27 +1,32 @@
 package com.drrr.web.redis;
 
 import com.drrr.domain.category.dto.CategoryDto;
-import com.drrr.domain.techblogpost.cache.RedisTechBlogPostCategory;
-import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
+import com.drrr.domain.techblogpost.cache.payload.RedisPostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostDynamicDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostStaticDataDto;
 import java.util.List;
 
 public record RedisUtil() {
     public static List<TechBlogPostCategoryDto> redisPostCategoriesEntityToDto(
-            final List<RedisTechBlogPostCategory> redisTechBlogPostCategories
+            final List<RedisPostsContents> redisPostsContents
     ) {
-        return redisTechBlogPostCategories.stream()
+        return redisPostsContents.stream()
                 .map((redisEntity) -> TechBlogPostCategoryDto.builder()
-                        .techBlogPostBasicInfoDto(TechBlogPostBasicInfoDto.builder()
-                                .id(redisEntity.redisTechBlogPostBasicInfo().id())
-                                .postLike(redisEntity.redisTechBlogPostBasicInfo().postLike())
-                                .summary(redisEntity.redisTechBlogPostBasicInfo().summary())
-                                .thumbnailUrl(redisEntity.redisTechBlogPostBasicInfo().thumbnailUrl())
-                                .title(redisEntity.redisTechBlogPostBasicInfo().title())
-                                .url(redisEntity.redisTechBlogPostBasicInfo().url())
-                                .viewCount(redisEntity.redisTechBlogPostBasicInfo().viewCount())
-                                .techBlogCode(redisEntity.redisTechBlogPostBasicInfo().techBlogCode())
-                                .writtenAt(redisEntity.redisTechBlogPostBasicInfo().writtenAt())
+                        .techBlogPostStaticDataDto(TechBlogPostStaticDataDto.builder()
+                                .id(redisEntity.redisTechBlogPostStaticData().id())
+                                //.postLike(redisEntity.redisTechBlogPostStaticData().postLike())
+                                .summary(redisEntity.redisTechBlogPostStaticData().summary())
+                                .thumbnailUrl(redisEntity.redisTechBlogPostStaticData().thumbnailUrl())
+                                .title(redisEntity.redisTechBlogPostStaticData().title())
+                                .url(redisEntity.redisTechBlogPostStaticData().url())
+                                // .viewCount(redisEntity.redisTechBlogPostStaticData().viewCount())
+                                .techBlogCode(redisEntity.redisTechBlogPostStaticData().techBlogCode())
+                                .writtenAt(redisEntity.redisTechBlogPostStaticData().writtenAt())
+                                .build())
+                        .techBlogPostDynamicDto(TechBlogPostDynamicDto.builder()
+                                .viewCount(redisEntity.redisTechBlogPostDynamicData().viewCount())
+                                .likeCount(redisEntity.redisTechBlogPostDynamicData().likeCount())
                                 .build())
                         .categoryDto(redisEntity.redisCategories().stream()
                                 .map(redisCategory -> CategoryDto.builder()
