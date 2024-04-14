@@ -1,11 +1,6 @@
 package com.drrr.techblogpost.service;
 
-import com.drrr.domain.techblogpost.cache.RedisKeywordPostRequest;
-import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts;
-import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts.CompoundCategoriesPostId;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
-import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories.CompoundPostCategoriesId;
-import com.drrr.domain.techblogpost.cache.request.RedisPageRequest;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -30,20 +25,19 @@ public class ExternalTechBlogPostService {
     //모든 블로그 가져오는 service
     @Transactional(readOnly = true)
     public Slice<TechBlogPostCategoryDto> execute(final PageableRequest pageableRequest) {
-        RedisPostCategories redisPostCategories = redisTechBlogPostService.findCachePostsInRedis(
+        final String key = "techBlogPosts";
+
+        final RedisPostCategories redisPostCategories = redisTechBlogPostService.findCacheSlicePostsInRedis(
                 pageableRequest.page(),
-                pageableRequest.size()
+                pageableRequest.size(),
+                key
         );
 
-        //redis key 값
-        final CompoundPostCategoriesId key = CompoundPostCategoriesId.builder()
-                .redisPageRequest(RedisPageRequest.from(pageableRequest.page(), pageableRequest.size()))
-                .build();
-
-        if (redisTechBlogPostService.hasCachedKey(key)) {
+        if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key)) {
             return new SliceImpl<>(
                     RedisUtil.redisPostCategoriesEntityToDto(
-                            redisPostCategories.redisTechBlogPostCategories()),
+                            redisPostCategories.redisPostsContents()
+                    ),
                     pageableRequest.fromPageRequest(),
                     redisPostCategories.hasNext()
             );
@@ -54,58 +48,43 @@ public class ExternalTechBlogPostService {
                 pageableRequest.fromPageRequest());
 
         //redis에 저장
-        redisTechBlogPostService.savePostCategoriesInRedis(
-                pageableRequest.page(),
-                pageableRequest.size(),
-                allPosts.hasNext(),
-                allPosts.getContent()
-        );
+        redisTechBlogPostService.saveSlicePostsInRedis(allPosts.getContent(), key);
 
         return allPosts;
     }
 
     //특정 카테고리에 해당하는 블로그를 가져오는 service
     public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final PageableRequest pageableRequest) {
-        RedisCategoryPosts redisCategoryPosts = redisTechBlogPostService.findPostsInRedisByCategory(
+        final String key = "category" + categoryId;
+
+        final RedisPostCategories redisCategoryPosts = redisTechBlogPostService.findCacheSlicePostsInRedis(
                 pageableRequest.page(),
                 pageableRequest.size(),
-                categoryId
+                key
         );
 
-        //redis key 값
-        final CompoundCategoriesPostId key = CompoundCategoriesPostId.builder()
-                .redisPageRequest(RedisPageRequest.from(pageableRequest.page(), pageableRequest.size()))
-                .categoryId(categoryId)
-                .build();
-
-        if (redisTechBlogPostService.hasCachedKey(key)) {
+        if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key)) {
             return new SliceImpl<>(
                     RedisUtil.redisPostCategoriesEntityToDto(
-                            redisCategoryPosts.redisTechBlogPostCategories()),
+                            redisCategoryPosts.redisPostsContents()
+                    ),
                     pageableRequest.fromPageRequest(),
                     redisCategoryPosts.hasNext()
             );
         }
 
-        Slice<TechBlogPostCategoryDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId,
+        final Slice<TechBlogPostCategoryDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId,
                 pageableRequest.fromPageRequest());
 
         //redis에 저장
-        redisTechBlogPostService.savePostsByCategory(RedisKeywordPostRequest.from(
-                        pageableRequest.page(),
-                        pageableRequest.size(),
-                        categoryId,
-                        postsByCategory.hasNext(),
-                        postsByCategory.getContent()
-                )
-        );
+        redisTechBlogPostService.saveSlicePostsInRedis(postsByCategory.getContent(), key);
         return postsByCategory;
     }
 
     //특정 게시물 상세보기
     public TechBlogPostDetailedInfoDto executeFindPostDetail(final Long postId) {
 
-        TechBlogPost post = techBlogPostService.findTechBlogPostsById(postId);
+        final TechBlogPost post = techBlogPostService.findTechBlogPostsById(postId);
         return TechBlogPostDetailedInfoDto.from(post);
     }
 
