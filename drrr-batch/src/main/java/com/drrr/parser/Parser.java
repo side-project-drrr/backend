@@ -25,4 +25,17 @@ public interface Parser {
             throw new RuntimeException(e);
         }
     }
+
+
+    default String removeUnnecessaryTag(String html) {
+        var document = Jsoup.parse(html);
+
+        document.select("a").remove();
+
+        document.select("code").remove();
+        document.select("br").append("\\n");
+        document.select("p").prepend("\\n\\n");
+
+        return document.html();
+    }
 }
