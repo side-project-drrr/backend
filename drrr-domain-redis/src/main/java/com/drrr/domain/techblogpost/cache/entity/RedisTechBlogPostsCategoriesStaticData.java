@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Builder
 public record RedisTechBlogPostsCategoriesStaticData(
         @Id
-        Long id,
+        Long postId,
         RedisTechBlogPostStaticData redisTechBlogPostStaticData,
         List<RedisCategory> redisCategories
 ) implements Serializable {
@@ -26,6 +26,7 @@ public record RedisTechBlogPostsCategoriesStaticData(
                     List<RedisCategory> redisCategories = RedisCategory.from(content.categoryDto());
 
                     return RedisTechBlogPostsCategoriesStaticData.builder()
+                            .postId(content.techBlogPostStaticDataDto().id())
                             .redisTechBlogPostStaticData(redisTechBlogPostStaticData)
                             .redisCategories(redisCategories)
                             .build();
