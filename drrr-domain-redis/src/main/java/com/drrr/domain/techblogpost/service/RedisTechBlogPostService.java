@@ -50,14 +50,19 @@ public class RedisTechBlogPostService {
         final int start = page * size;
         final int end = start + size;
 
-        final List<RedisTechBlogPostsCategoriesStaticData> staticData = redisTemplate.opsForZSet()
-                .range(key, start, end)
+        final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
+                        redisTemplate.opsForZSet()
+                                .range(key, start, end))
                 .stream()
                 .filter(Objects::nonNull)
                 .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
                 .toList();
 
-        final boolean hasNext = staticData.size() < size;
+        boolean hasNext = false;
+
+        if (!staticData.isEmpty()) {
+            hasNext = staticData.get(staticData.size() - 1).hasNext();
+        }
 
         //정적 정보 TTL 초기화
         redisTemplate.expire(key, 3600, TimeUnit.SECONDS);
@@ -92,9 +97,10 @@ public class RedisTechBlogPostService {
                 .build();
     }
 
-    public void saveSlicePostsInRedis(final List<TechBlogPostCategoryDto> contents, final String key) {
+    public void saveSlicePostsInRedis(final List<TechBlogPostCategoryDto> contents, final String key,
+                                      final boolean hasNext) {
         final List<RedisTechBlogPostsCategoriesStaticData> staticCacheData = RedisTechBlogPostsCategoriesStaticData.from(
-                contents);
+                contents, hasNext);
 
         staticCacheData.forEach((dto) -> {
             double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();

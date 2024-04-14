@@ -48,7 +48,7 @@ public class ExternalTechBlogPostService {
                 pageableRequest.fromPageRequest());
 
         //redis에 저장
-        redisTechBlogPostService.saveSlicePostsInRedis(allPosts.getContent(), key);
+        redisTechBlogPostService.saveSlicePostsInRedis(allPosts.getContent(), key, allPosts.hasNext());
 
         return allPosts;
     }
@@ -77,7 +77,7 @@ public class ExternalTechBlogPostService {
                 pageableRequest.fromPageRequest());
 
         //redis에 저장
-        redisTechBlogPostService.saveSlicePostsInRedis(postsByCategory.getContent(), key);
+        redisTechBlogPostService.saveSlicePostsInRedis(postsByCategory.getContent(), key, postsByCategory.hasNext());
         return postsByCategory;
     }
 

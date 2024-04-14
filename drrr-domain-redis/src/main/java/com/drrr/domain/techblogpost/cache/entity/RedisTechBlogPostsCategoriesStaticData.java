@@ -14,7 +14,8 @@ public record RedisTechBlogPostsCategoriesStaticData(
         @Id
         Long postId,
         RedisTechBlogPostStaticData redisTechBlogPostStaticData,
-        List<RedisCategory> redisCategories
+        List<RedisCategory> redisCategories,
+        boolean hasNext
 ) implements Serializable {
 
     public static List<RedisTechBlogPostsCategoriesStaticData> from(final List<TechBlogPostCategoryDto> contents) {
@@ -29,6 +30,25 @@ public record RedisTechBlogPostsCategoriesStaticData(
                             .postId(content.techBlogPostStaticDataDto().id())
                             .redisTechBlogPostStaticData(redisTechBlogPostStaticData)
                             .redisCategories(redisCategories)
+                            .build();
+                })
+                .toList();
+    }
+
+    public static List<RedisTechBlogPostsCategoriesStaticData> from(final List<TechBlogPostCategoryDto> contents,
+                                                                    final boolean hasNext) {
+        return contents.stream()
+                .map((content) -> {
+                    RedisTechBlogPostStaticData redisTechBlogPostStaticData = RedisTechBlogPostStaticData
+                            .from(content.techBlogPostStaticDataDto());
+
+                    List<RedisCategory> redisCategories = RedisCategory.from(content.categoryDto());
+
+                    return RedisTechBlogPostsCategoriesStaticData.builder()
+                            .postId(content.techBlogPostStaticDataDto().id())
+                            .redisTechBlogPostStaticData(redisTechBlogPostStaticData)
+                            .redisCategories(redisCategories)
+                            .hasNext(hasNext)
                             .build();
                 })
                 .toList();
