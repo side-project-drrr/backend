@@ -28,8 +28,8 @@ public record TechBlogPostCategoryDto(
     public static List<TechBlogPostCategoryDto> inOrderFrom(
             final List<TechBlogPostContentDto> contents,
             final TopTechBlogType type,
-            final Map<Long, List<CategoryDto> postIdsCategories>
-            ){
+            final Map<Long, List<CategoryDto>> postIdsCategories
+    ) {
         return contents.stream()
                 .map(content -> TechBlogPostCategoryDto.builder()
                         .techBlogPostStaticDataDto(content.techBlogPostStaticDataDto())
@@ -39,6 +39,7 @@ public record TechBlogPostCategoryDto(
                 .sorted(TechBlogPostCategoryDto.orderByTopBlogTypeCondition(type))
                 .toList();
     }
+
     public static List<TechBlogPostCategoryDto> from(
             final List<TechBlogPostContentDto> contents,
             final Map<Long, List<CategoryDto>> postIdsCategories
