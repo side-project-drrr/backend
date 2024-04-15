@@ -2,38 +2,37 @@ package com.drrr.techblogpost;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
-import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.entity.Category;
-import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.exception.DomainExceptionCode;
-import com.drrr.domain.like.entity.TechBlogPostLike;
+import com.drrr.domain.fixture.category.CategoryFixture;
+import com.drrr.domain.fixture.category.weight.CategoryWeightFixture;
+import com.drrr.domain.fixture.member.MemberFixture;
+import com.drrr.domain.fixture.post.TechBlogPostCategoryFixture;
+import com.drrr.domain.fixture.post.TechBlogPostFixture;
+import com.drrr.domain.fixture.post.TechBlogPostLikeFixture;
 import com.drrr.domain.like.repository.TechBlogPostLikeRepository;
-import com.drrr.domain.log.entity.post.MemberPostLog;
-import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.post.RedisPostDynamicDataFixture;
+import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
+import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
-import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,293 +84,62 @@ public class TechBlogPostE2ETest {
     @Autowired
     private CategoryWeightRepository categoryWeightRepository;
     @Autowired
-    private MemberPostLogRepository memberTechBlogPostRepository;
-    @Autowired
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
     @Autowired
     private TechBlogPostLikeRepository techBlogPostLikeRepository;
     @Autowired
-    private TechBlogPostService techBlogPostService;
-    @Autowired
     private DatabaseCleaner databaseCleaner;
+    @Autowired
+    private RedisPostDynamicDataRepository redisPostDynamicDataRepository;
+
 
     @BeforeEach
     void setup() {
         RestAssured.port = port;
         databaseCleaner.clear();
         //M1~M500 생성
-        List<Member> members = IntStream.rangeClosed(1, 500).mapToObj(i -> {
-            String email = "user" + i + "@example.com";
-            String nickname = "user" + i;
-            String provider = "provider" + i;
-            String providerId = "providerId" + i;
-            String imageUrl = "http://example.com/image" + i + ".jpg";
-            return Member.createMember(email, nickname, provider, providerId, imageUrl);
-        }).collect(Collectors.toList());
+        List<Member> members = MemberFixture.createMembers(200);
         memberRepository.saveAll(members);
 
-        TechBlogPost postLike = TechBlogPost.builder()
-                .writtenAt(LocalDate.now())
-                .author("author")
-                .thumbnailUrl("thumbnail")
-                .title("title")
-                .summary("summary")
-                .aiSummary("aiSummary")
-                .urlSuffix("urlSuffix")
-                .url("url")
-                .like(100)
-                .crawlerGroup(TechBlogCode.KAKAO)
-                .build();
+        TechBlogPost post = TechBlogPostFixture.createTechBlogPostLike(200);
+        techBlogPostRepository.save(post);
 
-        //P1~P99 생성
-        List<TechBlogPost> techBlogPosts = IntStream.rangeClosed(1, 99).mapToObj(i -> {
-            //현재로부터 몇년전까지 랜덤으로 연월일을 뽑을지 정함
-            LocalDate createdDate = LocalDate.of(2023, 9, 30);
+        redisPostDynamicDataRepository.save(
+                RedisPostDynamicDataFixture.createRedisPostDynamicData(200, 100, post.getId()));
 
-            String author = "Author" + i; // 짝수 인덱스에서만 저자 설정
-            String thumbnailUrl = "http://example.com/thumbnail" + i + ".jpg";
-            String title = "Title" + i;
-            String summary = (i % 3 == 0) ? "Summary" + i : null; // 3의 배수 인덱스에서만 요약 설정
-            String aiSummary = (i % 3 == 0) ? "Summary" + i : null; // 3의 배수 인덱스에서만 요약 설정
-            String urlSuffix = "/suffix/" + i;
-            String url = "http://example.com/suffix/" + i;
-            TechBlogCode techBlogCode = TechBlogCode.values()[i
-                    % TechBlogCode.values().length]; // 순환적으로 TechBlogCode 값 할당
-            return TechBlogPost.builder()
-                    .writtenAt(createdDate)
-                    .author(author)
-                    .thumbnailUrl(thumbnailUrl)
-                    .title(title)
-                    .summary(summary)
-                    .aiSummary(aiSummary)
-                    .urlSuffix(urlSuffix)
-                    .url(url)
-                    .crawlerGroup(TechBlogCode.KAKAO)
-                    .build();
-        }).collect(Collectors.toList());
+        techBlogPostLikeRepository.saveAll(
+                TechBlogPostLikeFixture.createTechBlogPostLikeIncrease(members.subList(100, 200), post));
 
-        techBlogPosts.add(postLike);
-        techBlogPostRepository.saveAll(techBlogPosts);
-
-        //PL1 생성
-        List<TechBlogPostLike> techBlogPostLikes = IntStream.range(0, 500).mapToObj(i -> {
-            List<Member> memberList = memberRepository.findAll();
-
-            if (memberList.isEmpty()) {
-                throw DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
-            }
-
-            return TechBlogPostLike.builder()
-                    .member(memberList.get(i))
-                    .post(postLike)
-                    .build();
-        }).toList();
-
-        techBlogPostLikeRepository.saveAll(techBlogPostLikes);
-
-        //C1~C10 생성
-        List<Category> categories = IntStream.rangeClosed(1, 10).mapToObj(i -> {
-            String categoryName = "Category" + i;
-            return Category.builder()
-                    .name(categoryName)
-                    .build();
-        }).collect(Collectors.toList());
+        List<Category> categories = CategoryFixture.createCategories(3);
         categoryRepository.saveAll(categories);
 
-        //각 M1~M500의 CW 생성
-        List<Member> memberList = memberRepository.findAll();
-        List<Category> categoryWeights = categoryRepository.findIds(Arrays.asList(2L, 3L, 5L, 7L, 8L));
-        List<Double> weights = Arrays.asList(8.0, 3.0, 4.0, 2.0, 2.0);
-        List<CategoryWeight> categoryWeightList = new ArrayList<>();
-        IntStream.range(0, 500).forEach(j -> {
-            IntStream.range(0, categoryWeights.size()).forEach(i -> {
-                Category category = categoryWeights.get(i);
-                double value = weights.get(i);
-                boolean preferred = i == 3 || i == 5 || i == 7;
+        List<TechBlogPostCategory> techBlogPostCategory = TechBlogPostCategoryFixture.createTechBlogPostCategories(
+                post,
+                categories);
+        techBlogPostCategoryRepository.saveAll(
+                techBlogPostCategory
+        );
 
-                categoryWeightList.add(CategoryWeight.builder()
-                        .member(memberList.get(j))
-                        .category(category)
-                        .weightValue(value)
-                        .lastReadAt(LocalDateTime.now())
-                        .preferred(preferred)
-                        .build());
-            });
-        });
+        categoryWeightRepository.saveAll(CategoryWeightFixture.createCategoryWeights(members, categories));
 
-        categoryWeightRepository.saveAll(categoryWeightList);
-
-        List<TechBlogPost> posts = techBlogPostRepository.findAll();
-        List<Category> categoryList = categoryRepository.findAll();
-        List<TechBlogPostCategory> techBlogPostCategories = new ArrayList<>();
-
-        //M1~M500의 Log 생성
-        List<MemberPostLog> logs = new ArrayList<>();
-        IntStream.range(0, 500).forEach(i -> {
-            logs.add(MemberPostLog.builder()
-                    .postId(1L)
-                    .memberId(memberList.get(i).getId())
-                    .isRecommended(false)
-                    .isRead(true)
-                    .lastReadAt(LocalDateTime.now())
-                    .recommendedAt(LocalDate.now())
-                    .build());
-            logs.add(MemberPostLog.builder()
-                    .postId(3L)
-                    .memberId(memberList.get(i).getId())
-                    .isRecommended(false)
-                    .isRead(true)
-                    .lastReadAt(LocalDateTime.now())
-                    .recommendedAt(LocalDate.now())
-                    .build());
-            logs.add(MemberPostLog.builder()
-                    .postId(5L)
-                    .memberId(memberList.get(i).getId())
-                    .isRecommended(false)
-                    .isRead(true)
-                    .lastReadAt(LocalDateTime.now())
-                    .recommendedAt(LocalDate.now())
-                    .build());
-            logs.add(MemberPostLog.builder()
-                    .postId(7L)
-                    .memberId(memberList.get(i).getId())
-                    .isRecommended(false)
-                    .isRead(true)
-                    .lastReadAt(LocalDateTime.now())
-                    .recommendedAt(LocalDate.now())
-                    .build());
-            logs.add(MemberPostLog.builder()
-                    .postId(9L)
-                    .memberId(memberList.get(i).getId())
-                    .isRecommended(false)
-                    .isRead(true)
-                    .lastReadAt(LocalDateTime.now())
-                    .recommendedAt(LocalDate.now())
-                    .build());
-        });
-
-        memberTechBlogPostRepository.saveAll(logs);
-
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(0))
-                .category(categoryList.get(2))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(0))
-                .category(categoryList.get(4))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(0))
-                .category(categoryList.get(6))
-                .build());
-
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(2))
-                .category(categoryList.get(1))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(2))
-                .category(categoryList.get(2))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(2))
-                .category(categoryList.get(6))
-                .build());
-
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(4))
-                .category(categoryList.get(8))
-                .build());
-
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(6))
-                .category(categoryList.get(3))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(6))
-                .category(categoryList.get(5))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(6))
-                .category(categoryList.get(8))
-                .build());
-
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(8))
-                .category(categoryList.get(0))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(8))
-                .category(categoryList.get(1))
-                .build());
-        techBlogPostCategories.add(TechBlogPostCategory.builder()
-                .post(posts.get(8))
-                .category(categoryList.get(2))
-                .build());
-
-        IntStream.rangeClosed(1, 7).forEach(j -> {
-            Category category = categoryList.get(j);
-            techBlogPostCategories.add(TechBlogPostCategory.builder()
-                    .post(posts.get(1))
-                    .category(category)
-                    .build());
-        });
-        IntStream.rangeClosed(1, 7).forEach(j -> {
-            Category category = categoryList.get(j);
-            techBlogPostCategories.add(TechBlogPostCategory.builder()
-                    .post(posts.get(3))
-                    .category(category)
-                    .build());
-        });
-        IntStream.rangeClosed(1, 7).forEach(j -> {
-            Category category = categoryList.get(j);
-            techBlogPostCategories.add(TechBlogPostCategory.builder()
-                    .post(posts.get(5))
-                    .category(category)
-                    .build());
-        });
-        IntStream.rangeClosed(1, 7).forEach(j -> {
-            Category category = categoryList.get(j);
-            techBlogPostCategories.add(TechBlogPostCategory.builder()
-                    .post(posts.get(7))
-                    .category(category)
-                    .build());
-        });
-        IntStream.rangeClosed(1, 7).forEach(j -> {
-            Category category = categoryList.get(j);
-            techBlogPostCategories.add(TechBlogPostCategory.builder()
-                    .post(posts.get(9))
-                    .category(category)
-                    .build());
-        });
-
-        IntStream.rangeClosed(10, 49).forEach(i -> {
-            TechBlogPost post = posts.get(i);
-            Category category = categoryList.get(7);
-            techBlogPostCategories.add(TechBlogPostCategory.builder()
-                    .post(post)
-                    .category(category)
-                    .build());
-
-        });
-
-        techBlogPostCategoryRepository.saveAll(techBlogPostCategories);
     }
 
     @Test
     void 여러_사용자가_게시물에_좋아요를_누르면_정상적으로_증가합니다() throws InterruptedException {
         //when
+        List<TechBlogPost> posts = techBlogPostRepository.findAll();
+
         CountDownLatch latch = new CountDownLatch(1);
         ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         IntStream.rangeClosed(1, 100).forEach(i -> {
-            String accessToken = jwtProvider.createAccessToken(Long.valueOf(i), Instant.now());
+            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
             Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .post("/api/v1/posts/{postId}/like", 1);
+                    .post("/api/v1/posts/{postId}/like", posts.get(0).getId());
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
@@ -383,28 +151,34 @@ public class TechBlogPostE2ETest {
         executorService.shutdown();
 
         //then
-        TechBlogPost techBlogPost = techBlogPostRepository.findById(1L).orElseThrow(
+        TechBlogPost techBlogPost = techBlogPostRepository.findById(posts.get(0).getId()).orElseThrow(
                 DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
-        int likeCount = techBlogPost.getPostLike();
-        assertThat(likeCount).isEqualTo(100);
+        RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(posts.get(0).getId())
+                .orElseThrow(DomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
 
+        assertAll(
+                () -> assertThat(techBlogPost.getPostLike()).isEqualTo(300),
+                () -> assertThat(redisPostDynamicData.getLikeCount()).isEqualTo(300)
+        );
     }
+
 
     @Test
     void 여러_사용자가_게시물에_좋아요를_누르면_정상적으로_감소합니다() throws InterruptedException {
         //when
+        List<TechBlogPost> posts = techBlogPostRepository.findAll();
         CountDownLatch latch = new CountDownLatch(1);
         ExecutorService executorService = Executors.newFixedThreadPool(100);
 
-        IntStream.rangeClosed(1, 100).forEach(i -> {
-            String accessToken = jwtProvider.createAccessToken(Long.valueOf(i), Instant.now());
+        IntStream.rangeClosed(101, 200).forEach(i -> {
+            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
             Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
                     .contentType(ContentType.APPLICATION_JSON.toString())
-                    .delete("/api/v1/posts/{postId}/like", 100);
+                    .delete("/api/v1/posts/{postId}/like", posts.get(0).getId());
             response.then()
                     .statusCode(HttpStatus.OK.value())
                     .log().all();
@@ -416,11 +190,54 @@ public class TechBlogPostE2ETest {
         executorService.shutdown();
 
         //then
-        TechBlogPost techBlogPost = techBlogPostRepository.findById(100L).orElseThrow(
-                DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+        List<TechBlogPost> techBlogPost = techBlogPostRepository.findAll();
+        Long postId = techBlogPost.get(0).getId();
 
-        int likeCount = techBlogPost.getPostLike();
-        assertThat(likeCount).isEqualTo(0);
+        RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(postId)
+                .orElseThrow(DomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
 
+        assertAll(
+                () -> assertThat(techBlogPost.get(0).getPostLike()).isEqualTo(100),
+                () -> assertThat(redisPostDynamicData.getLikeCount()).isEqualTo(100)
+        );
     }
+
+    @Test
+    void 여러_사용자가_게시물을_읽으면_조회수가_정상적으로_증가합니다() throws InterruptedException {
+        //when
+        List<TechBlogPost> posts = techBlogPostRepository.findAll();
+        CountDownLatch latch = new CountDownLatch(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(100);
+
+        IntStream.rangeClosed(1, 100).forEach(i -> {
+            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
+            Response response = given().log()
+                    .all()
+                    .header("Authorization", "Bearer " + accessToken)
+                    .when()
+                    .contentType(ContentType.APPLICATION_JSON.toString())
+                    .post("/api/v1/members/me/read-post/{postId}", posts.get(0).getId());
+            response.then()
+                    .statusCode(HttpStatus.OK.value())
+                    .log().all();
+
+            latch.countDown();
+
+        });
+        latch.await();
+        executorService.shutdown();
+
+        //then
+        List<TechBlogPost> techBlogPost = techBlogPostRepository.findAll();
+        Long postId = techBlogPost.get(0).getId();
+
+        RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(postId)
+                .orElseThrow(DomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
+
+        assertAll(
+                () -> assertThat(techBlogPost.get(0).getViewCount()).isEqualTo(200),
+                () -> assertThat(redisPostDynamicData.getViewCount()).isEqualTo(200)
+        );
+    }
+
 }
