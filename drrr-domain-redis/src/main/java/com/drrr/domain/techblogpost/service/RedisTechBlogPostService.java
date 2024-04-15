@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RedisTechBlogPostService {
     private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
-    private final RedisTemplate<Object, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     private final RedisPostCategoryStaticDataRepository redisPostCategoryStaticDataRepository;
@@ -71,11 +71,12 @@ public class RedisTechBlogPostService {
                 .map((post) -> post.redisTechBlogPostStaticData().id())
                 .toList();
 
+        //repository를 쓰면 HSET를 쉽게 객체로 변환해줌
         final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(keys);
 
         final Map<Long, RedisPostDynamicData> postDynamicDataMap = StreamSupport.stream(postDynamicData.spliterator(),
                         false)
-                .collect(Collectors.toMap(RedisPostDynamicData::postId, Function.identity()));
+                .collect(Collectors.toMap(RedisPostDynamicData::getPostId, Function.identity()));
 
         final List<RedisPostsContents> redisPostsContents = staticData.stream()
                 .map(data -> RedisPostsContents.builder()
@@ -108,9 +109,11 @@ public class RedisTechBlogPostService {
         });
         redisTemplate.expire(key, 3600, TimeUnit.SECONDS);
 
+        //opsForHash()를 사용해서 redis에 데이터를 저장함 - 객체를 각 필드 마다 map으로 저장
         final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
 
         redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
+
     }
 
     public List<RedisPostsContents> findRecommendPostsByIdsInRedis(final List<Long> postIds) {
@@ -137,7 +140,7 @@ public class RedisTechBlogPostService {
 
         final Map<Long, RedisPostDynamicData> postDynamicDataMap = StreamSupport.stream(postDynamicData.spliterator(),
                         false)
-                .collect(Collectors.toMap(RedisPostDynamicData::postId, Function.identity()));
+                .collect(Collectors.toMap(RedisPostDynamicData::getPostId, Function.identity()));
 
         //동적 정보 TTL 초기화
         postDynamicDataMap.forEach((keyValue, value) -> {
