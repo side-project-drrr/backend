@@ -1,6 +1,6 @@
 package com.drrr.domain.techblogpost.cache.entity;
 
-import com.drrr.domain.category.entity.RedisCategory;
+import com.drrr.domain.category.cache.RedisCategory;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import java.io.Serializable;
 import java.util.List;
