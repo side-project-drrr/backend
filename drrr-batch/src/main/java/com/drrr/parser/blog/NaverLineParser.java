@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class NaverLineParser {
 
     @Bean
-    Parser naverLineParser(WebDriverPool webDriverPool) {
+    Parser naverLineContentsParser(WebDriverPool webDriverPool) {
         return SimpleParser.builder()
                 .webDriverPool(webDriverPool)
                 .techBlogCode(TechBlogCode.LINE)

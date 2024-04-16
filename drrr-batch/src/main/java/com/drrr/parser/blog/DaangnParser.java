@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class DaangnParser {
 
     @Bean
-    Parser daangnParser(WebDriverPool webDriverPool) {
+    Parser daangnContentsParser(WebDriverPool webDriverPool) {
         return SimpleParser.builder()
                 .webDriverPool(webDriverPool)
                 .target(By.tagName("section"))

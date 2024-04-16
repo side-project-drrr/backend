@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class SquareLabParser {
 
     @Bean
-    Parser squareLabParser(WebDriverPool webDriverPool) {
+    Parser squareLabContentsParser(WebDriverPool webDriverPool) {
         return SimpleParser.builder()
                 .webDriverPool(webDriverPool)
                 .techBlogCode(TechBlogCode.SQUARE_LAB)

@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 public class KakaoPayParser {
 
     @Bean
-    Parser kakaoPayParser(WebDriverPool webDriverPool) {
+    Parser kakaoPayContentsParser(WebDriverPool webDriverPool) {
         return SimpleParser.builder()
                 .webDriverPool(webDriverPool)
                 .target(By.tagName("article"))

@@ -10,16 +10,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class DevSistersParser {
-
+public class KakaoParser {
 
     @Bean
-    Parser devSistersContentsParser(WebDriverPool webDriverPool) {
+    Parser kakaoContentsParser(WebDriverPool webDriverPool) {
         return SimpleParser.builder()
+                .target(By.className("elementor-inner"))
                 .webDriverPool(webDriverPool)
-                .target(By.id("article"))
-                .techBlogCode(TechBlogCode.DEV_SISTERS)
+                .techBlogCode(TechBlogCode.KAKAO)
                 .build();
-
     }
 }

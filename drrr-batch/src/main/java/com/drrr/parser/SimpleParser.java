@@ -5,8 +5,11 @@ import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.fluent.cralwer.core.WebDriverPool;
 import java.util.Objects;
 import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 
+
+@Slf4j
 @Builder
 public class SimpleParser implements Parser {
     private final WebDriverPool webDriverPool;
@@ -26,6 +29,7 @@ public class SimpleParser implements Parser {
 
     @Override
     public String execute(String url) {
+        log.info("{}", url);
         return webDriverPool.delegate(webDriver -> {
             webDriver.get(url);
             waitUnitlLoad(webDriver, target);

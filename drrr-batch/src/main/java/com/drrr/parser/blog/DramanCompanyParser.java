@@ -14,7 +14,7 @@ public class DramanCompanyParser {
 
 
     @Bean
-    Parser dramanCompanyParser(WebDriverPool webDriverPool) {
+    Parser dramanCompanyConentsParser(WebDriverPool webDriverPool) {
         return SimpleParser.builder()
                 .webDriverPool(webDriverPool)
                 .target(By.className("jeg_main_content"))
