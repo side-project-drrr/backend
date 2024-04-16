@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RedisTechBlogPostService {
     private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
-    private final RedisTemplate<Object, Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
     private final RedisPostCategoryStaticDataRepository redisPostCategoryStaticDataRepository;
@@ -87,8 +87,7 @@ public class RedisTechBlogPostService {
 
         //동적 정보 TTL 초기화
         postDynamicDataMap.forEach((keyValue, value) -> {
-            redisPostDynamicDataRepository.deleteById(keyValue);
-            redisPostDynamicDataRepository.save(value);
+            redisTemplate.expire("redisPostDynamicData:"+keyValue, 3600, TimeUnit.SECONDS);
         });
 
         return RedisPostCategories.builder()
