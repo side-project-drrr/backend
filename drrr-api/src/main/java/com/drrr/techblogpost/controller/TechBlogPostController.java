@@ -3,6 +3,7 @@ package com.drrr.techblogpost.controller;
 import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
+import com.drrr.techblogpost.response.TechBlogPostResponse;
 import com.drrr.techblogpost.service.ExternalTechBlogPostSearchService;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
 import com.drrr.techblogpost.service.SearchTopTechBlogPostService;
@@ -41,7 +42,7 @@ public class TechBlogPostController {
             @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 모든 블로그 정보 반환")
     )
     @GetMapping("/posts/all")
-    public Slice<TechBlogPostCategoryDto> findAllPosts(@Valid @ModelAttribute final PageableRequest pageableRequest) {
+    public Slice<TechBlogPostResponse> findAllPosts(@Valid @ModelAttribute final PageableRequest pageableRequest) {
         return externalTechBlogPostService.execute(pageableRequest);
     }
 
@@ -67,8 +68,8 @@ public class TechBlogPostController {
             @ApiResponse(responseCode = "200", description = "호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환")
     )
     @GetMapping("/posts/categories/{categoryId}")
-    public Slice<TechBlogPostCategoryDto> findPostsByCategory(@PathVariable("categoryId") final Long id,
-                                                              @Valid @ModelAttribute final PageableRequest pageableRequest) {
+    public Slice<TechBlogPostResponse> findPostsByCategory(@PathVariable("categoryId") final Long id,
+                                                           @Valid @ModelAttribute final PageableRequest pageableRequest) {
         return externalTechBlogPostService.execute(id, pageableRequest);
     }
 
