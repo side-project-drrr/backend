@@ -3,7 +3,7 @@ package com.drrr.domain.techblogpost.service;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.cache.entity.RedisTechBlogPostsCategoriesStaticData;
-import com.drrr.domain.techblogpost.cache.payload.RedisPostsContents;
+import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.repository.RedisPostCategoryStaticDataRepository;
 import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
@@ -78,8 +78,8 @@ public class RedisTechBlogPostService {
                         false)
                 .collect(Collectors.toMap(RedisPostDynamicData::getPostId, Function.identity()));
 
-        final List<RedisPostsContents> redisPostsContents = staticData.stream()
-                .map(data -> RedisPostsContents.builder()
+        final List<RedisSlicePostsContents> redisSlicePostsContents = staticData.stream()
+                .map(data -> RedisSlicePostsContents.builder()
                         .redisTechBlogPostDynamicData(postDynamicDataMap.get(data.redisTechBlogPostStaticData().id()))
                         .redisTechBlogPostStaticData(data.redisTechBlogPostStaticData())
                         .redisCategories(data.redisCategories())
@@ -88,12 +88,13 @@ public class RedisTechBlogPostService {
 
         //동적 정보 TTL 초기화
         postDynamicDataMap.forEach((keyValue, value) -> {
-            redisTemplate.expire("redisPostDynamicData:"+keyValue, 3600, TimeUnit.SECONDS);
+            redisPostDynamicDataRepository.deleteById(keyValue);
+            redisPostDynamicDataRepository.save(value);
         });
 
         return RedisPostCategories.builder()
                 .hasNext(hasNext)
-                .redisPostsContents(redisPostsContents)
+                .redisSlicePostsContents(redisSlicePostsContents)
                 .build();
     }
 
@@ -115,7 +116,7 @@ public class RedisTechBlogPostService {
 
     }
 
-    public List<RedisPostsContents> findRecommendPostsByIdsInRedis(final List<Long> postIds) {
+    public List<RedisSlicePostsContents> findRecommendPostsByIdsInRedis(final List<Long> postIds) {
 
         final Iterable<RedisTechBlogPostsCategoriesStaticData> staticDataIterable = redisPostCategoryStaticDataRepository.findAllById(
                 postIds);
@@ -148,7 +149,7 @@ public class RedisTechBlogPostService {
         });
 
         return staticData.stream()
-                .map(data -> RedisPostsContents.builder()
+                .map(data -> RedisSlicePostsContents.builder()
                         .redisTechBlogPostDynamicData(postDynamicDataMap.get(data.redisTechBlogPostStaticData().id()))
                         .redisTechBlogPostStaticData(data.redisTechBlogPostStaticData())
                         .redisCategories(data.redisCategories())
