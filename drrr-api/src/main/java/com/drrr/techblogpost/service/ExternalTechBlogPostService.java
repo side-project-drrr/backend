@@ -7,8 +7,8 @@ import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
+import com.drrr.techblogpost.response.TechBlogPostResponse;
 import com.drrr.web.page.request.PageableRequest;
-import com.drrr.web.redis.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -24,7 +24,7 @@ public class ExternalTechBlogPostService {
 
     //모든 블로그 가져오는 service
     @Transactional(readOnly = true)
-    public Slice<TechBlogPostCategoryDto> execute(final PageableRequest pageableRequest) {
+    public Slice<TechBlogPostResponse> execute(final PageableRequest pageableRequest) {
         final String key = "techBlogPosts";
 
         final RedisPostCategories redisPostCategories = redisTechBlogPostService.findCacheSlicePostsInRedis(
@@ -35,8 +35,8 @@ public class ExternalTechBlogPostService {
 
         if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key)) {
             return new SliceImpl<>(
-                    RedisUtil.redisPostCategoriesEntityToDto(
-                            redisPostCategories.redisPostsContents()
+                    TechBlogPostResponse.fromRedis(
+                            redisPostCategories.redisSlicePostsContents()
                     ),
                     pageableRequest.fromPageRequest(),
                     redisPostCategories.hasNext()
@@ -44,17 +44,23 @@ public class ExternalTechBlogPostService {
         }
 
         //redis에 저장되어 있는 게 없으면 db에서 탐색
-        final Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(
+        Slice<TechBlogPostCategoryDto> allPostsSlice = techBlogPostRepository.findAllPosts(
                 pageableRequest.fromPageRequest());
 
-        //redis에 저장
-        redisTechBlogPostService.saveSlicePostsInRedis(allPosts.getContent(), key, allPosts.hasNext());
+        Slice<TechBlogPostResponse> sliceResult = TechBlogPostResponse.from(
+                allPostsSlice.getContent(),
+                allPostsSlice.hasNext(),
+                pageableRequest.fromPageRequest()
+        );
 
-        return allPosts;
+        //redis에 저장
+        redisTechBlogPostService.saveSlicePostsInRedis(allPostsSlice.getContent(), key, allPostsSlice.hasNext());
+
+        return sliceResult;
     }
 
     //특정 카테고리에 해당하는 블로그를 가져오는 service
-    public Slice<TechBlogPostCategoryDto> execute(final Long categoryId, final PageableRequest pageableRequest) {
+    public Slice<TechBlogPostResponse> execute(final Long categoryId, final PageableRequest pageableRequest) {
         final String key = "category" + categoryId;
 
         final RedisPostCategories redisCategoryPosts = redisTechBlogPostService.findCacheSlicePostsInRedis(
@@ -65,9 +71,7 @@ public class ExternalTechBlogPostService {
 
         if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key)) {
             return new SliceImpl<>(
-                    RedisUtil.redisPostCategoriesEntityToDto(
-                            redisCategoryPosts.redisPostsContents()
-                    ),
+                    TechBlogPostResponse.fromRedis(redisCategoryPosts.redisSlicePostsContents()),
                     pageableRequest.fromPageRequest(),
                     redisCategoryPosts.hasNext()
             );
@@ -75,10 +79,15 @@ public class ExternalTechBlogPostService {
 
         final Slice<TechBlogPostCategoryDto> postsByCategory = techBlogPostRepository.findPostsByCategory(categoryId,
                 pageableRequest.fromPageRequest());
+        final Slice<TechBlogPostResponse> sliceResult = TechBlogPostResponse.from(
+                postsByCategory.getContent(),
+                postsByCategory.hasNext(),
+                pageableRequest.fromPageRequest()
+        );
 
         //redis에 저장
         redisTechBlogPostService.saveSlicePostsInRedis(postsByCategory.getContent(), key, postsByCategory.hasNext());
-        return postsByCategory;
+        return sliceResult;
     }
 
     //특정 게시물 상세보기
