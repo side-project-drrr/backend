@@ -5,7 +5,6 @@ import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.cache.entity.RedisTechBlogPostsCategoriesStaticData;
 import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
-import com.drrr.domain.techblogpost.repository.RedisPostCategoryStaticDataRepository;
 import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RedisTechBlogPostService {
     private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
     private final RedisTemplate<String, Object> redisTemplate;
-
-
-    private final RedisPostCategoryStaticDataRepository redisPostCategoryStaticDataRepository;
 
     public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key) {
         final int start = page * size;
@@ -113,60 +109,6 @@ public class RedisTechBlogPostService {
         final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
 
         redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
-
-    }
-
-    public List<RedisSlicePostsContents> findRecommendPostsByIdsInRedis(final List<Long> postIds) {
-
-        final Iterable<RedisTechBlogPostsCategoriesStaticData> staticDataIterable = redisPostCategoryStaticDataRepository.findAllById(
-                postIds);
-
-        final List<RedisTechBlogPostsCategoriesStaticData> staticData = StreamSupport.stream(
-                        staticDataIterable.spliterator(),
-                        false)
-                .toList();
-
-        //정적 정보 TTL 초기화
-        staticData.forEach((post) -> {
-            redisPostCategoryStaticDataRepository.deleteById(post.postId());
-            redisPostCategoryStaticDataRepository.save(post);
-        });
-
-        final List<Long> keys = staticData.stream()
-                .map(RedisTechBlogPostsCategoriesStaticData::postId)
-                .toList();
-
-        final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(keys);
-
-        final Map<Long, RedisPostDynamicData> postDynamicDataMap = StreamSupport.stream(postDynamicData.spliterator(),
-                        false)
-                .collect(Collectors.toMap(RedisPostDynamicData::getPostId, Function.identity()));
-
-        //동적 정보 TTL 초기화
-        postDynamicDataMap.forEach((keyValue, value) -> {
-            redisPostDynamicDataRepository.deleteById(keyValue);
-            redisPostDynamicDataRepository.save(value);
-        });
-
-        return staticData.stream()
-                .map(data -> RedisSlicePostsContents.builder()
-                        .redisTechBlogPostDynamicData(postDynamicDataMap.get(data.redisTechBlogPostStaticData().id()))
-                        .redisTechBlogPostStaticData(data.redisTechBlogPostStaticData())
-                        .redisCategories(data.redisCategories())
-                        .build())
-                .toList();
-
-    }
-
-    public void saveRecommendPostsInRedis(final List<TechBlogPostCategoryDto> contents) {
-        final List<RedisTechBlogPostsCategoriesStaticData> staticCacheData = RedisTechBlogPostsCategoriesStaticData.from(
-                contents);
-        redisPostCategoryStaticDataRepository.saveAll(staticCacheData);
-
-        final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
-
-        redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
-
 
     }
 
