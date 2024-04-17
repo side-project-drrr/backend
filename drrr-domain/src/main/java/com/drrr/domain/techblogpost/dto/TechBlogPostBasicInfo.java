@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import lombok.Builder;
 
 @Builder
-public record TechBlogPostBasicInfoDto(
+public record TechBlogPostBasicInfo(
         Long id,
         String title,
         String summary,
@@ -20,9 +20,17 @@ public record TechBlogPostBasicInfoDto(
 
 ) implements Serializable {
     @QueryProjection
-    public TechBlogPostBasicInfoDto(Long id, String title, String summary, TechBlogCode techBlogCode,
-                                    String thumbnailUrl,
-                                    int viewCount, int postLike, LocalDate writtenAt, String url) {
+    public TechBlogPostBasicInfo(
+            Long id,
+            String title,
+            String summary,
+            TechBlogCode techBlogCode,
+            String thumbnailUrl,
+            int viewCount,
+            int postLike,
+            LocalDate writtenAt,
+            String url
+    ) {
         this.id = id;
         this.title = title;
         this.summary = summary;

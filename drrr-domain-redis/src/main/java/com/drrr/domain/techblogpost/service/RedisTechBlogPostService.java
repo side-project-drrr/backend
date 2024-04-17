@@ -1,25 +1,20 @@
 package com.drrr.domain.techblogpost.service;
 
-import com.drrr.core.code.redis.RedisTTL;
-import com.drrr.core.code.techblog.TopTechBlogType;
-import com.drrr.domain.category.entity.RedisCategory;
-import com.drrr.domain.techblogpost.cache.RedisKeywordPostRequest;
-import com.drrr.domain.techblogpost.cache.RedisTechBlogPost;
-import com.drrr.domain.techblogpost.cache.RedisTechBlogPostBasicInfo;
-import com.drrr.domain.techblogpost.cache.RedisTechBlogPostCategory;
-import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts;
-import com.drrr.domain.techblogpost.cache.entity.RedisCategoryPosts.CompoundCategoriesPostId;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
-import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories.CompoundPostCategoriesId;
-import com.drrr.domain.techblogpost.cache.entity.RedisTopPostCategories;
-import com.drrr.domain.techblogpost.cache.entity.RedisTopPostCategories.CompoundTopPostCategoriesId;
-import com.drrr.domain.techblogpost.cache.request.RedisPageRequest;
+import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
+import com.drrr.domain.techblogpost.cache.entity.RedisTechBlogPostsCategoriesStaticData;
+import com.drrr.domain.techblogpost.cache.payload.RedisPostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
-import com.drrr.domain.techblogpost.entity.TechBlogPost;
-import com.drrr.domain.techblogpost.repository.RedisTechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.RedisPostCategoryStaticDataRepository;
+import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,166 +26,153 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class RedisTechBlogPostService {
-    private final RedisTechBlogPostRepository redisTechBlogPostRepository;
-    private final RedisTemplate<String, RedisTechBlogPost> redisTechBlogPostTemplate;
-    private final RedisTemplate<Object, Object> redisTemplate;
+    private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public <T> Boolean hasCachedKey(final T id) {
-        return redisTemplate.hasKey(id);
+
+    private final RedisPostCategoryStaticDataRepository redisPostCategoryStaticDataRepository;
+
+    public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key) {
+        final int start = page * size;
+        final int end = start + size;
+
+        final Set<Object> techBlogPosts = redisTemplate.opsForZSet()
+                .range(key, start, end);
+
+        if (Objects.nonNull(techBlogPosts)) {
+            return techBlogPosts.size() == size;
+        }
+
+        return false;
     }
 
-    public RedisPostCategories findCachePostsInRedis(final int page, final int size) {
-        final CompoundPostCategoriesId key = CompoundPostCategoriesId.builder()
-                .redisPageRequest(RedisPageRequest.from(page, size))
-                .build();
+    public RedisPostCategories findCacheSlicePostsInRedis(final int page, final int size, final String key) {
+        final int start = page * size;
+        final int end = start + size;
 
-        final RedisPostCategories value = (RedisPostCategories) redisTemplate.opsForValue().get(key);
-
-        redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
-
-        return value;
-    }
-
-    public void savePostCategoriesInRedis(final int page, final int size, final boolean hasNext,
-                                          final List<TechBlogPostCategoryDto> posts) {
-        final CompoundPostCategoriesId key = CompoundPostCategoriesId.builder()
-                .redisPageRequest(RedisPageRequest.from(page, size)).build();
-        final List<RedisTechBlogPostCategory> value = posts.stream()
-                .map((entity) -> {
-                    RedisTechBlogPostBasicInfo redisTechBlogPostBasicInfo = RedisTechBlogPostBasicInfo.from(
-                            entity.techBlogPostBasicInfoDto());
-                    List<RedisCategory> redisCategories = RedisCategory.from(entity.categoryDto());
-
-                    return RedisTechBlogPostCategory.builder()
-                            .redisTechBlogPostBasicInfo(redisTechBlogPostBasicInfo)
-                            .redisCategories(redisCategories)
-                            .build();
-                })
-                .toList();
-        final RedisPostCategories redisPostCategories = RedisPostCategories.builder()
-                .id(key)
-                .redisTechBlogPostCategories(value)
-                .hasNext(hasNext)
-                .build();
-
-        redisTemplate.opsForValue().set(key, redisPostCategories, 3600, TimeUnit.SECONDS);
-    }
-
-    public RedisCategoryPosts findPostsInRedisByCategory(final int page, final int size, final Long categoryId) {
-        final CompoundCategoriesPostId key = CompoundCategoriesPostId.builder()
-                .redisPageRequest(RedisPageRequest.from(page, size))
-                .categoryId(categoryId)
-                .build();
-
-        final RedisCategoryPosts value = (RedisCategoryPosts) redisTemplate.opsForValue().get(key);
-
-        redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
-
-        return value;
-    }
-
-    public void savePostsByCategory(final RedisKeywordPostRequest redisKeywordPostRequest) {
-        final CompoundCategoriesPostId key = CompoundCategoriesPostId.builder()
-                .redisPageRequest(redisKeywordPostRequest.fromPageRequest())
-                .categoryId(redisKeywordPostRequest.categoryId())
-                .build();
-
-        final List<RedisTechBlogPostCategory> value = redisKeywordPostRequest.posts().stream()
-                .map((entity) -> {
-                    RedisTechBlogPostBasicInfo redisTechBlogPostBasicInfo = RedisTechBlogPostBasicInfo.from(
-                            entity.techBlogPostBasicInfoDto());
-                    List<RedisCategory> redisCategories = RedisCategory.from(entity.categoryDto());
-
-                    return RedisTechBlogPostCategory.builder()
-                            .redisTechBlogPostBasicInfo(redisTechBlogPostBasicInfo)
-                            .redisCategories(redisCategories)
-                            .build();
-                })
-                .toList();
-
-        final RedisCategoryPosts redisCategoryPosts = RedisCategoryPosts.builder()
-                .id(key)
-                .redisTechBlogPostCategories(value)
-                .hasNext(redisKeywordPostRequest.hasNext())
-                .build();
-
-        redisTemplate.opsForValue().set(key, redisCategoryPosts, 3600, TimeUnit.SECONDS);
-    }
-
-    public RedisTopPostCategories findCacheTopPostsInRedis(final int count, final TopTechBlogType type) {
-        final CompoundTopPostCategoriesId key = CompoundTopPostCategoriesId.builder()
-                .topTechBlogType(type)
-                .count(count)
-                .build();
-
-        final RedisTopPostCategories value = (RedisTopPostCategories) redisTemplate.opsForValue().get(key);
-
-        redisTemplate.expire(key, RedisTTL.EXPIRE_CACHE.getSeconds(), TimeUnit.SECONDS);
-
-        return value;
-    }
-
-    public void saveTopPostCategoriesInRedis(final TopTechBlogType type, final List<TechBlogPostCategoryDto> posts,
-                                             int count) {
-        final CompoundTopPostCategoriesId key = CompoundTopPostCategoriesId.builder()
-                .topTechBlogType(type)
-                .count(count)
-                .build();
-
-        final List<RedisTechBlogPostCategory> value = posts.stream()
-                .map((entity) -> {
-                    RedisTechBlogPostBasicInfo redisTechBlogPostBasicInfo = RedisTechBlogPostBasicInfo.from(
-                            entity.techBlogPostBasicInfoDto());
-                    List<RedisCategory> redisCategories = RedisCategory.from(entity.categoryDto());
-
-                    return RedisTechBlogPostCategory.builder()
-                            .redisTechBlogPostBasicInfo(redisTechBlogPostBasicInfo)
-                            .redisCategories(redisCategories)
-                            .build();
-                })
-                .toList();
-        final RedisTopPostCategories redisTopPostCategories = RedisTopPostCategories.builder()
-                .id(key)
-                .redisTechBlogPostCategories(value)
-                .build();
-
-        redisTemplate.opsForValue().set(key, redisTopPostCategories, 3600, TimeUnit.SECONDS);
-    }
-
-
-    public List<TechBlogPost> findPostsByIdsInRedis(final List<Long> postIds) {
-        //redis repository에서는 찾고자하는 데이터가 없으면 빈 리스트 대신 null를 반환함
-        final List<String> keys = postIds.stream()
-                .map(Object::toString)
-                .toList();
-
-        final List<RedisTechBlogPost> redisTechBlogPosts = redisTechBlogPostTemplate.opsForValue().multiGet(keys);
-
-        return redisTechBlogPosts.stream()
+        final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
+                        redisTemplate.opsForZSet()
+                                .range(key, start, end))
+                .stream()
                 .filter(Objects::nonNull)
-                .map(RedisTechBlogPost::techBlogPost)
+                .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
                 .toList();
-    }
 
-    public void savePostsInRedis(final List<TechBlogPost> posts) {
-        final List<RedisTechBlogPost> redisTechBlogPosts = posts.stream()
-                .map((entity) -> RedisTechBlogPost.builder()
-                        .id(entity.getId())
-                        .techBlogPost(entity)
+        boolean hasNext = false;
+
+        if (!staticData.isEmpty()) {
+            hasNext = staticData.get(staticData.size() - 1).hasNext();
+        }
+
+        //정적 정보 TTL 초기화
+        redisTemplate.expire(key, 3600, TimeUnit.SECONDS);
+
+        final List<Long> keys = staticData.stream()
+                .map((post) -> post.redisTechBlogPostStaticData().id())
+                .toList();
+
+        final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(keys);
+
+        final Map<Long, RedisPostDynamicData> postDynamicDataMap = StreamSupport.stream(postDynamicData.spliterator(),
+                        false)
+                .collect(Collectors.toMap(RedisPostDynamicData::postId, Function.identity()));
+
+        final List<RedisPostsContents> redisPostsContents = staticData.stream()
+                .map(data -> RedisPostsContents.builder()
+                        .redisTechBlogPostDynamicData(postDynamicDataMap.get(data.redisTechBlogPostStaticData().id()))
+                        .redisTechBlogPostStaticData(data.redisTechBlogPostStaticData())
+                        .redisCategories(data.redisCategories())
                         .build())
                 .toList();
 
-        redisTechBlogPostRepository.saveAll(redisTechBlogPosts);
+        //동적 정보 TTL 초기화
+        postDynamicDataMap.forEach((keyValue, value) -> {
+            redisTemplate.expire("redisPostDynamicData:"+keyValue, 3600, TimeUnit.SECONDS);
+        });
+
+        return RedisPostCategories.builder()
+                .hasNext(hasNext)
+                .redisPostsContents(redisPostsContents)
+                .build();
     }
 
+    public void saveSlicePostsInRedis(final List<TechBlogPostCategoryDto> contents, final String key,
+                                      final boolean hasNext) {
+        final List<RedisTechBlogPostsCategoriesStaticData> staticCacheData = RedisTechBlogPostsCategoriesStaticData.from(
+                contents, hasNext);
+
+        staticCacheData.forEach((dto) -> {
+            double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
+            redisTemplate.opsForZSet().add(key, dto, score);
+        });
+        redisTemplate.expire(key, 3600, TimeUnit.SECONDS);
+
+        final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
+
+        redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
+    }
+
+    public List<RedisPostsContents> findRecommendPostsByIdsInRedis(final List<Long> postIds) {
+
+        final Iterable<RedisTechBlogPostsCategoriesStaticData> staticDataIterable = redisPostCategoryStaticDataRepository.findAllById(
+                postIds);
+
+        final List<RedisTechBlogPostsCategoriesStaticData> staticData = StreamSupport.stream(
+                        staticDataIterable.spliterator(),
+                        false)
+                .toList();
+
+        //정적 정보 TTL 초기화
+        staticData.forEach((post) -> {
+            redisPostCategoryStaticDataRepository.deleteById(post.postId());
+            redisPostCategoryStaticDataRepository.save(post);
+        });
+
+        final List<Long> keys = staticData.stream()
+                .map(RedisTechBlogPostsCategoriesStaticData::postId)
+                .toList();
+
+        final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(keys);
+
+        final Map<Long, RedisPostDynamicData> postDynamicDataMap = StreamSupport.stream(postDynamicData.spliterator(),
+                        false)
+                .collect(Collectors.toMap(RedisPostDynamicData::postId, Function.identity()));
+
+        //동적 정보 TTL 초기화
+        postDynamicDataMap.forEach((keyValue, value) -> {
+            redisPostDynamicDataRepository.deleteById(keyValue);
+            redisPostDynamicDataRepository.save(value);
+        });
+
+        return staticData.stream()
+                .map(data -> RedisPostsContents.builder()
+                        .redisTechBlogPostDynamicData(postDynamicDataMap.get(data.redisTechBlogPostStaticData().id()))
+                        .redisTechBlogPostStaticData(data.redisTechBlogPostStaticData())
+                        .redisCategories(data.redisCategories())
+                        .build())
+                .toList();
+
+    }
+
+    public void saveRecommendPostsInRedis(final List<TechBlogPostCategoryDto> contents) {
+        final List<RedisTechBlogPostsCategoriesStaticData> staticCacheData = RedisTechBlogPostsCategoriesStaticData.from(
+                contents);
+        redisPostCategoryStaticDataRepository.saveAll(staticCacheData);
+
+        final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
+
+        redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
+
+
+    }
 
     //redisTemplate.delete()를 사용해서 redis에 저장된 데이터를 삭제할 수 있음
     //jitter를 사용해서 redis에 저장된 데이터를 삭제하는 메서드를 만들어보자
     public void deleteKeysWithJitter() throws InterruptedException {
         try (Cursor<byte[]> cursor = redisTemplate.getConnectionFactory().getConnection().scan(ScanOptions.NONE)) {
             while (cursor.hasNext()) {
-                String key = new String(cursor.next());
-                long seconds = applyJitterSeconds();
+                final String key = new String(cursor.next());
+                final long seconds = applyJitterSeconds();
                 redisTemplate.expire(key, seconds, TimeUnit.SECONDS);
             }
         }
