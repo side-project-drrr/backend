@@ -6,6 +6,7 @@ import com.drrr.domain.category.service.WeightValidationService;
 import com.drrr.domain.log.service.LogUpdateService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.techblogpost.event.RedisEventListener.IncreaseViewEvent;
+import com.drrr.domain.techblogpost.event.RedisEventListener.ReformatRecommendationEvent;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,7 @@ public class ExternalMemberPostReadService {
         categoryWeightService.updateCategoryWeights(categoryIds, member, postId);
         //로깅 및 히스토리 데이터 insert
         logUpdateService.insertMemberLogAndHistory(memberId, postId);
+
+        publisher.publishEvent(new ReformatRecommendationEvent(memberId, List.of(postId)));
     }
 }
