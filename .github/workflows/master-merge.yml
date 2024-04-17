@@ -33,8 +33,18 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # 운영 환경 application.yml 적용
+      - name: Move files
+        run: |
+          cp drrr-api/src/main/resources/security-storage-api/config/* drrr-api/src/main/resources/
+
       - name: Build with Gradle
         run: ./gradlew clean build
+
+      - name: Run gradlew command
+        run: ./gradlew drrr-batch:copyGitSubmodule
+
+
 
       #Docker의 Buildx는 Docker의 CLI 플러그인으로, Docker 이미지를 빌드하는데 사용
       - name: Setup docker buildx
@@ -75,4 +85,4 @@ jobs:
         # ${{ env.NAME}} - drrr-runner
         run: |
           docker stop ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} && docker rm ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} && docker rmi -f ${{ secrets.DOCKER_HUB_MASTER_WITHOUT_TAG }}
-          docker run -d -p 8081:8081 --name ${{ secrets.BACKEND_SERVER_CONTAINER_NAME }} --restart always ${{ secrets.DOCKER_HUB_MASTER }}
+          cd /home/ec2-user/drrr-app && docker-compose down && docker rmi -f youngkyonyou/drrr-master && docker-compose up -d

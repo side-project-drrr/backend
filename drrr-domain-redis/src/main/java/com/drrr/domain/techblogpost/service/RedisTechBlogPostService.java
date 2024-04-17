@@ -88,8 +88,7 @@ public class RedisTechBlogPostService {
 
         //동적 정보 TTL 초기화
         postDynamicDataMap.forEach((keyValue, value) -> {
-            redisPostDynamicDataRepository.deleteById(keyValue);
-            redisPostDynamicDataRepository.save(value);
+            redisTemplate.expire("redisPostDynamicData:"+keyValue, 3600, TimeUnit.SECONDS);
         });
 
         return RedisPostCategories.builder()

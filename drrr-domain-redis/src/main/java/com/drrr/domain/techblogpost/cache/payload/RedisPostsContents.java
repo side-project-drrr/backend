@@ -1,6 +1,6 @@
 package com.drrr.domain.techblogpost.cache.payload;
 
-import com.drrr.domain.category.entity.RedisCategory;
+import com.drrr.domain.category.cache.RedisCategory;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.cache.entity.RedisTechBlogPostStaticData;
 import java.util.List;
