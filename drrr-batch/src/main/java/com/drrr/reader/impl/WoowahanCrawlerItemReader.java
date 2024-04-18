@@ -32,10 +32,7 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader {
 
         WebElement postsElement = this.webDriver.findElement(By.className("post-list"));
 
-        webDriverWait.until(ExpectedConditions.and(
-                ExpectedConditions.visibilityOfElementLocated(By.className("current")),
-                ExpectedConditions.textToBePresentInElementLocated(By.className("current"), String.valueOf(getPage()))
-        ));
+        this.webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.className("wp-pagenavi")));
 
         log.info("{}", postsElement.findElement(By.className("post-item")));
         final var externalBlogPosts = postsElement.findElements(By.cssSelector(".post-item:not(.firstpaint)"))
@@ -82,13 +79,13 @@ public class WoowahanCrawlerItemReader extends AbstractCrawlerPageItemReader {
     @Override
     protected String getPageUrlByParameter(int page) {
         final var url = "https://techblog.woowahan.com/?paged=" + page;
-        log.info("crawler naver url: {}", url);
+        log.info("crawler woowahan url: {}", url);
         return url;
     }
 
     @Override
     protected int getLastPage() {
-        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("wp-pagenavi")));
+        this.webDriverWait.until(ExpectedConditions.presenceOfElementLocated(By.className("wp-pagenavi")));
 
         return this.webDriver.findElement(By.className("wp-pagenavi"))
                 .findElements(By.tagName("a"))

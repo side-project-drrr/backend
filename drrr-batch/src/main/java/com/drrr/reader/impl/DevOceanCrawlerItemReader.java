@@ -6,6 +6,7 @@ import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.reader.AbstractCrawlerPageItemReader;
 import com.drrr.reader.CrawlerPageStrategy;
 import com.drrr.reader.impl.MarketKurlyItemReader.EmptyFinder;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -54,7 +55,7 @@ public class DevOceanCrawlerItemReader extends AbstractCrawlerPageItemReader {
                     log.info("{}", title);
                     final var description = li.findElement(By.className("desc"));
                     final var author = li.findElement(By.className("author")).findElement(By.tagName("em"));
-                    final var date = li.findElement(By.className("date"));
+                    final var date = CrawlingUtils.findByElement(() -> li.findElement(By.className("date")));
                     final var img = li.findElement(By.className("sec-img")).findElement(By.tagName("img"));
 
                     var postId = li.findElement(By.className("favorites")).getAttribute("data-board-id");
@@ -66,7 +67,9 @@ public class DevOceanCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .author(author.getText())// naver는 작성자가 없음
                             .summary(description.getText())
                             .thumbnailUrl(img.getAttribute("src"))
-                            .postDate(CrawlingLocalDatePatterns.PATTERN4.parse(date.getText()))
+                            .postDate(date.map(WebElement::getText)
+                                    .map(CrawlingLocalDatePatterns.PATTERN4::parse)
+                                    .orElse(null))
                             .code(TechBlogCode.DEVOCEAN)
                             .build();
                 })
@@ -83,7 +86,6 @@ public class DevOceanCrawlerItemReader extends AbstractCrawlerPageItemReader {
 
     @Override
     protected int getLastPage() {
-
         try {
             this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.className("sec-area-paging")));
         } catch (TimeoutException timeoutException) {
@@ -98,7 +100,12 @@ public class DevOceanCrawlerItemReader extends AbstractCrawlerPageItemReader {
         return this.webDriver.findElement(By.className("sec-area-paging"))
                 .findElements(By.tagName("a"))
                 .stream()
-                .map(WebElement::getText)
+                .map(webElement -> webElement.getAttribute("onClick"))
+                .filter(Objects::nonNull)
+                .filter(data -> data.length() > "goPage();".length())
+                .map(data -> data.substring("goPage(".length()))
+                .map(data -> data.substring(0, data.indexOf(')')))
+                .peek(log::info)
                 .filter(this::isNumber)
                 .mapToInt(Integer::parseInt)
                 .max()

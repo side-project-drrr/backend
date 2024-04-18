@@ -41,11 +41,19 @@ public class RegisterCategoryItemProcessor implements ItemProcessor<TemporalTech
      */
     @Override
     public TemporalTechBlogPost process(final TemporalTechBlogPost temporalTechBlogPost) {
+        log.info("카테고리 추출 시작:{}", temporalTechBlogPost.getId());
+        if (temporalTechBlogPost.isRegistrationCompleted()) {
+            return temporalTechBlogPost;
+        }
         final var blogContent = techBlogContentParserProvider.execute(
                 temporalTechBlogPost.getTechBlogCode(),
                 temporalTechBlogPost.getUrl()
         );
+
+        log.info("문단 요약 시작:{}", temporalTechBlogPost.getId());
         final var summarizedBlogContent = summarizeProvider.execute(blogContent);
+
+        log.info("GTP 추출 시작:{}", temporalTechBlogPost.getId());
         final var extractedCategoryTexts = extractCategoryProvider.request(summarizedBlogContent).getFirstResult();
         final var categoryNames = textLineSplitCategoryProvider.execute(extractedCategoryTexts);
 
