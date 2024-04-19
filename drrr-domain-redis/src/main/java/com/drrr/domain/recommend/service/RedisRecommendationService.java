@@ -70,12 +70,12 @@ public class RedisRecommendationService {
         redisTemplate.expire("recommendation:member:" + memberId, 3600, TimeUnit.SECONDS);
 
         redisPostsCategoriesStaticData.forEach(data -> {
-            redisTemplate.expire("postId:" + data.postId(), 3600, TimeUnit.SECONDS);
             redisTemplate.opsForHash().put(
                     "postId:" + data.postId(),
                     "redisTechBlogPostStaticData",
                     data
             );
+            redisTemplate.expire("postId:" + data.postId(), 3600, TimeUnit.SECONDS);
         });
 
         redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
