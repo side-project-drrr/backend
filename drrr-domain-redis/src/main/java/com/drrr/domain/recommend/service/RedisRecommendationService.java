@@ -5,9 +5,11 @@ import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
+import com.drrr.domain.util.MapperUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RedisRecommendationService {
 
     private final ObjectMapper objectMapper;
+    private final MapperUtils mapperUtils;
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
 
@@ -30,13 +33,20 @@ public class RedisRecommendationService {
     }
 
     public List<RedisSlicePostsContents> findMemberRecommendation(final Long memberId) {
-        List<Long> postIds = (List<Long>) redisTemplate.opsForValue().get("recommendation:member:" + memberId);
+        List<Long> postIds = objectMapper.convertValue(
+                redisTemplate.opsForValue().get("recommendation:member:" + memberId),
+                mapperUtils.mapType(List.class, Long.class)
+        );
+
+        redisTemplate.expire("recommendation:member:" + memberId, 3600, TimeUnit.SECONDS);
 
         List<RedisPostsCategoriesStaticData> recommendation = postIds.stream()
                 .map(postId -> {
-                    Map<String, Object> map = (Map<String, Object>) redisTemplate.opsForHash()
-                            .get("postId:" + postId, "redisTechBlogPostStaticData");
-                    return objectMapper.convertValue(map, RedisPostsCategoriesStaticData.class);
+                    redisTemplate.expire("postId:" + postIds, 3600, TimeUnit.SECONDS);
+                    return objectMapper.convertValue(
+                            redisTemplate.opsForHash()
+                                    .get("postId:" + postId, "redisTechBlogPostStaticData"),
+                            RedisPostsCategoriesStaticData.class);
                 })
                 .toList();
 
@@ -57,14 +67,17 @@ public class RedisRecommendationService {
         List<Long> postIds = redisPostDynamicData.stream().map(RedisPostDynamicData::getPostId).toList();
 
         redisTemplate.opsForValue().set("recommendation:member:" + memberId, postIds);
+        redisTemplate.expire("recommendation:member:" + memberId, 3600, TimeUnit.SECONDS);
 
         redisPostsCategoriesStaticData.forEach(data -> {
+            redisTemplate.expire("postId:" + data.postId(), 3600, TimeUnit.SECONDS);
             redisTemplate.opsForHash().put(
                     "postId:" + data.postId(),
                     "redisTechBlogPostStaticData",
                     data
             );
         });
+
         redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
 
     }

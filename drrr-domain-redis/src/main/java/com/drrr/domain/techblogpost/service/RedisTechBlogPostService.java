@@ -15,9 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,23 +108,6 @@ public class RedisTechBlogPostService {
 
         redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
 
-    }
-
-    //redisTemplate.delete()를 사용해서 redis에 저장된 데이터를 삭제할 수 있음
-    //jitter를 사용해서 redis에 저장된 데이터를 삭제하는 메서드를 만들어보자
-    public void deleteKeysWithJitter() throws InterruptedException {
-        try (Cursor<byte[]> cursor = redisTemplate.getConnectionFactory().getConnection().scan(ScanOptions.NONE)) {
-            while (cursor.hasNext()) {
-                final String key = new String(cursor.next());
-                final long seconds = applyJitterSeconds();
-                redisTemplate.expire(key, seconds, TimeUnit.SECONDS);
-            }
-        }
-    }
-
-    private long applyJitterSeconds() throws InterruptedException {
-        // 지터 시간은 예를 들어 100ms에서 1000ms 사이의 랜덤한 시간으로 설정
-        return (long) (Math.random() * 900 + 100);
     }
 
 }
