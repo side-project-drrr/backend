@@ -13,13 +13,14 @@ import com.drrr.domain.fixture.category.weight.CategoryWeightFixture;
 import com.drrr.domain.fixture.member.MemberFixture;
 import com.drrr.domain.fixture.post.TechBlogPostCategoryFixture;
 import com.drrr.domain.fixture.post.TechBlogPostFixture;
-import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.util.RedisTemplateTestUtil;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
@@ -33,6 +34,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,11 +59,11 @@ public class RecommendServiceE2ETest {
     @Autowired
     private CategoryWeightRepository categoryWeightRepository;
     @Autowired
-    private MemberPostLogRepository memberTechBlogPostRepository;
-    @Autowired
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
     @Autowired
     private DatabaseCleaner databaseCleaner;
+    @Autowired
+    private RedisTemplateTestUtil redisTemplateTestUtil;
 
     @BeforeEach
     void setup() {
@@ -136,9 +138,23 @@ public class RecommendServiceE2ETest {
         executorService.shutdown();
 
         //then
+        final List<Member> members = memberRepository.findAll();
+
+        final List<Long> memberIds = members.stream()
+                .map(Member::getId).toList();
+
+        final List<RedisSlicePostsContents> cacheMemberRecommendation = redisTemplateTestUtil.findCacheMemberRecommendation(
+                memberIds.get(0));
+
+        List<Long> postIds = cacheMemberRecommendation.stream().map(data -> data.redisTechBlogPostStaticData().id())
+                .toList();
+
         IntStream.range(0, 100).forEach(i -> {
             List<Long> postsId = membersRecommendedPosts.get(i);
-            assertThat(postsId).containsExactlyInAnyOrder(3L, 24L, 33L, 46L, 57L);
+            Assertions.assertAll(
+                    () -> assertThat(postsId).containsExactlyInAnyOrder(3L, 24L, 33L, 46L, 57L),
+                    () -> assertThat(postsId).containsExactlyInAnyOrder(postIds.toArray(new Long[0]))
+            );
         });
 
     }
