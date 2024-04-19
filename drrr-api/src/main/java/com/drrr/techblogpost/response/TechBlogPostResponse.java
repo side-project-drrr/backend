@@ -4,6 +4,7 @@ import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDynamicDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostStaticDataDto;
 import java.util.List;
 import lombok.Builder;
@@ -30,6 +31,13 @@ public record TechBlogPostResponse(
                         .build())
                 .toList();
         return new SliceImpl<>(techBlogPostResponses, pageable, hasNext);
+    }
+
+    public static Slice<TechBlogPostResponse> from(final TechBlogPostSliceDto techBlogPostSliceDto) {
+
+        return new SliceImpl<>(TechBlogPostResponse.from(techBlogPostSliceDto.contents())
+                , techBlogPostSliceDto.pageable(),
+                techBlogPostSliceDto.hasNext());
     }
 
     public static List<TechBlogPostResponse> from(final List<TechBlogPostCategoryDto> contents) {
