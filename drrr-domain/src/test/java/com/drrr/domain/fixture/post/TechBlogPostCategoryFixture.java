@@ -54,4 +54,29 @@ public class TechBlogPostCategoryFixture {
                 .category(category)
                 .build();
     }
+
+    public static List<TechBlogPostCategory> createTechBlogPostCategories(
+            final List<TechBlogPost> selectedTechBlogPosts,
+            final List<TechBlogPost> otherTechBlogPosts,
+            final List<Category> categories) {
+        List<TechBlogPostCategory> techBlogPostCategories = new ArrayList<>();
+
+        selectedTechBlogPosts.forEach(post -> {
+            List<TechBlogPostCategory> techBlogPostCategoryList = categories.stream()
+                    .map(category -> TechBlogPostCategory.builder()
+                            .post(post)
+                            .category(category)
+                            .build()).toList();
+            techBlogPostCategories.addAll(techBlogPostCategoryList);
+        });
+        otherTechBlogPosts.forEach(post -> {
+            List<TechBlogPostCategory> techBlogPostCategoryList = categories.stream()
+                    .map(category -> TechBlogPostCategory.builder()
+                            .post(post)
+                            .category(category)
+                            .build()).toList();
+            techBlogPostCategories.addAll(techBlogPostCategoryList);
+        });
+        return techBlogPostCategories;
+    }
 }

@@ -37,6 +37,25 @@ public class CategoryWeightFixture {
                         .build()).toList();
     }
 
+    public static List<CategoryWeight> createCategoryWeights(final List<Member> members,
+                                                             final List<Category> categories,
+                                                             final List<Double> weightValue,
+                                                             final List<Boolean> preferred) {
+        final List<CategoryWeight> categoryWeightResult = new ArrayList<>();
+        members.forEach(member -> {
+            List<CategoryWeight> categoryWeights = IntStream.range(0, categories.size())
+                    .mapToObj(i -> CategoryWeight.builder()
+                            .member(member)
+                            .category(categories.get(i))
+                            .weightValue(weightValue.get(i))
+                            .lastReadAt(LocalDateTime.now())
+                            .preferred(preferred.get(i))
+                            .build()).toList();
+            categoryWeightResult.addAll(categoryWeights);
+        });
+        return categoryWeightResult;
+    }
+
     public static List<CategoryWeight> createCategoryWeights(final Member member, final List<Category> categories,
                                                              final List<Double> weightValue) {
 
