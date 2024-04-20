@@ -122,8 +122,7 @@ public class WebCrawlerBatchConfiguration {
                         .entityManagerFactory(entityManagerFactory)
                         .build())
                 .writer((chunk -> chunk.getItems().forEach(temporalTechBlogPost -> {
-                    final Key key = new Key(temporalTechBlogPost.getUrlSuffix(),
-                            temporalTechBlogPost.getTechBlogCode());
+                    Key key = new Key(temporalTechBlogPost.getUrlSuffix(), temporalTechBlogPost.getTechBlogCode());
                     crawledTechBlogPostRepository.ifPresentOrElse(key,
                             () -> crawledTechBlogPostRepository.remove(key),
                             () -> temporalTechBlogPostRepository.delete(temporalTechBlogPost));
