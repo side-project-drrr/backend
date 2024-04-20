@@ -1,4 +1,4 @@
-package com.drrr.domain.category.entity;
+package com.drrr.domain.category.cache;
 
 import com.drrr.domain.category.dto.CategoryDto;
 import java.io.Serializable;

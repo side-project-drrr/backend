@@ -19,10 +19,7 @@ public class SinglePage<T> implements Page<T> {
     private final ContentsReader<T> contentsReader;
     private final WebDriverCleaner webDriverCleaner;
     private final After<T> after;
-
-
-    @Builder.Default
-    private Mode mode = Mode.ONCE;
+    private final Mode mode;
 
     @Getter
     @Setter(AccessLevel.PRIVATE)
@@ -51,7 +48,7 @@ public class SinglePage<T> implements Page<T> {
         this.contentsLoader = contentsLoader;
         this.contentsReader = contentsReader;
         this.webDriverCleaner = webDriverCleaner;
-        this.mode = mode;
+        this.mode = Objects.isNull(mode) ? Mode.ONCE : mode;
         this.after = after;
     }
 

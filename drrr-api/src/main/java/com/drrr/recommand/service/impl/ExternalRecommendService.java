@@ -4,12 +4,10 @@ import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.category.service.WeightValidationService;
 import com.drrr.domain.log.service.LogUpdateService;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
-import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
-import java.util.ArrayList;
+import com.drrr.web.redis.RedisUtil;
 import java.util.List;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,19 +31,23 @@ public class ExternalRecommendService {
         final List<Long> postIds = recommendPostService.recommendPosts(memberId, count);
 
         //redis에서 조회
-        final List<TechBlogPost> postsInRedis = redisTechBlogPostService.findPostsByIdsInRedis(postIds);
-        final List<TechBlogPost> notCachedPosts = techBlogPostService.findNotCachedTechBlogPosts(postsInRedis, postIds);
-        final List<TechBlogPost> posts = new ArrayList<>(postsInRedis);
+        List<TechBlogPostCategoryDto> postsInRedis = RedisUtil.redisPostCategoriesEntityToDto(
+                redisTechBlogPostService.findRecommendPostsByIdsInRedis(postIds)
+        );
+
+        final List<Long> redisPostIds = postsInRedis.stream()
+                .map(post -> post.techBlogPostStaticDataDto().id())
+                .toList();
+
+        final List<Long> notCachedPostIds = techBlogPostService.findNotCachedTechBlogPosts(redisPostIds, postIds);
+
+        List<TechBlogPostCategoryDto> categorizedPosts = techBlogPostService.categorize(notCachedPostIds);
+        categorizedPosts.addAll(postsInRedis);
 
         //캐싱해야 할 포스트가 있다면
-        if (!notCachedPosts.isEmpty()) {
-            redisTechBlogPostService.savePostsInRedis(notCachedPosts);
+        if (!notCachedPostIds.isEmpty()) {
+            redisTechBlogPostService.saveRecommendPostsInRedis(categorizedPosts);
         }
-
-        List<Long> concatPostIds = Stream.concat(posts.stream().map(TechBlogPost::getId)
-                , notCachedPosts.stream().map(TechBlogPost::getId)).toList();
-
-        List<TechBlogPostCategoryDto> categorizedPosts = techBlogPostService.categorize(concatPostIds);
 
         //로그 쌓기
         logUpdateService.insertTodayMemberPostRecommendLog(memberId, postIds);

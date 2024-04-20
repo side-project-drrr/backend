@@ -17,10 +17,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.WebDriver;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 @DisplayName("마이그레이션 통합 테스트")
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -36,8 +34,6 @@ class MigrationBatchConfigurationTest extends SpringBatchTestSupport {
 
     @Autowired
     private RegisterPostTagService registerPostTagService;
-    @MockBean
-    private WebDriver webDriver;
 
     public static TemporalTechBlogPost temporalTechBlogPost() {
         return TemporalTechBlogPost.builder()

@@ -103,12 +103,6 @@ public class TemporalTechBlogPost extends BaseEntity {
         this.temporalTechPostTags.addAll(tags);
     }
 
-    public void removeCategory(List<TemporalTechPostTag> tags) {
-        if (this.temporalTechPostTags == null) {
-            return;
-        }
-        this.temporalTechPostTags.removeAll(tags);
-    }
 
     public void updateAiSummarizedText(String aiSummarizedText) {
         this.aiSummary = aiSummarizedText;

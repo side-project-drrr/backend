@@ -19,4 +19,11 @@ public class CategoryFixture {
                 .build();
     }
 
+    public static List<Category> createIgnoreCategories(final int count) {
+        List<Category> categories = createCategories(count);
+        categories.forEach(Category::changeIgnoreType);
+
+        return categories;
+    }
+
 }

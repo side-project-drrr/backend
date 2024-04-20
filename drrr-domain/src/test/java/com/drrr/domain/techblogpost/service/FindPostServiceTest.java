@@ -11,8 +11,8 @@ import com.drrr.domain.fixture.post.TechBlogPostCategoryFixture;
 import com.drrr.domain.fixture.post.TechBlogPostFixture;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
-import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostStaticDataDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
@@ -71,11 +71,11 @@ public class FindPostServiceTest extends ServiceIntegrationTest {
         Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(PageRequest.of(0, 10));
 
         // then
-        List<TechBlogPostBasicInfoDto> basicInfoDtos = allPosts.getContent().stream()
-                .map(TechBlogPostCategoryDto::techBlogPostBasicInfoDto)
+        List<TechBlogPostStaticDataDto> staticDataDtos = allPosts.getContent().stream()
+                .map(TechBlogPostCategoryDto::techBlogPostStaticDataDto)
                 .toList();
-        Comparator<TechBlogPostBasicInfoDto> writtenAtComparator = Comparator.comparing(
-                        TechBlogPostBasicInfoDto::writtenAt)
+        Comparator<TechBlogPostStaticDataDto> writtenAtComparator = Comparator.comparing(
+                        TechBlogPostStaticDataDto::writtenAt)
                 .reversed();
 
         Assertions.assertAll(
@@ -85,8 +85,8 @@ public class FindPostServiceTest extends ServiceIntegrationTest {
                 () -> Assertions.assertEquals(0, allPosts.getNumber()),
                 () -> Assertions.assertEquals(10, allPosts.getNumberOfElements()),
                 () -> Assertions.assertEquals(10, allPosts.getSize()),
-                () -> Assertions.assertEquals(basicInfoDtos.stream().sorted(writtenAtComparator).toList(),
-                        basicInfoDtos)
+                () -> Assertions.assertEquals(staticDataDtos.stream().sorted(writtenAtComparator).toList(),
+                        staticDataDtos)
         );
 
     }
@@ -122,11 +122,11 @@ public class FindPostServiceTest extends ServiceIntegrationTest {
         );
 
         // then
-        List<TechBlogPostBasicInfoDto> basicInfoDtos = allPosts.getContent().stream()
-                .map(TechBlogPostCategoryDto::techBlogPostBasicInfoDto)
+        List<TechBlogPostStaticDataDto> staticDataDtos = allPosts.getContent().stream()
+                .map(TechBlogPostCategoryDto::techBlogPostStaticDataDto)
                 .toList();
-        Comparator<TechBlogPostBasicInfoDto> writtenAtComparator = Comparator.comparing(
-                        TechBlogPostBasicInfoDto::writtenAt)
+        Comparator<TechBlogPostStaticDataDto> writtenAtComparator = Comparator.comparing(
+                        TechBlogPostStaticDataDto::writtenAt)
                 .reversed();
 
         Assertions.assertAll(
@@ -136,7 +136,7 @@ public class FindPostServiceTest extends ServiceIntegrationTest {
                 () -> Assertions.assertEquals(0, allPosts.getNumber()),
                 () -> Assertions.assertEquals(10, allPosts.getNumberOfElements()),
                 () -> Assertions.assertEquals(10, allPosts.getSize()),
-                () -> Assertions.assertEquals(basicInfoDtos.stream().sorted(writtenAtComparator).toList(),
-                        basicInfoDtos));
+                () -> Assertions.assertEquals(staticDataDtos.stream().sorted(writtenAtComparator).toList(),
+                        staticDataDtos));
     }
 }

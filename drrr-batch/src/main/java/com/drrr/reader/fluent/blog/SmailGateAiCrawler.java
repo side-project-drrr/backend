@@ -20,6 +20,7 @@ import com.drrr.reader.fluent.TechBlogReader;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,7 +45,7 @@ public class SmailGateAiCrawler {
                     .singlePageInitializer(() -> BASE_URL)
                     .contentsLoader(contentsLoader())
                     .contentsReader(contentsReader())
-                    .after(data -> log.info("{}", data))
+                    // .after(data -> log.info("{}", data))
                     .build();
 
             return new PageItemReader(page, CODE);
@@ -53,10 +54,15 @@ public class SmailGateAiCrawler {
 
     private ContentsReader<ExternalBlogPosts> contentsReader() {
 
-        return webDriver -> Stream.concat(
-                webDriver.findElements(By.cssSelector(".dt-css-grid .visible article")).stream().map(this::parse),
-                webDriver.findElements(By.cssSelector(".dt-css-grid .hidden article")).stream().map(this::hiddenParse)
-        ).collect(collectingAndThen(toList(), ExternalBlogPosts::new));
+        return webDriver -> {
+            ((JavascriptExecutor) webDriver).executeScript(
+                    "[...document.querySelectorAll(\".dt-css-grid .hidden article\")].forEach(element => element.classList.add(\"show\"))");
+            return Stream.concat(
+                    webDriver.findElements(By.cssSelector(".dt-css-grid .visible article")).stream().map(this::parse),
+                    webDriver.findElements(By.cssSelector(".dt-css-grid .hidden article")).parallelStream()
+                            .map(this::hiddenParse)
+            ).collect(collectingAndThen(toList(), ExternalBlogPosts::new));
+        };
 
     }
 
@@ -66,7 +72,10 @@ public class SmailGateAiCrawler {
         //data-src
         var date = webElement.getAttribute("data-date");
         var titleElement = webElement.findElement(By.cssSelector(".entry-title a"));
-        //log.info("{}", webElement.getText());
+
+        var summaryElement = CrawlingUtils.findByElement(
+                () -> webElement.findElement(By.cssSelector(".entry-excerpt p")));
+        log.info("{}", webElement.getText());
 
         var link = CrawlingUtils.urlDecode(titleElement.getAttribute("href"));
         return ExternalBlogPost
@@ -76,6 +85,7 @@ public class SmailGateAiCrawler {
                 .code(CODE)
                 .title(webElement.getAttribute("data-name"))
                 .postDate((CrawlingLocalDatePatterns.PATTERN10.parse(date)))
+                .summary(summaryElement.map(WebElement::getText).orElse(null))
                 .thumbnailUrl(thumbnailElement.map(element -> element.getAttribute("data-src")).orElse(null))
                 .build();
     }
@@ -100,6 +110,6 @@ public class SmailGateAiCrawler {
     }
 
     private ContentsLoader contentsLoader() {
-        return new SimpleContentsLoader(By.className("closed-mobile-header"));
+        return new SimpleContentsLoader(By.className("dt-css-grid"));
     }
 }

@@ -13,15 +13,16 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 
 public class GenericParallelPages<T> implements MultiPage<T> {
+    private static final int DEFAULT_PARALLEL_COUNT = 2;
     private final WebDriverPool webDriverPool;
     private final ParallelPageInitializer pageInitializer;
     private final ContentsReader<T> contentsReader;
     private final PaginationReader paginationReader;
     private final ContentsLoader contentsLoader;
     private final After<T> after;
+    private final int parallelCount;
 
-    @Builder.Default
-    private int parallelCount = 2;
+
     private int currentPage = 1;
     private PaginationInformation paginationInformation;
 
@@ -40,7 +41,7 @@ public class GenericParallelPages<T> implements MultiPage<T> {
         this.contentsReader = contentsReader;
         this.paginationReader = paginationReader;
         this.contentsLoader = contentsLoader;
-        this.parallelCount = parallelCount;
+        this.parallelCount = parallelCount <= 0 ? DEFAULT_PARALLEL_COUNT : parallelCount;
         this.after = after;
     }
 

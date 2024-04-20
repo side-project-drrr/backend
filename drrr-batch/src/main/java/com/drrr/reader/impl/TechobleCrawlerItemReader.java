@@ -29,7 +29,7 @@ public class TechobleCrawlerItemReader extends AbstractCrawlerPageItemReader {
         this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("article")));
 
         var result = webDriver.findElements(By.tagName("article"))
-                .parallelStream()
+                .stream()
                 .map(card -> {
 
                     var imageSrc = EmptyFinder.get(() -> card.findElement(By.className("post-card-image"))
