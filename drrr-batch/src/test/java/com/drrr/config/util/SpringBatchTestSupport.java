@@ -27,7 +27,7 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBatchTest
 @TestPropertySource(properties = {
         "spring.batch.job.enabled=false",
-        "spring.jpa.properties.hibernate.default_batch_fetch_size=1000"
+        "spring.jpa.show-sql=true"
 })
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @ActiveProfiles("test")
