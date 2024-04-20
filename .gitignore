@@ -39,4 +39,7 @@ out/
 /**/src/main/generated/
 
 
-/drrr-batch/src/main/resourcess
+/drrr-batch/src/main/resources/*.yml
+/compose
+/command
+
