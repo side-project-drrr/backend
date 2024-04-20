@@ -13,6 +13,8 @@ spring:
         - main
       batch:
         - batch
+      stage:
+        - stage
     default: batch
   batch:
     job:
