@@ -14,6 +14,9 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.15.4'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+
+    testImplementation project(path: ':drrr-domain', configuration: 'archives')
 }
 
 bootJar {
