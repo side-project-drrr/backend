@@ -39,9 +39,7 @@ public enum DomainExceptionCode {
     SUBSCRIPTION(5000, "정의되지 않은 에러입니다."),
     SUBSCRIPTION_NOT_FOUND(SUBSCRIPTION.code + 1, "구독정보를 찾을 수 없습니다."),
     LANGUAGE(5500, "정의되지 않은 에러입니다."),
-    INVALID_LANGUAGE_CHARACTER_INDEX(LANGUAGE.code + 1, "유효하지 않은 언어 인덱스입니다."),
-    REDIS(6000, "정의되지 않은 에러입니다."),
-    REDIS_POST_DYNAMIC_DATA_NOT_FOUND(REDIS.code + 1, "Redis 게시물 동적 데이터를 찾을 수 없습니다.");
+    INVALID_LANGUAGE_CHARACTER_INDEX(LANGUAGE.code + 1, "유효하지 않은 언어 인덱스입니다.");
 
     private final int code;
     private final String message;
