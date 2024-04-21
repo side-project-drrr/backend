@@ -3,11 +3,8 @@ package com.drrr.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.drrr.core.code.techblog.TechBlogCode;
-import com.drrr.core.recommandation.constant.WeightConstants;
 import com.drrr.domain.category.entity.Category;
-import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
-import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.category.service.MemberViewWeightService;
 import com.drrr.domain.log.entity.history.MemberPostHistory;
 import com.drrr.domain.log.entity.post.MemberPostLog;
@@ -16,6 +13,7 @@ import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.log.service.LogUpdateService;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
@@ -42,8 +40,6 @@ class MemberViewWeightServiceTest extends ServiceIntegrationTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    @Autowired
-    private CategoryWeightRepository categoryWeightRepository;
 
     @Autowired
     private MemberViewWeightService memberViewWeightService;
@@ -61,6 +57,8 @@ class MemberViewWeightServiceTest extends ServiceIntegrationTest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
+    @Autowired
+    private MemberQueryService memberQueryService;
 
     @AfterEach
     void teardown() {
@@ -141,13 +139,12 @@ class MemberViewWeightServiceTest extends ServiceIntegrationTest {
         techBlogPostCategoryRepository.saveAll(techBlogPostCategories);
 
     }
-    
+
 
     @Test
     void 사용자가_본_게시물에_대한_로그와_히스토리가_정상적으로_쌓입니다() {
         //when
-
-        Long memberId = memberRepository.findAll().get(0).getId();
+        Long memberId = memberQueryService.getAllMembers().get(0).getId();
         Long postId = techBlogPostRepository.findAll().get(0).getId();
 
         logUpdateService.insertMemberLogAndHistory(memberId, postId);
@@ -182,7 +179,7 @@ class MemberViewWeightServiceTest extends ServiceIntegrationTest {
     @Test
     void 사용자가_한_게시물을_접근했을_때_조회수가_정상적으로_증가합니다() {
         //when
-        List<Member> members = memberRepository.findAll();
+        List<Member> members = memberQueryService.getAllMembers();
         if (members.isEmpty()) {
             throw new IllegalArgumentException("member elements is null");
         }
