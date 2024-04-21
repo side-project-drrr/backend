@@ -1,7 +1,7 @@
 package com.drrr.techblogpost.service;
 
 import com.drrr.domain.like.service.TechBlogPostLikeService;
-import com.drrr.domain.techblogpost.event.RedisEventListener.IncreaseLikeEvent;
+import com.drrr.domain.techblogpost.event.RedisPostsEventListener.IncreaseLikeEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
