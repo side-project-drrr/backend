@@ -2,6 +2,7 @@ package com.drrr.recommand.controller;
 
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.recommand.service.impl.ExternalRecommendService;
+import com.drrr.techblogpost.response.TechBlogPostResponse;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -31,7 +32,8 @@ public class RecommendController {
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = TechBlogPostCategoryDto.class))))
     @Secured("USER")
     @GetMapping("/members/me/post-recommendation/{count}")
-    public List<TechBlogPostCategoryDto> recommendPost(@NotNull @PathVariable("count") final int count, @MemberId final Long memberId) {
+    public List<TechBlogPostResponse> recommendPost(@NotNull @PathVariable("count") final int count,
+                                                    @MemberId final Long memberId) {
         return recommendService.execute(memberId, count);
     }
 }

@@ -13,6 +13,7 @@ import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
@@ -73,6 +74,8 @@ public class MemberViewE2ETest {
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
     @Autowired
     private DatabaseCleaner databaseCleaner;
+    @Autowired
+    private MemberQueryService memberQueryService;
 
     @BeforeEach
     public void 가짜_데이터_삽입() {
@@ -131,7 +134,7 @@ public class MemberViewE2ETest {
     }
 
     private void insertCategoryWeightDummyData() {
-        List<Member> members = memberRepository.findAll();
+        List<Member> members = memberQueryService.getAllMembers();
         List<Category> categories = categoryRepository.findAll();
         List<CategoryWeight> categoryWeights = new ArrayList<>();
 
@@ -232,7 +235,7 @@ public class MemberViewE2ETest {
     private void insertMemberPostLogDummyData() {
         List<MemberPostLog> logs = new ArrayList<>();
         IntStream.range(0, MEMBER_POST_LOG_COUNT).forEach(i -> {
-            List<Member> randomMemberIds = memberRepository.findAll();
+            List<Member> randomMemberIds = memberQueryService.getAllMembers();
             List<TechBlogPost> randomPostIds = techBlogPostRepository.findAll();
             Collections.shuffle(randomPostIds);
             Long randomMemberId = randomMemberIds.get(i).getId(); // 임의로 회원 ID 할당
@@ -322,7 +325,7 @@ public class MemberViewE2ETest {
     @Test
     void 여러_사용자가_한_게시물을_접근했을_때_조회수가_정상적으로_증가합니다() throws InterruptedException {
         //when
-        List<Member> members = memberRepository.findAll();
+        List<Member> members = memberQueryService.getAllMembers();
         if (members.isEmpty()) {
             throw new IllegalArgumentException("member elements is null");
         }

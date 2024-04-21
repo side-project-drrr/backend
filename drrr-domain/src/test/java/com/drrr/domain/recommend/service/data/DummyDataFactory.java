@@ -11,6 +11,7 @@ import com.drrr.domain.log.repository.MemberPostLogRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.entity.MemberRole;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
@@ -35,7 +36,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class DummyDataFactory {
     private final int CATEGORY_COUNT = 20;
     private final int POST_COUNT = 500;
-    private final int CATEGORIES_PER_POST = 8;
     private final int MAX_PREFER_CATEGORIES_COUNT = 8;
     @Autowired
     private MemberRepository memberRepository;
@@ -49,6 +49,8 @@ class DummyDataFactory {
     private MemberPostLogRepository memberPostLogRepository;
     @Autowired
     private TechBlogPostCategoryRepository techBlogPostCategoryRepository;
+    @Autowired
+    private MemberQueryService memberQueryService;
 
 
     //@Test
@@ -107,7 +109,7 @@ class DummyDataFactory {
     }
 
     private void insertCategoryWeightDummyData() {
-        List<Member> members = memberRepository.findAll();
+        List<Member> members = memberQueryService.getAllMembers();
         List<Category> categories = categoryRepository.findAll();
         List<CategoryWeight> categoryWeights = new ArrayList<>();
 
@@ -208,7 +210,7 @@ class DummyDataFactory {
         List<MemberPostLog> logs = new ArrayList<>();
         int MEMBER_POST_LOG_COUNT = 100;
         IntStream.range(0, MEMBER_POST_LOG_COUNT).forEach(i -> {
-            List<Member> randomMemberIds = memberRepository.findAll();
+            List<Member> randomMemberIds = memberQueryService.getAllMembers();
             List<TechBlogPost> randomPostIds = techBlogPostRepository.findAll();
             Collections.shuffle(randomPostIds);
             Long randomMemberId = randomMemberIds.get(i).getId(); // 임의로 회원 ID 할당

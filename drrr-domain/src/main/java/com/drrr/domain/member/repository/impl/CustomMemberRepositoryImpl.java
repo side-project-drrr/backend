@@ -2,17 +2,12 @@ package com.drrr.domain.member.repository.impl;
 
 import static com.drrr.domain.member.entity.QMember.member;
 
-import com.drrr.domain.member.dto.MemberDto;
 import com.drrr.domain.member.repository.CustomMemberRepository;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 import jakarta.persistence.EntityManager;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.Objects;
 
 @Repository
 @RequiredArgsConstructor

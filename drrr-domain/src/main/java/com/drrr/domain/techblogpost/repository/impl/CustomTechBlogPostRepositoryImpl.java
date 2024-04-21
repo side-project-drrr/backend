@@ -10,6 +10,7 @@ import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.techblogpost.dto.TechBlogPostBasicInfo;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostContentDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.repository.CustomTechBlogPostRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -21,8 +22,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
@@ -48,7 +47,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @Override
-    public Slice<TechBlogPostCategoryDto> findPostsByCategory(Long categoryId, Pageable pageable) {
+    public TechBlogPostSliceDto findPostsByCategory(Long categoryId, Pageable pageable) {
         final List<TechBlogPostBasicInfo> postEntities =
                 selectTechBlogPostBasicInfo()
                         .from(techBlogPostCategory)
@@ -96,7 +95,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @Override
-    public Slice<TechBlogPostCategoryDto> findAllPosts(Pageable pageable) {
+    public TechBlogPostSliceDto findAllPosts(Pageable pageable) {
         final List<TechBlogPostBasicInfo> postEntities =
                 selectTechBlogPostBasicInfo()
                         .from(techBlogPost)
@@ -115,7 +114,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @Override
-    public Slice<TechBlogPostCategoryDto> searchPostsTitleByKeyword(final String keyword, final Pageable pageable) {
+    public TechBlogPostSliceDto searchPostsTitleByKeyword(final String keyword, final Pageable pageable) {
         final List<TechBlogPostBasicInfo> postEntities =
                 selectTechBlogPostBasicInfo()
                         .from(techBlogPost)
@@ -152,9 +151,9 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
     }
 
     @NonNull
-    private Slice<TechBlogPostCategoryDto> getTechBlogPostCategoryDtos(final Pageable pageable,
-                                                                       final List<TechBlogPostContentDto> contents,
-                                                                       final Long total) {
+    private TechBlogPostSliceDto getTechBlogPostCategoryDtos(final Pageable pageable,
+                                                             final List<TechBlogPostContentDto> contents,
+                                                             final Long total) {
         final boolean hasNext = (pageable.getOffset() + contents.size()) < total;
 
         final Map<Long, List<CategoryDto>> postIdsCategories = categorizePosts(
@@ -165,7 +164,7 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
         final List<TechBlogPostCategoryDto> postCategoryDtos = TechBlogPostCategoryDto.from(contents,
                 postIdsCategories);
 
-        return new SliceImpl<>(postCategoryDtos, pageable, hasNext);
+        return TechBlogPostSliceDto.from(postCategoryDtos, pageable, hasNext);
     }
 
 }

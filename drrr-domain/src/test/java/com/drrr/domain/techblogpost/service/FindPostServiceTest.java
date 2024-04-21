@@ -12,6 +12,7 @@ import com.drrr.domain.fixture.post.TechBlogPostFixture;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostStaticDataDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
@@ -25,7 +26,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -68,10 +68,10 @@ public class FindPostServiceTest extends ServiceIntegrationTest {
         em.flush();
 
         // when
-        Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findAllPosts(PageRequest.of(0, 10));
+        TechBlogPostSliceDto allPosts = techBlogPostRepository.findAllPosts(PageRequest.of(0, 10));
 
         // then
-        List<TechBlogPostStaticDataDto> staticDataDtos = allPosts.getContent().stream()
+        List<TechBlogPostStaticDataDto> staticDataDtos = allPosts.contents().stream()
                 .map(TechBlogPostCategoryDto::techBlogPostStaticDataDto)
                 .toList();
         Comparator<TechBlogPostStaticDataDto> writtenAtComparator = Comparator.comparing(
@@ -80,11 +80,7 @@ public class FindPostServiceTest extends ServiceIntegrationTest {
 
         Assertions.assertAll(
                 () -> Assertions.assertTrue(allPosts.hasNext()),
-                () -> Assertions.assertTrue(allPosts.isFirst()),
-                () -> Assertions.assertFalse(allPosts.isLast()),
-                () -> Assertions.assertEquals(0, allPosts.getNumber()),
-                () -> Assertions.assertEquals(10, allPosts.getNumberOfElements()),
-                () -> Assertions.assertEquals(10, allPosts.getSize()),
+                () -> Assertions.assertEquals(10, allPosts.contents().size()),
                 () -> Assertions.assertEquals(staticDataDtos.stream().sorted(writtenAtComparator).toList(),
                         staticDataDtos)
         );
@@ -116,13 +112,13 @@ public class FindPostServiceTest extends ServiceIntegrationTest {
         em.flush();
 
         // when
-        Slice<TechBlogPostCategoryDto> allPosts = techBlogPostRepository.findPostsByCategory(
+        TechBlogPostSliceDto postsByCategory = techBlogPostRepository.findPostsByCategory(
                 category.getId(),
                 PageRequest.of(0, 10)
         );
 
         // then
-        List<TechBlogPostStaticDataDto> staticDataDtos = allPosts.getContent().stream()
+        List<TechBlogPostStaticDataDto> staticDataDtos = postsByCategory.contents().stream()
                 .map(TechBlogPostCategoryDto::techBlogPostStaticDataDto)
                 .toList();
         Comparator<TechBlogPostStaticDataDto> writtenAtComparator = Comparator.comparing(
@@ -130,12 +126,8 @@ public class FindPostServiceTest extends ServiceIntegrationTest {
                 .reversed();
 
         Assertions.assertAll(
-                () -> Assertions.assertTrue(allPosts.hasNext()),
-                () -> Assertions.assertTrue(allPosts.isFirst()),
-                () -> Assertions.assertFalse(allPosts.isLast()),
-                () -> Assertions.assertEquals(0, allPosts.getNumber()),
-                () -> Assertions.assertEquals(10, allPosts.getNumberOfElements()),
-                () -> Assertions.assertEquals(10, allPosts.getSize()),
+                () -> Assertions.assertTrue(postsByCategory.hasNext()),
+                () -> Assertions.assertEquals(10, postsByCategory.contents().size()),
                 () -> Assertions.assertEquals(staticDataDtos.stream().sorted(writtenAtComparator).toList(),
                         staticDataDtos));
     }

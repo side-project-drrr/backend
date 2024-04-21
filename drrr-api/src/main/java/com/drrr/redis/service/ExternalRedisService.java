@@ -1,6 +1,6 @@
 package com.drrr.redis.service;
 
-import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
+import com.drrr.domain.util.JitterUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 @Transactional
 @RequiredArgsConstructor
 public class ExternalRedisService {
-    private final RedisTechBlogPostService redisTechBlogPostService;
+    private final JitterUtils jitterUtils;
 
     public void execute() throws InterruptedException {
-        redisTechBlogPostService.deleteKeysWithJitter();
+        jitterUtils.deleteKeysWithJitter();
     }
 }

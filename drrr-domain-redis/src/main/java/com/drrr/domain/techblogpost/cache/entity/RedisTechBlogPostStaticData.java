@@ -7,13 +7,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash(value = "redisTechBlogPostStaticData", timeToLive = 3600) // Redis Repository 사용을 위한
 @Builder
 public record RedisTechBlogPostStaticData(
-        @Id
         Long id,
         String title,
         String summary,
