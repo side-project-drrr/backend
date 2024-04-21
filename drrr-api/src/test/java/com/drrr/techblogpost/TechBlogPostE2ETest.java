@@ -8,6 +8,7 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.exception.DomainExceptionCode;
+import com.drrr.domain.exception.RedisDomainExceptionCode;
 import com.drrr.domain.fixture.category.CategoryFixture;
 import com.drrr.domain.fixture.category.weight.CategoryWeightFixture;
 import com.drrr.domain.fixture.member.MemberFixture;
@@ -98,10 +99,10 @@ public class TechBlogPostE2ETest {
         RestAssured.port = port;
         databaseCleaner.clear();
         //M1~M500 생성
-        List<Member> members = MemberFixture.createMembers(200);
+        final List<Member> members = MemberFixture.createMembers(200);
         memberRepository.saveAll(members);
 
-        TechBlogPost post = TechBlogPostFixture.createTechBlogPostLike(200);
+        final TechBlogPost post = TechBlogPostFixture.createTechBlogPostLike(200);
         techBlogPostRepository.save(post);
 
         redisPostDynamicDataRepository.save(
@@ -110,10 +111,10 @@ public class TechBlogPostE2ETest {
         techBlogPostLikeRepository.saveAll(
                 TechBlogPostLikeFixture.createTechBlogPostLikeIncrease(members.subList(100, 200), post));
 
-        List<Category> categories = CategoryFixture.createCategories(3);
+        final List<Category> categories = CategoryFixture.createCategories(3);
         categoryRepository.saveAll(categories);
 
-        List<TechBlogPostCategory> techBlogPostCategory = TechBlogPostCategoryFixture.createTechBlogPostCategories(
+        final List<TechBlogPostCategory> techBlogPostCategory = TechBlogPostCategoryFixture.createTechBlogPostCategories(
                 post,
                 categories);
         techBlogPostCategoryRepository.saveAll(
@@ -127,10 +128,10 @@ public class TechBlogPostE2ETest {
     @Test
     void 여러_사용자가_게시물에_좋아요를_누르면_정상적으로_증가합니다() throws InterruptedException {
         //when
-        List<TechBlogPost> posts = techBlogPostRepository.findAll();
+        final List<TechBlogPost> posts = techBlogPostRepository.findAll();
 
-        CountDownLatch latch = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        final CountDownLatch latch = new CountDownLatch(1);
+        final ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         IntStream.rangeClosed(1, 100).forEach(i -> {
             String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
@@ -151,11 +152,11 @@ public class TechBlogPostE2ETest {
         executorService.shutdown();
 
         //then
-        TechBlogPost techBlogPost = techBlogPostRepository.findById(posts.get(0).getId()).orElseThrow(
+        final TechBlogPost techBlogPost = techBlogPostRepository.findById(posts.get(0).getId()).orElseThrow(
                 DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
 
-        RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(posts.get(0).getId())
-                .orElseThrow(DomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
+        final RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(posts.get(0).getId())
+                .orElseThrow(RedisDomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
 
         assertAll(
                 () -> assertThat(techBlogPost.getPostLike()).isEqualTo(300),
@@ -167,13 +168,13 @@ public class TechBlogPostE2ETest {
     @Test
     void 여러_사용자가_게시물에_좋아요를_누르면_정상적으로_감소합니다() throws InterruptedException {
         //when
-        List<TechBlogPost> posts = techBlogPostRepository.findAll();
-        CountDownLatch latch = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        final List<TechBlogPost> posts = techBlogPostRepository.findAll();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         IntStream.rangeClosed(101, 200).forEach(i -> {
-            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
-            Response response = given().log()
+            final String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
+            final Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
@@ -190,11 +191,11 @@ public class TechBlogPostE2ETest {
         executorService.shutdown();
 
         //then
-        List<TechBlogPost> techBlogPost = techBlogPostRepository.findAll();
-        Long postId = techBlogPost.get(0).getId();
+        final List<TechBlogPost> techBlogPost = techBlogPostRepository.findAll();
+        final Long postId = techBlogPost.get(0).getId();
 
-        RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(postId)
-                .orElseThrow(DomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
+        final RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(postId)
+                .orElseThrow(RedisDomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
 
         assertAll(
                 () -> assertThat(techBlogPost.get(0).getPostLike()).isEqualTo(100),
@@ -205,13 +206,13 @@ public class TechBlogPostE2ETest {
     @Test
     void 여러_사용자가_게시물을_읽으면_조회수가_정상적으로_증가합니다() throws InterruptedException {
         //when
-        List<TechBlogPost> posts = techBlogPostRepository.findAll();
-        CountDownLatch latch = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(100);
+        final List<TechBlogPost> posts = techBlogPostRepository.findAll();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         IntStream.rangeClosed(1, 100).forEach(i -> {
-            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
-            Response response = given().log()
+            final String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
+            final Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
@@ -228,16 +229,15 @@ public class TechBlogPostE2ETest {
         executorService.shutdown();
 
         //then
-        List<TechBlogPost> techBlogPost = techBlogPostRepository.findAll();
-        Long postId = techBlogPost.get(0).getId();
+        final List<TechBlogPost> techBlogPost = techBlogPostRepository.findAll();
+        final Long postId = techBlogPost.get(0).getId();
 
-        RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(postId)
-                .orElseThrow(DomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
+        final RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(postId)
+                .orElseThrow(RedisDomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
 
         assertAll(
                 () -> assertThat(techBlogPost.get(0).getViewCount()).isEqualTo(200),
                 () -> assertThat(redisPostDynamicData.getViewCount()).isEqualTo(200)
         );
     }
-
 }
