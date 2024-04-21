@@ -2,9 +2,8 @@ package com.drrr.infra.notifications.kafka.email;
 
 import com.drrr.core.recommandation.constant.PostConstants;
 import com.drrr.domain.category.service.RecommendPostService;
-import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.member.entity.Member;
-import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.infra.push.entity.PushMessage;
@@ -27,7 +26,7 @@ public class EmailProducer {
     private final RecommendPostService recommendPostService;
     private final TechBlogPostService techBlogPostService;
     private final KafkaTemplate<String, Object> kafkaTemplate;
-    private final MemberRepository memberRepository;
+    private final MemberQueryService memberQueryService;
     private String htmlBody = "";
 
     @Transactional
@@ -42,12 +41,7 @@ public class EmailProducer {
 
     @Transactional
     public void sendRecommendationMessage() {
-        final List<Member> members = memberRepository.findAll();
-        if (members.size() == 0) {
-            log.error("사용자를 찾을 수 없습니다.");
-
-            throw DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
-        }
+        final List<Member> members = memberQueryService.getAllMembers();
         final Context context = new Context();
 
         //limit은 테스트용 실제로는 제거해야 함
