@@ -5,7 +5,7 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import com.drrr.domain.exception.DomainExceptionCode;
+import com.drrr.domain.category.repository.common.CategoryQueryService;
 import com.drrr.domain.log.service.MemberPostLogService;
 import com.drrr.domain.member.entity.Member;
 import java.time.LocalDateTime;
@@ -26,6 +26,7 @@ public class CategoryWeightService {
     private final CategoryWeightRepository categoryWeightRepository;
     private final CategoryRepository categoryRepository;
     private final MemberPostLogService memberPostLogService;
+    private final CategoryQueryService categoryQueryService;
 
     public void updateCategoryWeights(final List<Long> categoryIds, final Member member, final Long postId) {
         final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberIdAndCategoryIdsWithPessimisticLock(
@@ -47,13 +48,7 @@ public class CategoryWeightService {
         if (postCategoryIdSet.size() > 0) {
             List<Long> newCategoryIds = postCategoryIdSet.stream().toList();
 
-            final List<Category> categories = categoryRepository.findIds(newCategoryIds);
-
-            if (categories.isEmpty()) {
-                log.error("카테고리를 찾을 수 없습니다.");
-                log.error("categoryIds -> {}", categoryIds);
-                throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
-            }
+            final List<Category> categories = categoryQueryService.getCategoriesByIds(newCategoryIds);
 
             final List<CategoryWeight> updatedCategoryWeights = categories.stream()
                     .map(category -> CategoryWeight.builder()
