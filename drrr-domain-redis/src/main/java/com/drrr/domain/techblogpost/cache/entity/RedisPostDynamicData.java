@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash(value = "redisPostDynamicData", timeToLive = 3600)
+@RedisHash(value = "redisPostDynamicData", timeToLive = 300)
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

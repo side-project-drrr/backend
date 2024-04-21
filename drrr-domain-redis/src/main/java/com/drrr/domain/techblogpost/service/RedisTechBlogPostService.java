@@ -59,7 +59,7 @@ public class RedisTechBlogPostService {
         }
 
         //정적 정보 TTL 초기화
-        redisTemplate.expire(key, 3600, TimeUnit.SECONDS);
+        redisTemplate.expire(key, 300, TimeUnit.SECONDS);
 
         final List<Long> keys = staticData.stream()
                 .map((post) -> post.redisTechBlogPostStaticData().id())
@@ -101,7 +101,7 @@ public class RedisTechBlogPostService {
             double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
             redisTemplate.opsForZSet().add(key, dto, score);
         });
-        redisTemplate.expire(key, 3600, TimeUnit.SECONDS);
+        redisTemplate.expire(key, 300, TimeUnit.SECONDS);
 
         //opsForHash()를 사용해서 redis에 데이터를 저장함 - 객체를 각 필드 마다 map으로 저장
         final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
