@@ -1,7 +1,10 @@
 package com.drrr.domain.techblogpost.event;
 
+import com.drrr.domain.util.MapperUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -12,40 +15,51 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class RedisEventListener {
+public class RedisPostsEventListener {
 
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
+    private final MapperUtils mapperUtils;
+    private final String REDIS_POST_DYNAMIC_DATA = "redisPostDynamicData:%s";
+    private final String VIEW_COUNT = "viewCount";
+    private final String LIKE_COUNT = "likeCount";
+    private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
 
     @Async
     @EventListener
     public void increaseView(final IncreaseViewEvent instance) {
-        redisTemplate.opsForHash().increment("redisPostDynamicData:" + instance.postId.toString(), "viewCount", 1);
+        redisTemplate.opsForHash()
+                .increment(String.format(REDIS_POST_DYNAMIC_DATA, instance.postId.toString()), VIEW_COUNT, 1);
     }
 
     @Async
     @EventListener
     public void increaseLike(final IncreaseLikeEvent instance) {
-        redisTemplate.opsForHash().increment("redisPostDynamicData:" + instance.postId.toString(), "likeCount", 1);
+        redisTemplate.opsForHash()
+                .increment(String.format(REDIS_POST_DYNAMIC_DATA, instance.postId.toString()), LIKE_COUNT, 1);
     }
 
     @Async
     @EventListener
     public void decreaseLike(final DecreaseLikeEvent instance) {
-        redisTemplate.opsForHash().increment("redisPostDynamicData:" + instance.postId.toString(), "likeCount", -1);
+        redisTemplate.opsForHash()
+                .increment(String.format(REDIS_POST_DYNAMIC_DATA, instance.postId.toString()), LIKE_COUNT, -1);
     }
 
     @Async
     @EventListener
     public void reformatRecommendation(final ReformatRecommendationEvent instance) {
 
-        List<Long> postIds = (List<Long>) redisTemplate.opsForValue()
-                .get("recommendation:member:" + instance.memberId.toString());
+        List<Long> postIds = objectMapper.convertValue(
+                redisTemplate.opsForValue().get(String.format(RECOMMENDATION_MEMBER, instance.memberId)),
+                mapperUtils.mapType(List.class, Long.class)
+        );
 
-        HashSet<Long> postIdsSet = new HashSet<>(postIds);
+        Set<Long> postIdsSet = new HashSet<>(postIds);
         boolean containsAny = postIdsSet.stream().anyMatch(instance.postIds::contains);
 
         if (containsAny) {
-            redisTemplate.delete("recommendation:member:" + instance.memberId);
+            redisTemplate.delete(String.format(RECOMMENDATION_MEMBER, instance.memberId));
         }
     }
 
