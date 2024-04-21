@@ -4,9 +4,9 @@ import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
-import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.KeywordTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
+import com.drrr.techblogpost.response.TechBlogPostDetailedResponse;
 import com.drrr.techblogpost.response.TechBlogPostResponse;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
 import com.drrr.web.page.request.PageableRequest;
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TechBlogPostController {
     private final ExternalTechBlogPostService externalTechBlogPostService;
     private final TechBlogPostService techBlogPostService;
-    private final TechBlogPostRepository techBlogPostRepository;
     private final KeywordTechBlogPostService keywordTechBlogPostService;
 
     @Operation(summary = "모든 기술 블로그 정보를 가져오는 API", description = """
@@ -60,7 +59,7 @@ public class TechBlogPostController {
     public Slice<TechBlogPostResponse> searchPosts(
             @Valid @RequestParam("keyword") final String keyword,
             @Valid @ModelAttribute final PageableRequest pageableRequest) {
-        TechBlogPostSliceDto postsByKeyword = keywordTechBlogPostService.findPostsByKeyword(keyword,
+        final TechBlogPostSliceDto postsByKeyword = keywordTechBlogPostService.findPostsByKeyword(keyword,
                 pageableRequest.page(),
                 pageableRequest.size());
 
@@ -86,9 +85,11 @@ public class TechBlogPostController {
     )
     @Secured("USER")
     @GetMapping("/posts/{postId}")
-    public TechBlogPostDetailedInfoDto findPostDetail(@NotNull @PathVariable("postId") final Long postId) {
+    public TechBlogPostDetailedResponse findPostDetail(@NotNull @PathVariable("postId") final Long postId) {
         final TechBlogPost post = techBlogPostService.findTechBlogPostsById(postId);
-        return TechBlogPostDetailedInfoDto.from(post);
+        final TechBlogPostDetailedInfoDto detailedPost = TechBlogPostDetailedInfoDto.from(post);
+
+        return TechBlogPostDetailedResponse.from(detailedPost);
     }
 
     @Operation(summary = "Request로 보낸 Type(VIEWS or LIKES)이 가장 높은 탑 기술 블로그를 반환 API",
