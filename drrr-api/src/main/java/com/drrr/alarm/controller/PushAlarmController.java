@@ -7,10 +7,10 @@ import com.drrr.alarm.service.impl.ExternalSubscriptionDeleteService;
 import com.drrr.alarm.service.request.PushDateRequest;
 import com.drrr.alarm.service.request.PushDatesRequest;
 import com.drrr.alarm.service.request.SubscriptionRequest;
-import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.infra.push.dto.PushDateDto;
 import com.drrr.infra.push.entity.Subscription;
 import com.drrr.infra.push.repository.SubscriptionRepository;
+import com.drrr.techblogpost.response.TechBlogPostResponse;
 import com.drrr.web.annotation.MemberId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,7 +47,8 @@ public class PushAlarmController {
             description = "호출 성공 시  count만큼 사용자의 웹 푸시가 존재하는 날을 추출해서 열람여부, 읽음여부, 게시물 개수, 푸시날짜 정보 반환")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "사용자의 푸시가 존재하는 날짜별로 count만큼 웹 푸시 상태 정보 반환"))
     @GetMapping("/members/me/web-push/posts/count/{count}")
-    public List<PushDateDto> findMemberPushPostsCountByDate(@MemberId final Long memberId, @PathVariable("count") final int count) {
+    public List<PushDateDto> findMemberPushPostsCountByDate(@MemberId final Long memberId,
+                                                            @PathVariable("count") final int count) {
         return externalSearchPushPostsCountService.execute(memberId, count);
     }
 
@@ -55,7 +56,8 @@ public class PushAlarmController {
             description = "호출 성공 시  pushDate(format : YYYYMMDD) from ~ to에 해당하는 날짜의 푸시 게시물 반환")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "날짜 범위 pushDate(format : YYYYMMDD)에 해당하는 웹 푸시 게시물 정보 반환"))
     @GetMapping("/members/me/web-push/posts/date")
-    public List<TechBlogPostCategoryDto> findMemberPushPostsByDate(@MemberId final Long memberId, @Valid @ModelAttribute final PushDateRequest request) {
+    public List<TechBlogPostResponse> findMemberPushPostsByDate(@MemberId final Long memberId,
+                                                                @Valid @ModelAttribute final PushDateRequest request) {
         return externalSearchPushPostsService.execute(memberId, request);
     }
 
@@ -63,7 +65,8 @@ public class PushAlarmController {
             description = "호출 성공 시 지정된 pushDate(format : YYYYMMDD)에 푸시한 푸시 상태 읽음으로 변경")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "지정된 pushDate(format : YYYYMMDD)에 웹 푸시의 상태를 읽음으로 변경"))
     @PostMapping("/members/me/web-push/posts/read")
-    public void updateMemberPushReadStatus(@MemberId final Long memberId, @RequestParam("pushDate") final LocalDate pushDate) {
+    public void updateMemberPushReadStatus(@MemberId final Long memberId,
+                                           @RequestParam("pushDate") final LocalDate pushDate) {
         externalPushStatusUpdateService.updateReadStatus(memberId, pushDate);
     }
 
