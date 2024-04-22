@@ -7,6 +7,9 @@ import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import java.time.LocalDate;
 import java.util.List;
+
+import com.drrr.domain.techblogpost.dto.TechBlogPostStaticDataDto;
+import com.drrr.domain.techblogpost.dto.TechBlogPostViewDto;
 import lombok.Builder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -14,15 +17,7 @@ import org.springframework.data.domain.SliceImpl;
 
 @Builder
 public record TechBlogPostResponse(
-        Long id,
-        String title,
-        String summary,
-        TechBlogCode techBlogCode,
-        String thumbnailUrl,
-        LocalDate writtenAt,
-        String url,
-        int viewCount,
-        int likeCount,
+        TechBlogPostViewDto techBlogPostBasicInfoDto,
         List<CategoryDto> categoryDto
 ) {
     public static Slice<TechBlogPostResponse> from(
@@ -48,6 +43,7 @@ public record TechBlogPostResponse(
     public static List<TechBlogPostResponse> fromRedis(final List<RedisSlicePostsContents> contents) {
         return contents.stream()
                 .map((redisEntity) -> TechBlogPostResponse.builder()
+                        .techBlogPostBasicInfoDto(TechBlogPostViewDto.builder()
                         .id(redisEntity.redisTechBlogPostStaticData().id())
                         .title(redisEntity.redisTechBlogPostStaticData().title())
                         .summary(redisEntity.redisTechBlogPostStaticData().summary())
@@ -56,7 +52,7 @@ public record TechBlogPostResponse(
                         .writtenAt(redisEntity.redisTechBlogPostStaticData().writtenAt())
                         .url(redisEntity.redisTechBlogPostStaticData().url())
                         .viewCount(redisEntity.redisTechBlogPostDynamicData().getViewCount())
-                        .likeCount(redisEntity.redisTechBlogPostDynamicData().getLikeCount())
+                        .likeCount(redisEntity.redisTechBlogPostDynamicData().getLikeCount()).build())
                         .categoryDto(redisEntity.redisCategories().stream()
                                 .map(redisCategory -> CategoryDto.builder()
                                         .id(redisCategory.id())
@@ -68,6 +64,7 @@ public record TechBlogPostResponse(
     private static List<TechBlogPostResponse> createTechBlogPostResponse(final List<TechBlogPostCategoryDto> contents) {
         return contents.stream()
                 .map(content -> TechBlogPostResponse.builder()
+                        .techBlogPostBasicInfoDto(TechBlogPostViewDto.builder()
                         .id(content.techBlogPostStaticDataDto().id())
                         .title(content.techBlogPostStaticDataDto().title())
                         .summary(content.techBlogPostStaticDataDto().summary())
@@ -76,7 +73,7 @@ public record TechBlogPostResponse(
                         .writtenAt(content.techBlogPostStaticDataDto().writtenAt())
                         .url(content.techBlogPostStaticDataDto().url())
                         .viewCount(content.techBlogPostDynamicDto().viewCount())
-                        .likeCount(content.techBlogPostDynamicDto().likeCount())
+                        .likeCount(content.techBlogPostDynamicDto().likeCount()).build())
                         .categoryDto(content.categoryDto())
                         .build())
                 .toList();
