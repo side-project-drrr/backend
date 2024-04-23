@@ -24,8 +24,16 @@ bootJar {
 }
 
 
+group = 'com.drrr'
+
+version = '1.0.0'
+
 task copyGitSubmodule(type: Copy) {
     from './config'
     include '*.yml'
     into './src/main/resources'
+}
+
+jar {
+    enabled = false
 }
