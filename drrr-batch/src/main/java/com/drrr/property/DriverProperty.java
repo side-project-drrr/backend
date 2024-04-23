@@ -1,4 +1,4 @@
-package com.drrr.poperty;
+package com.drrr.property;
 
 
 import java.net.MalformedURLException;

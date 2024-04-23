@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesBindin
 
 
 // prefix
-@ConfigurationProperties("extract.category")
+@ConfigurationProperties("extract")
 @ConfigurationPropertiesBinding
 public record ExtractCategoryProperty(
         String entryPoint
@@ -16,5 +16,5 @@ public record ExtractCategoryProperty(
     public String createUri(String path) {
         return entryPoint + path;
     }
-    
+
 }
