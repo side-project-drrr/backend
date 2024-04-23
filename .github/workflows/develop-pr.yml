@@ -37,7 +37,7 @@ jobs:
 
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build --parallel
 
 
       - name: Checkout code
