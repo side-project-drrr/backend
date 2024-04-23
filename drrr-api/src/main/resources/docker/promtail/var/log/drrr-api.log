@@ -1,0 +1,428 @@
+2024-04-23T23:26:05.343+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] com.drrr.DrRRApiApplication              : Starting DrRRApiApplication using Java 17.0.8 with PID 43980 (C:\Use
+rs\User\backend\drrr-api\build\classes\java\main started by User in C:\Users\User\backend)
+2024-04-23T23:26:05.345+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] com.drrr.DrRRApiApplication              : No active profile set, falling back to 1 default profile: "develop"
+2024-04-23T23:26:06.259+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-04-23T23:26:06.259+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-04-23T23:26:06.415+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 148 ms. Found 2 JPA repository interfaces.
+2024-04-23T23:26:06.421+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-04-23T23:26:06.421+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-04-23T23:26:06.458+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.drrr.domain.auth.repository.RedisAuthenticationTokenRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2024-04-23T23:26:06.460+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2024-04-23T23:26:06.479+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 57 ms. Found 12 JPA repository interfaces.
+2024-04-23T23:26:06.945+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2024-04-23T23:26:06.946+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-04-23T23:26:06.979+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.infra.push.repository.PushStatusRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.979+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.infra.push.repository.SubscriptionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.979+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.admin.repository.AdminRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.979+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.category.repository.CategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.980+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.category.repository.CategoryWeightRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.980+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.email.repository.EmailRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.980+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.like.repository.TechBlogPostLikeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.980+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.log.repository.MemberPostHistoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.980+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.log.repository.MemberPostLogRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.980+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.member.repository.MemberRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.980+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.981+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.techblogpost.repository.TechBlogPostRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.981+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.techblogpost.repository.TemporalTechBlogPostRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.981+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.drrr.domain.techblogpost.repository.TemporalTechPostTagRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-04-23T23:26:06.996+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 2 Redis repository interfaces.
+2024-04-23T23:26:07.751+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2024-04-23T23:26:07.762+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-04-23T23:26:07.762+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.19]
+2024-04-23T23:26:07.847+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-04-23T23:26:07.848+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2465 ms
+2024-04-23T23:26:08.413+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-04-23T23:26:08.484+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2024-04-23T23:26:08.524+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-04-23T23:26:08.792+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-04-23T23:26:08.822+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-04-23T23:26:08.959+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6aed4a23
+2024-04-23T23:26:08.961+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-04-23T23:26:09.163+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.infra.push.entity.PushStatus
+2024-04-23T23:26:09.236+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.infra.push.entity.Subscription
+2024-04-23T23:26:09.239+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.admin.entity.Admin
+2024-04-23T23:26:09.242+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.category.entity.Category
+2024-04-23T23:26:09.245+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.category.entity.CategoryWeight
+2024-04-23T23:26:09.251+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.email.entity.Email
+2024-04-23T23:26:09.253+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.like.entity.TechBlogPostLike
+2024-04-23T23:26:09.255+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.log.entity.history.MemberPostHistory
+2024-04-23T23:26:09.258+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.log.entity.post.MemberPostLog
+2024-04-23T23:26:09.261+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.member.entity.Member
+2024-04-23T23:26:09.263+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.techblogpost.entity.TechBlogPost
+2024-04-23T23:26:09.267+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.techblogpost.entity.TechBlogPostCategory
+2024-04-23T23:26:09.270+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.techblogpost.entity.TemporalTechBlogPost
+2024-04-23T23:26:09.275+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] o.h.boot.model.internal.EntityBinder     : HHH000137: Root entity should not hold a PrimaryKeyJoinColum(s), will be ignored: com.drrr.domain.techblogpost.entity.TemporalTechPostTag
+2024-04-23T23:26:10.182+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-04-23T23:26:10.266+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-04-23T23:26:10.534+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-04-23T23:26:12.318+09:00  WARN 43980 --- [dr--r--r--] [main] [                                                 ] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-04-23T23:26:12.673+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2024-04-23T23:26:12.726+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@513f965e, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@b6630a, org.springframework.security.web.context.SecurityContextHolderFilter@6ea5e1fd, org.springframework.security.web.header.HeaderWriterFilter@468cbb46, org.springframework.web.filter.CorsFilter@56f8032, org.springframework.security.web.authentication.logout.LogoutFilter@20325baf, com.drrr.web.security.filter.JwtTokenValidationFilter@594c66c3, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6818550d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@48945548, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5884d435, org.springframework.security.web.session.SessionManagementFilter@56d96ef4, org.springframework.security.web.access.ExceptionTranslationFilter@5a0c7024]
+2024-04-23T23:26:13.434+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2024-04-23T23:26:13.472+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = latest
+	bootstrap.servers = [localhost:9093]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-group_web_push-1
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = group_web_push
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.JsonDeserializer
+
+2024-04-23T23:26:13.536+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-1] [                                                 ] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-04-23T23:26:13.536+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-04-23T23:26:13.538+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-1] [                                                 ] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2024-04-23T23:26:13.566+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.6.1
+2024-04-23T23:26:13.567+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 5e3c2b738d253ff5
+2024-04-23T23:26:13.567+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1713882373565
+2024-04-23T23:26:13.569+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] fkaConsumerFactory$ExtendedKafkaConsumer : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Subscribed to topic(s): alarm-web-push
+2024-04-23T23:26:13.574+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = latest
+	bootstrap.servers = [localhost:9093]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-group_email-2
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = group_email
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.JsonDeserializer
+
+2024-04-23T23:26:13.577+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.6.1
+2024-04-23T23:26:13.577+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 5e3c2b738d253ff5
+2024-04-23T23:26:13.577+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1713882373577
+2024-04-23T23:26:13.577+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] fkaConsumerFactory$ExtendedKafkaConsumer : [Consumer clientId=consumer-group_email-2, groupId=group_email] Subscribed to topic(s): verification-email
+2024-04-23T23:26:13.578+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.k.clients.consumer.ConsumerConfig    : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.include.jmx.reporter = true
+	auto.offset.reset = latest
+	bootstrap.servers = [localhost:9093]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-group_email-3
+	client.rack = 
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = group_email
+	group.instance.id = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.leave.group.on.close = true
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [class org.apache.kafka.clients.consumer.RangeAssignor, class org.apache.kafka.clients.consumer.CooperativeStickyAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.springframework.kafka.support.serializer.JsonDeserializer
+
+2024-04-23T23:26:13.581+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 3.6.1
+2024-04-23T23:26:13.581+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 5e3c2b738d253ff5
+2024-04-23T23:26:13.581+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1713882373581
+2024-04-23T23:26:13.581+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] fkaConsumerFactory$ExtendedKafkaConsumer : [Consumer clientId=consumer-group_email-3, groupId=group_email] Subscribed to topic(s): alarm-email
+2024-04-23T23:26:13.590+09:00  INFO 43980 --- [dr--r--r--] [main] [                                                 ] com.drrr.DrRRApiApplication              : Started DrRRApiApplication in 8.677 seconds (process running for 9.196)
+2024-04-23T23:26:13.889+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Cluster ID: -yJk18t1RRujaAt99_jqpg
+2024-04-23T23:26:13.888+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-group_email-3, groupId=group_email] Cluster ID: -yJk18t1RRujaAt99_jqpg
+2024-04-23T23:26:13.889+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-group_email-2, groupId=group_email] Cluster ID: -yJk18t1RRujaAt99_jqpg
+2024-04-23T23:26:13.890+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Discovered group coordinator localhost:9093 (id: 2147483646 rack: null)
+2024-04-23T23:26:13.890+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Discovered group coordinator localhost:9093 (id: 2147483646 rack: null)
+2024-04-23T23:26:13.890+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] Discovered group coordinator localhost:9093 (id: 2147483646 rack: null)
+2024-04-23T23:26:13.894+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] (Re-)joining group
+2024-04-23T23:26:13.894+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] (Re-)joining group
+2024-04-23T23:26:13.894+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] (Re-)joining group
+2024-04-23T23:26:13.904+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] Request joining group due to: need to re-join with the given member-id: consumer-group_email-2-1df10e5e-1bd7-451a-9c88-b31f73818916
+2024-04-23T23:26:13.905+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Request joining group due to: need to re-join with the given member-id: consumer-group_email-3-30916254-79de-4a00-9da6-d4f7644e3c06
+2024-04-23T23:26:13.905+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] Request joining group due to: rebalance failed due to 'The group member needs to have a valid member id before actually entering a consumer group.' (MemberIdRequiredException)
+2024-04-23T23:26:13.905+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Request joining group due to: need to re-join with the given member-id: consumer-group_web_push-1-e2785f0a-a2d6-446b-b29f-a65cd12bd0e9
+2024-04-23T23:26:13.905+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] (Re-)joining group
+2024-04-23T23:26:13.905+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Request joining group due to: rebalance failed due to 'The group member needs to have a valid member id before actually entering a consumer group.' (MemberIdRequiredException)
+2024-04-23T23:26:13.905+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Request joining group due to: rebalance failed due to 'The group member needs to have a valid member id before actually entering a consumer group.' (MemberIdRequiredException)
+2024-04-23T23:26:13.905+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] (Re-)joining group
+2024-04-23T23:26:13.905+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] (Re-)joining group
+2024-04-23T23:26:16.908+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] Successfully joined group with generation Generation{generationId=3, memberId='consumer-group_email-2-1df10e5e-1bd7-451a-9c88-b31f73818916', protocol='range'}
+2024-04-23T23:26:16.908+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Successfully joined group with generation Generation{generationId=3, memberId='consumer-group_email-3-30916254-79de-4a00-9da6-d4f7644e3c06', protocol='range'}
+2024-04-23T23:26:16.908+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Successfully joined group with generation Generation{generationId=3, memberId='consumer-group_web_push-1-e2785f0a-a2d6-446b-b29f-a65cd12bd0e9', protocol='range'}
+2024-04-23T23:26:16.913+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Finished assignment for group at generation 3: {consumer-group_email-3-30916254-79de-4a00-9da6-d4f7644e3c06=Assignment(partitions=[alarm-email-0]), consumer-group_email-2-1df10e5e-1bd7-451a-9c88-b31f73818916=Assignment(partitions=[verification-email-0])}
+2024-04-23T23:26:16.913+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Finished assignment for group at generation 3: {consumer-group_web_push-1-e2785f0a-a2d6-446b-b29f-a65cd12bd0e9=Assignment(partitions=[alarm-web-push-0])}
+2024-04-23T23:26:16.918+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] Successfully synced group in generation Generation{generationId=3, memberId='consumer-group_email-2-1df10e5e-1bd7-451a-9c88-b31f73818916', protocol='range'}
+2024-04-23T23:26:16.918+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Successfully synced group in generation Generation{generationId=3, memberId='consumer-group_email-3-30916254-79de-4a00-9da6-d4f7644e3c06', protocol='range'}
+2024-04-23T23:26:16.918+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Successfully synced group in generation Generation{generationId=3, memberId='consumer-group_web_push-1-e2785f0a-a2d6-446b-b29f-a65cd12bd0e9', protocol='range'}
+2024-04-23T23:26:16.918+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Notifying assignor about the new Assignment(partitions=[alarm-web-push-0])
+2024-04-23T23:26:16.918+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Notifying assignor about the new Assignment(partitions=[alarm-email-0])
+2024-04-23T23:26:16.918+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] Notifying assignor about the new Assignment(partitions=[verification-email-0])
+2024-04-23T23:26:16.921+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Adding newly assigned partitions: alarm-email-0
+2024-04-23T23:26:16.921+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Adding newly assigned partitions: alarm-web-push-0
+2024-04-23T23:26:16.921+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] Adding newly assigned partitions: verification-email-0
+2024-04-23T23:26:16.929+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-2, groupId=group_email] Setting offset for partition verification-email-0 to the committed offset FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[localhost:9093 (id: 1 rack: null)], epoch=0}}
+2024-04-23T23:26:16.929+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_email-3, groupId=group_email] Setting offset for partition alarm-email-0 to the committed offset FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[localhost:9093 (id: 1 rack: null)], epoch=0}}
+2024-04-23T23:26:16.929+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Setting offset for partition alarm-web-push-0 to the committed offset FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[localhost:9093 (id: 1 rack: null)], epoch=0}}
+2024-04-23T23:26:16.930+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] o.s.k.l.KafkaMessageListenerContainer    : group_email: partitions assigned: [verification-email-0]
+2024-04-23T23:26:16.930+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] o.s.k.l.KafkaMessageListenerContainer    : group_email: partitions assigned: [alarm-email-0]
+2024-04-23T23:26:16.930+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] o.s.k.l.KafkaMessageListenerContainer    : group_web_push: partitions assigned: [alarm-web-push-0]
+2024-04-23T23:26:17.076+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-4] [6d745ed88148c2810150f872eb013f0f-15fa6bb566b30ee9] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------JwtTokenValidationFilter CALL-------------------
+2024-04-23T23:26:17.076+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-4] [6d745ed88148c2810150f872eb013f0f-15fa6bb566b30ee9] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------request URI: /api/v1/posts/all---------------
+2024-04-23T23:26:17.076+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-4] [6d745ed88148c2810150f872eb013f0f-15fa6bb566b30ee9] c.d.w.s.filter.JwtTokenValidationFilter  : -----------JWT Token null-------------------
+2024-04-23T23:26:17.118+09:00 ERROR 43980 --- [dr--r--r--] [http-nio-8081-exec-4] [6d745ed88148c2810150f872eb013f0f-5a22bbaf6018b7ed] c.d.t.controller.TechBlogPostController  : pageableRequest: PageableRequest[page=0, size=10]
+2024-04-23T23:26:19.273+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-3] [298e9e3933fcfd1f3c6204173b454dc5-3bce3fa014f6071e] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------JwtTokenValidationFilter CALL-------------------
+2024-04-23T23:26:19.273+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-3] [298e9e3933fcfd1f3c6204173b454dc5-3bce3fa014f6071e] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------request URI: /api/v1/posts/all---------------
+2024-04-23T23:26:19.273+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-3] [298e9e3933fcfd1f3c6204173b454dc5-3bce3fa014f6071e] c.d.w.s.filter.JwtTokenValidationFilter  : -----------JWT Token null-------------------
+2024-04-23T23:26:19.274+09:00 ERROR 43980 --- [dr--r--r--] [http-nio-8081-exec-3] [298e9e3933fcfd1f3c6204173b454dc5-2fbb1b2a0beac3e8] c.d.t.controller.TechBlogPostController  : pageableRequest: PageableRequest[page=0, size=10]
+2024-04-23T23:30:53.424+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-5] [df98c63ef1c2ff4bac067730131b8dc9-d0b2b21e06997cd9] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------JwtTokenValidationFilter CALL-------------------
+2024-04-23T23:30:53.424+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-5] [df98c63ef1c2ff4bac067730131b8dc9-d0b2b21e06997cd9] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------request URI: /api/v1/posts/all---------------
+2024-04-23T23:30:53.425+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-5] [df98c63ef1c2ff4bac067730131b8dc9-d0b2b21e06997cd9] c.d.w.s.filter.JwtTokenValidationFilter  : -----------JWT Token null-------------------
+2024-04-23T23:30:53.426+09:00 ERROR 43980 --- [dr--r--r--] [http-nio-8081-exec-5] [df98c63ef1c2ff4bac067730131b8dc9-15c8565f24cfd40f] c.d.t.controller.TechBlogPostController  : pageableRequest: PageableRequest[page=0, size=10]
+2024-04-23T23:33:40.892+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-9] [755eb5982a377edb4d84d46e3aeb6da1-4f82bc254a11a106] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------JwtTokenValidationFilter CALL-------------------
+2024-04-23T23:33:40.892+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-9] [755eb5982a377edb4d84d46e3aeb6da1-4f82bc254a11a106] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------request URI: /api/v1/posts/all---------------
+2024-04-23T23:33:40.892+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-9] [755eb5982a377edb4d84d46e3aeb6da1-4f82bc254a11a106] c.d.w.s.filter.JwtTokenValidationFilter  : -----------JWT Token null-------------------
+2024-04-23T23:33:40.893+09:00 ERROR 43980 --- [dr--r--r--] [http-nio-8081-exec-9] [755eb5982a377edb4d84d46e3aeb6da1-391e2b26f7f16852] c.d.t.controller.TechBlogPostController  : pageableRequest: PageableRequest[page=0, size=10]
+2024-04-23T23:33:41.317+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-10] [c592079b53910123c207327a87c9c21b-d88d1c00d54d56f0] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------JwtTokenValidationFilter CALL-------------------
+2024-04-23T23:33:41.317+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-10] [c592079b53910123c207327a87c9c21b-d88d1c00d54d56f0] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------request URI: /api/v1/posts/all---------------
+2024-04-23T23:33:41.317+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-10] [c592079b53910123c207327a87c9c21b-d88d1c00d54d56f0] c.d.w.s.filter.JwtTokenValidationFilter  : -----------JWT Token null-------------------
+2024-04-23T23:33:41.319+09:00 ERROR 43980 --- [dr--r--r--] [http-nio-8081-exec-10] [c592079b53910123c207327a87c9c21b-863408f0e940bc7e] c.d.t.controller.TechBlogPostController  : pageableRequest: PageableRequest[page=0, size=10]
+2024-04-23T23:33:41.837+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-1] [5af0df44018349858f17f2bd890fb1b8-2e025c5d8dd7cb98] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------JwtTokenValidationFilter CALL-------------------
+2024-04-23T23:33:41.837+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-1] [5af0df44018349858f17f2bd890fb1b8-2e025c5d8dd7cb98] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------request URI: /api/v1/posts/all---------------
+2024-04-23T23:33:41.837+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-1] [5af0df44018349858f17f2bd890fb1b8-2e025c5d8dd7cb98] c.d.w.s.filter.JwtTokenValidationFilter  : -----------JWT Token null-------------------
+2024-04-23T23:33:41.838+09:00 ERROR 43980 --- [dr--r--r--] [http-nio-8081-exec-1] [5af0df44018349858f17f2bd890fb1b8-43c06528621fd645] c.d.t.controller.TechBlogPostController  : pageableRequest: PageableRequest[page=0, size=10]
+2024-04-23T23:35:14.365+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#2-0-C-1] [                                                 ] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-group_web_push-1, groupId=group_web_push] Node -1 disconnected.
+2024-04-23T23:35:14.365+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#1-0-C-1] [                                                 ] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-group_email-3, groupId=group_email] Node -1 disconnected.
+2024-04-23T23:35:14.365+09:00  INFO 43980 --- [dr--r--r--] [org.springframework.kafka.KafkaListenerEndpointContainer#0-0-C-1] [                                                 ] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-group_email-2, groupId=group_email] Node -1 disconnected.
+2024-04-23T23:39:18.482+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-2] [159362eb512385becb1321b160736c49-a57fe26efbd5e454] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------JwtTokenValidationFilter CALL-------------------
+2024-04-23T23:39:18.482+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-2] [159362eb512385becb1321b160736c49-a57fe26efbd5e454] c.d.w.s.filter.JwtTokenValidationFilter  : -------------------request URI: /api/v1/posts/all---------------
+2024-04-23T23:39:18.482+09:00  INFO 43980 --- [dr--r--r--] [http-nio-8081-exec-2] [159362eb512385becb1321b160736c49-a57fe26efbd5e454] c.d.w.s.filter.JwtTokenValidationFilter  : -----------JWT Token null-------------------
+2024-04-23T23:39:18.483+09:00 ERROR 43980 --- [dr--r--r--] [http-nio-8081-exec-2] [159362eb512385becb1321b160736c49-47b1bdcc81c879c0] c.d.t.controller.TechBlogPostController  : pageableRequest: PageableRequest[page=0, size=10]
