@@ -50,7 +50,7 @@ jobs:
           host: ${{ secrets.BATCH_HOST }}
           key: ${{ secrets.BATCH_SSH_KEY }}
           password: ${{secrets.BATCH_SSH_PASSWORD}}
-          source: drrr-batch/build/libs/*.jar
+          source: "./drrr-batch/build/libs/*.jar"
           target: ${{secrets.BATCH_SSH_TARGET_URL}}
 
       - name: Archive production artifacts
