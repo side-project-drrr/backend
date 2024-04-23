@@ -42,11 +42,10 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v2
+        run: ls
 
       - name: Deploy Prod use SCP
         uses: appleboy/scp-action@v0.1.7
-        run: |
-          ls -al
         with:
           username: ${{secrets.BATCH_SSH_USER}}
           host: ${{ secrets.BATCH_HOST }}
