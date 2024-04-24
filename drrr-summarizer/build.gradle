@@ -4,3 +4,12 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
+
+group = 'com.drrr'
+version = '1.0.0'
+jar {
+    enabled = false
+}
+bootJar {
+    enabled = true
+}
