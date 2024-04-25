@@ -38,7 +38,7 @@ public class SummarizeProvider {
     private String executePythonScript(String args) {
         log.info("{}", textSummarizerProperty);
         return this.childProcessRunner.execute(
-                "python",
+                "python3",
                 textSummarizerProperty.scriptPath(),
                 args
         );
