@@ -6,6 +6,7 @@ import com.google.common.net.HttpHeaders;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -20,7 +21,8 @@ public class SummarizeProvider {
 
 
     public SummarizeResponse request(List<String> content) {
-        return restclient.post()
+
+        return restclient.method(HttpMethod.GET)
                 .uri(extractCategoryProperty.createUri("/api/v1/post/summarize"))
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(new SummarizeRequest(content))
