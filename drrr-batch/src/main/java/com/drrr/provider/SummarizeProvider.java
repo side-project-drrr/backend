@@ -2,6 +2,7 @@ package com.drrr.provider;
 
 import com.drrr.payload.request.SummarizeRequest;
 import com.drrr.payload.response.SummarizeResponse;
+import com.drrr.property.ExtractCategoryProperty;
 import com.google.common.net.HttpHeaders;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,12 @@ import org.springframework.web.client.RestClient;
 public class SummarizeProvider {
 
     private final RestClient restclient = RestClient.create();
-    private final com.drrr.property.ExtractCategoryProperty extractCategoryProperty;
+    private final ExtractCategoryProperty extractCategoryProperty;
 
 
     public SummarizeResponse request(List<String> content) {
 
+        log.info("{}", extractCategoryProperty.createUri("/api/v1/post/summarize"));
         return restclient.method(HttpMethod.GET)
                 .uri(extractCategoryProperty.createUri("/api/v1/post/summarize"))
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
