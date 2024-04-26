@@ -21,4 +21,5 @@ public class PostContentsSummarizerApi {
     public SummarizeResponse summarize(@RequestBody SummarizerRequest summarizerRequest) {
         return summarizerService.execute(summarizerRequest);
     }
+
 }
