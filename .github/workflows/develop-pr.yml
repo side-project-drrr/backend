@@ -37,7 +37,18 @@ jobs:
 
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build --parallel
+
+
+      - name: Deploy Prod use SCP
+        uses: appleboy/scp-action@master
+        with:
+          username: ${{secrets.BATCH_SSH_USER}}
+          host: ${{ secrets.BATCH_HOST }}
+          key: ${{ secrets.BATCH_SSH_KEY }}
+          source: "./drrr-batch/build/libs/*.jar,./drrr-summarizer/build/libs/*.jar"
+          target: ${{secrets.BATCH_SSH_TARGET_URL}}
+          strip_components: 3
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v4

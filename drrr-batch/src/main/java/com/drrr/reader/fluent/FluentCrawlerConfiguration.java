@@ -6,7 +6,7 @@ import static java.util.stream.Collectors.toMap;
 
 import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.fluent.cralwer.core.WebDriverPool;
-import com.drrr.poperty.DriverProperty;
+import com.drrr.property.DriverProperty;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

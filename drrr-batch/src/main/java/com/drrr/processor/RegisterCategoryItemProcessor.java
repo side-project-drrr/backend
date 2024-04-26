@@ -2,10 +2,8 @@ package com.drrr.processor;
 
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.service.RegisterPostTagService;
-import com.drrr.provider.ExtractCategoryProvider;
 import com.drrr.provider.SummarizeProvider;
 import com.drrr.provider.TechBlogContentParserProvider;
-import com.drrr.provider.TextLineSplitCategoryProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
@@ -23,8 +21,6 @@ public class RegisterCategoryItemProcessor implements ItemProcessor<TemporalTech
 
     private final TechBlogContentParserProvider techBlogContentParserProvider;
     private final SummarizeProvider summarizeProvider;
-    private final ExtractCategoryProvider extractCategoryProvider;
-    private final TextLineSplitCategoryProvider textLineSplitCategoryProvider;
     private final RegisterPostTagService registerPostTagService;
 
 
@@ -45,22 +41,18 @@ public class RegisterCategoryItemProcessor implements ItemProcessor<TemporalTech
         if (temporalTechBlogPost.isRegistrationCompleted()) {
             return temporalTechBlogPost;
         }
+
         final var blogContent = techBlogContentParserProvider.execute(
                 temporalTechBlogPost.getTechBlogCode(),
                 temporalTechBlogPost.getUrl()
         );
 
-        log.info("문단 요약 시작:{}", temporalTechBlogPost.getId());
-        final var summarizedBlogContent = summarizeProvider.execute(blogContent);
-
-        log.info("GTP 추출 시작:{}", temporalTechBlogPost.getId());
-        final var extractedCategoryTexts = extractCategoryProvider.request(summarizedBlogContent).getFirstResult();
-        final var categoryNames = textLineSplitCategoryProvider.execute(extractedCategoryTexts);
-
+        log.info("문단 요약 시작 & 카테고리 추출 시작:{}", temporalTechBlogPost.getId());
+        final var summarizeResponse = summarizeProvider.request(blogContent);
         registerPostTagService.execute(
                 temporalTechBlogPost.getId(),
-                categoryNames,
-                summarizedBlogContent
+                summarizeResponse.categoryNames(),
+                summarizeResponse.aiSummarizedText()
         );
 
         return temporalTechBlogPost;
