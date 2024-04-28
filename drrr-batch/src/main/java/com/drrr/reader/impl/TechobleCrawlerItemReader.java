@@ -26,7 +26,7 @@ public class TechobleCrawlerItemReader extends AbstractCrawlerPageItemReader {
     protected ExternalBlogPosts executeCrawlerPage() {
         this.webDriver.get(TARGET_URL);
 
-        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("article")));
+        this.webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("site-main")));
 
         var result = webDriver.findElements(By.tagName("article"))
                 .stream()
