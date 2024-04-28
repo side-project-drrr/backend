@@ -24,8 +24,7 @@ public class SummarizeProvider {
     public SummarizeResponse request(List<String> content) {
 
         log.info("{}", extractCategoryProperty.createUri("/api/v1/post/summarize"));
-        log.info("{}", new SummarizeRequest(content));
-        return restclient.method(HttpMethod.GET)
+        return restclient.method(HttpMethod.POST)
                 .uri(extractCategoryProperty.createUri("/api/v1/post/summarize"))
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(new SummarizeRequest(content))
