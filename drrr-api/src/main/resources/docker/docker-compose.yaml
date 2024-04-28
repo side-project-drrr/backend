@@ -15,10 +15,25 @@ services:
       - "9091:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert_rules.yml:/etc/prometheus/alert_rules.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml' # Prometheus 구성 파일 지정
     networks:
       monitor:
         ipv4_address: 192.19.199.100
-
+  alertmanager:
+    image: prom/alertmanager
+    volumes:
+      - ./prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    networks:
+      monitor:
+        ipv4_address: 192.19.199.120
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--web.listen-address=:9095'
+      - '--cluster.listen-address='
+    ports:
+      - 9094:9094
   #UI Server
   jaeger-service:
     image: jaegertracing/all-in-one:latest
