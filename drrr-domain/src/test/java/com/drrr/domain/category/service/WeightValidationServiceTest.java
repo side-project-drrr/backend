@@ -11,6 +11,7 @@ import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
@@ -79,6 +80,8 @@ class WeightValidationServiceTest extends ServiceIntegrationTest {
     private WeightValidationService weightValidationService;
     @Autowired
     private DatabaseCleaner databaseCleaner;
+    @Autowired
+    private MemberQueryService memberQueryService;
 
     @Transactional
     @BeforeEach
@@ -277,7 +280,7 @@ class WeightValidationServiceTest extends ServiceIntegrationTest {
     @Test
     void 가중치_검증에_의해서_가중치가_제대로_감소합니다() {
         //when
-        List<Member> members = memberRepository.findAll();
+        List<Member> members = memberQueryService.getAllMembers();
         if (members.isEmpty()) {
             throw new IllegalArgumentException("members elements is null");
         }

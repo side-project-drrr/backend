@@ -21,6 +21,7 @@ public enum DomainExceptionCode {
 
     LIKE(3000, "정의되지 않은 에러입니다."),
     DUPLICATE_LIKE(LIKE.code + 1, "사용자가 하나의 게시물에 중복으로 좋아요를 눌렀습니다."),
+    DUPLICATE_DISLIKE(LIKE.code + 2, "사용자가 하나의 게시물에 중복으로 싫어요를 눌렀습니다."),
     EMAIL(3500, "정의되지 않은 에러입니다."),
     EMAIL_VERIFICATION_INFORMATION_NOT_FOUND(EMAIL.code + 1, "이메일 인증 정보를 찾을 수 없습니다."),
     EMAIL_VERIFICATION_CODE_EXPIRED(EMAIL.code + 2, "이메일 인증코드가 유효하지 않습니다."),
@@ -39,6 +40,7 @@ public enum DomainExceptionCode {
     SUBSCRIPTION_NOT_FOUND(SUBSCRIPTION.code + 1, "구독정보를 찾을 수 없습니다."),
     LANGUAGE(5500, "정의되지 않은 에러입니다."),
     INVALID_LANGUAGE_CHARACTER_INDEX(LANGUAGE.code + 1, "유효하지 않은 언어 인덱스입니다.");
+
     private final int code;
     private final String message;
 

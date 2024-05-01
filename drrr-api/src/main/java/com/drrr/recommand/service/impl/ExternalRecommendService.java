@@ -3,10 +3,11 @@ package com.drrr.recommand.service.impl;
 import com.drrr.domain.category.service.RecommendPostService;
 import com.drrr.domain.category.service.WeightValidationService;
 import com.drrr.domain.log.service.LogUpdateService;
+import com.drrr.domain.recommend.service.RedisRecommendationService;
+import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
-import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
-import com.drrr.web.redis.RedisUtil;
+import com.drrr.techblogpost.response.TechBlogPostResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,19 @@ public class ExternalRecommendService {
 
     private final RecommendPostService recommendPostService;
     private final WeightValidationService weightValidationService;
-    private final RedisTechBlogPostService redisTechBlogPostService;
     private final TechBlogPostService techBlogPostService;
     private final LogUpdateService logUpdateService;
+    private final RedisRecommendationService redisRecommendationService;
 
     @Transactional
-    public List<TechBlogPostCategoryDto> execute(final Long memberId, final int count) {
+    public List<TechBlogPostResponse> execute(final Long memberId, final int count) {
+
+        if (redisRecommendationService.hasCachedKey(memberId)) {
+            List<RedisSlicePostsContents> memberRecommendation = redisRecommendationService.findMemberRecommendation(
+                    memberId);
+            return TechBlogPostResponse.fromRedis(memberRecommendation);
+        }
+
         //사용자 가중치 검증
         weightValidationService.validateWeight(memberId);
 
@@ -31,27 +39,13 @@ public class ExternalRecommendService {
         final List<Long> postIds = recommendPostService.recommendPosts(memberId, count);
 
         //redis에서 조회
-        List<TechBlogPostCategoryDto> postsInRedis = RedisUtil.redisPostCategoriesEntityToDto(
-                redisTechBlogPostService.findRecommendPostsByIdsInRedis(postIds)
-        );
-
-        final List<Long> redisPostIds = postsInRedis.stream()
-                .map(post -> post.techBlogPostStaticDataDto().id())
-                .toList();
-
-        final List<Long> notCachedPostIds = techBlogPostService.findNotCachedTechBlogPosts(redisPostIds, postIds);
-
-        List<TechBlogPostCategoryDto> categorizedPosts = techBlogPostService.categorize(notCachedPostIds);
-        categorizedPosts.addAll(postsInRedis);
-
-        //캐싱해야 할 포스트가 있다면
-        if (!notCachedPostIds.isEmpty()) {
-            redisTechBlogPostService.saveRecommendPostsInRedis(categorizedPosts);
-        }
+        List<TechBlogPostCategoryDto> categorizedPosts = techBlogPostService.categorize(postIds);
 
         //로그 쌓기
         logUpdateService.insertTodayMemberPostRecommendLog(memberId, postIds);
 
-        return categorizedPosts;
+        redisRecommendationService.saveMemberRecommendation(memberId, categorizedPosts);
+
+        return TechBlogPostResponse.from(categorizedPosts);
     }
 }

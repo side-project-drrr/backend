@@ -5,9 +5,10 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
+import com.drrr.domain.category.repository.common.CategoryQueryService;
 import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.member.entity.Member;
-import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -25,23 +26,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MemberPreferredCategoryServiceModificationService {
     private final CategoryWeightRepository categoryWeightRepository;
-    private final MemberRepository memberRepository;
     private final CategoryRepository categoryRepository;
     private final WeightValidationService weightValidationService;
+    private final MemberQueryService memberQueryService;
+    private final CategoryQueryService categoryQueryService;
 
     public void changeMemberPreferredCategory(final Long memberId, final List<Long> updateCategoryIds) {
-        final Member member = memberRepository.findById(memberId).orElseThrow(() -> {
-            log.error("사용자를 찾을 수 없습니다.");
-            log.error("memberId -> {}", memberId);
-            return DomainExceptionCode.MEMBER_NOT_FOUND.newInstance();
-        });
+        final Member member = memberQueryService.getMemberById(memberId);
 
-        List<Category> categories = categoryRepository.findByIdIn(updateCategoryIds);
-        if (categories.isEmpty()) {
-            log.error("카테고리가 존재하지 않습니다.");
-            log.error("category id -> {}", updateCategoryIds.toString());
-            throw DomainExceptionCode.CATEGORY_NOT_FOUND.newInstance();
-        }
+        List<Category> categories = categoryQueryService.getCategoriesByIds(updateCategoryIds);
 
         //현재 사용자의 카테고리 정보 가져오기
         final List<CategoryWeight> categoryWeights = categoryWeightRepository.findByMemberId(memberId);

@@ -52,7 +52,13 @@ public class TechBlogPostLikeService {
                     return DomainExceptionCode.TECH_BLOG_NOT_FOUND.newInstance();
                 });
 
-        postLikeRepository.deleteByMemberIdAndPostId(memberId, postId);
-        post.decreaseLikeCount();
+        postLikeRepository.findByPostIdAndMemberId(memberId, postId)
+                .ifPresentOrElse((postLike) -> {
+                    postLikeRepository.deleteByMemberIdAndPostId(memberId, postId);
+                    post.decreaseLikeCount();
+                }, () -> {
+                    log.error("사용자가 하나의 게시물에 중복으로 싫어요를 눌렀습니다. memberId -> {}, postId ->{} ", memberId, postId);
+                    throw DomainExceptionCode.DUPLICATE_DISLIKE.newInstance();
+                });
     }
 }

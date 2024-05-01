@@ -8,7 +8,6 @@ allprojects {
     apply plugin: 'java'
     group = 'com.example'
     version = '0.0.1-SNAPSHOT'
-    sourceCompatibility = '17'
 
     repositories {
         mavenCentral()
@@ -20,6 +19,10 @@ allprojects {
     jar {
         enabled = true
     }
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 
 }
 
@@ -30,8 +33,7 @@ subprojects {
 
     group = 'com.example'
     version = '0.0.1-SNAPSHOT'
-
-    sourceCompatibility = '17'
+    
     bootJar {
         enabled = false
     }
@@ -63,5 +65,9 @@ subprojects {
 
     tasks.named('test') {
         useJUnitPlatform()
+    }
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 }

@@ -8,10 +8,13 @@ import com.drrr.auth.payload.response.SignInResponse;
 import com.drrr.auth.payload.response.SignUpResponse;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
+import com.drrr.domain.category.repository.common.CategoryQueryService;
 import com.drrr.domain.email.entity.Email;
 import com.drrr.domain.email.repository.EmailRepository;
+import com.drrr.domain.jpa.entity.BaseEntity;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,6 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +52,12 @@ public class AuthE2ETest {
     private JwtProvider jwtProvider;
     @Autowired
     private DatabaseCleaner databaseCleaner;
+    @Autowired
+    private MemberQueryService memberQueryService;
+    @Autowired
+    private CategoryQueryService categoryQueryService;
 
     private final int CATEGORY_COUNT = 3;
-
 
     @BeforeEach
     private void setup() {
@@ -109,17 +116,18 @@ public class AuthE2ETest {
                                 .extract().body().asString(), new TypeReference<SignUpResponse>() {
                         });
         //then
-        Optional<Member> memberOptional = memberRepository.findByProviderId("123456");
-        Member member = memberOptional.get();
+        Member member = memberQueryService.getMemberByProviderId("123456");
         Long tokenMemberId = jwtProvider.extractToValueFrom(response.accessToken());
-        List<Category> categories = categoryRepository.findAllById(List.of(1L, 2L, 3L));
+        List<Category> categories = categoryQueryService.getCategoriesByIds(List.of(1L, 2L, 3L));
 
-        assertThat(categories.stream().map(category -> category.getId()).toList()).containsExactly(1L, 2L, 3L);
-        assertThat(member.getId()).isEqualTo(tokenMemberId);
-        assertThat(memberOptional).isPresent();
-        assertThat(response).isNotNull();
-        assertThat(response.accessToken()).isNotNull();
-        assertThat(response.refreshToken()).isNotNull();
+        Assertions.assertAll(
+                () -> assertThat(categories.stream().map(category -> category.getId()).toList()).containsExactly(1L, 2L,
+                        3L),
+                () -> assertThat(member.getId()).isEqualTo(tokenMemberId),
+                () -> assertThat(response).isNotNull(),
+                () -> assertThat(response.accessToken()).isNotNull(),
+                () -> assertThat(response.refreshToken()).isNotNull()
+        );
     }
 
     @Test
@@ -143,17 +151,18 @@ public class AuthE2ETest {
                                 .extract().body().asString(), new TypeReference<SignInResponse>() {
                         });
         //then
-        Optional<Member> memberOptional = memberRepository.findByProviderId("1324");
-        Member member = memberOptional.get();
+        Member member = memberQueryService.getMemberByProviderId("1324");
         Long tokenMemberId = jwtProvider.extractToValueFrom(response.accessToken());
         List<Category> categories = categoryRepository.findAllById(List.of(1L, 2L, 3L));
 
-        assertThat(categories.stream().map(category -> category.getId()).toList()).containsExactly(1L, 2L, 3L);
-        assertThat(member.getId()).isEqualTo(tokenMemberId);
-        assertThat(memberOptional).isPresent();
-        assertThat(response).isNotNull();
-        assertThat(response.accessToken()).isNotNull();
-        assertThat(response.refreshToken()).isNotNull();
+        Assertions.assertAll(
+                () -> assertThat(categories.stream().map(BaseEntity::getId).toList()).containsExactly(1L, 2L,
+                        3L),
+                () -> assertThat(member.getId()).isEqualTo(tokenMemberId),
+                () -> assertThat(response).isNotNull(),
+                () -> assertThat(response.accessToken()).isNotNull(),
+                () -> assertThat(response.refreshToken()).isNotNull()
+        );
     }
 
     @Test
@@ -184,8 +193,10 @@ public class AuthE2ETest {
                                 .extract().body().asString(), new TypeReference<AccessTokenResponse>() {
                         });
         //then
-        assertThat(response).isNotNull();
-        assertThat(response.accessToken()).isNotNull();
+        Assertions.assertAll(
+                () -> assertThat(response).isNotNull(),
+                () -> assertThat(response.accessToken()).isNotNull()
+        );
     }
 
     @Test
@@ -204,8 +215,11 @@ public class AuthE2ETest {
                 .statusCode(HttpStatus.OK.value());
         //then
         Optional<Member> memberOptional = memberRepository.findByProviderId("1324");
-        assertThat(memberOptional).isPresent();
-        assertThat(memberOptional.get().isActive()).isFalse();
+
+        Assertions.assertAll(
+                () -> assertThat(memberOptional).isPresent(),
+                () -> assertThat(memberOptional.get().isActive()).isFalse()
+        );
     }
 
 }

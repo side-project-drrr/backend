@@ -8,7 +8,7 @@ spring:
     allow-bean-definition-overriding: true
   data:
     redis:
-      time-to-live: 3600 # 데이터 유지 시간(sec) 1시간
+      time-to-live: 300 # 데이터 유지 시간(sec) 1시간
       host: localhost
       port: 6379
   kafka:
@@ -93,6 +93,9 @@ opentracing:
       port: 6831           # jaeger udp port
     enabled: true
     log-spans: true
+logging:
+  file:
+    name: ./drrr-api/src/main/resources/docker/promtail/var/log/drrr-api.log
 #logging:
 #  level:
 #    web: debug

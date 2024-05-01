@@ -4,6 +4,7 @@ import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.entity.CategoryWeight;
 import com.drrr.domain.member.entity.Member;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -36,11 +37,29 @@ public class CategoryWeightFixture {
                         .build()).toList();
     }
 
+    public static List<CategoryWeight> createCategoryWeights(final List<Member> members,
+                                                             final List<Category> categories,
+                                                             final List<Double> weightValue,
+                                                             final List<Boolean> preferred) {
+        final List<CategoryWeight> categoryWeightResult = new ArrayList<>();
+        members.forEach(member -> {
+            List<CategoryWeight> categoryWeights = IntStream.range(0, categories.size())
+                    .mapToObj(i -> CategoryWeight.builder()
+                            .member(member)
+                            .category(categories.get(i))
+                            .weightValue(weightValue.get(i))
+                            .lastReadAt(LocalDateTime.now())
+                            .preferred(preferred.get(i))
+                            .build()).toList();
+            categoryWeightResult.addAll(categoryWeights);
+        });
+        return categoryWeightResult;
+    }
+
     public static List<CategoryWeight> createCategoryWeights(final Member member, final List<Category> categories,
                                                              final List<Double> weightValue) {
 
-
-        return  IntStream.range(0, categories.size())
+        return IntStream.range(0, categories.size())
                 .mapToObj(i -> CategoryWeight.builder()
                         .member(member)
                         .category(categories.get(i))
@@ -49,6 +68,7 @@ public class CategoryWeightFixture {
                         .preferred(false)
                         .build()).toList();
     }
+
     public static CategoryWeight createCategoryWeight(final Member member, final Category category) {
 
         return CategoryWeight.builder()
@@ -71,6 +91,25 @@ public class CategoryWeightFixture {
                         .lastReadAt(LocalDateTime.now())
                         .preferred(false)
                         .build()).toList();
+
+    }
+
+    public static List<CategoryWeight> createCategoryWeights(final List<Member> members,
+                                                             final List<Category> categories) {
+        List<CategoryWeight> categoryWeightResults = new ArrayList<>();
+        members.forEach(member -> {
+            List<CategoryWeight> categoryWeights = categories.stream()
+                    .map(category -> CategoryWeight.builder()
+                            .member(member)
+                            .category(category)
+                            .weightValue(DEFAULT_WEIGHT_VALUE)
+                            .lastReadAt(LocalDateTime.now())
+                            .preferred(false)
+                            .build()).toList();
+
+            categoryWeightResults.addAll(categoryWeights);
+        });
+        return categoryWeightResults;
 
     }
 

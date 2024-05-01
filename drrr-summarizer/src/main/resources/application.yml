@@ -1,0 +1,12 @@
+summarizer:
+  runner-count: 4
+  script-path: $(SCRIPT_PATH)
+
+extract:
+  category:
+    api-url: https://api.openai.com/v1/chat/completions
+    gpt-key: $(API_KEY)
+    model: 'gpt-3.5-turbo-1106'
+    role: 'user'
+    base-prompt: |+
+      Extract keywords, show one at a time,remove irrelevant content up to a maximum of 10 keywords,display only IT industry terms,and prioritize them based on importance.
