@@ -1,6 +1,7 @@
 package com.drrr.web.resolver;
 
 import com.drrr.web.annotation.MemberId;
+import com.drrr.web.annotation.Optional;
 import com.drrr.web.exception.ApiExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,9 +35,21 @@ public class JwtTokenResolver implements HandlerMethodArgumentResolver {
 
         final String tokenWithBearer = request.getHeader(HttpHeaders.AUTHORIZATION);
 
+        if (parameter.hasParameterAnnotation(Optional.class)) {
+            return extractMemberIdFromToken(tokenWithBearer);
+        }
+
         if (Objects.isNull(tokenWithBearer) || !tokenWithBearer.startsWith(TOKEN_PREFIX)) {
             throw new IllegalArgumentException(
                     ApiExceptionCode.JWT_NO_AUTHORIZATION_HEADER.newInstance());
+        }
+
+        return extractMemberIdFromToken(tokenWithBearer);
+    }
+
+    private Long extractMemberIdFromToken(final String tokenWithBearer) {
+        if (tokenWithBearer == null) {
+            return -1L;
         }
 
         final String token = tokenWithBearer.substring(TOKEN_PREFIX.length());
