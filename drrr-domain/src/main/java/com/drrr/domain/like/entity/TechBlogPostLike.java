@@ -9,6 +9,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,4 +32,10 @@ public class TechBlogPostLike extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "techblogpost_id")
     private TechBlogPost post;
+
+    public static Set<Long> toSet(final List<TechBlogPostLike> memberLikedPosts){
+        return memberLikedPosts.stream()
+                .map(memberLikedPost -> memberLikedPost.getPost().getId())
+                .collect(Collectors.toSet());
+    }
 }

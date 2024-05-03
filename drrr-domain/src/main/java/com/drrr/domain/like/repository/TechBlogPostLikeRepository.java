@@ -21,4 +21,7 @@ public interface TechBlogPostLikeRepository extends JpaRepository<TechBlogPostLi
     @Query("select tbpl.post.id from TechBlogPostLike tbpl where tbpl.member.id =:memberId")
     List<Long> findPostIdsByMemberId(@Param("memberId") final Long memberId);
 
+    @Query("select tbpl from TechBlogPostLike tbpl where tbpl.member.id =:memberId and tbpl.post.id in :postIds")
+    List<TechBlogPostLike> findByMemberIdAndPostIdIn(Long memberId, List<Long> postIds);
+
 }
