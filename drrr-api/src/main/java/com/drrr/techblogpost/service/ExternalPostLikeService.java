@@ -14,6 +14,6 @@ public class ExternalPostLikeService {
 
     public void execute(final Long memberId, final Long postId) {
         techBlogPostLikeService.addPostLike(memberId, postId);
-        publisher.publishEvent(new IncreaseLikeEvent(postId));
+        publisher.publishEvent(new IncreaseLikeEvent(memberId, postId));
     }
 }

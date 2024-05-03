@@ -14,6 +14,6 @@ public class ExternalPostDislikeService {
 
     public void execute(final Long memberId, final Long postId) {
         techBlogPostLikeService.deletePostLike(memberId, postId);
-        publisher.publishEvent(new DecreaseLikeEvent(postId));
+        publisher.publishEvent(new DecreaseLikeEvent(memberId, postId));
     }
 }
