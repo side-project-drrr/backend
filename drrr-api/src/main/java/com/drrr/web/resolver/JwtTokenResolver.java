@@ -1,5 +1,6 @@
 package com.drrr.web.resolver;
 
+import com.drrr.domain.techblogpost.constant.RedisMemberConstants;
 import com.drrr.web.annotation.MemberId;
 import com.drrr.web.annotation.Optional;
 import com.drrr.web.exception.ApiExceptionCode;
@@ -49,7 +50,8 @@ public class JwtTokenResolver implements HandlerMethodArgumentResolver {
 
     private Long extractMemberIdFromToken(final String tokenWithBearer) {
         if (tokenWithBearer == null) {
-            return -1L;
+            //Optional 어노테이션일 때 jwt 토큰이 없으면 null를 반환한다.
+            return RedisMemberConstants.GUEST.getId();
         }
 
         final String token = tokenWithBearer.substring(TOKEN_PREFIX.length());
