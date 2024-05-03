@@ -7,6 +7,7 @@ import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostContentDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.common.TechBlogPostQueryService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class TechBlogPostService {
     private final TechBlogPostRepository techBlogPostRepository;
+    private final TechBlogPostQueryService techBlogPostQueryService;
 
     public List<TechBlogPostCategoryDto> findTopPostByType(final int count, final TopTechBlogType type) {
         final List<Long> topPostsIds = techBlogPostRepository.findTopPost(count, type);
@@ -67,8 +69,7 @@ public class TechBlogPostService {
     }
 
     public TechBlogPost findTechBlogPostsById(final Long postId) {
-        return techBlogPostRepository.findById(postId).orElseThrow(
-                DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+        return techBlogPostQueryService.getTechBlogPostById(postId);
     }
 
     public List<TechBlogPostCategoryDto> findPushPosts(final List<Long> postIds) {
