@@ -270,7 +270,7 @@ public class TechBlogPostE2ETest {
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .post("/api/v1/posts/{postId}/like", post.getId())
-                 .statusCode();
+                .statusCode();
 
 
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
@@ -281,7 +281,7 @@ public class TechBlogPostE2ETest {
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .delete("/api/v1/posts/{postId}/like", post.getId())
-                 .statusCode();
+                .statusCode();
 
         final Set<Long> memberDislikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 

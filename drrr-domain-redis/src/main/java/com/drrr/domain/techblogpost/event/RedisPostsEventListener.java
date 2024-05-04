@@ -26,7 +26,7 @@ public class RedisPostsEventListener {
     private final String VIEW_COUNT = "viewCount";
     private final String LIKE_COUNT = "likeCount";
     private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
-    private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberIdㅇ:%s";
+    private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
 
     @Async
     @EventListener
