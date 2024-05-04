@@ -10,6 +10,7 @@ import com.drrr.web.resolver.JwtTokenResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     private final JwtTokenResolver jwtTokenResolver;
     private final RateLimiterService rateLimiterService;
+    private final Environment environment;
 
 
     @Override
@@ -34,7 +36,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new RateLimitInterceptor(rateLimiterService));
+        registry.addInterceptor(new RateLimitInterceptor(rateLimiterService, environment));
     }
 
     @Override
