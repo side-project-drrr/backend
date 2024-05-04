@@ -50,6 +50,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * <h3>Given</h3>
@@ -76,6 +77,7 @@ import org.springframework.http.HttpStatus;
  * <h2>추천 받아야 하는 Post Id 기댓값</h2>
  * <br>P2, P4, P6, P8, P10</br>
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TechBlogPostE2ETest {
     @LocalServerPort
@@ -268,7 +270,7 @@ public class TechBlogPostE2ETest {
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .post("/api/v1/posts/{postId}/like", post.getId())
-                 .statusCode();
+                .statusCode();
 
 
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
@@ -279,7 +281,7 @@ public class TechBlogPostE2ETest {
                 .when()
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .delete("/api/v1/posts/{postId}/like", post.getId())
-                 .statusCode();
+                .statusCode();
 
         final Set<Long> memberDislikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 

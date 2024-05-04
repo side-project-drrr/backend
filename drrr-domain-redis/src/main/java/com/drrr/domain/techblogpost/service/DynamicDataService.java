@@ -5,8 +5,10 @@ import com.drrr.domain.techblogpost.constant.RedisMemberConstants;
 import com.drrr.domain.techblogpost.constant.RedisTtlConstants;
 import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.drrr.domain.util.MapperUtils;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -20,7 +22,6 @@ import org.springframework.stereotype.Service;
 public class DynamicDataService {
     private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
     private final ObjectMapper objectMapper;
-    private final MapperUtils mapperUtils;
     private final RedisTemplate<String, Object> redisTemplate;
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
 
@@ -40,9 +41,12 @@ public class DynamicDataService {
     }
 
     public Set<Long> findMemberLikedPostIdSet(final Long memberId) {
+        if(RedisMemberConstants.GUEST.getId().equals(memberId)) {
+            return Collections.emptySet();
+        }
+
         return objectMapper.convertValue(
-                Objects.requireNonNullElse(redisTemplate.opsForSet().members(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId)), Collections.emptySet()),
-                mapperUtils.mapType(Set.class, Long.class)
-        );
+                redisTemplate.opsForSet().members(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId)),Set.class);
+
     }
 }
