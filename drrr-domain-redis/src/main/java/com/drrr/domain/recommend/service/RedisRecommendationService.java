@@ -56,10 +56,7 @@ public class RedisRecommendationService {
 
         final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(postIds);
 
-        final Set<Long> memberLikedPostIdSet = objectMapper.convertValue(
-                Objects.requireNonNullElse(redisTemplate.opsForValue().get(String.valueOf(memberId)), Collections.emptySet()),
-                mapperUtils.mapType(Set.class, Long.class)
-        );
+        final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 
         final Map<Long, RedisPostDynamicData> postDynamicDataMap = RedisPostDynamicData.iterableToMap(postDynamicData);
 

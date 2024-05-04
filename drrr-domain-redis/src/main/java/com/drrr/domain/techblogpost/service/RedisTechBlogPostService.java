@@ -11,6 +11,7 @@ import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.drrr.domain.util.MapperUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,8 +29,6 @@ public class RedisTechBlogPostService {
     private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final DynamicDataService dynamicDataService;
-    private final ObjectMapper objectMapper;
-    private final MapperUtils mapperUtils;
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
 
     public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key) {
@@ -77,16 +76,12 @@ public class RedisTechBlogPostService {
         //repository를 쓰면 HSET를 쉽게 객체로 변환해줌
         final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(keys);
 
-        if(Objects.nonNull(memberId)){
-            redisTemplate.opsForSet().add(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId), keys);
-        }
+
+        final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
+
 
         final Map<Long, RedisPostDynamicData> postDynamicDataMap = RedisPostDynamicData.iterableToMap(postDynamicData);
 
-        final Set<Long> memberLikedPostIdSet = objectMapper.convertValue(
-                Objects.requireNonNullElse(redisTemplate.opsForValue().get(String.valueOf(memberId)), Collections.emptySet()),
-                mapperUtils.mapType(Set.class, Long.class)
-        );
 
         final List<RedisSlicePostsContents> redisSlicePostsContents = RedisSlicePostsContents.fromRedisData(staticData, postDynamicDataMap, memberLikedPostIdSet);
 
@@ -115,9 +110,13 @@ public class RedisTechBlogPostService {
 
         //사용자 좋아요 여부 정보 TTL 초기화 및 저장
         if(!memberId.equals(RedisMemberConstants.GUEST.getId())){
-            redisTemplate.opsForSet().add(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId), memberLikedPostIdSet);
-            redisTemplate.expire(key, RedisTtlConstants.FIVE_MINUTES.getTtl(), TimeUnit.SECONDS);
+            memberLikedPostIdSet
+                    .forEach((postId) -> redisTemplate.opsForSet()
+                            .add(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId), postId));
         }
+
+        redisTemplate.expire(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId),
+                RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
 
         //게시물의 좋아요 및 조회수 정보 저장
         final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
