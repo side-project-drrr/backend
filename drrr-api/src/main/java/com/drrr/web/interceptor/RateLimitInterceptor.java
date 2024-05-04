@@ -1,6 +1,7 @@
 package com.drrr.web.interceptor;
 
 import com.drrr.domain.rate.service.RateLimiterService;
+import com.nimbusds.jose.Header;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
@@ -12,7 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private final RateLimiterService rateLimiterService;
-    private final int LIMIT_REQUEST_PER_MINUTE = 10;
+    private final int LIMIT_REQUEST_PER_MINUTE = 300;
     private final int WAIT_MINUTES = 5;
     private final Environment env;
 
@@ -23,6 +24,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
         if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
             return true;
         }
