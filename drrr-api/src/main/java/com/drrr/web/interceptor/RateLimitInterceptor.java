@@ -29,6 +29,11 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        String clientIpForwardedFromAws = request.getHeader("X-Forwarded-For");
+        System.out.println("clientIpForwardedFromAws = " + clientIpForwardedFromAws);
+        String clientIpRealFromAws = request.getHeader("X-Real-IP");
+        System.out.println("clientIpRealFromAws = " + clientIpRealFromAws);
+
         String clientIp = request.getRemoteAddr(); // Assuming the client id is passed in header
         String api = request.getRequestURI().startsWith("/api") ? "api" : request.getRequestURI();
 
