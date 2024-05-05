@@ -33,7 +33,7 @@ class NormalizeCategoryNameBatchTest extends SpringBatchTestSupport {
                 .build()
         );
 
-        this.launchJob(ChangeCategoryNameBatch.JOB_NAME);
+        this.launchJob(NormalizeCategoryNameBatch.JOB_NAME);
 
         Assertions.assertThat(techBlogPostCategoryRepository.count()).isEqualTo(3);
         Assertions.assertThat(categoryRepository.count()).isEqualTo(4);
