@@ -46,12 +46,14 @@ class RemoveIgnoreCategoryBatchTest extends SpringBatchTestSupport {
                         .toList()
         );
 
+        var previousCount = temporalTechPostTagRepository.count();
+
         temporalTechPostTagRepository.saveAll(categories.stream()
                 .map(category -> new TemporalTechPostTag(category, post))
                 .toList());
 
         this.launchJob(RemoveIgnoreCategoryBatch.JOB_NAME, new JobParameters());
-
+        assertThat(previousCount).isEqualTo(10);
         assertThat(temporalTechPostTagRepository.count()).isEqualTo(0);
     }
 
@@ -63,8 +65,11 @@ class RemoveIgnoreCategoryBatchTest extends SpringBatchTestSupport {
                 TechBlogPostCategoryFixture.createTechBlogPostCategories(post,
                         categoryRepository.saveAll(CategoryFixture.createIgnoreCategories(10))));
 
+        var previousCount = temporalTechPostTagRepository.count();
+
         this.launchJob(RemoveIgnoreCategoryBatch.JOB_NAME, new JobParameters());
 
+        assertThat(previousCount).isEqualTo(10);
         assertThat(techBlogPostCategoryRepository.count()).isEqualTo(0);
     }
 
