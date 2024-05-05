@@ -79,4 +79,10 @@ public class BatchProcessingTechBlogPostCategory extends BaseEntity {
     public String getCategoryName() {
         return category.getName();
     }
+
+    public boolean isExtendType() {
+        return category.isExtendType();
+    }
+
+
 }

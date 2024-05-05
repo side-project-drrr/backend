@@ -33,6 +33,10 @@ public class Category extends BaseEntity {
         this.metaCategoryType = MetaCategoryType.NONE;
     }
 
+    public boolean isExtendType() {
+        return this.metaCategoryType == MetaCategoryType.EXTEND;
+    }
+
     public boolean isReplaceType() {
         return metaCategoryType == MetaCategoryType.REPLACE;
     }
@@ -41,12 +45,18 @@ public class Category extends BaseEntity {
         this.metaCategoryType = MetaCategoryType.IGNORE;
     }
 
+
     public boolean isRegistrationAllowed() {
         return metaCategoryType != MetaCategoryType.IGNORE;
     }
 
     public void changeReplaceType(Long id) {
         this.metaCategoryType = MetaCategoryType.REPLACE;
+        this.referenceId = id;
+    }
+
+    public void changeExtendType(Long id) {
+        this.metaCategoryType = MetaCategoryType.EXTEND;
         this.referenceId = id;
     }
 

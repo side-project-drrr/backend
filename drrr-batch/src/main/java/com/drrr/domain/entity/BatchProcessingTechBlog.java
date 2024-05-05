@@ -43,8 +43,8 @@ public class BatchProcessingTechBlog extends BaseEntity {
     }
 
     public void replaceCategories(Function<Long, Optional<Category>> categoryReplacer) {
-        categories.forEach(postCategory -> postCategory.replaceCategory(categoryReplacer));
-        categories.removeIf(distinctByKey(BatchProcessingTechBlogPostCategory::getCategoryName));
+        this.categories.forEach(postCategory -> postCategory.replaceCategory(categoryReplacer));
+        this.categories.removeIf(distinctByKey(BatchProcessingTechBlogPostCategory::getCategoryName));
     }
 
 
@@ -81,16 +81,26 @@ public class BatchProcessingTechBlog extends BaseEntity {
      * @param newCategories
      */
 
-    public void register(
-            List<Category> newCategories
-    ) {
-
-        categories.removeAll(unNormalizedPostCategory);
+    public void register(List<Category> newCategories) {
+        this.categories.removeAll(unNormalizedPostCategory);
 
         newCategories.stream()
                 .map(category -> new BatchProcessingTechBlogPostCategory(this, category))
                 .forEach(categories::add);
 
         this.categories.removeIf(distinctByKey(BatchProcessingTechBlogPostCategory::getCategoryName));
+    }
+
+
+    public void extendCategories(Function<Long, Optional<Category>> categoryReplacer) {
+        categories.addAll(categories.stream()
+                .filter(BatchProcessingTechBlogPostCategory::isExtendType)
+                .map(BatchProcessingTechBlogPostCategory::getReferenceId)
+                .map(categoryReplacer)
+                .map(Optional::orElseThrow)
+                .map(category -> new BatchProcessingTechBlogPostCategory(this, category))
+                .toList());
+
+        categories.removeIf(distinctByKey(BatchProcessingTechBlogPostCategory::getCategoryName));
     }
 }
