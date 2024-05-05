@@ -41,7 +41,6 @@ public class RemoveIgnoreCategoryBatch {
     Job removeTempPostIgnoreCategoryBatchJob() {
         return new JobBuilder(JOB_NAME, jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(removeTempPostIgnoreCategoryStep())
                 .start(removePostIgnoreCategoryStep())
                 .build();
 
