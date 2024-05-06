@@ -35,6 +35,8 @@ jobs:
           docker-compose up -d
           docker image prune -f
 
+      - name: Build with Gradle
+        run: ./gradlew clean build --parallel
 
       # 운영 환경 application.yml 적용
       - name: Move files
