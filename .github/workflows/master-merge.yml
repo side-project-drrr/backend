@@ -23,6 +23,11 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.TOKEN }}
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run gradlew command
+        run: ./gradlew drrr-batch:copyGitSubmodule
 
       ## docker compose up (docker-compose 기반)
       - name: Build and run Docker Compose
@@ -30,8 +35,19 @@ jobs:
           docker-compose up -d
           docker image prune -f
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew clean build --parallel
+
+      - name: Deploy Prod use SCP
+        uses: appleboy/scp-action@master
+        with:
+          username: ${{secrets.BATCH_SSH_USER}}
+          host: ${{ secrets.BATCH_HOST }}
+          key: ${{ secrets.BATCH_SSH_KEY }}
+          source: "./drrr-batch/build/libs/*.jar,./drrr-summarizer/build/libs/*.jar"
+          target: ${{secrets.BATCH_SSH_TARGET_URL}}
+          strip_components: 3
+
 
       # 운영 환경 application.yml 적용
       - name: Move files
@@ -40,10 +56,6 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build
-
-      - name: Run gradlew command
-        run: ./gradlew drrr-batch:copyGitSubmodule
-
 
 
       #Docker의 Buildx는 Docker의 CLI 플러그인으로, Docker 이미지를 빌드하는데 사용
