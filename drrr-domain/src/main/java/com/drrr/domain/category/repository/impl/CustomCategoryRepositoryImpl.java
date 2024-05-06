@@ -120,7 +120,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                                SELECT A.id id
                                     , A.name name
                                     , '%s' keyIndex
-                                 FROM DRRR_CATEGORY A 
+                                 FROM drrr_category A 
                                 WHERE A.name >= '%s' AND A.name < '%s'
                                 LIMIT %d
                              )
@@ -141,7 +141,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                                SELECT A.id id
                                     , A.name name
                                     , '%s' keyIndex
-                                 FROM DRRR_CATEGORY A
+                                 FROM drrr_category A
                                 WHERE A.name LIKE '%s%%'
                                 LIMIT %d
                              )
@@ -188,7 +188,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                    SELECT A.id id
                         , A.name name
                         , '기타' keyIndex
-                     FROM DRRR_CATEGORY A
+                     FROM drrr_category A
                     WHERE A.name NOT REGEXP '^[A-Za-z가-힣]'
                      LIMIT %d
                  )
@@ -216,7 +216,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                    SELECT A.id id
                         , A.name name
                         , '기타' keyIndex
-                     FROM DRRR_CATEGORY A
+                     FROM drrr_category A
                     WHERE A.name NOT REGEXP '^[A-Za-z가-힣]'
                     LIMIT %d
                     OFFSET %d 
@@ -237,7 +237,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 
         String count = """
                    SELECT count(*)
-                     FROM DRRR_CATEGORY A
+                     FROM drrr_category A
                     WHERE A.name NOT REGEXP '^[A-Za-z가-힣]'
                 """;
 
