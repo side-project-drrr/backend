@@ -18,19 +18,26 @@ import com.drrr.domain.fixture.post.TechBlogPostLikeFixture;
 import com.drrr.domain.like.repository.TechBlogPostLikeRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import com.drrr.domain.post.RedisPostDynamicDataFixture;
+import com.drrr.domain.techblogpost.cache.entity.RedisMemberPostDynamicData;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.common.TechBlogPostQueryService;
+import com.drrr.domain.techblogpost.service.DynamicDataService;
+import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,6 +50,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * <h3>Given</h3>
@@ -69,6 +77,7 @@ import org.springframework.http.HttpStatus;
  * <h2>추천 받아야 하는 Post Id 기댓값</h2>
  * <br>P2, P4, P6, P8, P10</br>
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TechBlogPostE2ETest {
     @LocalServerPort
@@ -92,6 +101,12 @@ public class TechBlogPostE2ETest {
     private DatabaseCleaner databaseCleaner;
     @Autowired
     private RedisPostDynamicDataRepository redisPostDynamicDataRepository;
+    @Autowired
+    private DynamicDataService dynamicDataService;
+    @Autowired
+    private MemberQueryService memberQueryService;
+    @Autowired
+    private TechBlogPostQueryService techBlogPostQueryService;
 
 
     @BeforeEach
@@ -134,8 +149,8 @@ public class TechBlogPostE2ETest {
         final ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         IntStream.rangeClosed(1, 100).forEach(i -> {
-            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
-            Response response = given().log()
+            final String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
+            final Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
@@ -152,11 +167,11 @@ public class TechBlogPostE2ETest {
         executorService.shutdown();
 
         //then
-        final TechBlogPost techBlogPost = techBlogPostRepository.findById(posts.get(0).getId()).orElseThrow(
-                DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+        final TechBlogPost techBlogPost = techBlogPostQueryService.getTechBlogPostById(posts.get(0).getId());
 
         final RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(posts.get(0).getId())
                 .orElseThrow(RedisDomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
+
 
         assertAll(
                 () -> assertThat(techBlogPost.getPostLike()).isEqualTo(300),
@@ -239,5 +254,41 @@ public class TechBlogPostE2ETest {
                 () -> assertThat(techBlogPost.get(0).getViewCount()).isEqualTo(200),
                 () -> assertThat(redisPostDynamicData.getViewCount()).isEqualTo(200)
         );
+    }
+
+    @Test
+    public void 사용자의_좋아요_여부가_정상적으로_캐싱됩니다(){
+        //when
+        final Long memberId = memberQueryService.getMemberById(1L).getId();
+        final String accessToken = jwtProvider.createAccessToken(memberId, Instant.now());
+
+        final TechBlogPost post = techBlogPostQueryService.getTechBlogPostById(1L);
+
+         given().log()
+                .all()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .contentType(ContentType.APPLICATION_JSON.toString())
+                .post("/api/v1/posts/{postId}/like", post.getId())
+                .statusCode();
+
+
+        final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
+
+         given().log()
+                .all()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .contentType(ContentType.APPLICATION_JSON.toString())
+                .delete("/api/v1/posts/{postId}/like", post.getId())
+                .statusCode();
+
+        final Set<Long> memberDislikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
+
+        assertAll(
+                () -> assertThat(memberLikedPostIdSet).contains(post.getId()),
+                () -> assertThat(memberDislikedPostIdSet).doesNotContain(post.getId())
+        );
+
     }
 }
