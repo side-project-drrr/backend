@@ -25,6 +25,11 @@ jobs:
           token: ${{ secrets.TOKEN }}
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      # 운영 환경 application.yml 적용
+      - name: Move files
+        run: |
+          cp drrr-api/src/main/resources/security-storage-api/config/* drrr-api/src/main/resources/
+
 
       - name: Run gradlew command
         run: ./gradlew drrr-batch:copyGitSubmodule
@@ -35,11 +40,6 @@ jobs:
           docker-compose up -d
           docker image prune -f
 
-
-      # 운영 환경 application.yml 적용
-      - name: Move files
-        run: |
-          cp drrr-api/src/main/resources/security-storage-api/config/* drrr-api/src/main/resources/
 
       - name: Build with Gradle
         run: ./gradlew clean build --parallel
