@@ -59,7 +59,7 @@ public class ExternalTechBlogPostService {
             findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
         }
 
-        return saveAndReturnSlicePosts(pageableRequest, memberId, key);
+        return saveAndReturnCategorySlicePosts(pageableRequest, memberId, key, categoryId);
     }
 
     private Slice<TechBlogPostResponse> findSlicePostsByRedis(
@@ -80,7 +80,32 @@ public class ExternalTechBlogPostService {
 
     private Slice<TechBlogPostResponse> saveAndReturnSlicePosts(final PageableRequest pageableRequest, final Long memberId, final String key){
         final TechBlogPostSliceDto allPosts = techBlogPostRepository.findAllPosts(
-                pageableRequest.fromPageRequest());
+                pageableRequest.fromPageRequest()
+        );
+
+        return findSlicePostsAndSaveInRedis(allPosts, memberId, pageableRequest, key);
+    }
+
+    private Slice<TechBlogPostResponse> saveAndReturnCategorySlicePosts(
+            final PageableRequest pageableRequest,
+            final Long memberId,
+            final String key,
+            final Long categoryId
+    ){
+        final TechBlogPostSliceDto allPosts = techBlogPostRepository.findPostsByCategory(
+                categoryId,
+                pageableRequest.fromPageRequest()
+        );
+
+        return findSlicePostsAndSaveInRedis(allPosts, memberId, pageableRequest, key);
+    }
+
+    private Slice<TechBlogPostResponse> findSlicePostsAndSaveInRedis(
+            final TechBlogPostSliceDto allPosts,
+            final Long memberId,
+            final PageableRequest pageableRequest,
+            final String key
+    ){
 
         final List<Long> postIds = allPosts.contents()
                 .stream()
