@@ -13,8 +13,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private final RateLimiterService rateLimiterService;
-    private final int LIMIT_REQUEST_PER_MINUTE = 20;
-    private final int WAIT_MINUTES = 5;
+    private final int LIMIT_REQUEST_PER_MINUTE = 2;
+    private final int WAIT_MINUTES = 1;
     private final Environment env;
 
     public RateLimitInterceptor(RateLimiterService rateLimiterService, Environment env) {
