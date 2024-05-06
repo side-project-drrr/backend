@@ -35,7 +35,6 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
                                     @NotNull final FilterChain filterChain)
             throws ServletException, IOException {
 
-
         //prometheus의 지표 수집을 위한 주기적인 request는 무시
         if (IgnoreUrlsSet.contains(request.getRequestURI())) {
             filterChain.doFilter(request, response);
