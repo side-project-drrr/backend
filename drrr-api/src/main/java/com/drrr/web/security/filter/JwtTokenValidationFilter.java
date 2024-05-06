@@ -34,15 +34,12 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest request, @NotNull final HttpServletResponse response,
                                     @NotNull final FilterChain filterChain)
             throws ServletException, IOException {
-        String clientIpForwardedFromAws = request.getHeader("X-Forwarded-For");
-        System.out.println("clientIpForwardedFromAws = " + clientIpForwardedFromAws);
-        String clientIpRealFromAws = request.getHeader("X-Real-IP");
-        System.out.println("clientIpRealFromAws = " + clientIpRealFromAws);       
 
         String clientIpForwardedFromAws = request.getHeader("X-Forwarded-For");
         System.out.println("clientIpForwardedFromAws = " + clientIpForwardedFromAws);
         String clientIpRealFromAws = request.getHeader("X-Real-IP");
         System.out.println("clientIpRealFromAws = " + clientIpRealFromAws);
+        Sytstem.out.println("##################################### test ####################");
 
         //prometheus의 지표 수집을 위한 주기적인 request는 무시
         if (IgnoreUrlsSet.contains(request.getRequestURI())) {
