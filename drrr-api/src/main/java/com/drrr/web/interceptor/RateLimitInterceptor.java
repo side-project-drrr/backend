@@ -29,7 +29,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String clientIp = request.getRemoteAddr(); // Assuming the client id is passed in header
+        String clientIp = request.getHeader("X-Forwarded-For");
         String api = request.getRequestURI().startsWith("/api") ? "api" : request.getRequestURI();
 
         if (!rateLimiterService.isAllowed(clientIp, api, LIMIT_REQUEST_PER_MINUTE, Duration.ofMinutes(WAIT_MINUTES))) {
