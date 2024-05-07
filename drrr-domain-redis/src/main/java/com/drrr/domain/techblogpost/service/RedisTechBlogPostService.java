@@ -67,6 +67,12 @@ public class RedisTechBlogPostService {
                 .map((post) -> post.redisTechBlogPostStaticData().id())
                 .toList();
 
+        System.out.println("##################################################");
+        System.out.println("##################################################");
+        System.out.println("##################################################");
+        System.out.println("모든 게시물 이나 카테고리에 해당하는 게시물 찾는 API 의 Keys 리스트");
+        System.out.println("keys -> "+keys);
+
 
 
         //repository를 쓰면 HSET를 쉽게 객체로 변환해줌
