@@ -48,11 +48,15 @@ public class RedisTechBlogPostService {
 
         final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
                         redisTemplate.opsForZSet()
-                                .range(key, start, end))
+                                .range(key, start, end-1))
                 .stream()
                 .filter(Objects::nonNull)
                 .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
                 .toList();
+        System.out.println("SIZE staticData 사이즈 -> "+staticData.size());
+        for (RedisTechBlogPostsCategoriesStaticData staticDatum : staticData) {
+            System.out.println("staticDatum -> "+staticDatum.postId());
+        }
 
         boolean hasNext = false;
 
