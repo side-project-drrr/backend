@@ -49,4 +49,17 @@ public class DynamicDataService {
                 redisTemplate.opsForSet().members(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId)),Set.class);
 
     }
+
+    public void saveMemberLikedPosts(final Long memberId, final List<Long> postIds) {
+        if(Objects.isNull(postIds) || postIds.isEmpty()) {
+            return;
+        }
+
+        redisTemplate.opsForSet().add(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId), postIds.toArray());
+        redisTemplate.expire(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId), RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
+    }
+
+    public void saveDynamicData(final List<RedisPostDynamicData> redisPostDynamicData) {
+        redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
+    }
 }

@@ -8,10 +8,6 @@ import com.drrr.domain.techblogpost.constant.RedisMemberConstants;
 import com.drrr.domain.techblogpost.constant.RedisTtlConstants;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
-import com.drrr.domain.util.MapperUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -119,8 +115,7 @@ public class RedisTechBlogPostService {
                 RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
 
         //게시물의 좋아요 및 조회수 정보 저장
-        final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
-        redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
+        dynamicDataService.saveDynamicData(RedisPostDynamicData.from(contents));
 
     }
 

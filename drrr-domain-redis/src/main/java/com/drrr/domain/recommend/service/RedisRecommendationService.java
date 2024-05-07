@@ -2,7 +2,6 @@ package com.drrr.domain.recommend.service;
 
 import com.drrr.domain.like.entity.TechBlogPostLike;
 import com.drrr.domain.recommend.cache.entity.RedisPostsCategoriesStaticData;
-import com.drrr.domain.techblogpost.cache.entity.RedisMemberPostDynamicData;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
@@ -10,10 +9,8 @@ import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.drrr.domain.techblogpost.service.DynamicDataService;
 import com.drrr.domain.util.MapperUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -88,6 +85,13 @@ public class RedisRecommendationService {
             );
             redisTemplate.expire("postId:" + data.postId(), 300, TimeUnit.SECONDS);
         });
+
+        final List<Long> memberLikedPostIds = memberLikedPosts.stream()
+                .map(like -> like.getPost().getId())
+                .toList();
+
+        dynamicDataService.saveDynamicData(RedisPostDynamicData.from(contents));
+        dynamicDataService.saveMemberLikedPosts(memberId, memberLikedPostIds);
 
     }
 }
