@@ -43,6 +43,7 @@ subprojects {
     }
     repositories {
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
     configurations {
         compileOnly {
@@ -53,7 +54,7 @@ subprojects {
     dependencies {
 
         compileOnly 'org.projectlombok:lombok'
-
+        implementation 'com.github.napstr:logback-discord-appender:1.0.0'
         //developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
