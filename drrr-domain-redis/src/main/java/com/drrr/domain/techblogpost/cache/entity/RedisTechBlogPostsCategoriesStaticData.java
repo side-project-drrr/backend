@@ -17,10 +17,10 @@ public record RedisTechBlogPostsCategoriesStaticData(
     public static List<RedisTechBlogPostsCategoriesStaticData> from(final List<TechBlogPostCategoryDto> contents) {
         return contents.stream()
                 .map((content) -> {
-                    RedisTechBlogPostStaticData redisTechBlogPostStaticData = RedisTechBlogPostStaticData
+                    final RedisTechBlogPostStaticData redisTechBlogPostStaticData = RedisTechBlogPostStaticData
                             .from(content.techBlogPostStaticDataDto());
 
-                    List<RedisCategory> redisCategories = RedisCategory.from(content.categoryDto());
+                    final List<RedisCategory> redisCategories = RedisCategory.from(content.categoryDto());
 
                     return RedisTechBlogPostsCategoriesStaticData.builder()
                             .postId(content.techBlogPostStaticDataDto().id())
@@ -35,10 +35,10 @@ public record RedisTechBlogPostsCategoriesStaticData(
                                                                     final boolean hasNext) {
         return contents.stream()
                 .map((content) -> {
-                    RedisTechBlogPostStaticData redisTechBlogPostStaticData = RedisTechBlogPostStaticData
+                    final RedisTechBlogPostStaticData redisTechBlogPostStaticData = RedisTechBlogPostStaticData
                             .from(content.techBlogPostStaticDataDto());
 
-                    List<RedisCategory> redisCategories = RedisCategory.from(content.categoryDto());
+                    final List<RedisCategory> redisCategories = RedisCategory.from(content.categoryDto());
 
                     return RedisTechBlogPostsCategoriesStaticData.builder()
                             .postId(content.techBlogPostStaticDataDto().id())

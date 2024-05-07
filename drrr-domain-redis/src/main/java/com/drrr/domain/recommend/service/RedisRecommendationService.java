@@ -4,6 +4,7 @@ import com.drrr.domain.like.entity.TechBlogPostLike;
 import com.drrr.domain.recommend.cache.entity.RedisPostsCategoriesStaticData;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
+import com.drrr.domain.techblogpost.constant.RedisTtlConstants;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.drrr.domain.techblogpost.service.DynamicDataService;
@@ -43,7 +44,7 @@ public class RedisRecommendationService {
 
         final List<RedisPostsCategoriesStaticData> recommendation = postIds.stream()
                 .map(postId -> {
-                    redisTemplate.expire("postId:" + postIds, 300, TimeUnit.SECONDS);
+                    redisTemplate.expire("postId:" + postIds, RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
                     return objectMapper.convertValue(
                             redisTemplate.opsForHash()
                                     .get("postId:" + postId, "redisTechBlogPostStaticData"),
