@@ -3,6 +3,7 @@ package com.drrr.techblogpost.service;
 import com.drrr.domain.like.entity.TechBlogPostLike;
 import com.drrr.domain.like.repository.TechBlogPostLikeRepository;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
+import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.DynamicDataService;
@@ -36,6 +37,10 @@ public class ExternalTechBlogPostService {
                 key,
                 memberId
         );
+        System.out.println("##################EXTERNAL TECH BLOG POST SERVICE###############");
+        for (RedisSlicePostsContents content :redisPostCategories.redisSlicePostsContents()) {
+            System.out.println("content post id = " + content.redisTechBlogPostStaticData().id());
+        }
 
         if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key)) {
             findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
