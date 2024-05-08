@@ -44,11 +44,11 @@ public class RedisTechBlogPostService {
 
     public RedisPostCategories findCacheSlicePostsInRedis(final int page, final int size, final String key, final Long memberId) {
         final int start = page * size;
-        final int end = start + size;
+        final int end = start + size-1;
 
         final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
                         redisTemplate.opsForZSet()
-                                .range(key, start, end-1))
+                                .range(key, start, end))
                 .stream()
                 .filter(Objects::nonNull)
                 .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
