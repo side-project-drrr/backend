@@ -43,6 +43,7 @@ public class ExternalTechBlogPostService {
         }
 
         if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key)) {
+            System.out.println("INSIDE hasCachedKeyByRange");
             findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
         }
 
@@ -73,6 +74,10 @@ public class ExternalTechBlogPostService {
             final RedisPostCategories redisCategoryPosts
     ){
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
+        System.out.println("INSIDE findSlicePostsByRedis");
+        for (Long aLong : memberLikedPostIdSet) {
+            System.out.println("post id -> "+aLong);
+        }
         return new SliceImpl<>(
                 TechBlogPostResponse.fromRedis(
                         redisCategoryPosts.redisSlicePostsContents(),
