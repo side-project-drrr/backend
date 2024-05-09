@@ -12,6 +12,7 @@ import com.drrr.domain.util.MapperUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +31,16 @@ public class RedisRecommendationService {
     private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
     private final DynamicDataService dynamicDataService;
 
-    public boolean hasCachedKey(final Long memberId) {
-        return Boolean.TRUE.equals(redisTemplate.hasKey("recommendation:member:" + memberId));
+    public boolean hasCachedKey(final Long memberId, final int count) {
+        final Set<Object> recommendationPostIdSet = redisTemplate.opsForSet().members("recommendation:member:" + memberId);
+
+        return recommendationPostIdSet.size() == count;
     }
 
     public List<RedisSlicePostsContents> findMemberRecommendation(final Long memberId) {
-        final List<Long> postIds = objectMapper.convertValue(
-                redisTemplate.opsForValue().get("recommendation:member:" + memberId),
-                mapperUtils.mapType(List.class, Long.class)
+        final Set<Long> postIds = objectMapper.convertValue(
+                redisTemplate.opsForSet().members("recommendation:member:" + memberId),
+                mapperUtils.mapType(Set.class, Long.class)
         );
 
         redisTemplate.expire("recommendation:member:" + memberId, 300, TimeUnit.SECONDS);
@@ -75,8 +78,7 @@ public class RedisRecommendationService {
 
         final List<Long> postIds = contents.stream().map(content -> content.techBlogPostStaticDataDto().id()).toList();
 
-        redisTemplate.opsForValue().set("recommendation:member:" + memberId, postIds);
-        redisTemplate.expire("recommendation:member:" + memberId, 300, TimeUnit.SECONDS);
+        redisTemplate.opsForSet().add("recommendation:member:" + memberId, postIds, 300, TimeUnit.SECONDS);
 
         redisPostsCategoriesStaticData.forEach(data -> {
             redisTemplate.opsForHash().put(

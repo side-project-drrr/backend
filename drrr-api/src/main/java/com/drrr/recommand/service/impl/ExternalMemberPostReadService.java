@@ -41,6 +41,6 @@ public class ExternalMemberPostReadService {
         //로깅 및 히스토리 데이터 insert
         logUpdateService.insertMemberLogAndHistory(memberId, postId);
 
-        publisher.publishEvent(new ReformatRecommendationEvent(memberId, List.of(postId)));
+        publisher.publishEvent(new ReformatRecommendationEvent(memberId, postId));
     }
 }
