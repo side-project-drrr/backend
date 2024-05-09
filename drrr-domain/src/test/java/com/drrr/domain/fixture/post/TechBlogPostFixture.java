@@ -43,6 +43,24 @@ public class TechBlogPostFixture {
                 .build();
     }
 
+    public static List<TechBlogPost> createTechBlogPostsLike(final int like, final int postCount) {
+        return IntStream.range(0, postCount)
+                .mapToObj(i -> TechBlogPost.builder()
+                        .title("title" + i)
+                        .author("author" + i)
+                        .like(like)
+                        .summary("summary" + i)
+                        .url("url" + i)
+                        .writtenAt(LocalDate.now())
+                        .urlSuffix("urlSuffix" + i)
+                        .thumbnailUrl("thumbnailUrl")
+                        .aiSummary("aiSummary" + i)
+                        .viewCount(DEFAULT_VIEW)
+                        .crawlerGroup(TechBlogCode.KAKAO)
+                        .build()).toList();
+
+    }
+
     public static TechBlogPost createTechBlogPostView(final int viewCount) {
         return TechBlogPost.builder()
                 .title("title")
