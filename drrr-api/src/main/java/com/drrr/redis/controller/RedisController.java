@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class RedisController {
 
-    private CacheFlushUtils cacheFlushUtils;
+    private final CacheFlushUtils cacheFlushUtils;
     private final ExternalRedisService externalRedisService;
 
     @Operation(summary = "게시물과 카테고리 등이 새로 입력되는 배치의 실행 후 호출되는 API")
