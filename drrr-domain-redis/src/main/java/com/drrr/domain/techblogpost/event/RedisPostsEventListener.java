@@ -60,7 +60,7 @@ public class RedisPostsEventListener {
     @Async
     @EventListener
     public void reformatRecommendation(final ReformatRecommendationEvent instance) {
-        redisTemplate.opsForSet().remove(String.format(RECOMMENDATION_MEMBER, instance.memberId), instance.postId);
+        redisTemplate.opsForZSet().remove(String.format(RECOMMENDATION_MEMBER, instance.memberId), instance.postId);
     }
 
     public record IncreaseViewEvent(
