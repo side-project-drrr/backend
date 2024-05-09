@@ -60,18 +60,7 @@ public class RedisPostsEventListener {
     @Async
     @EventListener
     public void reformatRecommendation(final ReformatRecommendationEvent instance) {
-
-        final List<Long> postIds = objectMapper.convertValue(
-                redisTemplate.opsForValue().get(String.format(RECOMMENDATION_MEMBER, instance.memberId)),
-                mapperUtils.mapType(List.class, Long.class)
-        );
-
-        final Set<Long> postIdsSet = new HashSet<>(postIds);
-        boolean containsAny = postIdsSet.stream().anyMatch(instance.postIds::contains);
-
-        if (containsAny) {
-            redisTemplate.delete(String.format(RECOMMENDATION_MEMBER, instance.memberId));
-        }
+        redisTemplate.opsForSet().remove(String.format(RECOMMENDATION_MEMBER, instance.memberId), instance.postId);
     }
 
     public record IncreaseViewEvent(
@@ -93,7 +82,7 @@ public class RedisPostsEventListener {
 
     public record ReformatRecommendationEvent(
             Long memberId,
-            List<Long> postIds
+            Long postId
     ) {
     }
 

@@ -32,7 +32,7 @@ public class ExternalRecommendService {
     @Transactional
     public List<TechBlogPostResponse> execute(final Long memberId, final int count) {
 
-        if (redisRecommendationService.hasCachedKey(memberId)) {
+        if (redisRecommendationService.hasCachedKey(memberId, count)) {
             final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
             List<RedisSlicePostsContents> memberRecommendation = redisRecommendationService.findMemberRecommendation(
                     memberId);
