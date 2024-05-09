@@ -5,6 +5,7 @@ import com.drrr.domain.ExternalBlogPost;
 import com.drrr.domain.ExternalBlogPosts;
 import com.drrr.reader.AbstractCrawlerPageItemReader;
 import com.drrr.reader.CrawlerPageStrategy;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
@@ -70,6 +71,9 @@ public class DaangnCrawlerItemReader extends AbstractCrawlerPageItemReader {
                             .findElement(By.tagName("time"))
                             .getText();
 
+                    if (datetime.length() <= 5) {
+                        datetime += ", " + LocalDateTime.now().getYear();
+                    }
                     var date = CrawlingLocalDatePatterns.PATTERN6.parse(datetime);
 
                     return ExternalBlogPost.builder()
@@ -95,7 +99,7 @@ public class DaangnCrawlerItemReader extends AbstractCrawlerPageItemReader {
         var urls = webDriver.findElement(By.tagName("nav"))
                 .findElements(By.tagName("li"))
                 .stream()
-                .takeWhile(li -> !Objects.equals(li.getText(), "검색"))
+                .takeWhile(li -> !Objects.equals(li.getText(), "IT스타트업"))
                 .map((li) -> li.findElement(By.tagName("a")).getAttribute("href"))
                 .toList();
 
