@@ -12,7 +12,6 @@ import com.drrr.domain.util.MapperUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -30,20 +29,21 @@ public class RedisRecommendationService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
     private final DynamicDataService dynamicDataService;
+    private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
 
     public boolean hasCachedKey(final Long memberId, final int count) {
-        final Set<Object> recommendationPostIdSet = redisTemplate.opsForSet().members("recommendation:member:" + memberId);
+        final Set<Object> recommendationPostIdSet = redisTemplate.opsForZSet().range(String.format(RECOMMENDATION_MEMBER, memberId), 0, -1);
 
         return recommendationPostIdSet.size() == count;
     }
 
     public List<RedisSlicePostsContents> findMemberRecommendation(final Long memberId) {
         final Set<Long> postIds = objectMapper.convertValue(
-                redisTemplate.opsForSet().members("recommendation:member:" + memberId),
+                redisTemplate.opsForZSet().range(String.format(RECOMMENDATION_MEMBER,memberId) , 0, -1),
                 mapperUtils.mapType(Set.class, Long.class)
         );
 
-        redisTemplate.expire("recommendation:member:" + memberId, 300, TimeUnit.SECONDS);
+        redisTemplate.expire(String.format(RECOMMENDATION_MEMBER,memberId), 300, TimeUnit.SECONDS);
 
         final List<RedisPostsCategoriesStaticData> recommendation = postIds.stream()
                 .map(postId -> {
@@ -67,18 +67,14 @@ public class RedisRecommendationService {
     }
 
     public void saveMemberRecommendation(final Long memberId, final List<TechBlogPostCategoryDto> contents, final List<TechBlogPostLike> memberLikedPosts) {
-        //동적 정보 저장
-        final List<RedisPostDynamicData> redisPostDynamicData = RedisPostDynamicData.from(contents);
-        redisPostDynamicDataRepository.saveAll(redisPostDynamicData);
-
-
         final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData = RedisPostsCategoriesStaticData.from(
                 contents);
 
 
-        final List<Long> postIds = contents.stream().map(content -> content.techBlogPostStaticDataDto().id()).toList();
-
-        redisTemplate.opsForSet().add("recommendation:member:" + memberId, postIds, 300, TimeUnit.SECONDS);
+        contents.forEach(content->{
+                    double score = -content.techBlogPostStaticDataDto().writtenAt().toEpochDay();
+                    redisTemplate.opsForZSet().add(String.format(RECOMMENDATION_MEMBER, memberId), content.techBlogPostStaticDataDto().id(), score);
+                });
 
         redisPostsCategoriesStaticData.forEach(data -> {
             redisTemplate.opsForHash().put(
