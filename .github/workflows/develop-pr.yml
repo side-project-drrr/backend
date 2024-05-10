@@ -23,6 +23,7 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.TOKEN }}
+          fetch-depth: 0
       # Fetch master branch
       # Attempt to merge with master
       - name: Try to Merge with Master
