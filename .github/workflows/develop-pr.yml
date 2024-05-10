@@ -23,6 +23,21 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.TOKEN }}
+          fetch-depth: 0
+      # Fetch master branch
+      # Attempt to merge with master
+      - name: Try to Merge with Master
+        id: merge
+        run: |
+          git checkout -b master-merge-test origin/master
+          git merge --no-ff -m "test" ${{ github.event.pull_request.head.ref }}
+          if [ $? -eq 0 ]; then
+            echo "Merge Successful"
+          else
+            echo "Merge Conflict with master"
+            exit 1
+          fi
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
