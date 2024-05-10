@@ -30,7 +30,7 @@ jobs:
         id: merge
         run: |
           git checkout -b master-merge-test master
-          git merge --no-ff --no-commit ${{ github.event.pull_request.head.ref }} || echo "::set-output name=status::failure"
+          git merge --no-ff -m "test" ${{ github.event.pull_request.head.ref }} || echo "::set-output name=status::failure"
 
       # Check if there was a merge conflict
       - name: Check Merge Conflict
