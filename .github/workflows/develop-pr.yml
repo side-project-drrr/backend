@@ -31,17 +31,10 @@ jobs:
         run: |
           git checkout -b master-merge-test origin/master
           git merge --no-ff -m "test" ${{ github.event.pull_request.head.ref }} || echo "::set-output name=status::failure"
-
-      # Check if there was a merge conflict
-      - name: Check Merge Conflict
-        if: steps.merge.outputs.status == 'failure'
-        run: exit 1
-
-      # Check if there was a merge conflict
-      - name: Check Merge Conflict
-        if: steps.merge.outcome == 'failure'
-        run: exit 1
-
+          if [ $? -ne 0 ]; then
+            echo "Merge Conflict with master"
+            exit 1
+          fi
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
