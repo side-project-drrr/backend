@@ -28,7 +28,7 @@ jobs:
       - name: Try to Merge with Master
         id: merge
         run: |
-          git checkout -b master-merge-test master
+          git checkout -b master-merge-test origin/master
           git merge --no-ff --no-commit ${{ github.event.pull_request.head.ref }} || echo "::set-output name=status::failure"
 
       # Check if there was a merge conflict
