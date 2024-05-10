@@ -23,6 +23,24 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}
+      # Fetch master branch
+      - name: Fetch Master Branch
+        run: git fetch origin master
+
+      # Attempt to merge with master
+      - name: Try to Merge with Master
+        id: merge
+        run: |
+          git checkout -b master-merge-test master
+          git merge --no-ff --no-commit ${{ github.event.pull_request.head.ref }} || echo "::error::Merge Conflict with master"
+
+      # Check if there was a merge conflict
+      - name: Check Merge Conflict
+        if: steps.merge.outcome == 'failure'
+        run: exit 1
+
+        
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
