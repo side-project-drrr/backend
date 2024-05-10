@@ -1,10 +1,10 @@
-package com.drrr.provider;
+package com.drrr.post.provider;
 
 
-import com.drrr.payload.response.OpenAiChatCompletionResponse;
-import com.drrr.property.ExtractCategoryProperty;
-import com.google.common.net.HttpHeaders;
+import com.drrr.post.payload.response.OpenAiChatCompletionResponse;
+import com.drrr.post.property.ExtractCategoryProperty;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;

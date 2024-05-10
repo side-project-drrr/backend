@@ -7,6 +7,9 @@ import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.service.SearchMemberService;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -60,5 +63,17 @@ public class TechBlogPostLikeService {
                     log.error("사용자가 하나의 게시물에 중복으로 싫어요를 눌렀습니다. memberId -> {}, postId ->{} ", memberId, postId);
                     throw DomainExceptionCode.DUPLICATE_DISLIKE.newInstance();
                 });
+    }
+
+    public Set<Long> findLikedPostIdsSet(final Long memberId, final List<Long> postIds){
+        List<TechBlogPostLike> memberLikedPosts = findMemberLikedPosts(memberId, postIds);
+
+        return memberLikedPosts.stream()
+                .map(like -> like.getPost().getId())
+                .collect(Collectors.toSet());
+    }
+
+    public List<TechBlogPostLike> findMemberLikedPosts(final Long memberId, final List<Long> postIds){
+        return postLikeRepository.findByMemberIdAndPostIdIn(memberId, postIds);
     }
 }

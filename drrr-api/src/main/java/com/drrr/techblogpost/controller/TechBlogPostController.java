@@ -1,6 +1,8 @@
 package com.drrr.techblogpost.controller;
 
 import com.drrr.core.code.techblog.TopTechBlogType;
+import com.drrr.domain.like.service.TechBlogPostLikeService;
+import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -9,6 +11,8 @@ import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.techblogpost.response.TechBlogPostDetailedResponse;
 import com.drrr.techblogpost.response.TechBlogPostResponse;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
+import com.drrr.web.annotation.MemberId;
+import com.drrr.web.annotation.Optional;
 import com.drrr.web.page.request.PageableRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
@@ -35,6 +40,7 @@ public class TechBlogPostController {
     private final ExternalTechBlogPostService externalTechBlogPostService;
     private final TechBlogPostService techBlogPostService;
     private final KeywordTechBlogPostService keywordTechBlogPostService;
+    private final TechBlogPostLikeService techBlogPostLikeService;
 
     @Operation(summary = "모든 기술 블로그 정보를 가져오는 API", description = """
             호출 성공 시 모든 기술 블로그 정보 반환 [page 값은 0부터 시작 
@@ -44,8 +50,9 @@ public class TechBlogPostController {
             @ApiResponse(responseCode = "200", description = "request 정보를 참고하여 모든 블로그 정보 반환")
     )
     @GetMapping("/posts/all")
-    public Slice<TechBlogPostResponse> findAllPosts(@Valid @ModelAttribute final PageableRequest pageableRequest) {
-        return externalTechBlogPostService.execute(pageableRequest);
+    public Slice<TechBlogPostResponse> findAllPosts(@Optional @MemberId final Long memberId,
+                                                    @Valid @ModelAttribute final PageableRequest pageableRequest) {
+        return externalTechBlogPostService.execute(pageableRequest, memberId);
     }
 
     @Operation(summary = "Keyword가 제목에 들어간 블로그 정보 가져오는 API", description = """
@@ -57,13 +64,22 @@ public class TechBlogPostController {
     )
     @GetMapping("/posts/title/keyword-search")
     public Slice<TechBlogPostResponse> searchPosts(
+            @Optional @MemberId final Long memberId,
             @Valid @RequestParam("keyword") final String keyword,
             @Valid @ModelAttribute final PageableRequest pageableRequest) {
         final TechBlogPostSliceDto postsByKeyword = keywordTechBlogPostService.findPostsByKeyword(keyword,
                 pageableRequest.page(),
                 pageableRequest.size());
 
-        return TechBlogPostResponse.from(postsByKeyword);
+        final List<Long> postIds = postsByKeyword.contents()
+                .stream()
+                .map((content) -> content.techBlogPostStaticDataDto().id())
+                .toList();
+
+        final Set<Long> postIdSet = techBlogPostLikeService.findLikedPostIdsSet(memberId, postIds);
+
+
+        return TechBlogPostResponse.from(postsByKeyword, postIdSet);
     }
 
     @Operation(summary = "특정 카테고리에 해당하는 기술블로그의 기본정보를 가져오는 API", description = """
@@ -74,9 +90,10 @@ public class TechBlogPostController {
             @ApiResponse(responseCode = "200", description = "호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환")
     )
     @GetMapping("/posts/categories/{categoryId}")
-    public Slice<TechBlogPostResponse> findPostsByCategory(@PathVariable("categoryId") final Long id,
+    public Slice<TechBlogPostResponse> findPostsByCategory(@Optional @MemberId final Long memberId,
+                                                           @PathVariable("categoryId") final Long id,
                                                            @Valid @ModelAttribute final PageableRequest pageableRequest) {
-        return externalTechBlogPostService.execute(id, pageableRequest);
+        return externalTechBlogPostService.execute(id, pageableRequest, memberId);
     }
 
     @Operation(summary = "특정 게시물에 대한 상세보기 API - [JWT TOKEN REQUIRED]", description = "호출 성공 시 특정 게시물에 대한 상세 정보 반환")
@@ -98,8 +115,18 @@ public class TechBlogPostController {
             @ApiResponse(responseCode = "200", description = "조회수가 가장 높은 기술 블로그를 반환")
     )
     @GetMapping("/posts/top/{type}/{count}")
-    public List<TechBlogPostResponse> findTopNPosts(@NotNull @PathVariable("count") final int count,
+    public List<TechBlogPostResponse> findTopNPosts(@Optional @MemberId final Long memberId,
+                                                    @NotNull @PathVariable("count") final int count,
                                                     @NotNull @PathVariable("type") final TopTechBlogType type) {
-        return TechBlogPostResponse.from(techBlogPostService.findTopPostByType(count, type));
+        final List<TechBlogPostCategoryDto> topPostByType = techBlogPostService.findTopPostByType(count, type);
+
+        final List<Long> postIds = topPostByType
+                .stream()
+                .map((content) -> content.techBlogPostStaticDataDto().id())
+                .toList();
+
+        final Set<Long> postIdSet = techBlogPostLikeService.findLikedPostIdsSet(memberId, postIds);
+
+        return TechBlogPostResponse.from(techBlogPostService.findTopPostByType(count, type), postIdSet);
     }
 }

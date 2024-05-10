@@ -94,6 +94,8 @@ opentracing:
     enabled: true
     log-spans: true
 logging:
+  discord:
+      webhook-uri: https://discord.com/api/webhooks/1236319410331844719/yNk5xYMLwefdR0pPdAwOk9LmlSZkjpRPizJyyg-VEzMDnzesQjJA2xwfLJJgQsEhx_uB
   file:
     name: ./drrr-api/src/main/resources/docker/promtail/var/log/drrr-api.log
 #logging:

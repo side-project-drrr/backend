@@ -15,4 +15,5 @@ include 'drrr-domain-redis'
 include 'drrr-infra'
 include 'drrr-push-batch'
 include 'drrr-fluent-crawler'
+include 'drrr-summarizer'
 

@@ -1,6 +1,6 @@
 package com.drrr.reader.fluent.blog;
 
-import com.drrr.poperty.DriverProperty;
+import com.drrr.property.DriverProperty;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.chrome.ChromeOptions;

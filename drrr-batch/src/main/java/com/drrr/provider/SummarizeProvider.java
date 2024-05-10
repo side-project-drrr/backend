@@ -1,47 +1,36 @@
 package com.drrr.provider;
 
-import static java.util.concurrent.CompletableFuture.supplyAsync;
-
-import com.drrr.property.TextSummarizerProperty;
+import com.drrr.payload.request.SummarizeRequest;
+import com.drrr.payload.response.SummarizeResponse;
+import com.drrr.property.ExtractCategoryProperty;
+import com.google.common.net.HttpHeaders;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class SummarizeProvider {
 
-    private final ChildProcessRunner childProcessRunner;
-    private final TextSummarizerProperty textSummarizerProperty;
+    private final RestClient restclient = RestClient.create();
+    private final ExtractCategoryProperty extractCategoryProperty;
 
 
-    public String execute(List<String> texts) {
+    public SummarizeResponse request(List<String> content) {
 
-        // 실행할 스레드 개수를 결정합니다 min(문장 수, 실행할 스레드 수)
-        var executor = Executors.newFixedThreadPool(textSummarizerProperty.calculateRunnerCount(texts.size()));
-
-        var completableFutures = texts.stream()
-                .map((text) -> supplyAsync(() -> this.executePythonScript(text), executor))
-                .toList();
-
-        return completableFutures.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.joining());
-    }
-
-
-    private String executePythonScript(String args) {
-        log.info("{}", textSummarizerProperty);
-        return this.childProcessRunner.execute(
-                "python",
-                textSummarizerProperty.scriptPath(),
-                args
-        );
+        log.info("{}", extractCategoryProperty.createUri("/api/v1/post/summarize"));
+        return restclient.method(HttpMethod.POST)
+                .uri(extractCategoryProperty.createUri("/api/v1/post/summarize"))
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .body(new SummarizeRequest(content))
+                .retrieve()
+                .toEntity(SummarizeResponse.class)
+                .getBody();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.drrr.provider;
+package com.drrr.post.provider;
 
 
 import java.util.Arrays;

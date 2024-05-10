@@ -1,15 +1,13 @@
 package com.drrr.techblogpost.response;
 
-import com.drrr.core.code.techblog.TechBlogCode;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
-import java.time.LocalDate;
 import java.util.List;
 
-import com.drrr.domain.techblogpost.dto.TechBlogPostStaticDataDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostViewDto;
+import java.util.Set;
 import lombok.Builder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -18,29 +16,31 @@ import org.springframework.data.domain.SliceImpl;
 @Builder
 public record TechBlogPostResponse(
         TechBlogPostViewDto techBlogPostBasicInfoDto,
-        List<CategoryDto> categoryDto
+        List<CategoryDto> categoryDto,
+        boolean hasMemberLikedPost
 ) {
     public static Slice<TechBlogPostResponse> from(
             final List<TechBlogPostCategoryDto> contents,
             final boolean hasNext,
-            final Pageable pageable
+            final Pageable pageable,
+            final Set<Long> postIdSet
     ) {
-        List<TechBlogPostResponse> techBlogPostResponses = createTechBlogPostResponse(contents);
+        List<TechBlogPostResponse> techBlogPostResponses = createTechBlogPostResponse(contents, postIdSet);
         return new SliceImpl<>(techBlogPostResponses, pageable, hasNext);
     }
 
-    public static Slice<TechBlogPostResponse> from(final TechBlogPostSliceDto techBlogPostSliceDto) {
+    public static Slice<TechBlogPostResponse> from(final TechBlogPostSliceDto techBlogPostSliceDto, final Set<Long> postIdSet) {
 
-        return new SliceImpl<>(TechBlogPostResponse.from(techBlogPostSliceDto.contents())
+        return new SliceImpl<>(TechBlogPostResponse.from(techBlogPostSliceDto.contents(), postIdSet)
                 , techBlogPostSliceDto.pageable(),
                 techBlogPostSliceDto.hasNext());
     }
 
-    public static List<TechBlogPostResponse> from(final List<TechBlogPostCategoryDto> contents) {
-        return createTechBlogPostResponse(contents);
+    public static List<TechBlogPostResponse> from(final List<TechBlogPostCategoryDto> contents, final Set<Long> postIdSet) {
+        return createTechBlogPostResponse(contents, postIdSet);
     }
 
-    public static List<TechBlogPostResponse> fromRedis(final List<RedisSlicePostsContents> contents) {
+    public static List<TechBlogPostResponse> fromRedis(final List<RedisSlicePostsContents> contents, final Set<Long> memberLikedPostIdSet) {
         return contents.stream()
                 .map((redisEntity) -> TechBlogPostResponse.builder()
                         .techBlogPostBasicInfoDto(TechBlogPostViewDto.builder()
@@ -53,6 +53,7 @@ public record TechBlogPostResponse(
                         .url(redisEntity.redisTechBlogPostStaticData().url())
                         .viewCount(redisEntity.redisTechBlogPostDynamicData().getViewCount())
                         .likeCount(redisEntity.redisTechBlogPostDynamicData().getLikeCount()).build())
+                        .hasMemberLikedPost(memberLikedPostIdSet.contains(redisEntity.redisTechBlogPostStaticData().id()))
                         .categoryDto(redisEntity.redisCategories().stream()
                                 .map(redisCategory -> CategoryDto.builder()
                                         .id(redisCategory.id())
@@ -61,7 +62,7 @@ public record TechBlogPostResponse(
                                 .toList()).build()).toList();
     }
 
-    private static List<TechBlogPostResponse> createTechBlogPostResponse(final List<TechBlogPostCategoryDto> contents) {
+    private static List<TechBlogPostResponse> createTechBlogPostResponse(final List<TechBlogPostCategoryDto> contents, final Set<Long> postIdSet) {
         return contents.stream()
                 .map(content -> TechBlogPostResponse.builder()
                         .techBlogPostBasicInfoDto(TechBlogPostViewDto.builder()
@@ -74,6 +75,7 @@ public record TechBlogPostResponse(
                         .url(content.techBlogPostStaticDataDto().url())
                         .viewCount(content.techBlogPostDynamicDto().viewCount())
                         .likeCount(content.techBlogPostDynamicDto().likeCount()).build())
+                        .hasMemberLikedPost(postIdSet.contains(content.techBlogPostStaticDataDto().id()))
                         .categoryDto(content.categoryDto())
                         .build())
                 .toList();

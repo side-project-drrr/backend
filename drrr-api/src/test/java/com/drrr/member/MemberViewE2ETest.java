@@ -43,11 +43,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * <h2>같은 post에 대한 500명의 Members의 동시 접근 테스트</h2>
  * <br>Post Id 1에 대해서 500명의 사용자가 동시 접근했을 때 조회수가 제대로 증가되어 조회수가 500이 되는지 확인</br>
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class MemberViewE2ETest {
     private final int CATEGORY_COUNT = 20;

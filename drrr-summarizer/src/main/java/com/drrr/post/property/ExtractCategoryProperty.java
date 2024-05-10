@@ -1,8 +1,8 @@
-package com.drrr.property;
+package com.drrr.post.property;
 
 
-import com.drrr.payload.common.Message;
-import com.drrr.payload.request.OpenAiChatCompletionRequest;
+import com.drrr.post.payload.common.Message;
+import com.drrr.post.payload.request.OpenAiChatCompletionRequest;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 

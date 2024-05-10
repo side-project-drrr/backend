@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class RecommendServiceE2ETest {
 
@@ -109,6 +112,11 @@ public class RecommendServiceE2ETest {
                 TechBlogPostCategoryFixture.createTechBlogPostCategories(selectedTechBlogPosts, otherTechBlogPosts,
                         categories));
 
+        redisTemplateTestUtil.flushAll();
+    }
+
+    @AfterEach
+    void flushAll() {
         redisTemplateTestUtil.flushAll();
     }
 

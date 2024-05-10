@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.category.repository.CategoryRepository;
 import com.drrr.domain.category.repository.CategoryWeightRepository;
-import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.domain.exception.RedisDomainExceptionCode;
 import com.drrr.domain.fixture.category.CategoryFixture;
 import com.drrr.domain.fixture.category.weight.CategoryWeightFixture;
@@ -18,6 +17,7 @@ import com.drrr.domain.fixture.post.TechBlogPostLikeFixture;
 import com.drrr.domain.like.repository.TechBlogPostLikeRepository;
 import com.drrr.domain.member.entity.Member;
 import com.drrr.domain.member.repository.MemberRepository;
+import com.drrr.domain.member.repository.common.MemberQueryService;
 import com.drrr.domain.post.RedisPostDynamicDataFixture;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -25,17 +25,23 @@ import com.drrr.domain.techblogpost.entity.TechBlogPostCategory;
 import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
+import com.drrr.domain.techblogpost.repository.common.TechBlogPostQueryService;
+import com.drrr.domain.techblogpost.service.DynamicDataService;
+import com.drrr.domain.util.RedisTemplateTestUtil;
 import com.drrr.util.DatabaseCleaner;
 import com.drrr.web.jwt.util.JwtProvider;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
+import org.aspectj.lang.annotation.After;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +49,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * <h3>Given</h3>
@@ -69,6 +76,7 @@ import org.springframework.http.HttpStatus;
  * <h2>추천 받아야 하는 Post Id 기댓값</h2>
  * <br>P2, P4, P6, P8, P10</br>
  */
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class TechBlogPostE2ETest {
     @LocalServerPort
@@ -92,6 +100,14 @@ public class TechBlogPostE2ETest {
     private DatabaseCleaner databaseCleaner;
     @Autowired
     private RedisPostDynamicDataRepository redisPostDynamicDataRepository;
+    @Autowired
+    private DynamicDataService dynamicDataService;
+    @Autowired
+    private MemberQueryService memberQueryService;
+    @Autowired
+    private TechBlogPostQueryService techBlogPostQueryService;
+    @Autowired
+    private RedisTemplateTestUtil redisTemplateTestUtil;
 
 
     @BeforeEach
@@ -102,26 +118,69 @@ public class TechBlogPostE2ETest {
         final List<Member> members = MemberFixture.createMembers(200);
         memberRepository.saveAll(members);
 
-        final TechBlogPost post = TechBlogPostFixture.createTechBlogPostLike(200);
-        techBlogPostRepository.save(post);
+        final List<TechBlogPost> posts = TechBlogPostFixture.createTechBlogPostsLike(200, 2);
+        techBlogPostRepository.saveAll(posts);
 
-        redisPostDynamicDataRepository.save(
-                RedisPostDynamicDataFixture.createRedisPostDynamicData(200, 100, post.getId()));
+        posts.forEach(post -> {
+            redisPostDynamicDataRepository.save(
+                    RedisPostDynamicDataFixture.createRedisPostDynamicData(200, 100, post.getId()));
+        });
 
         techBlogPostLikeRepository.saveAll(
-                TechBlogPostLikeFixture.createTechBlogPostLikeIncrease(members.subList(100, 200), post));
+                TechBlogPostLikeFixture.createTechBlogPostsLikeIncrease(members.subList(100, 200), posts));
 
         final List<Category> categories = CategoryFixture.createCategories(3);
         categoryRepository.saveAll(categories);
 
         final List<TechBlogPostCategory> techBlogPostCategory = TechBlogPostCategoryFixture.createTechBlogPostCategories(
-                post,
+                posts,
                 categories);
         techBlogPostCategoryRepository.saveAll(
                 techBlogPostCategory
         );
 
         categoryWeightRepository.saveAll(CategoryWeightFixture.createCategoryWeights(members, categories));
+
+    }
+
+    @AfterEach
+    void flushAllCache(){
+        redisTemplateTestUtil.flushAll();
+    }
+
+    @Test
+    public void 사용자의_좋아요_여부가_정상적으로_캐싱됩니다(){
+        //when
+        final Long memberId = memberQueryService.getMemberById(2L).getId();
+        final String accessToken = jwtProvider.createAccessToken(memberId, Instant.now());
+
+        final TechBlogPost post = techBlogPostQueryService.getTechBlogPostById(2L);
+
+        given().log()
+                .all()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .contentType(ContentType.APPLICATION_JSON.toString())
+                .post("/api/v1/posts/{postId}/like", post.getId())
+                .statusCode();
+
+
+        final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
+
+        given().log()
+                .all()
+                .header("Authorization", "Bearer " + accessToken)
+                .when()
+                .contentType(ContentType.APPLICATION_JSON.toString())
+                .delete("/api/v1/posts/{postId}/like", post.getId())
+                .statusCode();
+
+        final Set<Long> memberDislikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
+
+        assertAll(
+                () -> assertThat(memberLikedPostIdSet).contains(post.getId()),
+                () -> assertThat(memberDislikedPostIdSet).doesNotContain(post.getId())
+        );
 
     }
 
@@ -134,8 +193,8 @@ public class TechBlogPostE2ETest {
         final ExecutorService executorService = Executors.newFixedThreadPool(100);
 
         IntStream.rangeClosed(1, 100).forEach(i -> {
-            String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
-            Response response = given().log()
+            final String accessToken = jwtProvider.createAccessToken((long) i, Instant.now());
+            final Response response = given().log()
                     .all()
                     .header("Authorization", "Bearer " + accessToken)
                     .when()
@@ -152,11 +211,11 @@ public class TechBlogPostE2ETest {
         executorService.shutdown();
 
         //then
-        final TechBlogPost techBlogPost = techBlogPostRepository.findById(posts.get(0).getId()).orElseThrow(
-                DomainExceptionCode.TECH_BLOG_NOT_FOUND::newInstance);
+        final TechBlogPost techBlogPost = techBlogPostQueryService.getTechBlogPostById(posts.get(0).getId());
 
         final RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(posts.get(0).getId())
                 .orElseThrow(RedisDomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
+
 
         assertAll(
                 () -> assertThat(techBlogPost.getPostLike()).isEqualTo(300),
@@ -202,7 +261,6 @@ public class TechBlogPostE2ETest {
                 () -> assertThat(redisPostDynamicData.getLikeCount()).isEqualTo(100)
         );
     }
-
     @Test
     void 여러_사용자가_게시물을_읽으면_조회수가_정상적으로_증가합니다() throws InterruptedException {
         //when
@@ -240,4 +298,5 @@ public class TechBlogPostE2ETest {
                 () -> assertThat(redisPostDynamicData.getViewCount()).isEqualTo(200)
         );
     }
+
 }

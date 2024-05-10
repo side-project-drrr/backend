@@ -17,9 +17,7 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.item.database.JpaCursorItemReader;
-import org.springframework.batch.item.database.JpaPagingItemReader;
 import org.springframework.batch.item.database.builder.JpaCursorItemReaderBuilder;
-import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -43,8 +41,7 @@ public class RemoveIgnoreCategoryBatch {
     Job removeTempPostIgnoreCategoryBatchJob() {
         return new JobBuilder(JOB_NAME, jobRepository)
                 .incrementer(new RunIdIncrementer())
-                .start(removeTempPostIgnoreCategoryStep())
-                .next(removePostIgnoreCategoryStep())
+                .start(removePostIgnoreCategoryStep())
                 .build();
 
     }
@@ -58,8 +55,7 @@ public class RemoveIgnoreCategoryBatch {
                         chunk.getItems()
                                 .stream()
                                 .map(BaseEntity::getId)
-                                .toList()
-                ))
+                                .toList()))
                 .build();
     }
 
@@ -94,16 +90,15 @@ public class RemoveIgnoreCategoryBatch {
 
     @Bean("techBlogPostJapCursorItemReader")
     @StepScope
-    JpaPagingItemReader<TechBlogPostCategory> techBlogPostJpaCursorItemReader() {
-        return new JpaPagingItemReaderBuilder<TechBlogPostCategory>()
+    JpaCursorItemReader<TechBlogPostCategory> techBlogPostJpaCursorItemReader() {
+        return new JpaCursorItemReaderBuilder<TechBlogPostCategory>()
                 .name("techBlogPostJpaCursorItemReader")
                 .entityManagerFactory(entityManagerFactory)
                 .queryString("""
                         select tbpc from TechBlogPostCategory tbpc join Category c
                          on c = tbpc.category
                          where c.metaCategoryType = 2
-                         """)
-                .pageSize(10)
+                        """)
                 .build();
 
     }
