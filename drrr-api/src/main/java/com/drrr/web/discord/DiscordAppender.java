@@ -59,6 +59,13 @@ public class DiscordAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         if (exceptionBrief.equals("")) {
             exceptionBrief = DiscordConstants.EXCEPTION_NOT_FOUND;
         }
+        System.out.println("$$$$$$$$$$$$$$$$$ DIS CORD $$$$$$$$$$$$$$");
+        System.out.println("mdcPropertyMap REQUEST URI" + mdcPropertyMap.get(DiscordConstants.REQUEST_URI));
+        System.out.println("mdcPropertyMap IP ADDRESS" + mdcPropertyMap.get(DiscordConstants.IP_ADDRESS));
+        System.out.println("mdcPropertyMap HEADERS" + mdcPropertyMap.get(DiscordConstants.HEADERS));
+        System.out.println("mdcPropertyMap PARAMS" + mdcPropertyMap.get(DiscordConstants.PARAMS));
+        System.out.println("mdcPropertyMap BODY" + mdcPropertyMap.get(DiscordConstants.BODY));
+        System.out.println("$$$$$$$$$$$$$$$$$ DIS CORD $$$$$$$$$$$$$$");
 
         discordWebhook.addEmbed(new EmbedObject()
                 .setTitle("[" + level + " - " + DiscordConstants.BRIEF_EXCEPTION_MDC + "]")
