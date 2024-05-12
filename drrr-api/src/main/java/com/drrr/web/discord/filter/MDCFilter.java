@@ -26,7 +26,7 @@ public class MDCFilter extends OncePerRequestFilter {
                                     final FilterChain filterChain)
             throws ServletException, IOException {
 
-        MDC.put(DiscordConstants.IP_ADDRESS, request.getRemoteAddr());
+        MDC.put(DiscordConstants.IP_ADDRESS, request.getHeader("X-Forwarded-For"));
         MDC.put(DiscordConstants.REQUEST_URI, request.getRequestURI());
         MDC.put(DiscordConstants.METHOD, request.getMethod());
         MDC.put(DiscordConstants.HEADERS, HttpRequestUtil.getHeaderMap(request));
