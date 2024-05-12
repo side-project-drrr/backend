@@ -15,8 +15,8 @@ public class RedisTemplateTestUtil {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
-    public List<RedisSlicePostsContents> findCacheMemberRecommendation(final Long memberId) {
-        return redisRecommendationService.findMemberRecommendation(memberId);
+    public List<RedisSlicePostsContents> findCacheMemberRecommendation(final Long memberId, final int count) {
+        return redisRecommendationService.findMemberRecommendation(memberId, count);
     }
 
     public void flushAll() {
