@@ -23,7 +23,7 @@ public class HttpRequestUtil {
 
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            if (!headerName.startsWith("Sec")) { // 'Sec'으로 시작하지 않는 헤더만 추가
+            if (!headerName.startsWith("sec")) { // 'Sec'으로 시작하지 않는 헤더만 추가
                 headerMap.put(headerName, request.getHeader(headerName));
             }
         }
