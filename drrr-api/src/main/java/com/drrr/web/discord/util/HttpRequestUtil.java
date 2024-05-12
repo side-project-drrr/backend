@@ -47,9 +47,14 @@ public class HttpRequestUtil {
     }
 
     public static String getBody(final HttpServletRequest request) throws IOException {
-        final ServletInputStream inputStream = request.getInputStream();
-        final String messageBody = StreamUtils.copyToString(inputStream,
-                StandardCharsets.UTF_8);
+        String messageBody = "";
+
+        if (request.getInputStream().isReady()) {
+            final ServletInputStream inputStream = request.getInputStream();
+            messageBody = StreamUtils.copyToString(inputStream,
+                    StandardCharsets.UTF_8);
+        }
+
         return messageBody;
     }
 
