@@ -1,13 +1,9 @@
 package com.drrr.web.discord;
 
 import com.drrr.domain.exception.DomainExceptionCode;
-import com.drrr.web.discord.model.Author;
 import com.drrr.web.discord.model.EmbedObject;
 import com.drrr.web.discord.model.Field;
-import com.drrr.web.discord.model.Footer;
-import com.drrr.web.discord.model.Image;
 import com.drrr.web.discord.model.JsonObject;
-import com.drrr.web.discord.model.Thumbnail;
 import com.drrr.web.discord.util.ApiCallUtil;
 import io.micrometer.core.instrument.util.StringEscapeUtils;
 import java.awt.Color;
@@ -68,10 +64,6 @@ public class DiscordWebHook {
             jsonEmbed.put("url", embed.getUrl());
 
             processDiscordEmbedColor(embed, jsonEmbed);
-            processDiscordEmbedFooter(embed.getFooter(), jsonEmbed);
-            processDiscordEmbedImage(embed.getImage(), jsonEmbed);
-            processDiscordEmbedThumbnail(embed.getThumbnail(), jsonEmbed);
-            processDiscordEmbedAuthor(embed.getAuthor(), jsonEmbed);
             processDiscordEmbedMessageFields(embed.getFields(), jsonEmbed);
 
             embedObjects.add(jsonEmbed);
@@ -89,41 +81,6 @@ public class DiscordWebHook {
             rgb = (rgb << 8) + color.getBlue();
 
             jsonEmbed.put("color", rgb);
-        }
-    }
-
-    private void processDiscordEmbedFooter(final Footer footer, JsonObject jsonEmbed) {
-        if (footer != null) {
-            JsonObject jsonFooter = new JsonObject();
-            jsonFooter.put("text", footer.text());
-            jsonFooter.put("icon_url", footer.iconUrl());
-            jsonEmbed.put("footer", jsonFooter);
-        }
-    }
-
-    private void processDiscordEmbedImage(final Image image, JsonObject jsonEmbed) {
-        if (image != null) {
-            JsonObject jsonImage = new JsonObject();
-            jsonImage.put("url", image.url());
-            jsonEmbed.put("image", jsonImage);
-        }
-    }
-
-    private void processDiscordEmbedThumbnail(final Thumbnail thumbnail, JsonObject jsonEmbed) {
-        if (thumbnail != null) {
-            JsonObject jsonThumbnail = new JsonObject();
-            jsonThumbnail.put("url", thumbnail.url());
-            jsonEmbed.put("thumbnail", jsonThumbnail);
-        }
-    }
-
-    private void processDiscordEmbedAuthor(final Author author, JsonObject jsonEmbed) {
-        if (author != null) {
-            JsonObject jsonAuthor = new JsonObject();
-            jsonAuthor.put("name", author.name());
-            jsonAuthor.put("url", author.url());
-            jsonAuthor.put("icon_url", author.iconUrl());
-            jsonEmbed.put("author", jsonAuthor);
         }
     }
 
