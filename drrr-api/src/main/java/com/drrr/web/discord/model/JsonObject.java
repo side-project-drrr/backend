@@ -11,7 +11,7 @@ public class JsonObject {
 
     private final HashMap<String, Object> discordMessageMap = new HashMap<>();
 
-    public void put(String key, Object value) {
+    public void put(final String key, final Object value) {
         if (value != null) {
             discordMessageMap.put(key, value);
         }
@@ -20,12 +20,12 @@ public class JsonObject {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        Set<Entry<String, Object>> entrySet = discordMessageMap.entrySet();
+        final Set<Entry<String, Object>> entrySet = discordMessageMap.entrySet();
         builder.append("{");
 
         int iter = 0;
         for (Map.Entry<String, Object> entry : entrySet) {
-            Object val = entry.getValue();
+            final Object val = entry.getValue();
             builder.append(quote(entry.getKey())).append(":");
 
             if (val instanceof String) {
@@ -51,7 +51,7 @@ public class JsonObject {
         return builder.toString();
     }
 
-    private String quote(String string) {
+    private String quote(final String string) {
         return "\"" + string + "\"";
     }
 }
