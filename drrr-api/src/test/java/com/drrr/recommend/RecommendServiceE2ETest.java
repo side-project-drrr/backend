@@ -156,7 +156,7 @@ public class RecommendServiceE2ETest {
                 .map(Member::getId).toList();
 
         final List<RedisSlicePostsContents> cacheMemberRecommendation = redisTemplateTestUtil.findCacheMemberRecommendation(
-                memberIds.get(0));
+                memberIds.get(0), 5);
 
         final List<Long> postIds = cacheMemberRecommendation.stream()
                 .map(data -> data.redisTechBlogPostStaticData().id())
@@ -189,7 +189,8 @@ public class RecommendServiceE2ETest {
 
         final List<TechBlogPostResponse> oldResponseBody = oldsRecommendationResponse.jsonPath()
                 .getList("", TechBlogPostResponse.class);
-        final List<Long> oldPostIds = oldResponseBody.stream().map(data -> data.techBlogPostBasicInfoDto().id()).toList();
+        final List<Long> oldPostIds = oldResponseBody.stream().map(data -> data.techBlogPostBasicInfoDto().id())
+                .toList();
 
         final Long memberReadPostId = oldPostIds.get(0);
 
@@ -217,10 +218,11 @@ public class RecommendServiceE2ETest {
         final List<TechBlogPostResponse> newResponseBody = newRecommendationResponse.jsonPath()
                 .getList("", TechBlogPostResponse.class);
 
-        final List<Long> newPostIds = newResponseBody.stream().map(data -> data.techBlogPostBasicInfoDto().id()).toList();
+        final List<Long> newPostIds = newResponseBody.stream().map(data -> data.techBlogPostBasicInfoDto().id())
+                .toList();
 
         final List<RedisSlicePostsContents> cacheMemberRecommendation = redisTemplateTestUtil.findCacheMemberRecommendation(
-                1L);
+                1L, 5);
 
         final List<Long> cachedPostIds = cacheMemberRecommendation.stream()
                 .map(data -> data.redisTechBlogPostStaticData().id())
