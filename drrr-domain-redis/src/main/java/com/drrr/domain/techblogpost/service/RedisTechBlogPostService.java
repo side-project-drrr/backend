@@ -42,9 +42,10 @@ public class RedisTechBlogPostService {
     }
 
 
-    public RedisPostCategories findCacheSlicePostsInRedis(final int page, final int size, final String key, final Long memberId) {
+    public RedisPostCategories findCacheSlicePostsInRedis(final int page, final int size, final String key,
+                                                          final Long memberId) {
         final int start = page * size;
-        final int end = start + size-1;
+        final int end = start + size - 1;
 
         final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
                         redisTemplate.opsForZSet()
@@ -53,9 +54,9 @@ public class RedisTechBlogPostService {
                 .filter(Objects::nonNull)
                 .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
                 .toList();
-        System.out.println("SIZE staticData 사이즈 -> "+staticData.size());
+        System.out.println("SIZE staticData 사이즈 -> " + staticData.size());
         for (RedisTechBlogPostsCategoriesStaticData staticDatum : staticData) {
-            System.out.println("staticDatum -> "+staticDatum.postId());
+            System.out.println("staticDatum -> " + staticDatum.postId());
         }
 
         boolean hasNext = false;
@@ -75,21 +76,14 @@ public class RedisTechBlogPostService {
         System.out.println("##################################################");
         System.out.println("##################################################");
         System.out.println("모든 게시물 이나 카테고리에 해당하는 게시물 찾는 API 의 Keys 리스트");
-        System.out.println("keys -> "+keys);
-
-
-
-        //repository를 쓰면 HSET를 쉽게 객체로 변환해줌
-        final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(keys);
-
+        System.out.println("keys -> " + keys);
 
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 
+        final Map<Long, RedisPostDynamicData> postDynamicDataMap = dynamicDataService.findDynamicData(keys);
 
-        final Map<Long, RedisPostDynamicData> postDynamicDataMap = RedisPostDynamicData.iterableToMap(postDynamicData);
-
-
-        final List<RedisSlicePostsContents> redisSlicePostsContents = RedisSlicePostsContents.fromRedisData(staticData, postDynamicDataMap, memberLikedPostIdSet);
+        final List<RedisSlicePostsContents> redisSlicePostsContents = RedisSlicePostsContents.fromRedisData(staticData,
+                postDynamicDataMap, memberLikedPostIdSet);
 
         //동적 정보 TTL 초기화
         dynamicDataService.initiateRedisTtl(postDynamicDataMap, redisTemplate, memberId);
@@ -110,12 +104,12 @@ public class RedisTechBlogPostService {
 
         //opsForZSet()를 사용해서 redis에 데이터를 저장함 - 객체를 score로 저장
         staticCacheData.forEach((dto) -> {
-            double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
+            final double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
             redisTemplate.opsForZSet().add(key, dto, score);
         });
 
         //사용자 좋아요 여부 정보 TTL 초기화 및 저장
-        if(!memberId.equals(RedisMemberConstants.GUEST.getId())){
+        if (!memberId.equals(RedisMemberConstants.GUEST.getId())) {
             memberLikedPostIdSet
                     .forEach((postId) -> redisTemplate.opsForSet()
                             .add(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId), postId));
