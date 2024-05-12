@@ -70,7 +70,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "prometheus"
+        include: "*"
   metrics:
     distribution:
       percentiles-histogram:
@@ -93,11 +93,10 @@ opentracing:
       port: 6831           # jaeger udp port
     enabled: true
     log-spans: true
+discord:
+  webhook.key: https://discord.com/api/webhooks/1236319410331844719/yNk5xYMLwefdR0pPdAwOk9LmlSZkjpRPizJyyg-VEzMDnzesQjJA2xwfLJJgQsEhx_uB
 logging:
-  discord:
-      webhook-uri: https://discord.com/api/webhooks/1236319410331844719/yNk5xYMLwefdR0pPdAwOk9LmlSZkjpRPizJyyg-VEzMDnzesQjJA2xwfLJJgQsEhx_uB
   file:
     name: ./drrr-api/src/main/resources/docker/promtail/var/log/drrr-api.log
-#logging:
 #  level:
 #    web: debug

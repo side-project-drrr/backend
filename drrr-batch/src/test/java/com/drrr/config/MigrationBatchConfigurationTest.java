@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.drrr.config.util.SpringBatchTestSupport;
 import com.drrr.core.code.techblog.TechBlogCode;
-import com.drrr.domain.category.entity.Category;
 import com.drrr.domain.techblogpost.entity.TemporalTechBlogPost;
 import com.drrr.domain.techblogpost.repository.TechBlogPostCategoryRepository;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
@@ -48,9 +47,6 @@ class MigrationBatchConfigurationTest extends SpringBatchTestSupport {
                 .build();
     }
 
-    public static Category category(String name) {
-        return new Category(name);
-    }
 
     @Test
     void 기술블로그가_정상적으로_마이그레이션_처리됩니다() {

@@ -52,6 +52,17 @@ public class SpringBatchTestSupport {
         }
     }
 
+    protected void launchJob(final String jobName) {
+        final Job job = applicationContext.getBean(jobName, Job.class);
+        jobLauncherTestUtils.setJob(job);
+
+        try {
+            jobLauncherTestUtils.launchJob();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @TestConfiguration
     static class FakeConfiguration {
