@@ -39,7 +39,9 @@ public enum DomainExceptionCode {
     SUBSCRIPTION(5000, "정의되지 않은 에러입니다."),
     SUBSCRIPTION_NOT_FOUND(SUBSCRIPTION.code + 1, "구독정보를 찾을 수 없습니다."),
     LANGUAGE(5500, "정의되지 않은 에러입니다."),
-    INVALID_LANGUAGE_CHARACTER_INDEX(LANGUAGE.code + 1, "유효하지 않은 언어 인덱스입니다.");
+    INVALID_LANGUAGE_CHARACTER_INDEX(LANGUAGE.code + 1, "유효하지 않은 언어 인덱스입니다."),
+    DISCORD(6000, "정의되지 않은 에러입니다."),
+    DISCORD_ALARM_TRANSFER_FAILED(DISCORD.code + 1, "디스코드 로그 전송에 실패하였습니다.");
 
     private final int code;
     private final String message;
