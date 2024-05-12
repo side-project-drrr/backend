@@ -103,7 +103,7 @@ public class DiscordAppender extends UnsynchronizedAppenderBase<ILoggingEvent> {
         if (throwable != null) {
             exceptionDetail = ThrowableProxyUtil.asString(throwable);
 
-            final String exception = exceptionDetail.substring(0, 4000);
+            final String exception = exceptionDetail.substring(0, 1000);
             discordWebhook.addEmbed(
                     new EmbedObject()
                             .setTitle("[" + DiscordConstants.EXCEPTION_DETAIL_MDC + "]")
