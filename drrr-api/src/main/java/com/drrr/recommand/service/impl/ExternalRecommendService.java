@@ -35,7 +35,7 @@ public class ExternalRecommendService {
         if (redisRecommendationService.hasCachedKey(memberId, count)) {
             final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
             List<RedisSlicePostsContents> memberRecommendation = redisRecommendationService.findMemberRecommendation(
-                    memberId);
+                    memberId, count);
             return TechBlogPostResponse.fromRedis(memberRecommendation, memberLikedPostIdSet);
         }
 
@@ -54,9 +54,7 @@ public class ExternalRecommendService {
         //사용자 게시물 좋아요 여부
         final List<TechBlogPostLike> memberLikedPosts = techBlogPostLikeService.findMemberLikedPosts(memberId, postIds);
 
-
         redisRecommendationService.saveMemberRecommendation(memberId, categorizedPosts, memberLikedPosts);
-
 
         return TechBlogPostResponse.from(categorizedPosts, TechBlogPostLike.toSet(memberLikedPosts));
     }
