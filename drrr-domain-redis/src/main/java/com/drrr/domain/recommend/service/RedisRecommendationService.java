@@ -12,6 +12,7 @@ import com.drrr.domain.util.MapperUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +33,21 @@ public class RedisRecommendationService {
     private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
 
     public boolean hasCachedKey(final Long memberId, final int count) {
-        final Set<Object> recommendationPostIdSet = redisTemplate.opsForZSet().range(String.format(RECOMMENDATION_MEMBER, memberId), 0, -1);
+        final Set<Object> recommendationPostIdSet = redisTemplate.opsForZSet()
+                .range(String.format(RECOMMENDATION_MEMBER, memberId), 0, -1);
 
         return recommendationPostIdSet.size() == count;
     }
 
-    public List<RedisSlicePostsContents> findMemberRecommendation(final Long memberId) {
-        final Set<Long> postIds = objectMapper.convertValue(
-                redisTemplate.opsForZSet().range(String.format(RECOMMENDATION_MEMBER,memberId) , 0, -1),
-                mapperUtils.mapType(Set.class, Long.class)
-        );
+    public List<RedisSlicePostsContents> findMemberRecommendation(final Long memberId, final int count) {
+        final List<Long> postIds = Objects.requireNonNull(
+                        redisTemplate.opsForZSet().range(String.format(RECOMMENDATION_MEMBER, memberId), 0, count - 1))
+                .stream()
+                .filter(Objects::nonNull)
+                .map((data) -> (Long) data)
+                .toList();
 
-        redisTemplate.expire(String.format(RECOMMENDATION_MEMBER,memberId), 300, TimeUnit.SECONDS);
+        redisTemplate.expire(String.format(RECOMMENDATION_MEMBER, memberId), 300, TimeUnit.SECONDS);
 
         final List<RedisPostsCategoriesStaticData> recommendation = postIds.stream()
                 .map(postId -> {
@@ -55,26 +59,26 @@ public class RedisRecommendationService {
                 })
                 .toList();
 
-        final Iterable<RedisPostDynamicData> postDynamicData = redisPostDynamicDataRepository.findAllById(postIds);
-
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 
-        final Map<Long, RedisPostDynamicData> postDynamicDataMap = RedisPostDynamicData.iterableToMap(postDynamicData);
+        final Map<Long, RedisPostDynamicData> postDynamicDataMap = dynamicDataService.findDynamicData(postIds);
 
-        dynamicDataService.initiateRedisTtl(postDynamicDataMap, redisTemplate,memberId);
+        dynamicDataService.initiateRedisTtl(postDynamicDataMap, redisTemplate, memberId);
 
         return RedisSlicePostsContents.from(recommendation, postDynamicDataMap, memberLikedPostIdSet);
     }
 
-    public void saveMemberRecommendation(final Long memberId, final List<TechBlogPostCategoryDto> contents, final List<TechBlogPostLike> memberLikedPosts) {
+    public void saveMemberRecommendation(final Long memberId, final List<TechBlogPostCategoryDto> contents,
+                                         final List<TechBlogPostLike> memberLikedPosts) {
         final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData = RedisPostsCategoriesStaticData.from(
                 contents);
 
-
-        contents.forEach(content->{
-                    double score = -content.techBlogPostStaticDataDto().writtenAt().toEpochDay();
-                    redisTemplate.opsForZSet().add(String.format(RECOMMENDATION_MEMBER, memberId), content.techBlogPostStaticDataDto().id(), score);
-                });
+        contents.forEach(content -> {
+            final double score = -content.techBlogPostStaticDataDto().writtenAt().toEpochDay();
+            redisTemplate.opsForZSet()
+                    .add(String.format(RECOMMENDATION_MEMBER, memberId), content.techBlogPostStaticDataDto().id(),
+                            score);
+        });
 
         redisPostsCategoriesStaticData.forEach(data -> {
             redisTemplate.opsForHash().put(
