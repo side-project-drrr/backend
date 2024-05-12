@@ -36,7 +36,11 @@ public class RedisPostDynamicData implements Serializable {
                 .toList();
     }
 
-    public static Map<Long, RedisPostDynamicData> iterableToMap(final Iterable<RedisPostDynamicData> postDynamicData){
+    public static Map<Long, RedisPostDynamicData> iterableToMap(final Iterable<RedisPostDynamicData> postDynamicData) {
+        System.out.println("%%%%%%%%%%%%%%%%%% iterableToMap %%%%%%%%%%%%%%%%");
+        for (RedisPostDynamicData postDynamicDatum : postDynamicData) {
+            System.out.println("postDynamicDatum = " + postDynamicDatum.getPostId());
+        }
         return StreamSupport.stream(postDynamicData.spliterator(),
                         false)
                 .collect(Collectors.toMap(RedisPostDynamicData::getPostId, Function.identity()));
