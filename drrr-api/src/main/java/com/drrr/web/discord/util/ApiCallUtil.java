@@ -27,9 +27,6 @@ public class ApiCallUtil {
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
 
-        System.out.println("@@@@@@@@@@@@@@@@@@ DISCORD JSON @@@@@@@@@@@@@@@@@@@@");
-        System.out.println(json.toString());
-
         OutputStream stream = connection.getOutputStream();
         stream.write(json.toString().getBytes(StandardCharsets.UTF_8));
         stream.flush();
