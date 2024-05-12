@@ -23,7 +23,9 @@ public class HttpRequestUtil {
 
         while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
-            headerMap.put(headerName, request.getHeader(headerName));
+            if (!headerName.startsWith("Sec")) { // 'Sec'으로 시작하지 않는 헤더만 추가
+                headerMap.put(headerName, request.getHeader(headerName));
+            }
         }
 
         return toJson(headerMap);
