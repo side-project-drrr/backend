@@ -31,25 +31,6 @@ public class EmbedObject {
      */
     private Color color;
 
-    /**
-     * <b>Discord Embed Message 바닥글</b>
-     */
-    private Footer footer;
-
-    /**
-     * <b>Discord Embed Message 썸네일</b>
-     */
-    private Thumbnail thumbnail;
-
-    /**
-     * <b>Discord Embed Message 사진</b>
-     */
-    private Image image;
-
-    /**
-     * <b>Discord Embed Message 작성자</b>
-     */
-    private Author author;
 
     public String getTitle() {
         return title;
@@ -87,44 +68,8 @@ public class EmbedObject {
         return this;
     }
 
-    public Footer getFooter() {
-        return footer;
-    }
-
-    public Thumbnail getThumbnail() {
-        return thumbnail;
-    }
-
-    public EmbedObject setThumbnail(String url) {
-        this.thumbnail = new Thumbnail(url);
-        return this;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public EmbedObject setImage(String url) {
-        this.image = new Image(url);
-        return this;
-    }
-
-    public Author getAuthor() {
-        return author;
-    }
-
     public List<Field> getFields() {
         return fields;
-    }
-
-    public EmbedObject setFooter(String text, String icon) {
-        this.footer = new Footer(text, icon);
-        return this;
-    }
-
-    public EmbedObject setAuthor(String name, String url, String icon) {
-        this.author = new Author(name, url, icon);
-        return this;
     }
 
     public EmbedObject addField(String name, String value, boolean inline) {
