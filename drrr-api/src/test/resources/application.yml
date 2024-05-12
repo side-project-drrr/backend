@@ -113,3 +113,6 @@ global:
     front:
       local:
         domain: http://localhost:5173
+discord:
+  webhook:
+    key: https://discord.com/api/webhooks/1236319410331844719/yNk5xYMLwefdR0pPdAwOk9LmlSZkjpRPizJyyg-VEzMDnzesQjJA2xwfLJJgQsEhx_uB
