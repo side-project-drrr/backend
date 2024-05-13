@@ -31,8 +31,8 @@ public class DynamicDataService {
                                  final Long memberId) {
         //동적 정보 TTL 초기화
         postDynamicDataMap.forEach((keyValue, value) -> {
-            redisPostDynamicDataRepository.deleteById(keyValue);
-            redisPostDynamicDataRepository.save(value);
+            redisTemplate.expire(String.format(REDIS_DYNAMIC_POST_DATA, keyValue),
+                    RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
         });
 
         if (!memberId.equals(RedisMemberConstants.GUEST.getId())) {
