@@ -6,9 +6,7 @@ import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.constant.RedisTtlConstants;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
-import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.drrr.domain.techblogpost.service.DynamicDataService;
-import com.drrr.domain.util.MapperUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RedisRecommendationService {
 
     private final ObjectMapper objectMapper;
-    private final MapperUtils mapperUtils;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
     private final DynamicDataService dynamicDataService;
     private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
 
