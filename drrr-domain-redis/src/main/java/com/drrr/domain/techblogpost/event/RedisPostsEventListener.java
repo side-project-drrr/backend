@@ -1,12 +1,6 @@
 package com.drrr.domain.techblogpost.event;
 
 import com.drrr.domain.techblogpost.constant.RedisMemberConstants;
-import com.drrr.domain.util.MapperUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -20,9 +14,7 @@ import org.springframework.stereotype.Component;
 public class RedisPostsEventListener {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final ObjectMapper objectMapper;
-    private final MapperUtils mapperUtils;
-    private final String REDIS_POST_DYNAMIC_DATA = "redisPostDynamicData:%s";
+    private final String REDIS_POST_DYNAMIC_DATA = "redisDynamicPostData:%s";
     private final String VIEW_COUNT = "viewCount";
     private final String LIKE_COUNT = "likeCount";
     private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
@@ -41,8 +33,9 @@ public class RedisPostsEventListener {
         redisTemplate.opsForHash()
                 .increment(String.format(REDIS_POST_DYNAMIC_DATA, instance.postId), LIKE_COUNT, 1);
 
-        if(!instance.memberId.equals(RedisMemberConstants.GUEST.getId())){
-            redisTemplate.opsForSet().add(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, instance.memberId), instance.postId);
+        if (!instance.memberId.equals(RedisMemberConstants.GUEST.getId())) {
+            redisTemplate.opsForSet()
+                    .add(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, instance.memberId), instance.postId);
         }
     }
 
@@ -52,8 +45,9 @@ public class RedisPostsEventListener {
         redisTemplate.opsForHash()
                 .increment(String.format(REDIS_POST_DYNAMIC_DATA, instance.postId.toString()), LIKE_COUNT, -1);
 
-        if(!instance.memberId.equals(RedisMemberConstants.GUEST.getId())){
-            redisTemplate.opsForSet().remove(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, instance.memberId), instance.postId);
+        if (!instance.memberId.equals(RedisMemberConstants.GUEST.getId())) {
+            redisTemplate.opsForSet()
+                    .remove(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, instance.memberId), instance.postId);
         }
     }
 
