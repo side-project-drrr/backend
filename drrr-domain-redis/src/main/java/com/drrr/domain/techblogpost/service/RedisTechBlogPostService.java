@@ -7,7 +7,6 @@ import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.constant.RedisMemberConstants;
 import com.drrr.domain.techblogpost.constant.RedisTtlConstants;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
-import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class RedisTechBlogPostService {
-    private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final DynamicDataService dynamicDataService;
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
