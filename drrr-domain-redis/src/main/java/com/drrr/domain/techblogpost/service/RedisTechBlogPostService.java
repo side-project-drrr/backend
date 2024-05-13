@@ -13,7 +13,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,9 +105,18 @@ public class RedisTechBlogPostService {
                 contents, hasNext);
 
         //opsForZSet()를 사용해서 redis에 데이터를 저장함 - 객체를 score로 저장
-        staticCacheData.forEach((dto) -> {
-            final double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
-            redisTemplate.opsForZSet().add(key, dto, score);
+
+        redisTemplate.execute(new SessionCallback<List>() {
+            @Override
+            public List execute(@NonNull RedisOperations operations) throws DataAccessException {
+                operations.watch(key);
+                operations.multi();
+                staticCacheData.forEach((dto) -> {
+                    final double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
+                    operations.opsForZSet().add(key, dto, score);
+                });
+                return operations.exec();
+            }
         });
 
         //사용자 좋아요 여부 정보 TTL 초기화 및 저장
