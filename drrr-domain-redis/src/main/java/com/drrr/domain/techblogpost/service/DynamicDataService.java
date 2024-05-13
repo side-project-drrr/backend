@@ -13,7 +13,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -72,19 +75,34 @@ public class DynamicDataService {
             return;
         }
 
-        redisTemplate.opsForSet().add(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId), postIds.toArray());
-        redisTemplate.expire(String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId),
-                RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
+        redisTemplate.execute(new SessionCallback<List<Object>>() {
+            @Override
+            public List<Object> execute(RedisOperations operations) throws DataAccessException {
+                String key = String.format(REDIS_MEMBER_POST_DYNAMIC_DATA, memberId);
+                operations.watch(key);
+                operations.multi();
+                operations.opsForSet().add(key, postIds.toArray());
+                operations.expire(key, RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
+                return operations.exec();
+            }
+        });
     }
 
     public void saveDynamicData(final List<RedisPostDynamicData> redisPostDynamicData) {
-        redisPostDynamicData.forEach((data) -> {
-            redisTemplate.opsForHash().put(String.format(REDIS_DYNAMIC_POST_DATA, data.getPostId()), "viewCount",
-                    data.getViewCount());
-            redisTemplate.opsForHash().put(String.format(REDIS_DYNAMIC_POST_DATA, data.getPostId()), "likeCount",
-                    data.getLikeCount());
-            redisTemplate.expire(String.format(REDIS_DYNAMIC_POST_DATA, data.getPostId()),
-                    RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
+
+        redisTemplate.execute(new SessionCallback<List<Object>>() {
+            @Override
+            public List<Object> execute(RedisOperations operations) throws DataAccessException {
+                operations.watch(REDIS_DYNAMIC_POST_DATA);
+                operations.multi();
+                redisPostDynamicData.forEach((data) -> {
+                    String key = String.format(REDIS_DYNAMIC_POST_DATA, data.getPostId());
+                    operations.opsForHash().put(key, "viewCount", data.getViewCount());
+                    operations.opsForHash().put(key, "likeCount", data.getLikeCount());
+                    operations.expire(key, RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
+                });
+                return operations.exec();
+            }
         });
     }
 }
