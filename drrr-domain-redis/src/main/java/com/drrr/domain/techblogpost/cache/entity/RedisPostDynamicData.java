@@ -3,10 +3,6 @@ package com.drrr.domain.techblogpost.cache.entity;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,15 +30,5 @@ public class RedisPostDynamicData implements Serializable {
                         .viewCount(content.techBlogPostDynamicDto().viewCount())
                         .build())
                 .toList();
-    }
-
-    public static Map<Long, RedisPostDynamicData> iterableToMap(final Iterable<RedisPostDynamicData> postDynamicData) {
-        System.out.println("%%%%%%%%%%%%%%%%%% iterableToMap %%%%%%%%%%%%%%%%");
-        for (RedisPostDynamicData postDynamicDatum : postDynamicData) {
-            System.out.println("postDynamicDatum = " + postDynamicDatum.getPostId());
-        }
-        return StreamSupport.stream(postDynamicData.spliterator(),
-                        false)
-                .collect(Collectors.toMap(RedisPostDynamicData::getPostId, Function.identity()));
     }
 }
