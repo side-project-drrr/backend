@@ -3,7 +3,6 @@ package com.drrr.domain.techblogpost.service;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.constant.RedisMemberConstants;
 import com.drrr.domain.techblogpost.constant.RedisTtlConstants;
-import com.drrr.domain.techblogpost.repository.RedisPostDynamicDataRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class DynamicDataService {
-    private final RedisPostDynamicDataRepository redisPostDynamicDataRepository;
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
