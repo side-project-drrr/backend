@@ -1,6 +1,7 @@
 package com.drrr.techblogpost;
 
 import static io.restassured.RestAssured.given;
+import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -40,7 +41,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.IntStream;
 import org.apache.http.entity.ContentType;
-import org.aspectj.lang.annotation.After;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -144,12 +144,13 @@ public class TechBlogPostE2ETest {
     }
 
     @AfterEach
-    void flushAllCache(){
+    void flushAllCache() {
         redisTemplateTestUtil.flushAll();
     }
 
     @Test
-    public void 사용자의_좋아요_여부가_정상적으로_캐싱됩니다(){
+    public void 사용자의_좋아요_여부가_정상적으로_캐싱됩니다() throws InterruptedException {
+
         //when
         final Long memberId = memberQueryService.getMemberById(2L).getId();
         final String accessToken = jwtProvider.createAccessToken(memberId, Instant.now());
@@ -164,7 +165,6 @@ public class TechBlogPostE2ETest {
                 .post("/api/v1/posts/{postId}/like", post.getId())
                 .statusCode();
 
-
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 
         given().log()
@@ -174,7 +174,7 @@ public class TechBlogPostE2ETest {
                 .contentType(ContentType.APPLICATION_JSON.toString())
                 .delete("/api/v1/posts/{postId}/like", post.getId())
                 .statusCode();
-
+        sleep(1000);
         final Set<Long> memberDislikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 
         assertAll(
@@ -215,7 +215,6 @@ public class TechBlogPostE2ETest {
 
         final RedisPostDynamicData redisPostDynamicData = redisPostDynamicDataRepository.findById(posts.get(0).getId())
                 .orElseThrow(RedisDomainExceptionCode.REDIS_POST_DYNAMIC_DATA_NOT_FOUND::newInstance);
-
 
         assertAll(
                 () -> assertThat(techBlogPost.getPostLike()).isEqualTo(300),
@@ -261,6 +260,7 @@ public class TechBlogPostE2ETest {
                 () -> assertThat(redisPostDynamicData.getLikeCount()).isEqualTo(100)
         );
     }
+
     @Test
     void 여러_사용자가_게시물을_읽으면_조회수가_정상적으로_증가합니다() throws InterruptedException {
         //when
