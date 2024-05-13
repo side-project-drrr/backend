@@ -52,8 +52,10 @@ public class DynamicDataService {
     }
 
     public Map<Long, RedisPostDynamicData> findDynamicData(final List<Long> postIds) {
+        System.out.println("********************* DynamicDataService.findDynamicData*********************");
+        System.out.println("postId = " + postIds);
         return postIds.stream().collect(Collectors.toMap(Function.identity(), postId -> {
-            Map<Object, Object> entries = redisTemplate.opsForHash()
+            final Map<Object, Object> entries = redisTemplate.opsForHash()
                     .entries(String.format(REDIS_DYNAMIC_POST_DATA, postId));
 
             int viewCount = (int) entries.get("viewCount");
