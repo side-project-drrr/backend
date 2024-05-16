@@ -78,7 +78,6 @@ public class TechBlogPostController {
 
         final Set<Long> postIdSet = techBlogPostLikeService.findLikedPostIdsSet(memberId, postIds);
 
-
         return TechBlogPostResponse.from(postsByKeyword, postIdSet);
     }
 
@@ -118,15 +117,14 @@ public class TechBlogPostController {
     public List<TechBlogPostResponse> findTopNPosts(@Optional @MemberId final Long memberId,
                                                     @NotNull @PathVariable("count") final int count,
                                                     @NotNull @PathVariable("type") final TopTechBlogType type) {
-        final List<TechBlogPostCategoryDto> topPostByType = techBlogPostService.findTopPostByType(count, type);
 
-        final List<Long> postIds = topPostByType
-                .stream()
-                .map((content) -> content.techBlogPostStaticDataDto().id())
+        final List<TechBlogPostCategoryDto> posts = techBlogPostService.findTopPostByType(count, type);
+
+        final List<Long> postIds = posts.stream().map((content) -> content.techBlogPostStaticDataDto().id())
                 .toList();
 
         final Set<Long> postIdSet = techBlogPostLikeService.findLikedPostIdsSet(memberId, postIds);
 
-        return TechBlogPostResponse.from(techBlogPostService.findTopPostByType(count, type), postIdSet);
+        return TechBlogPostResponse.from(posts, postIdSet);
     }
 }
