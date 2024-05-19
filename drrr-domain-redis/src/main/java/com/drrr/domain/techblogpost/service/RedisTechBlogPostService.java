@@ -1,5 +1,7 @@
 package com.drrr.domain.techblogpost.service;
 
+import com.drrr.domain.like.entity.TechBlogPostLike;
+import com.drrr.domain.recommend.cache.entity.RedisPostsCategoriesStaticData;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostDynamicData;
 import com.drrr.domain.techblogpost.cache.entity.RedisTechBlogPostsCategoriesStaticData;
@@ -7,17 +9,14 @@ import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.constant.RedisMemberConstants;
 import com.drrr.domain.techblogpost.constant.RedisTtlConstants;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataAccessException;
-import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SessionCallback;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +27,7 @@ public class RedisTechBlogPostService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final DynamicDataService dynamicDataService;
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
+    private final ObjectMapper objectMapper;
 
     public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key) {
         final int start = page * size;
@@ -106,17 +106,9 @@ public class RedisTechBlogPostService {
 
         //opsForZSet()를 사용해서 redis에 데이터를 저장함 - 객체를 score로 저장
 
-        redisTemplate.execute(new SessionCallback<List>() {
-            @Override
-            public List execute(@NonNull RedisOperations operations) throws DataAccessException {
-                operations.watch(key);
-                operations.multi();
-                staticCacheData.forEach((dto) -> {
-                    final double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
-                    operations.opsForZSet().add(key, dto, score);
-                });
-                return operations.exec();
-            }
+        staticCacheData.forEach((dto) -> {
+            final double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
+            redisTemplate.opsForZSet().add(key, dto, score);
         });
 
         //사용자 좋아요 여부 정보 TTL 초기화 및 저장
@@ -131,6 +123,117 @@ public class RedisTechBlogPostService {
 
         //게시물의 좋아요 및 조회수 정보 저장
         dynamicDataService.saveDynamicData(RedisPostDynamicData.from(contents));
+
+    }
+
+    public boolean hasCachedKey(final Long memberId, final int count, final String key) {
+        final Set<Object> recommendationPostIdSet = redisTemplate.opsForZSet()
+                .range(String.format(key, memberId), 0, -1);
+
+        return recommendationPostIdSet.size() == count;
+    }
+
+    public List<RedisSlicePostsContents> findRedisZSetByKey(final Long memberId, final int count, final String key) {
+        final List<Long> postIds = Objects.requireNonNull(
+                        redisTemplate.opsForZSet().range(String.format(key, memberId), 0, count - 1))
+                .stream()
+                .filter(Objects::nonNull)
+                .map((data) -> (Long) data)
+                .toList();
+
+        redisTemplate.expire(String.format(key, memberId), 300, TimeUnit.SECONDS);
+
+        final List<RedisPostsCategoriesStaticData> recommendation = postIds.stream()
+                .map(postId -> {
+                    redisTemplate.expire("postId:" + postIds, RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
+                    return objectMapper.convertValue(
+                            redisTemplate.opsForHash()
+                                    .get("postId:" + postId, "redisTechBlogPostStaticData"),
+                            RedisPostsCategoriesStaticData.class);
+                })
+                .toList();
+
+        final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
+
+        final Map<Long, RedisPostDynamicData> postDynamicDataMap = dynamicDataService.findDynamicData(postIds);
+
+        dynamicDataService.initiateRedisTtl(postDynamicDataMap, redisTemplate, memberId);
+
+        return RedisSlicePostsContents.from(recommendation, postDynamicDataMap, memberLikedPostIdSet);
+    }
+
+    public void saveRedisRecommendationPost(
+            final Long memberId,
+            final List<TechBlogPostCategoryDto> contents,
+            final List<TechBlogPostLike> memberLikedPosts,
+            final String key
+    ) {
+        final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData = RedisPostsCategoriesStaticData.from(
+                contents);
+
+        contents.forEach(content -> {
+            final double score = -content.techBlogPostStaticDataDto().writtenAt().toEpochDay();
+            redisTemplate.opsForZSet()
+                    .add(String.format(key, memberId), content.techBlogPostStaticDataDto().id(),
+                            score);
+        });
+
+        redisPostsCategoriesStaticData.forEach(data -> {
+            redisTemplate.opsForHash().put(
+                    "postId:" + data.postId(),
+                    "redisTechBlogPostStaticData",
+                    data
+            );
+            redisTemplate.expire("postId:" + data.postId(), 300, TimeUnit.SECONDS);
+        });
+
+        final List<Long> memberLikedPostIds = memberLikedPosts.stream()
+                .map(like -> like.getPost().getId())
+                .toList();
+
+        dynamicDataService.saveDynamicData(RedisPostDynamicData.from(contents));
+        dynamicDataService.saveMemberLikedPosts(memberId, memberLikedPostIds);
+
+    }
+
+
+    public void saveRedisZSetByKey(
+            final Long memberId,
+            final List<TechBlogPostCategoryDto> contents,
+            final List<TechBlogPostLike> memberLikedPosts,
+            final String key
+    ) {
+        final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData = RedisPostsCategoriesStaticData.from(
+                contents);
+
+        memberLikedPosts.forEach(content -> {
+            double score = 0;
+            if (key.contains("LIKES")) {
+                score = content.getPost().getPostLike();
+            } else {
+                score = content.getPost().getViewCount();
+            }
+
+            redisTemplate.opsForZSet()
+                    .add(key, content.getId(),
+                            score);
+        });
+
+        redisPostsCategoriesStaticData.forEach(data -> {
+            redisTemplate.opsForHash().put(
+                    "postId:" + data.postId(),
+                    "redisTechBlogPostStaticData",
+                    data
+            );
+            redisTemplate.expire("postId:" + data.postId(), 300, TimeUnit.SECONDS);
+        });
+
+        final List<Long> memberLikedPostIds = memberLikedPosts.stream()
+                .map(like -> like.getPost().getId())
+                .toList();
+
+        dynamicDataService.saveDynamicData(RedisPostDynamicData.from(contents));
+        dynamicDataService.saveMemberLikedPosts(memberId, memberLikedPostIds);
 
     }
 

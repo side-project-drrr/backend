@@ -5,10 +5,10 @@ import com.drrr.domain.category.service.WeightValidationService;
 import com.drrr.domain.like.entity.TechBlogPostLike;
 import com.drrr.domain.like.service.TechBlogPostLikeService;
 import com.drrr.domain.log.service.LogUpdateService;
-import com.drrr.domain.recommend.service.RedisRecommendationService;
 import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.service.DynamicDataService;
+import com.drrr.domain.techblogpost.service.RedisTechBlogPostService;
 import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.techblogpost.response.TechBlogPostResponse;
 import java.util.List;
@@ -25,17 +25,18 @@ public class ExternalRecommendService {
     private final WeightValidationService weightValidationService;
     private final TechBlogPostService techBlogPostService;
     private final LogUpdateService logUpdateService;
-    private final RedisRecommendationService redisRecommendationService;
+    private final RedisTechBlogPostService redisTechBlogPostService;
     private final TechBlogPostLikeService techBlogPostLikeService;
     private final DynamicDataService dynamicDataService;
+    private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
 
     @Transactional
     public List<TechBlogPostResponse> execute(final Long memberId, final int count) {
 
-        if (redisRecommendationService.hasCachedKey(memberId, count)) {
+        if (redisTechBlogPostService.hasCachedKey(memberId, count, RECOMMENDATION_MEMBER)) {
             final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
-            List<RedisSlicePostsContents> memberRecommendation = redisRecommendationService.findMemberRecommendation(
-                    memberId, count);
+            List<RedisSlicePostsContents> memberRecommendation = redisTechBlogPostService.findRedisZSetByKey(
+                    memberId, count, RECOMMENDATION_MEMBER);
             return TechBlogPostResponse.fromRedis(memberRecommendation, memberLikedPostIdSet);
         }
 
@@ -54,7 +55,8 @@ public class ExternalRecommendService {
         //사용자 게시물 좋아요 여부
         final List<TechBlogPostLike> memberLikedPosts = techBlogPostLikeService.findMemberLikedPosts(memberId, postIds);
 
-        redisRecommendationService.saveMemberRecommendation(memberId, categorizedPosts, memberLikedPosts);
+        redisTechBlogPostService.saveRedisRecommendationPost(memberId, categorizedPosts, memberLikedPosts,
+                RECOMMENDATION_MEMBER);
 
         return TechBlogPostResponse.from(categorizedPosts, TechBlogPostLike.toSet(memberLikedPosts));
     }

@@ -79,3 +79,4 @@ CREATE TABLE BATCH_JOB_EXECUTION_PARAMS  (
 	references BATCH_JOB_EXECUTION(JOB_EXECUTION_ID)
 );
 ```
+![image](https://github.com/side-project-drrr/backend/assets/55623317/577798ae-20dd-4ead-b6eb-a743c78b5699)
