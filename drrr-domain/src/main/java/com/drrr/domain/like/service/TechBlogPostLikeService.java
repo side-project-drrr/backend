@@ -65,15 +65,15 @@ public class TechBlogPostLikeService {
                 });
     }
 
-    public Set<Long> findLikedPostIdsSet(final Long memberId, final List<Long> postIds){
-        List<TechBlogPostLike> memberLikedPosts = findMemberLikedPosts(memberId, postIds);
+    public Set<Long> findLikedPostIdsSet(final Long memberId, final List<Long> postIds) {
+        final List<TechBlogPostLike> memberLikedPosts = findMemberLikedPosts(memberId, postIds);
 
         return memberLikedPosts.stream()
                 .map(like -> like.getPost().getId())
                 .collect(Collectors.toSet());
     }
 
-    public List<TechBlogPostLike> findMemberLikedPosts(final Long memberId, final List<Long> postIds){
+    public List<TechBlogPostLike> findMemberLikedPosts(final Long memberId, final List<Long> postIds) {
         return postLikeRepository.findByMemberIdAndPostIdIn(memberId, postIds);
     }
 }
