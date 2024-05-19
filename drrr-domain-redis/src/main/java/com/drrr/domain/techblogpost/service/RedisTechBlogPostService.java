@@ -162,6 +162,41 @@ public class RedisTechBlogPostService {
         return RedisSlicePostsContents.from(recommendation, postDynamicDataMap, memberLikedPostIdSet);
     }
 
+    public void saveRedisRecommendationPost(
+            final Long memberId,
+            final List<TechBlogPostCategoryDto> contents,
+            final List<TechBlogPostLike> memberLikedPosts,
+            final String key
+    ) {
+        final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData = RedisPostsCategoriesStaticData.from(
+                contents);
+
+        contents.forEach(content -> {
+            final double score = -content.techBlogPostStaticDataDto().writtenAt().toEpochDay();
+            redisTemplate.opsForZSet()
+                    .add(String.format(key, memberId), content.techBlogPostStaticDataDto().id(),
+                            score);
+        });
+
+        redisPostsCategoriesStaticData.forEach(data -> {
+            redisTemplate.opsForHash().put(
+                    "postId:" + data.postId(),
+                    "redisTechBlogPostStaticData",
+                    data
+            );
+            redisTemplate.expire("postId:" + data.postId(), 300, TimeUnit.SECONDS);
+        });
+
+        final List<Long> memberLikedPostIds = memberLikedPosts.stream()
+                .map(like -> like.getPost().getId())
+                .toList();
+
+        dynamicDataService.saveDynamicData(RedisPostDynamicData.from(contents));
+        dynamicDataService.saveMemberLikedPosts(memberId, memberLikedPostIds);
+
+    }
+
+
     public void saveRedisZSetByKey(
             final Long memberId,
             final List<TechBlogPostCategoryDto> contents,

@@ -55,7 +55,7 @@ public class ExternalRecommendService {
         //사용자 게시물 좋아요 여부
         final List<TechBlogPostLike> memberLikedPosts = techBlogPostLikeService.findMemberLikedPosts(memberId, postIds);
 
-        redisTechBlogPostService.saveRedisZSetByKey(memberId, categorizedPosts, memberLikedPosts,
+        redisTechBlogPostService.saveRedisRecommendationPost(memberId, categorizedPosts, memberLikedPosts,
                 RECOMMENDATION_MEMBER);
 
         return TechBlogPostResponse.from(categorizedPosts, TechBlogPostLike.toSet(memberLikedPosts));
