@@ -2,7 +2,6 @@ package com.drrr.techblogpost.controller;
 
 import com.drrr.core.code.techblog.TopTechBlogType;
 import com.drrr.domain.like.service.TechBlogPostLikeService;
-import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostDetailedInfoDto;
 import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.entity.TechBlogPost;
@@ -11,6 +10,7 @@ import com.drrr.domain.techblogpost.service.TechBlogPostService;
 import com.drrr.techblogpost.response.TechBlogPostDetailedResponse;
 import com.drrr.techblogpost.response.TechBlogPostResponse;
 import com.drrr.techblogpost.service.ExternalTechBlogPostService;
+import com.drrr.techblogpost.service.SearchTopTechBlogPostService;
 import com.drrr.web.annotation.MemberId;
 import com.drrr.web.annotation.Optional;
 import com.drrr.web.page.request.PageableRequest;
@@ -41,6 +41,7 @@ public class TechBlogPostController {
     private final TechBlogPostService techBlogPostService;
     private final KeywordTechBlogPostService keywordTechBlogPostService;
     private final TechBlogPostLikeService techBlogPostLikeService;
+    private final SearchTopTechBlogPostService searchTopTechBlogPostService;
 
     @Operation(summary = "모든 기술 블로그 정보를 가져오는 API", description = """
             호출 성공 시 모든 기술 블로그 정보 반환 [page 값은 0부터 시작 
@@ -118,13 +119,6 @@ public class TechBlogPostController {
                                                     @NotNull @PathVariable("count") final int count,
                                                     @NotNull @PathVariable("type") final TopTechBlogType type) {
 
-        final List<TechBlogPostCategoryDto> posts = techBlogPostService.findTopPostByType(count, type);
-
-        final List<Long> postIds = posts.stream().map((content) -> content.techBlogPostStaticDataDto().id())
-                .toList();
-
-        final Set<Long> postIdSet = techBlogPostLikeService.findLikedPostIdsSet(memberId, postIds);
-
-        return TechBlogPostResponse.from(posts, postIdSet);
+        return searchTopTechBlogPostService.execute(memberId, count, type);
     }
 }
