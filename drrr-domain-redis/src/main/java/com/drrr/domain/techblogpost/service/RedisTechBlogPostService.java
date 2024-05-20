@@ -27,20 +27,34 @@ public class RedisTechBlogPostService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final DynamicDataService dynamicDataService;
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
+    private final String REDIS_DYNAMIC_POST_DATA = "redisDynamicPostData:%s";
     private final ObjectMapper objectMapper;
 
-    public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key) {
+    public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key, final Long memberId) {
         final int start = page * size;
         final int end = start + size;
 
-        final Set<Object> techBlogPosts = redisTemplate.opsForZSet()
-                .range(key, start, end);
+        final List<Long> postIds = Objects.requireNonNull(
+                        redisTemplate.opsForZSet()
+                                .range(key, start, end))
+                .stream()
+                .filter(Objects::nonNull)
+                .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
+                .map(RedisTechBlogPostsCategoriesStaticData::postId)
+                .toList();
 
-        if (Objects.nonNull(techBlogPosts)) {
-            return techBlogPosts.size() == size;
+        final boolean hasDynamicCacheKey = dynamicDataService.hasDynamicCacheKey(memberId, postIds);
+
+        if (!hasDynamicCacheKey) {
+            return false;
         }
 
-        return false;
+        return postIds.size() == size;
+
+    }
+
+    private Boolean hasDynamicCacheKey(final Long memberId, final List<Long> keys) {
+        return keys.stream().allMatch((key) -> redisTemplate.hasKey(String.format(REDIS_DYNAMIC_POST_DATA, key)));
     }
 
 
@@ -127,19 +141,30 @@ public class RedisTechBlogPostService {
     }
 
     public boolean hasCachedKey(final Long memberId, final int count, final String key) {
-        final Set<Object> recommendationPostIdSet = redisTemplate.opsForZSet()
-                .range(String.format(key, memberId), 0, -1);
-
-        return recommendationPostIdSet.size() == count;
-    }
-
-    public List<RedisSlicePostsContents> findRedisZSetByKey(final Long memberId, final int count, final String key) {
         final List<Long> postIds = Objects.requireNonNull(
-                        redisTemplate.opsForZSet().range(String.format(key, memberId), 0, count - 1))
+                        redisTemplate.opsForZSet()
+                                .range(String.format(key, memberId), 0, -1))
                 .stream()
                 .filter(Objects::nonNull)
                 .map((data) -> (Long) data)
                 .toList();
+
+        final boolean hasDynamicCacheKey = dynamicDataService.hasDynamicCacheKey(memberId, postIds);
+
+        if (!hasDynamicCacheKey) {
+            return false;
+        }
+
+        return postIds.size() == count;
+    }
+
+    public List<RedisSlicePostsContents> findRedisZSetByKey(final Long memberId, final int count, final String key) {
+        final List<Long> postIds =
+                Objects.requireNonNull(redisTemplate.opsForZSet().range(String.format(key, memberId), 0, count - 1))
+                        .stream()
+                        .filter(Objects::nonNull)
+                        .map((data) -> (Long) data)
+                        .toList();
 
         redisTemplate.expire(String.format(key, memberId), 300, TimeUnit.SECONDS);
 
@@ -151,6 +176,7 @@ public class RedisTechBlogPostService {
                                     .get("postId:" + postId, "redisTechBlogPostStaticData"),
                             RedisPostsCategoriesStaticData.class);
                 })
+                .filter(Objects::nonNull)
                 .toList();
 
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
@@ -178,14 +204,7 @@ public class RedisTechBlogPostService {
                             score);
         });
 
-        redisPostsCategoriesStaticData.forEach(data -> {
-            redisTemplate.opsForHash().put(
-                    "postId:" + data.postId(),
-                    "redisTechBlogPostStaticData",
-                    data
-            );
-            redisTemplate.expire("postId:" + data.postId(), 300, TimeUnit.SECONDS);
-        });
+        saveRedisHash(redisPostsCategoriesStaticData);
 
         final List<Long> memberLikedPostIds = memberLikedPosts.stream()
                 .map(like -> like.getPost().getId())
@@ -194,6 +213,17 @@ public class RedisTechBlogPostService {
         dynamicDataService.saveDynamicData(RedisPostDynamicData.from(contents));
         dynamicDataService.saveMemberLikedPosts(memberId, memberLikedPostIds);
 
+    }
+
+    private void saveRedisHash(final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData) {
+        redisPostsCategoriesStaticData.forEach(data -> {
+            redisTemplate.opsForHash().put(
+                    "postId:" + data.postId(),
+                    "redisTechBlogPostStaticData",
+                    data
+            );
+            redisTemplate.expire("postId:" + data.postId(), 300, TimeUnit.SECONDS);
+        });
     }
 
 
@@ -219,14 +249,7 @@ public class RedisTechBlogPostService {
                             score);
         });
 
-        redisPostsCategoriesStaticData.forEach(data -> {
-            redisTemplate.opsForHash().put(
-                    "postId:" + data.postId(),
-                    "redisTechBlogPostStaticData",
-                    data
-            );
-            redisTemplate.expire("postId:" + data.postId(), 300, TimeUnit.SECONDS);
-        });
+        saveRedisHash(redisPostsCategoriesStaticData);
 
         final List<Long> memberLikedPostIds = memberLikedPosts.stream()
                 .map(like -> like.getPost().getId())
