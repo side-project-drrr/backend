@@ -27,6 +27,10 @@ public class DynamicDataService {
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
     private final String REDIS_DYNAMIC_POST_DATA = "redisDynamicPostData:%s";
 
+    public boolean hasDynamicCacheKey(final Long memberId, final List<Long> keys) {
+        return keys.stream().allMatch((key) -> redisTemplate.hasKey(String.format(REDIS_DYNAMIC_POST_DATA, key)));
+    }
+
     public void initiateRedisTtl(final Map<Long, RedisPostDynamicData> postDynamicDataMap,
                                  final RedisTemplate<String, Object> redisTemplate,
                                  final Long memberId) {

@@ -38,11 +38,12 @@ public class ExternalTechBlogPostService {
                 memberId
         );
         System.out.println("##################EXTERNAL TECH BLOG POST SERVICE###############");
-        for (RedisSlicePostsContents content :redisPostCategories.redisSlicePostsContents()) {
+        for (RedisSlicePostsContents content : redisPostCategories.redisSlicePostsContents()) {
             System.out.println("content post id = " + content.redisTechBlogPostStaticData().id());
         }
 
-        if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key)) {
+        if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key,
+                memberId)) {
             System.out.println("INSIDE hasCachedKeyByRange");
             findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
         }
@@ -51,7 +52,8 @@ public class ExternalTechBlogPostService {
     }
 
     //특정 카테고리에 해당하는 블로그를 가져오는 service
-    public Slice<TechBlogPostResponse> execute(final Long categoryId, final PageableRequest pageableRequest, final Long memberId) {
+    public Slice<TechBlogPostResponse> execute(final Long categoryId, final PageableRequest pageableRequest,
+                                               final Long memberId) {
         final String key = "category" + categoryId;
 
         final RedisPostCategories redisPostCategories = redisTechBlogPostService.findCacheSlicePostsInRedis(
@@ -61,7 +63,8 @@ public class ExternalTechBlogPostService {
                 memberId
         );
 
-        if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key)) {
+        if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key,
+                memberId)) {
             findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
         }
 
@@ -72,11 +75,11 @@ public class ExternalTechBlogPostService {
             final PageableRequest pageableRequest,
             final Long memberId,
             final RedisPostCategories redisCategoryPosts
-    ){
+    ) {
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
         System.out.println("INSIDE findSlicePostsByRedis");
         for (Long aLong : memberLikedPostIdSet) {
-            System.out.println("post id -> "+aLong);
+            System.out.println("post id -> " + aLong);
         }
         return new SliceImpl<>(
                 TechBlogPostResponse.fromRedis(
@@ -88,7 +91,8 @@ public class ExternalTechBlogPostService {
         );
     }
 
-    private Slice<TechBlogPostResponse> saveAndReturnSlicePosts(final PageableRequest pageableRequest, final Long memberId, final String key){
+    private Slice<TechBlogPostResponse> saveAndReturnSlicePosts(final PageableRequest pageableRequest,
+                                                                final Long memberId, final String key) {
         final TechBlogPostSliceDto allPosts = techBlogPostRepository.findAllPosts(
                 pageableRequest.fromPageRequest()
         );
@@ -101,7 +105,7 @@ public class ExternalTechBlogPostService {
             final Long memberId,
             final String key,
             final Long categoryId
-    ){
+    ) {
         final TechBlogPostSliceDto allPosts = techBlogPostRepository.findPostsByCategory(
                 categoryId,
                 pageableRequest.fromPageRequest()
@@ -115,7 +119,7 @@ public class ExternalTechBlogPostService {
             final Long memberId,
             final PageableRequest pageableRequest,
             final String key
-    ){
+    ) {
 
         final List<Long> postIds = allPosts.contents()
                 .stream()
@@ -135,7 +139,8 @@ public class ExternalTechBlogPostService {
         );
 
         //redis에 저장
-        redisTechBlogPostService.saveSlicePostsInRedis(allPosts.contents(), key, allPosts.hasNext(), memberLikedPostIdSet, memberId);
+        redisTechBlogPostService.saveSlicePostsInRedis(allPosts.contents(), key, allPosts.hasNext(),
+                memberLikedPostIdSet, memberId);
 
         return sliceResult;
     }
