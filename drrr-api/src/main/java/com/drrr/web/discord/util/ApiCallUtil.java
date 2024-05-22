@@ -45,8 +45,6 @@ public class ApiCallUtil {
                 response.append(line);
             }
             reader.close();
-            System.out.println("Response Code: " + responseCode);
-            System.out.println("Response Message: " + response.toString());
         }
 
         connection.disconnect();
