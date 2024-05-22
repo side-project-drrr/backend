@@ -9,12 +9,14 @@ import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.constant.RedisMemberConstants;
 import com.drrr.domain.techblogpost.constant.RedisTtlConstants;
 import com.drrr.domain.techblogpost.dto.TechBlogPostCategoryDto;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -27,21 +29,30 @@ public class RedisTechBlogPostService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final DynamicDataService dynamicDataService;
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
-    private final String REDIS_DYNAMIC_POST_DATA = "redisDynamicPostData:%s";
     private final ObjectMapper objectMapper;
 
     public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key, final Long memberId) {
         final int start = page * size;
         final int end = start + size;
 
-        final List<Long> postIds = Objects.requireNonNull(
+        final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
                         redisTemplate.opsForZSet()
                                 .range(key, start, end))
                 .stream()
                 .filter(Objects::nonNull)
                 .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
+                .toList();
+
+        final List<Long> postIds = staticData.stream()
                 .map(RedisTechBlogPostsCategoriesStaticData::postId)
                 .toList();
+
+        if (staticData.isEmpty()) {
+            return false;
+        }
+
+        redisTemplate.opsForValue()
+                .set(key + start + end, staticData, RedisTtlConstants.FIVE_MINUTES.getTtl(), TimeUnit.SECONDS);
 
         final boolean hasDynamicCacheKey = dynamicDataService.hasDynamicCacheKey(memberId, postIds);
 
@@ -53,27 +64,16 @@ public class RedisTechBlogPostService {
 
     }
 
-    private Boolean hasDynamicCacheKey(final Long memberId, final List<Long> keys) {
-        return keys.stream().allMatch((key) -> redisTemplate.hasKey(String.format(REDIS_DYNAMIC_POST_DATA, key)));
-    }
-
-
     public RedisPostCategories findCacheSlicePostsInRedis(final int page, final int size, final String key,
                                                           final Long memberId) {
         final int start = page * size;
         final int end = start + size - 1;
 
-        final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
-                        redisTemplate.opsForZSet()
-                                .range(key, start, end))
-                .stream()
-                .filter(Objects::nonNull)
-                .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
-                .toList();
-        System.out.println("SIZE staticData 사이즈 -> " + staticData.size());
-        for (RedisTechBlogPostsCategoriesStaticData staticDatum : staticData) {
-            System.out.println("staticDatum -> " + staticDatum.postId());
-        }
+        final List<RedisTechBlogPostsCategoriesStaticData> staticData = objectMapper.convertValue(
+                redisTemplate.opsForValue()
+                        .get(key + start + (end + 1)),
+                new TypeReference<>() {
+                });
 
         boolean hasNext = false;
 
@@ -87,12 +87,6 @@ public class RedisTechBlogPostService {
         final List<Long> keys = staticData.stream()
                 .map((post) -> post.redisTechBlogPostStaticData().id())
                 .toList();
-
-        System.out.println("##################################################");
-        System.out.println("##################################################");
-        System.out.println("##################################################");
-        System.out.println("모든 게시물 이나 카테고리에 해당하는 게시물 찾는 API 의 Keys 리스트");
-        System.out.println("keys -> " + keys);
 
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 
@@ -120,10 +114,12 @@ public class RedisTechBlogPostService {
 
         //opsForZSet()를 사용해서 redis에 데이터를 저장함 - 객체를 score로 저장
 
-        staticCacheData.forEach((dto) -> {
-            final double score = -dto.redisTechBlogPostStaticData().writtenAt().toEpochDay();
-            redisTemplate.opsForZSet().add(key, dto, score);
-        });
+        IntStream.range(0, staticCacheData.size())
+                .forEach((index) -> {
+                    final double score = -(
+                            staticCacheData.get(index).redisTechBlogPostStaticData().writtenAt().toEpochDay() - index);
+                    redisTemplate.opsForZSet().add(key, staticCacheData.get(index), score);
+                });
 
         //사용자 좋아요 여부 정보 TTL 초기화 및 저장
         if (!memberId.equals(RedisMemberConstants.GUEST.getId())) {
@@ -197,12 +193,14 @@ public class RedisTechBlogPostService {
         final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData = RedisPostsCategoriesStaticData.from(
                 contents);
 
-        contents.forEach(content -> {
-            final double score = -content.techBlogPostStaticDataDto().writtenAt().toEpochDay();
-            redisTemplate.opsForZSet()
-                    .add(String.format(key, memberId), content.techBlogPostStaticDataDto().id(),
-                            score);
-        });
+        IntStream.range(0, contents.size())
+                .forEach((index) -> {
+                    final double score = -(
+                            contents.get(index).techBlogPostStaticDataDto().writtenAt().toEpochDay() - index);
+                    redisTemplate.opsForZSet()
+                            .add(String.format(key, memberId), contents.get(index).techBlogPostStaticDataDto().id(),
+                                    score);
+                });
 
         saveRedisHash(redisPostsCategoriesStaticData);
 

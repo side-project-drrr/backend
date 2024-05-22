@@ -3,7 +3,6 @@ package com.drrr.techblogpost.service;
 import com.drrr.domain.like.entity.TechBlogPostLike;
 import com.drrr.domain.like.repository.TechBlogPostLikeRepository;
 import com.drrr.domain.techblogpost.cache.entity.RedisPostCategories;
-import com.drrr.domain.techblogpost.cache.payload.RedisSlicePostsContents;
 import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.repository.TechBlogPostRepository;
 import com.drrr.domain.techblogpost.service.DynamicDataService;
@@ -31,21 +30,18 @@ public class ExternalTechBlogPostService {
     public Slice<TechBlogPostResponse> execute(PageableRequest pageableRequest, final Long memberId) {
         final String key = "techBlogPosts";
 
-        final RedisPostCategories redisPostCategories = redisTechBlogPostService.findCacheSlicePostsInRedis(
-                pageableRequest.page(),
-                pageableRequest.size(),
-                key,
-                memberId
-        );
-        System.out.println("##################EXTERNAL TECH BLOG POST SERVICE###############");
-        for (RedisSlicePostsContents content : redisPostCategories.redisSlicePostsContents()) {
-            System.out.println("content post id = " + content.redisTechBlogPostStaticData().id());
-        }
-
         if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key,
                 memberId)) {
+
+            final RedisPostCategories redisPostCategories = redisTechBlogPostService.findCacheSlicePostsInRedis(
+                    pageableRequest.page(),
+                    pageableRequest.size(),
+                    key,
+                    memberId
+            );
+
             System.out.println("INSIDE hasCachedKeyByRange");
-            findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
+            return findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
         }
 
         return saveAndReturnSlicePosts(pageableRequest, memberId, key);
@@ -77,10 +73,7 @@ public class ExternalTechBlogPostService {
             final RedisPostCategories redisCategoryPosts
     ) {
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
-        System.out.println("INSIDE findSlicePostsByRedis");
-        for (Long aLong : memberLikedPostIdSet) {
-            System.out.println("post id -> " + aLong);
-        }
+
         return new SliceImpl<>(
                 TechBlogPostResponse.fromRedis(
                         redisCategoryPosts.redisSlicePostsContents(),
