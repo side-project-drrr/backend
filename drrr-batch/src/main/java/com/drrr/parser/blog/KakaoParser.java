@@ -15,9 +15,10 @@ public class KakaoParser {
     @Bean
     Parser kakaoContentsParser(WebDriverPool webDriverPool) {
         return SimpleParser.builder()
-                .target(By.className("elementor-inner"))
+                .target(By.className("preview"))
                 .webDriverPool(webDriverPool)
                 .techBlogCode(TechBlogCode.KAKAO)
                 .build();
     }
+
 }
