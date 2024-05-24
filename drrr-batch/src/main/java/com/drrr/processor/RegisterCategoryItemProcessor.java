@@ -49,6 +49,7 @@ public class RegisterCategoryItemProcessor implements ItemProcessor<TemporalTech
 
         log.info("문단 요약 시작 & 카테고리 추출 시작:{}", temporalTechBlogPost.getId());
         final var summarizeResponse = summarizeProvider.request(blogContent);
+        log.info("카테고리 추출 완료");
         registerPostTagService.execute(
                 temporalTechBlogPost.getId(),
                 summarizeResponse.categoryNames(),
