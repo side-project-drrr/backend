@@ -21,7 +21,6 @@ public class SummarizeProvider {
 
 
     public String execute(List<String> texts) {
-
         // 실행할 스레드 개수를 결정합니다 min(문장 수, 실행할 스레드 수)
         var executor = Executors.newFixedThreadPool(textSummarizerProperty.calculateRunnerCount(texts.size()));
 
@@ -37,7 +36,6 @@ public class SummarizeProvider {
 
     private String executePythonScript(String args) {
         log.info("{}", textSummarizerProperty);
-        log.info("{}", args);
         return this.childProcessRunner.execute(
                 "python3",
                 textSummarizerProperty.scriptPath(),
