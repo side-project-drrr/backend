@@ -40,7 +40,6 @@ public class ExternalTechBlogPostService {
                     memberId
             );
 
-            System.out.println("INSIDE hasCachedKeyByRange");
             return findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
         }
 
