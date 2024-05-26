@@ -1,5 +1,5 @@
 summarizer:
-  runner-count: 4
+  runner-count: 6
   script-path: $(SCRIPT_PATH)
 
 extract:
@@ -9,4 +9,4 @@ extract:
     model: 'gpt-3.5-turbo-1106'
     role: 'user'
     base-prompt: |+
-      Extract keywords, show one at a time,remove irrelevant content up to a maximum of 10 keywords,display only IT industry terms,and prioritize them based on importance.
+      Extract keywords, show one at a time,remove irrelevant content up to a maximum of 5 keywords,display only IT industry terms,and prioritize them based on importance.

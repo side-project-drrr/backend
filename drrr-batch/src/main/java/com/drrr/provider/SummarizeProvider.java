@@ -22,7 +22,6 @@ public class SummarizeProvider {
 
 
     public SummarizeResponse request(List<String> content) {
-
         log.info("{}", extractCategoryProperty.createUri("/api/v1/post/summarize"));
         return restclient.method(HttpMethod.POST)
                 .uri(extractCategoryProperty.createUri("/api/v1/post/summarize"))

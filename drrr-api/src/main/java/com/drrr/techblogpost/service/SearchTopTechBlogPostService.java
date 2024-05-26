@@ -20,14 +20,14 @@ import org.springframework.stereotype.Service;
 public class SearchTopTechBlogPostService {
     private final TechBlogPostService techBlogPostService;
     private final TechBlogPostLikeService techBlogPostLikeService;
-    private final String RECOMMENDATION_MEMBER = "POST:%s";
+    private final String TOP_POST_KEY = "POST:%s";
     private final RedisTechBlogPostService redisTechBlogPostService;
     private final TechBlogPostLikeRepository techBlogPostLikeRepository;
 
     private final DynamicDataService dynamicDataService;
 
     public List<TechBlogPostResponse> execute(final Long memberId, final int count, final TopTechBlogType type) {
-        final String key = String.format(RECOMMENDATION_MEMBER, type.toString());
+        final String key = String.format(TOP_POST_KEY, type.toString());
 
         if (redisTechBlogPostService.hasCachedKey(memberId, count, key)) {
             final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
