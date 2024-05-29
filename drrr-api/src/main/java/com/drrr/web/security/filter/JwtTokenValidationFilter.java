@@ -1,7 +1,7 @@
 package com.drrr.web.security.filter;
 
+import com.drrr.domain.exception.DomainExceptionCode;
 import com.drrr.error.ErrorResponse;
-import com.drrr.web.exception.ApiExceptionCode;
 import com.drrr.web.jwt.util.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -43,7 +44,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
         log.info("-------------------JwtTokenValidationFilter CALL-------------------");
         log.info("-------------------request URI: " + request.getRequestURI() + "---------------");
-        final String token = jwtTokenProvider.extractToken(request);
+        final String token = jwtTokenProvider.extractAccessToken(request);
 
         if (Objects.isNull(token)) {
 
@@ -63,21 +64,32 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(auth);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
-            returnErrorResponse(response, ApiExceptionCode.JWT_UNAUTHORIZED);
+            String refreshToken = jwtTokenProvider.extractRefreshToken(request);
+
+            if (jwtTokenProvider.validateToken(refreshToken)) {
+                //토큰 변조 및 토큰 만료시
+                returnErrorResponse(response, DomainExceptionCode.JWT_TOKEN_REGENERATION_REQUIRED.getCode(),
+                        DomainExceptionCode.JWT_TOKEN_REGENERATION_REQUIRED.getMessage());
+            } else {
+                //access 및 refresh token이 유효하지 않을 때
+                returnErrorResponse(response, DomainExceptionCode.JWT_TOKEN_INVALID.getCode(),
+                        DomainExceptionCode.JWT_TOKEN_INVALID.getMessage());
+            }
         }
     }
 
     private void returnErrorResponse(
-            HttpServletResponse response,
-            ApiExceptionCode errorCode
+            final HttpServletResponse response,
+            final int code,
+            final String message
     ) {
         ObjectMapper objectMapper = new ObjectMapper();
-        response.setStatus(errorCode.getCode());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
+                .code(code)
+                .message(message)
                 .build();
         try {
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
