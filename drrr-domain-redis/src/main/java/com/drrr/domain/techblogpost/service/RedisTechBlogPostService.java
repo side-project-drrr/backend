@@ -60,7 +60,7 @@ public class RedisTechBlogPostService {
             return false;
         }
 
-        return postIds.size() == size;
+        return true;
 
     }
 

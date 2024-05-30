@@ -59,7 +59,7 @@ public class ExternalTechBlogPostService {
                     key,
                     memberId
             );
-            findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
+            return findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
         }
 
         return saveAndReturnCategorySlicePosts(pageableRequest, memberId, key, categoryId);
