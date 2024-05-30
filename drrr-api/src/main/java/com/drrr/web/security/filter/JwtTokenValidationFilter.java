@@ -29,7 +29,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtTokenProvider;
-    private final Set<String> IgnoreUrlsSet = new HashSet<>(List.of("/actuator/prometheus", "/healthcheck"));
+    private final String regenerateTokenUri = "/api/v1/auth/access-token";
+    private final Set<String> IgnoreUrlsSet = new HashSet<>(
+            List.of("/actuator/prometheus", "/healthcheck"));
 
     @Override
     protected void doFilterInternal(final HttpServletRequest request, @NotNull final HttpServletResponse response,
@@ -44,17 +46,22 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
         log.info("-------------------JwtTokenValidationFilter CALL-------------------");
         log.info("-------------------request URI: " + request.getRequestURI() + "---------------");
-        final String token = jwtTokenProvider.extractAccessToken(request);
+
+        String token = jwtTokenProvider.extractAccessToken(request);
 
         if (Objects.isNull(token)) {
-
             log.info("-----------JWT Token null-------------------");
             filterChain.doFilter(request, response);
             return;
         }
 
         try {
+            if (request.getRequestURI().equals(regenerateTokenUri)) {
+                token = jwtTokenProvider.extractRefreshToken(request);
+            }
+
             final Long memberId = jwtTokenProvider.extractToValueFrom(token);
+
             jwtTokenProvider.validateToken(token);
             final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(memberId, null,
                     List.of(new SimpleGrantedAuthority("USER")));
@@ -63,6 +70,7 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(auth);
             filterChain.doFilter(request, response);
+
         } catch (Exception e) {
             String refreshToken = jwtTokenProvider.extractRefreshToken(request);
 
