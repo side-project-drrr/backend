@@ -182,6 +182,7 @@ public class AuthE2ETest {
                                 .when()
                                 .contentType(ContentType.APPLICATION_JSON.toString())
                                 .header("Authorization", "Bearer " + accessToken)
+                                .header("REFRESH-TOKEN", "Bearer " + refreshToken)
                                 .body("""
                                         {
                                             "accessToken" : """ + "\"" + accessToken + "\"" + """
