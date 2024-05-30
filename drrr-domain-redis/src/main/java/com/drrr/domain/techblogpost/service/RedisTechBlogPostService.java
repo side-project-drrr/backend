@@ -29,6 +29,7 @@ public class RedisTechBlogPostService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final DynamicDataService dynamicDataService;
     private final String REDIS_MEMBER_POST_DYNAMIC_DATA = "memberId:%s";
+    private final String REDIS_MEMBER_RECOMMENDATION_POST = "recommendation:posts:member:%s";
     private final ObjectMapper objectMapper;
 
     public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key, final Long memberId) {
@@ -69,7 +70,7 @@ public class RedisTechBlogPostService {
         final int start = page * size;
         final int end = start + size - 1;
 
-        final List<RedisTechBlogPostsCategoriesStaticData> staticData = objectMapper.convertValue(
+        final List<RedisTechBlogPostsCategoriesStaticData> posts = objectMapper.convertValue(
                 redisTemplate.opsForValue()
                         .get(key + start + (end + 1)),
                 new TypeReference<>() {
@@ -77,22 +78,22 @@ public class RedisTechBlogPostService {
 
         boolean hasNext = false;
 
-        if (!staticData.isEmpty()) {
-            hasNext = staticData.get(staticData.size() - 1).hasNext();
+        if (!posts.isEmpty()) {
+            hasNext = posts.get(posts.size() - 1).hasNext();
         }
 
         //정적 정보 TTL 초기화
         redisTemplate.expire(key, RedisTtlConstants.FIVE_MINUTES.getTtl(), TimeUnit.SECONDS);
 
-        final List<Long> keys = staticData.stream()
+        final List<Long> dynamicPostIds = posts.stream()
                 .map((post) -> post.redisTechBlogPostStaticData().id())
                 .toList();
 
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 
-        final Map<Long, RedisPostDynamicData> postDynamicDataMap = dynamicDataService.findDynamicData(keys);
+        final Map<Long, RedisPostDynamicData> postDynamicDataMap = dynamicDataService.findDynamicData(dynamicPostIds);
 
-        final List<RedisSlicePostsContents> redisSlicePostsContents = RedisSlicePostsContents.fromRedisData(staticData,
+        final List<RedisSlicePostsContents> redisSlicePostsContents = RedisSlicePostsContents.fromRedisData(posts,
                 postDynamicDataMap, memberLikedPostIdSet);
 
         //동적 정보 TTL 초기화
@@ -137,24 +138,15 @@ public class RedisTechBlogPostService {
     }
 
     public boolean hasCachedKey(final Long memberId, final int count, final String key) {
-        final List<Long> postIds = Objects.requireNonNull(
-                        redisTemplate.opsForZSet()
-                                .range(String.format(key, memberId), 0, -1))
-                .stream()
-                .filter(Objects::nonNull)
-                .map((data) -> (Long) data)
-                .toList();
+        final List<RedisPostsCategoriesStaticData> posts = objectMapper.convertValue(
+                redisTemplate.opsForValue().get(String.format(REDIS_MEMBER_RECOMMENDATION_POST, memberId)),
+                new TypeReference<>() {
+                });
 
-        final boolean hasDynamicCacheKey = dynamicDataService.hasDynamicCacheKey(memberId, postIds);
-
-        if (!hasDynamicCacheKey) {
+        if (Objects.isNull(posts)) {
             return false;
         }
 
-        return postIds.size() == count;
-    }
-
-    public List<RedisSlicePostsContents> findRedisZSetByKey(final Long memberId, final int count, final String key) {
         final List<Long> postIds =
                 Objects.requireNonNull(redisTemplate.opsForZSet().range(String.format(key, memberId), 0, count - 1))
                         .stream()
@@ -162,26 +154,54 @@ public class RedisTechBlogPostService {
                         .map((data) -> (Long) data)
                         .toList();
 
+        if (posts.size() != count) {
+
+            redisTemplate.expire(String.format(key, memberId), RedisTtlConstants.FIVE_MINUTES.getTtl(),
+                    TimeUnit.SECONDS);
+
+            final List<RedisPostsCategoriesStaticData> recommendation = postIds.stream()
+                    .map(postId -> {
+                        redisTemplate.expire("postId:" + postIds, RedisTtlConstants.TEN_MINUTES.getTtl(),
+                                TimeUnit.SECONDS);
+                        return objectMapper.convertValue(
+                                redisTemplate.opsForHash()
+                                        .get("postId:" + postId, "redisTechBlogPostStaticData"),
+                                RedisPostsCategoriesStaticData.class);
+                    })
+                    .filter(Objects::nonNull)
+                    .toList();
+
+            redisTemplate.opsForValue()
+                    .set(String.format(REDIS_MEMBER_RECOMMENDATION_POST, memberId), recommendation,
+                            RedisTtlConstants.FIVE_MINUTES.getTtl(),
+                            TimeUnit.SECONDS);
+            return false;
+        }
+
+        return dynamicDataService.hasDynamicCacheKey(memberId, postIds);
+    }
+
+    public List<RedisSlicePostsContents> findRedisZSetByKey(final Long memberId, final int count, final String key) {
+
         redisTemplate.expire(String.format(key, memberId), 300, TimeUnit.SECONDS);
 
-        final List<RedisPostsCategoriesStaticData> recommendation = postIds.stream()
-                .map(postId -> {
-                    redisTemplate.expire("postId:" + postIds, RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
-                    return objectMapper.convertValue(
-                            redisTemplate.opsForHash()
-                                    .get("postId:" + postId, "redisTechBlogPostStaticData"),
-                            RedisPostsCategoriesStaticData.class);
-                })
-                .filter(Objects::nonNull)
+        final List<RedisPostsCategoriesStaticData> posts = objectMapper.convertValue(
+                redisTemplate.opsForValue()
+                        .get(key),
+                new TypeReference<>() {
+                });
+
+        final List<Long> dynamicPostIds = posts.stream()
+                .map((post) -> post.redisTechBlogPostStaticData().id())
                 .toList();
 
         final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
 
-        final Map<Long, RedisPostDynamicData> postDynamicDataMap = dynamicDataService.findDynamicData(postIds);
+        final Map<Long, RedisPostDynamicData> postDynamicDataMap = dynamicDataService.findDynamicData(dynamicPostIds);
 
         dynamicDataService.initiateRedisTtl(postDynamicDataMap, redisTemplate, memberId);
 
-        return RedisSlicePostsContents.from(recommendation, postDynamicDataMap, memberLikedPostIdSet);
+        return RedisSlicePostsContents.from(posts, postDynamicDataMap, memberLikedPostIdSet);
     }
 
     public void saveRedisRecommendationPost(

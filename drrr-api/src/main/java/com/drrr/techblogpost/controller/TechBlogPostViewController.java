@@ -1,6 +1,6 @@
 package com.drrr.techblogpost.controller;
 
-import com.drrr.domain.techblogpost.service.UnsignedMemberPostService;
+import com.drrr.techblogpost.service.UnsignedMemberPostReadExternalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 public class TechBlogPostViewController {
-    private final UnsignedMemberPostService unsignedMemberPostService;
+    private final UnsignedMemberPostReadExternalService unsignedMemberPostService;
+
 
     @Operation(summary = "비회원이 원 게시물을 읽는 경우 조회수 증가 API"
             , description = "호출 성공 시 비회원이 조회한 기술 블로그의 조회수 증가")
