@@ -33,7 +33,7 @@ public class RedisTechBlogPostService {
 
     public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key, final Long memberId) {
         final int start = page * size;
-        final int end = start + size;
+        final int end = start + size - 1;
 
         final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
                         redisTemplate.opsForZSet()

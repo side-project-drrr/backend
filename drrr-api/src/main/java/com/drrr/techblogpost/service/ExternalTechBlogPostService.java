@@ -51,16 +51,17 @@ public class ExternalTechBlogPostService {
                                                final Long memberId) {
         final String key = "category" + categoryId;
 
-        final RedisPostCategories redisPostCategories = redisTechBlogPostService.findCacheSlicePostsInRedis(
-                pageableRequest.page(),
-                pageableRequest.size(),
-                key,
-                memberId
-        );
-
         if (redisTechBlogPostService.hasCachedKeyByRange(pageableRequest.page(), pageableRequest.size(), key,
                 memberId)) {
-            findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
+
+            final RedisPostCategories redisPostCategories = redisTechBlogPostService.findCacheSlicePostsInRedis(
+                    pageableRequest.page(),
+                    pageableRequest.size(),
+                    key,
+                    memberId
+            );
+
+            return findSlicePostsByRedis(pageableRequest, memberId, redisPostCategories);
         }
 
         return saveAndReturnCategorySlicePosts(pageableRequest, memberId, key, categoryId);
