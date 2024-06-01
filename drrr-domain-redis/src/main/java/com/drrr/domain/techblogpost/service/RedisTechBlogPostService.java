@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -44,18 +45,22 @@ public class RedisTechBlogPostService {
                 .map((data) -> (RedisTechBlogPostsCategoriesStaticData) data)
                 .toList();
 
+        final Set<Long> postIdSet = staticData.stream()
+                .map(RedisTechBlogPostsCategoriesStaticData::postId)
+                .collect(Collectors.toSet());
+
+        if (staticData.isEmpty() || postIdSet.size() != staticData.size()) {
+            return false;
+        }
+
         final List<Long> postIds = staticData.stream()
                 .map(RedisTechBlogPostsCategoriesStaticData::postId)
                 .toList();
 
-        if (staticData.isEmpty()) {
-            return false;
-        }
-
         redisTemplate.opsForValue()
                 .set(key + start + end, staticData, RedisTtlConstants.FIVE_MINUTES.getTtl(), TimeUnit.SECONDS);
 
-        final boolean hasDynamicCacheKey = dynamicDataService.hasDynamicCacheKey(memberId, postIds);
+        final boolean hasDynamicCacheKey = dynamicDataService.hasDynamicCacheKey(postIds);
 
         if (!hasDynamicCacheKey) {
             return false;
@@ -138,15 +143,7 @@ public class RedisTechBlogPostService {
     }
 
     public boolean hasCachedKey(final Long memberId, final int count, final String key) {
-        final List<RedisPostsCategoriesStaticData> posts = objectMapper.convertValue(
-                redisTemplate.opsForValue().get(String.format(REDIS_MEMBER_RECOMMENDATION_POST, memberId)),
-                new TypeReference<>() {
-                });
-
-        if (Objects.isNull(posts)) {
-            return false;
-        }
-
+        //특정 사용자에게 추천할 게시물의 id를 가져옴
         final List<Long> postIds =
                 Objects.requireNonNull(redisTemplate.opsForZSet().range(String.format(key, memberId), 0, count - 1))
                         .stream()
@@ -154,40 +151,47 @@ public class RedisTechBlogPostService {
                         .map((data) -> (Long) data)
                         .toList();
 
-        if (posts.size() != count) {
-
-            redisTemplate.expire(String.format(key, memberId), RedisTtlConstants.FIVE_MINUTES.getTtl(),
-                    TimeUnit.SECONDS);
-
-            final List<RedisPostsCategoriesStaticData> recommendation = postIds.stream()
-                    .map(postId -> {
-                        redisTemplate.expire("postId:" + postIds, RedisTtlConstants.TEN_MINUTES.getTtl(),
-                                TimeUnit.SECONDS);
-                        return objectMapper.convertValue(
-                                redisTemplate.opsForHash()
-                                        .get("postId:" + postId, "redisTechBlogPostStaticData"),
-                                RedisPostsCategoriesStaticData.class);
-                    })
-                    .filter(Objects::nonNull)
-                    .toList();
-
-            redisTemplate.opsForValue()
-                    .set(String.format(REDIS_MEMBER_RECOMMENDATION_POST, memberId), recommendation,
-                            RedisTtlConstants.FIVE_MINUTES.getTtl(),
-                            TimeUnit.SECONDS);
+        if (postIds.size() != count) {
             return false;
         }
 
-        return dynamicDataService.hasDynamicCacheKey(memberId, postIds);
+        //post id에 해당하는 게시물 정보 가져옴
+        final List<RedisPostsCategoriesStaticData> posts = postIds.stream()
+                .map(postId -> {
+                    redisTemplate.expire("postId:" + postIds, RedisTtlConstants.TEN_MINUTES.getTtl(), TimeUnit.SECONDS);
+                    return objectMapper.convertValue(
+                            redisTemplate.opsForHash()
+                                    .get("postId:" + postId, "redisTechBlogPostStaticData"),
+                            RedisPostsCategoriesStaticData.class);
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        if (posts.isEmpty()) {
+            return false;
+        }
+
+        redisTemplate.opsForValue()
+                .set(String.format(REDIS_MEMBER_RECOMMENDATION_POST, memberId), posts,
+                        RedisTtlConstants.FIVE_MINUTES.getTtl(),
+                        TimeUnit.SECONDS);
+
+        final boolean hasDynamicCacheKey = dynamicDataService.hasDynamicCacheKey(postIds);
+
+        if (!hasDynamicCacheKey) {
+            return false;
+        }
+
+        return true;
     }
 
-    public List<RedisSlicePostsContents> findRedisZSetByKey(final Long memberId, final int count, final String key) {
+    public List<RedisSlicePostsContents> findRedisZSetByKey(final Long memberId, final String key) {
 
         redisTemplate.expire(String.format(key, memberId), 300, TimeUnit.SECONDS);
 
         final List<RedisPostsCategoriesStaticData> posts = objectMapper.convertValue(
                 redisTemplate.opsForValue()
-                        .get(key),
+                        .get(String.format(key, memberId)),
                 new TypeReference<>() {
                 });
 
@@ -210,6 +214,8 @@ public class RedisTechBlogPostService {
             final List<TechBlogPostLike> memberLikedPosts,
             final String key
     ) {
+        System.out.println("세이브 했다");
+        System.out.println("key : " + key);
         final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData = RedisPostsCategoriesStaticData.from(
                 contents);
 
@@ -222,6 +228,11 @@ public class RedisTechBlogPostService {
                                     score);
                 });
 
+        redisTemplate.delete(String.format(REDIS_MEMBER_RECOMMENDATION_POST, memberId));
+        redisTemplate.opsForValue()
+                .set(String.format(REDIS_MEMBER_RECOMMENDATION_POST, memberId), redisPostsCategoriesStaticData,
+                        RedisTtlConstants.FIVE_MINUTES.getTtl(),
+                        TimeUnit.SECONDS);
         saveRedisHash(redisPostsCategoriesStaticData);
 
         final List<Long> memberLikedPostIds = memberLikedPosts.stream()
@@ -234,6 +245,7 @@ public class RedisTechBlogPostService {
     }
 
     private void saveRedisHash(final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData) {
+
         redisPostsCategoriesStaticData.forEach(data -> {
             redisTemplate.opsForHash().put(
                     "postId:" + data.postId(),
