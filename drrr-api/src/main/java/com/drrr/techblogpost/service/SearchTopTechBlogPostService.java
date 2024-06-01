@@ -33,7 +33,6 @@ public class SearchTopTechBlogPostService {
             final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
             List<RedisSlicePostsContents> memberRecommendation = redisTechBlogPostService.findRedisZSetByKey(
                     memberId,
-                    count,
                     key
             );
             return TechBlogPostResponse.fromRedis(memberRecommendation, memberLikedPostIdSet);
