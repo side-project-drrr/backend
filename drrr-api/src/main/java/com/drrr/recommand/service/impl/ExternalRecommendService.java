@@ -29,6 +29,7 @@ public class ExternalRecommendService {
     private final TechBlogPostLikeService techBlogPostLikeService;
     private final DynamicDataService dynamicDataService;
     private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
+    private final String REDIS_MEMBER_RECOMMENDATION_POST = "recommendation:posts:member:%s";
 
     @Transactional
     public List<TechBlogPostResponse> execute(final Long memberId, final int count) {
@@ -36,7 +37,7 @@ public class ExternalRecommendService {
         if (redisTechBlogPostService.hasCachedKey(memberId, count, RECOMMENDATION_MEMBER)) {
             final Set<Long> memberLikedPostIdSet = dynamicDataService.findMemberLikedPostIdSet(memberId);
             List<RedisSlicePostsContents> memberRecommendation = redisTechBlogPostService.findRedisZSetByKey(
-                    memberId, count, RECOMMENDATION_MEMBER);
+                    memberId, REDIS_MEMBER_RECOMMENDATION_POST);
             return TechBlogPostResponse.fromRedis(memberRecommendation, memberLikedPostIdSet);
         }
 
