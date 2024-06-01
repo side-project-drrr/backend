@@ -1,16 +1,17 @@
 package com.drrr.web.jwt.util;
 
 
-import com.drrr.web.exception.ApiExceptionCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jwt.BadJwtException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -26,6 +27,7 @@ public class JwtProvider {
     private static final Long refreshTokenExpiry = 14 * 24 * 60 * 60L; // 2주
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final String HEADER_AUTHORIZATION = "Authorization";
+    private static final String HEADER_REFRESH_TOKEN = "REFRESH-TOKEN";
     private final JwtEncoder jwtEncoder;
     private final JwtDecoder jwtDecoder;
 
@@ -55,7 +57,23 @@ public class JwtProvider {
     }
 
     private Map<String, Object> decode(final String token) {
-        return jwtDecoder.decode(token).getClaims();
+
+        Jwt jwt = jwtDecoder.decode(token);
+        if (jwt == null || jwt.getClaims() == null) {
+            throw new JwtValidationException("Token is tampered", Collections.EMPTY_LIST);
+        }
+
+        Instant expiresAt = jwt.getExpiresAt();
+        Instant now = Instant.now();
+
+        assert expiresAt != null;
+
+        if (expiresAt.isBefore(now)) {
+            throw new JwtValidationException("Token is expired", Collections.EMPTY_LIST);
+        }
+
+        return jwt.getClaims();
+
     }
 
     public Long extractTtlMillisFromAccessToken(final String accessToken) {
@@ -70,15 +88,20 @@ public class JwtProvider {
     }
 
     public Long extractToValueFrom(final String token) {
-        try {
-            return Long.parseLong(this.decode(token).get("id").toString());
-        } catch (JwtValidationException ex) {
-            throw ApiExceptionCode.JWT_UNAUTHORIZED.newInstance();
-        }
+        return Long.parseLong(this.decode(token).get("id").toString());
     }
 
-    public String extractToken(final HttpServletRequest request) {
+    public String extractAccessToken(final HttpServletRequest request) {
         final String token = request.getHeader(HEADER_AUTHORIZATION);
+
+        if (!Objects.isNull(token) && token.startsWith(TOKEN_PREFIX)) {
+            return token.substring(TOKEN_PREFIX.length());
+        }
+        return null;
+    }
+
+    public String extractRefreshToken(final HttpServletRequest request) {
+        final String token = request.getHeader(HEADER_REFRESH_TOKEN);
 
         if (!Objects.isNull(token) && token.startsWith(TOKEN_PREFIX)) {
             return token.substring(TOKEN_PREFIX.length());

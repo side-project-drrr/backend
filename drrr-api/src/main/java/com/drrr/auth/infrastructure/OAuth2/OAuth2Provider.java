@@ -12,7 +12,8 @@ public enum OAuth2Provider {
     KAKAO_PROFILE_URI("https://kapi.kakao.com/v2/user/me"),
     GITHUB_REQUEST_ACCESS_TOKEN_URI("https://github.com/login/oauth/access_token"),
     GITHUB_PROFILE_URI("https://api.github.com/user"),
-    REDIRECT_URL("http://localhost:8081");
+    REDIRECT_URL("http://localhost:8081"),
+    PRODUCTION_REDIRECT_URL("https://api.drrr.kr");
     private final String requestUrl;
 
 }

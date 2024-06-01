@@ -41,7 +41,10 @@ public enum DomainExceptionCode {
     LANGUAGE(5500, "정의되지 않은 에러입니다."),
     INVALID_LANGUAGE_CHARACTER_INDEX(LANGUAGE.code + 1, "유효하지 않은 언어 인덱스입니다."),
     DISCORD(6000, "정의되지 않은 에러입니다."),
-    DISCORD_ALARM_TRANSFER_FAILED(DISCORD.code + 1, "디스코드 로그 전송에 실패하였습니다.");
+    DISCORD_ALARM_TRANSFER_FAILED(DISCORD.code + 1, "디스코드 로그 전송에 실패하였습니다."),
+    JWT(6500, "정의되지 않은 에러입니다."),
+    JWT_TOKEN_REGENERATION_REQUIRED(JWT.code + 1, "Access Token 재발급이 필요합니다."),
+    JWT_TOKEN_INVALID(JWT.code + 2, "JWT 토큰이 유효하지 않습니다.");
 
     private final int code;
     private final String message;
