@@ -124,7 +124,7 @@ public class CategoryController {
     })
     @GetMapping("/categories/keyword-search")
     public Slice<CategoryDto> searchCategory(@Valid @ModelAttribute final CategorySearchWordRequest request,
-                                             @Valid @ModelAttribute final PageableRequest pageableRequest) {
+                                             @Valid @ModelAttribute final CategoryIndexPageableRequest pageableRequest) {
         return externalSearchCategoryService.execute(request, pageableRequest);
     }
 
