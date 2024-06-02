@@ -14,13 +14,15 @@ public class RedisTemplateTestUtil {
     private RedisTechBlogPostService redisTechBlogPostService;
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
-    private final String RECOMMENDATION_MEMBER = "recommendation:member:%s";
+    private final String REDIS_MEMBER_RECOMMENDATION_POST = "recommendation:posts:member:%s";
 
     public List<RedisSlicePostsContents> findCacheMemberRecommendation(final Long memberId, final int count) {
-        return redisTechBlogPostService.findRedisZSetByKey(memberId, count, RECOMMENDATION_MEMBER);
+        return redisTechBlogPostService.findRedisZSetByKey(memberId, REDIS_MEMBER_RECOMMENDATION_POST);
+
     }
 
     public void flushAll() {
+
         redisTemplate.execute((RedisConnection connection) -> {
             connection.serverCommands().flushAll();
             return "OK";
