@@ -96,7 +96,6 @@ public class PushMessageBatchConfig {
                                 );
                                 subscriptions.stream().forEach(subscription -> {
                                     NotificationDto notification = NotificationDto.builder()
-                                            .id(subscription.getId())
                                             .endpoint(subscription.getEndpoint())
                                             .p256dh(subscription.getP256dh())
                                             .payload("DRRR에서 새로 업데이트된 게시물을 만나보세요!")
