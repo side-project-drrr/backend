@@ -15,6 +15,7 @@ public class DatabaseCleaner {
     private EntityManager entityManager;
 
     private List<MappingInformation> tableNames;
+    private final String SUBSCRIPTION_TABLE_NAME = "DRRR_SUBSCRIPTION";
 
 
     @Transactional
@@ -42,10 +43,13 @@ public class DatabaseCleaner {
         this.tableNames = entityManager.getMetamodel()
                 .getEntities().stream()
                 .filter(e -> e.getJavaType().getAnnotation(Entity.class) != null)
-                .map(e -> new MappingInformation(
-                        e.getJavaType().getAnnotation(Table.class).name().toUpperCase(),
-                        "id"
-                ))
+                .filter(e -> !e.getJavaType().getAnnotation(Table.class).name().equals(SUBSCRIPTION_TABLE_NAME))
+                .map(e -> {
+                    return new MappingInformation(
+                            e.getJavaType().getAnnotation(Table.class).name().toUpperCase(),
+                            "id"
+                    );
+                })
                 .toList();
     }
 }
