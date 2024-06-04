@@ -59,7 +59,7 @@ public class WebPushConsumer {
         );
 
         if (Objects.equals(sendState, SubscriptionState.EXPIRED)) {
-            subscriptionRepository.deleteById(notificationDto.id());
+            subscriptionRepository.deleteById(notificationDto.auth());
         }
 
         if (Objects.equals(sendState, SubscriptionState.ACTIVE)) {

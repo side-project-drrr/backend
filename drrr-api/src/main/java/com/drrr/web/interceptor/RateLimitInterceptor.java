@@ -1,21 +1,22 @@
 package com.drrr.web.interceptor;
 
 import com.drrr.domain.rate.service.RateLimiterService;
-import com.nimbusds.jose.Header;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.Arrays;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private final RateLimiterService rateLimiterService;
-    private final int LIMIT_REQUEST_PER_MINUTE = 300;
+    private final int LIMIT_REQUEST_PER_MINUTE = 3000;
     private final int WAIT_MINUTES = 5;
     private final Environment env;
+    private final String healthCheckUrl = "/healthcheck";
 
     public RateLimitInterceptor(RateLimiterService rateLimiterService, Environment env) {
         this.rateLimiterService = rateLimiterService;
@@ -23,8 +24,15 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+                             @NonNull Object handler)
+            throws Exception {
+        //healthCheck 도 rate limit을 적용하지 않는다.
+        if (request.getRequestURI().equals(healthCheckUrl)) {
+            return true;
+        }
 
+        //junit 테스트 시에는 rate limit을 적용하지 않는다.
         if (Arrays.asList(env.getActiveProfiles()).contains("test")) {
             return true;
         }
