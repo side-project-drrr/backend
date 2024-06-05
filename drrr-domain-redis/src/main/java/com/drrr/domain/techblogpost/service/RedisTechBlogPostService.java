@@ -35,7 +35,7 @@ public class RedisTechBlogPostService {
 
     public <T> Boolean hasCachedKeyByRange(final int page, final int size, final String key, final Long memberId) {
         final int start = page * size;
-        final int end = start + size;
+        final int end = start + size - 1;
 
         final List<RedisTechBlogPostsCategoriesStaticData> staticData = Objects.requireNonNull(
                         redisTemplate.opsForZSet()
@@ -77,13 +77,13 @@ public class RedisTechBlogPostService {
 
         final List<RedisTechBlogPostsCategoriesStaticData> posts = objectMapper.convertValue(
                 redisTemplate.opsForValue()
-                        .get(key + start + (end + 1)),
+                        .get(key + start + end),
                 new TypeReference<>() {
                 });
 
         boolean hasNext = false;
 
-        if (!posts.isEmpty()) {
+        if (Objects.nonNull(posts)) {
             hasNext = posts.get(posts.size() - 1).hasNext();
         }
 
