@@ -94,7 +94,7 @@ public class PushMessageBatchConfig {
                                                 .map(PushStatus::getMemberId)
                                                 .toList()
                                 );
-                                subscriptions.stream().forEach(subscription -> {
+                                subscriptions.forEach(subscription -> {
                                     NotificationDto notification = NotificationDto.builder()
                                             .endpoint(subscription.getEndpoint())
                                             .p256dh(subscription.getP256dh())
