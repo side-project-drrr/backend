@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Objects;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
@@ -13,7 +14,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private final RateLimiterService rateLimiterService;
-    private final int LIMIT_REQUEST_PER_MINUTE = 3000;
+    private final int LIMIT_REQUEST_PER_MINUTE = 50;
     private final int WAIT_MINUTES = 5;
     private final Environment env;
     private final String healthCheckUrl = "/healthcheck";
@@ -38,11 +39,14 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         }
 
         String clientIp = request.getHeader("X-Forwarded-For");
-        String api = request.getRequestURI().startsWith("/api") ? "api" : request.getRequestURI();
 
-        if (!rateLimiterService.isAllowed(clientIp, api, LIMIT_REQUEST_PER_MINUTE, Duration.ofMinutes(WAIT_MINUTES))) {
-            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            return false;
+        if (Objects.nonNull(clientIp)) {
+            String api = request.getRequestURI();
+            if (!rateLimiterService.isAllowed(clientIp, api, LIMIT_REQUEST_PER_MINUTE,
+                    Duration.ofMinutes(WAIT_MINUTES))) {
+                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
+                return false;
+            }
         }
 
         return true;
