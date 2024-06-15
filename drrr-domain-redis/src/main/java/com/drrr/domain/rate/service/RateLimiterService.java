@@ -2,7 +2,6 @@ package com.drrr.domain.rate.service;
 
 import java.time.Duration;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -10,16 +9,15 @@ public class RateLimiterService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public RateLimiterService(RedisTemplate<String, String> redisTemplate) {
+    public RateLimiterService(final RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
-    public boolean isAllowed(String clientIp, String api, int limit, Duration duration) {
-        String key = String.format("ratelimit:%s:%s", clientIp, api);
-        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+    public boolean isAllowed(final String clientIp, final String api, final int limit, final Duration duration) {
+        final String key = String.format("ratelimit:%s:%s", clientIp, api);
 
-        Long current = ops.increment(key, 1);
-        if (current == 1) {
+        final long current = redisTemplate.opsForHash().increment(key, api, 1);
+        if (current == 1L) {
             redisTemplate.expire(key, duration);
         }
 
