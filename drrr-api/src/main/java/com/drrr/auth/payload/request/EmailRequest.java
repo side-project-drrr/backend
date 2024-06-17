@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record EmailRequest(
         @NotNull String providerId,
-        @NotNull String email
+        @NotNull String email,
+        @NotNull Boolean isRegistered
 ) {
 }

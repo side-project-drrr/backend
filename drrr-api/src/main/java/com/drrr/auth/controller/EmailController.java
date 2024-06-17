@@ -5,6 +5,8 @@ import com.drrr.auth.payload.request.EmailVerificationRequest;
 import com.drrr.auth.service.impl.EmailVerificationService;
 import com.drrr.auth.service.impl.IssuanceVerificationCode;
 import com.drrr.domain.email.service.VerificationService.VerificationDto;
+import com.drrr.web.annotation.MemberId;
+import com.drrr.web.annotation.Optional;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -34,7 +36,8 @@ public class EmailController {
     @Operation(summary = "이메일 인증코드 발급 API", description = "호출 성공 시 이메일 인증코드 발급")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "이메일 인증코드 발급"))
     @PostMapping("/send-verification-email")
-    public void createEmailVerification(@RequestBody final EmailRequest emailRequest) {
-        issuanceVerificationCode.execute(emailRequest);
+    public void createEmailVerification(@Optional @MemberId final Long memberId,
+                                        @RequestBody final EmailRequest emailRequest) {
+        issuanceVerificationCode.execute(emailRequest, memberId);
     }
 }
