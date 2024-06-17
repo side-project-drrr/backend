@@ -46,6 +46,9 @@ public class JwtTokenValidationFilter extends OncePerRequestFilter {
 
         log.info("-------------------JwtTokenValidationFilter CALL-------------------");
         log.info("-------------------request URI: " + request.getRequestURI() + "---------------");
+        log.info("-------------------request RemoteAddr: " + request.getRemoteAddr() + "---------------");
+        log.info("-------------------request X-Forwarded-For: " + request.getHeader("X-Forwarded-For")
+                + "---------------");
 
         String token = jwtTokenProvider.extractAccessToken(request);
 
