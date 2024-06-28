@@ -1,7 +1,7 @@
 package com.drrr.domain.category.service;
 
+import com.drrr.core.category.constant.CategoryTypeConstants;
 import com.drrr.core.category.constant.IndexConstants;
-import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.entity.Category;
@@ -52,7 +52,7 @@ public class CategoryService {
     }
 
     public CategoryRangeDto findCategoriesByRange(final IndexConstants startIdx, final IndexConstants endIdx,
-                                                  final LanguageConstants language, final int size) {
+                                                  final CategoryTypeConstants language, final int size) {
         final List<CategoriesKeyDto> rangedEtcCategories = categoryRepository.findRangedCategories(startIdx, endIdx,
                 language, size);
 
