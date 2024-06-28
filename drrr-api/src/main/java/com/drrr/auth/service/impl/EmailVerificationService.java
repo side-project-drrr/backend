@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class EmailVerificationService {
     private final VerificationService verificationService;
 
-    public VerificationDto execute(final EmailVerificationRequest request) {
-        return verificationService.verifyCode(request.providerId(), request.verificationCode());
+    public VerificationDto execute(final EmailVerificationRequest request, final Long memberId) {
+        return verificationService.verifyCode(request.providerId(), request.verificationCode(), memberId);
     }
 }

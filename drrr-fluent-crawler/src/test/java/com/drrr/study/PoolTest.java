@@ -42,8 +42,6 @@ public class PoolTest {
                             throw new RuntimeException(e);
                         }
 
-                        System.out.println(i + 1);
-
                         webDriver.get("https://blog.dramancompany.com/page/" + (i + 1));
                         var wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
 
