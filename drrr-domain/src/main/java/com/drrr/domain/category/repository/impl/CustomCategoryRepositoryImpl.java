@@ -4,8 +4,8 @@ import static com.drrr.domain.category.entity.QCategory.category;
 import static com.drrr.domain.category.entity.QCategoryWeight.categoryWeight;
 import static com.drrr.domain.techblogpost.entity.QTechBlogPostCategory.techBlogPostCategory;
 
+import com.drrr.core.category.constant.CategoryTypeConstants;
 import com.drrr.core.category.constant.IndexConstants;
-import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryPostDto;
 import com.drrr.domain.category.entity.Category;
@@ -61,9 +61,9 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
                 .fetch();
     }
 
-    private BooleanExpression languageCondition(final LanguageConstants language,
+    private BooleanExpression languageCondition(final CategoryTypeConstants language,
                                                 IndexConstants indexConstants) {
-        if (language.equals(LanguageConstants.ENGLISH)) {
+        if (language.equals(CategoryTypeConstants.ENGLISH)) {
             return category.name.toUpperCase().like(
                     indexConstants.getCharacter() + "%");
         }
@@ -72,7 +72,7 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Override
-    public Slice<CategoryDto> findCategoryByNameLike(final LanguageConstants language,
+    public Slice<CategoryDto> findCategoryByNameLike(final CategoryTypeConstants language,
                                                      IndexConstants indexConstants,
                                                      Pageable pageable) {
 
@@ -154,11 +154,11 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 
     @Override
     public List<CategoriesKeyDto> findRangedCategories(IndexConstants startIdx, IndexConstants endIdx,
-                                                       LanguageConstants language, int size) {
+                                                       CategoryTypeConstants language, int size) {
 
         final IndexConstants[] rangeIndexConstants = IndexConstants.values();
 
-        final String unionSql = language.equals(LanguageConstants.ENGLISH) ?
+        final String unionSql = language.equals(CategoryTypeConstants.ENGLISH) ?
                 englishRangedCategoriesQueryFactory(rangeIndexConstants, startIdx, endIdx, size) :
                 koreanRangedCategoriesQueryFactory(rangeIndexConstants, startIdx, endIdx, size);
 
@@ -209,13 +209,12 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
     }
 
     @Override
-    public Slice<CategoriesKeyDto> findEtcCategoriesPage(Pageable pageable) {
+    public Slice<CategoryDto> findEtcCategoriesPage(Pageable pageable) {
 
         String query = String.format("""
                 (
                    SELECT A.id id
                         , A.name name
-                        , '기타' keyIndex
                      FROM drrr_category A
                     WHERE A.name NOT REGEXP '^[A-Za-z가-힣]'
                     LIMIT %d
@@ -227,11 +226,10 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 
         //가장 최근에 만들어진 게시물 순으로 정렬됨
         //사용자가 관심 있는 카테고리에 대해 게시물 추출
-        List<CategoriesKeyDto> categoriesKeyDtos = list.stream()
-                .map(elem -> CategoriesKeyDto.builder()
+        List<CategoryDto> categoryDtos = list.stream()
+                .map(elem -> CategoryDto.builder()
                         .id((Long) elem[0])
                         .name((String) elem[1])
-                        .keyIndex(((String) elem[2]))
                         .build())
                 .toList();
 
@@ -246,9 +244,9 @@ public class CustomCategoryRepositoryImpl implements CustomCategoryRepository {
 
         Long total = (Long) singleResult;
 
-        boolean hasNext = (pageable.getOffset() + categoriesKeyDtos.size()) < total;
+        boolean hasNext = (pageable.getOffset() + categoryDtos.size()) < total;
 
-        return new SliceImpl<>(categoriesKeyDtos, pageable, hasNext);
+        return new SliceImpl<>(categoryDtos, pageable, hasNext);
     }
 
     @Override
