@@ -14,6 +14,8 @@ import com.drrr.domain.techblogpost.dto.TechBlogPostSliceDto;
 import com.drrr.domain.techblogpost.repository.CustomTechBlogPostRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.LinkedHashMap;
@@ -48,25 +50,48 @@ public class CustomTechBlogPostRepositoryImpl implements CustomTechBlogPostRepos
 
     @Override
     public TechBlogPostSliceDto findPostsByCategory(Long categoryId, Pageable pageable) {
-        final List<TechBlogPostBasicInfo> postEntities =
-                selectTechBlogPostBasicInfo()
-                        .from(techBlogPostCategory)
-                        .leftJoin(techBlogPostCategory.post, techBlogPost)
-                        .where(techBlogPostCategory.category.id.eq(categoryId))
-                        .orderBy(techBlogPost.writtenAt.desc())
-                        .offset(pageable.getOffset())
-                        .limit(pageable.getPageSize())
-                        .fetch();
+        BooleanExpression condition = null;
+        if (categoryId != 0) {
+            condition = techBlogPostCategory.category.id.eq(categoryId);
+        }
+
+        JPAQuery<TechBlogPostBasicInfo> query = selectTechBlogPostBasicInfo()
+                .from(selectFrom(categoryId));
+
+        if (condition != null) {
+            query = query.leftJoin(techBlogPostCategory.post, techBlogPost)
+                    .where(condition);
+        }
+
+        final List<TechBlogPostBasicInfo> postEntities = query
+                .orderBy(techBlogPost.writtenAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
         final List<TechBlogPostContentDto> contents = TechBlogPostContentDto.from(postEntities);
 
-        final Long total = queryFactory.select(techBlogPost.count())
-                .from(techBlogPostCategory)
-                .leftJoin(techBlogPostCategory.post, techBlogPost)
-                .where(techBlogPostCategory.category.id.eq(categoryId)).fetchOne();
+        JPAQuery<Long> countQuery = queryFactory.select(techBlogPost.count())
+                .from(selectFrom(categoryId));
+
+        if (categoryId != 0) {
+            countQuery = countQuery.from(techBlogPostCategory).leftJoin(techBlogPostCategory.post, techBlogPost);
+        }
+
+        final Long total = countQuery
+                .where(condition).fetchOne();
 
         return getTechBlogPostCategoryDtos(pageable, contents, total);
     }
+
+    private EntityPathBase<?> selectFrom(Long categoryId) {
+        if (categoryId == 0) {
+            return techBlogPost;
+        } else {
+            return techBlogPostCategory;
+        }
+    }
+
 
     @Override
     public List<TechBlogPostBasicInfo> findPostsByPostIds(List<Long> postIds) {
