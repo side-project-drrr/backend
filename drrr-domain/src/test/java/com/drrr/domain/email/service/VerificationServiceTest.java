@@ -51,7 +51,7 @@ class VerificationServiceTest extends ServiceIntegrationTest {
 
         final String code = verificationService.createVerificationCode("provider", "email");
 
-        assertThat(verificationService.verifyCode("provider", code).isVerified()).isTrue();
+        assertThat(verificationService.verifyCode("provider", code, null).isVerified()).isTrue();
     }
 
     @Test
@@ -60,7 +60,7 @@ class VerificationServiceTest extends ServiceIntegrationTest {
 
         final String code = verificationService.createVerificationCode("provider", "email");
 
-        assertThat(verificationService.verifyCode("provider", "other").isVerified()).isFalse();
+        assertThat(verificationService.verifyCode("provider", "other", null).isVerified()).isFalse();
     }
 
 

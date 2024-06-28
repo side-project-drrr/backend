@@ -3,7 +3,9 @@ package com.drrr.domain.email.service;
 import com.drrr.domain.email.entity.Email;
 import com.drrr.domain.email.generator.EmailCodeGenerator;
 import com.drrr.domain.email.repository.EmailRepository;
+import com.drrr.domain.member.repository.MemberRepository;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ public class VerificationService {
     private final EmailCodeGenerator emailCodeGenerator;
     private final ExpireEmailService expireEmailService;
     private final EmailRepository emailRepository;
+    private final MemberRepository memberRepository;
 
     public String createVerificationCode(final String providerId, final String email) {
         this.removeExistsVerificationCode(providerId);
@@ -37,9 +40,14 @@ public class VerificationService {
         }
     }
 
-    public VerificationDto verifyCode(final String providerId, final String verificationCode) {
+    public VerificationDto verifyCode(final String providerId, final String verificationCode, final Long memberId) {
         expireEmailService.removeWhenExpireTime(providerId, LocalDateTime.now());
         final boolean isRemoved = expireEmailService.removeWhenMatchCode(providerId, verificationCode);
+
+        if (Objects.nonNull(memberId) && isRemoved) {
+            final String email = memberRepository.findEmailByMemberId(memberId);
+            memberRepository.updateEmail(memberId, email);
+        }
 
         return VerificationDto.builder()
                 .isVerified(isRemoved)

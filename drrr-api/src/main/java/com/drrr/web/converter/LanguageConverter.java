@@ -1,14 +1,14 @@
 package com.drrr.web.converter;
 
-import com.drrr.core.category.constant.LanguageConstants;
+import com.drrr.core.category.constant.CategoryTypeConstants;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LanguageConverter implements Converter<String, LanguageConstants> {
+public class LanguageConverter implements Converter<String, CategoryTypeConstants> {
     @Override
-    public LanguageConstants convert(String source) {
-        return LanguageConstants.valueOf(source.toUpperCase());
+    public CategoryTypeConstants convert(String source) {
+        return CategoryTypeConstants.valueOf(source.toUpperCase());
     }
 
 }
