@@ -10,7 +10,6 @@ import com.drrr.category.service.impl.ExternalSearchCategoryService;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.repository.CategoryRepository;
-import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.recommand.service.impl.ExternalMemberPreferredCategoryModificationService;
 import com.drrr.web.annotation.MemberId;
 import com.drrr.web.page.request.CategoryIndexPageableRequest;
@@ -77,7 +76,7 @@ public class CategoryController {
     })
     //기타 안 들어가 있음
     @GetMapping("/categories/search-etc")
-    public Slice<CategoriesKeyDto> findEtcCategory(@Valid @ModelAttribute CategoryIndexPageableRequest pageRequest) {
+    public Slice<CategoryDto> findEtcCategory(@Valid @ModelAttribute CategoryIndexPageableRequest pageRequest) {
         return externalFindCategoryService.execute(pageRequest);
     }
 

@@ -2,10 +2,10 @@ package com.drrr.category.service.impl;
 
 import com.drrr.category.request.CategoryIndexSliceRequest;
 import com.drrr.category.request.CategoryRangeRequest;
+import com.drrr.core.category.constant.CategoryTypeConstants;
 import com.drrr.domain.category.dto.CategoryDto;
 import com.drrr.domain.category.dto.CategoryRangeDto;
 import com.drrr.domain.category.repository.CategoryRepository;
-import com.drrr.domain.category.repository.impl.CustomCategoryRepositoryImpl.CategoriesKeyDto;
 import com.drrr.domain.category.service.CategoryService;
 import com.drrr.web.page.request.CategoryIndexPageableRequest;
 import java.util.List;
@@ -23,7 +23,7 @@ public class ExternalFindCategoryService {
         return categoryService.findCategoriesByPostId(postId);
     }
 
-    public Slice<CategoriesKeyDto> execute(final CategoryIndexPageableRequest pageRequest) {
+    public Slice<CategoryDto> execute(final CategoryIndexPageableRequest pageRequest) {
         return categoryRepository.findEtcCategoriesPage(pageRequest.fromPageRequest());
     }
 
@@ -42,7 +42,13 @@ public class ExternalFindCategoryService {
     public Slice<CategoryDto> execute(final CategoryIndexSliceRequest request,
                                       final CategoryIndexPageableRequest pageableRequest) {
 
-        return categoryRepository.findCategoryByNameLike(request.language()
+        //기타 카테고리
+        if (request.type().equals(CategoryTypeConstants.ETC)) {
+            return categoryRepository.findEtcCategoriesPage(pageableRequest.fromPageRequest());
+        }
+
+        //한글 or 영어 카테고리
+        return categoryRepository.findCategoryByNameLike(request.type()
                 , request.index()
                 , pageableRequest.fromPageRequest());
     }
