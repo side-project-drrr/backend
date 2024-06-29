@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -286,7 +285,7 @@ public class CategoryE2ETest {
         Map<String, String> params = new HashMap<>();
         params.put("page", "0");
         params.put("size", "10");
-        params.put("language", "ENGLISH");
+        params.put("type", "ENGLISH");
         params.put("index", index);
 
         Response response = given()
