@@ -82,8 +82,8 @@ public class TechBlogPostController {
         return TechBlogPostResponse.from(postsByKeyword, postIdSet);
     }
 
-    @Operation(summary = "특정 카테고리에 해당하는 기술블로그의 기본정보를 가져오는 API", description = """
-            호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환 [page 값은 0부터 시작 
+    @Operation(summary = "모든 기술블로그를 가져오거나 특정 카테고리에 해당하는 기술블로그의 기본정보를 가져오는 API", description = """
+            호출 성공 시 특정 카테고리 id에 해당하는 기술 블로그 기본정보 반환, 카테고리ID가 0인 경우 모든 기술 블로그를 가져옴 [page 값은 0부터 시작 
             size는 한 page에 담길 게시물의 개수 - 작성일자 기준 내림차순 반환]
             """)
     @ApiResponses(

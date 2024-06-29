@@ -1,7 +1,7 @@
 package com.drrr.category.request;
 
+import com.drrr.core.category.constant.CategoryTypeConstants;
 import com.drrr.core.category.constant.IndexConstants;
-import com.drrr.core.category.constant.LanguageConstants;
 import com.drrr.domain.exception.DomainExceptionCode;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -10,15 +10,15 @@ import lombok.Builder;
 public record CategoryRangeRequest(
         @NotNull IndexConstants startIdx,
         @NotNull IndexConstants endIdx,
-        @NotNull LanguageConstants language,
+        @NotNull CategoryTypeConstants language,
         @NotNull int size
 ) {
     public static void requestValidationCheck(final CategoryRangeRequest request) {
-        if (request.language.equals(LanguageConstants.ENGLISH) &&
+        if (request.language.equals(CategoryTypeConstants.ENGLISH) &&
                 (!isEnglish(request.startIdx.getCharacter()) || !isEnglish(request.endIdx.getCharacter()))) {
             throw DomainExceptionCode.INVALID_LANGUAGE_CHARACTER_INDEX.newInstance();
         }
-        if (request.language.equals(LanguageConstants.KOREAN) &&
+        if (request.language.equals(CategoryTypeConstants.KOREAN) &&
                 (!isKorean(request.startIdx.getCharacter()) || !isKorean(request.endIdx.getCharacter()))) {
             throw DomainExceptionCode.INVALID_LANGUAGE_CHARACTER_INDEX.newInstance();
         }

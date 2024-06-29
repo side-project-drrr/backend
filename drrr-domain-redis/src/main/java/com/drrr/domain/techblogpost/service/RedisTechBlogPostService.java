@@ -214,8 +214,6 @@ public class RedisTechBlogPostService {
             final List<TechBlogPostLike> memberLikedPosts,
             final String key
     ) {
-        System.out.println("세이브 했다");
-        System.out.println("key : " + key);
         final List<RedisPostsCategoriesStaticData> redisPostsCategoriesStaticData = RedisPostsCategoriesStaticData.from(
                 contents);
 
